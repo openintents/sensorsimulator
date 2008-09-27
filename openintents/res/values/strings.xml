@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+ * Copyright (C) 2007-2008 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ -->
+ 
+<resources>
+    <!-- Main application  -->
+	<string name="app_name">Open Intents</string>
+	<string name="default_tag">DEFAULT</string>
+	
+	<string name="openintents">OpenIntents</string>
+	<string name="about_openintents">About OpenIntents</string>
+	<string name="about">About</string>
+	<string name="about_openintents_text">OpenIntents 
+		defines open intents and interfaces to make Android applications
+		work together.\n\n
+		For more information visit the OpenIntents developer home at \n
+		http://code.google.com/p/openintents/\n\n
+		For copyright notes of maps see the About menu of Location Map View.\n
+		3rd party fonts by www.anke-art.de have been included. 
+	</string>
+	<string name="action_MAIN">org.openintents.main.OpenIntentsView</string>
+
+	<string name="oi_acceptancetest">Acceptance Test for Open Intents</string>
+	
+	<string name="init_databases">Init default values</string>
+	<string name="init_add_locations">Add default locations</string>
+	<string name="init_add_news_feeds">Add default news feeds</string>	
+	<string name="init_add_all_values">Add all default values</string>
+	<string name="init_done">Values added</string>
+	<string name="init_view_locations">View Locations</string>
+	<string name="init_view_news">View Newsfeeds</string>
+
+	<!-- Location Provider -->
+	<string name="list_of_locations">List of locations</string>
+	<string name="add_current_location">Add curr. loc.</string>
+	<string name="view_location">View</string>
+	<string name="list_is_empty">(end of list)</string>
+	<string name="locations_map">Map</string>
+	<string name="tag_location">Tag location</string>
+	<string name="delete_location">Delete loc.</string>
+	<string name="locations_manage_extras">Manage extras</string>
+	<string name="locations_delete_extra">Delete</string>
+	<string name="locations_add_extra">Add</string>
+	<string name="locations_use_center">Use center as new coord.</string>
+	<string name="locations_restore_values">Restore values</string>
+	<string name="locations_about">About Location Map View</string>
+	<string name="locations_about_text">Location Map View uses 3rd party data and imagery \n\n
+	Copyright Notice: Data: (c)2007 TeleAtlas, AND, Europa Technologies,
+Kingway, Map Data Sciences Pty Ltd, PSMA, ZENRIN, Geocentre,
+MapLink/TeleAtlas; Imagery: (c)2007 DigitalGlobe, EarthSat, Sanborn, NYGIS,
+Scankort, TerraMetrics, MassGIS Commonwealth of Massachusetts, Digital
+Earth Technology.
+	</string>
+	<string name="key">Key</string>
+	<string name="value">Value</string>
+	
+	<!--   Tags Provider   -->
+	<string name="list_of_tags">List of tags</string>
+	<string name="list_of_contents">List of contents</string>
+	<string name="select">Select</string>
+	<string name="add">Add</string>
+	<string name="add_tag">Add new tag/content</string>
+	<string name="tag_all">ALL</string>
+	<string name="tags_add_any_tag">add new tag (advanced)</string>
+	<string name="tags_unique">unique tag</string>
+	<string name="tags_security">Content is secured, privileges has not been granted.</string>
+	<string name="tags_unparsable_uri">Content URI could not be parsed</string>
+	<string name="tags_unknown_content">Content type is unknown, add package information using menu "packages".</string>
+	<!-- intent list  -->
+	<string name = "intents_list">List of Actions by Type</string>
+	<string name = "intents_types">Action list by Type</string>
+	<string name = "no_types">No types</string>
+	<string name="intents_list_of">List of %s</string>
+	<string name="intents_item_of">%s</string>
+	<string name="intents_list_pick_type">Pick type for action %s</string>
+	<string name="intents_list_pick_type_action">Pick type, thereafter an action</string>
+	
+	<!--  Content Browser -->
+	<string name = "content_browser">Tag browser</string>
+	<string name ="tags_add_tag">Add tag</string>
+	<string name="tags_view_content">View</string>
+	<string name="tags_remove_tag">Remove tag</string>
+	
+	<string name="message">Message</string>
+	<string name="todo">To do</string>
+	<string name="tags_view_tag">View</string>
+	
+	<string name="no_tags">No tagged content found.</string>
+	<string name="empty_tag">Please enter an existing tag or select one using the magnifier.</string>
+	<string name="nothing_selected">Nothing selected</string>
+	<string name="nothing_found">Nothing found (%s)</string>
+	
+    <string name="menu_package_add">Import</string>
+    <string name="menu_package_del">Unregister</string>
+    <string name="menu_package_list">Content types</string>
+    <string name="label_packages">Content types (%s)</string>
+    <string name="label_packages_pick">Content types (%s) - Pick a type</string>
+    <string name="label_package_add">Enter URL</string>
+    <string name="button_ok">OK</string>
+    <string name="no_packages">No content types</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_title_package_add">Import</string>
+    <string name="dialog_message_package_add">Loading...</string>
+    <string name="dialog_title_package_del">Unregister</string>
+    <string name="dialog_message_package_del">Are you sure?</string>
+    
+    <string name="tags_cloud">Tag Cloud</string>
+	<string name="tags_cloud_pick">Tag Cloud - Pick a tag</string>    
+    
+    <!-- Magnolia tagging (Ma.Gnolia.com) -->
+    <string name="magnolia_settings">Ma.gnolia settings</string>
+    <string name="magnolia_tagging">Ma.gnolia tags</string>
+    		
+    <!-- Media Browser -->
+    <string name="media_browser">Media browser</string>
+    <string name="internal_content">Internal</string>
+    <string name="external_content">SD card</string>
+    <string name="audio">Audio</string>
+    <string name="video">Video</string>
+    <string name="images">Images</string>
+    <string name="media">Media</string>
+    <string name="media_scanner">Media scanner</string>
+    
+    <!-- Media Player -->
+    <string name="media_player">Media player</string>
+    <string name="pick_media_file">Pick a media file</string>
+    <string name="get_content_media_file">Pick a media file (get content)</string>
+    <string name="open_audio">Open audio</string>
+    <string name="open_video">Open video</string>
+    
+	
+	<!--     Dialog box    -->
+	<string name="cancel">Cancel</string>
+	<string name="ok">OK</string>
+	
+	<!--     Newsreader Service -->
+	<string name="news_service_settings">News Service</string>
+	<string name="start_on_system_boot">Start on system boot</string>
+	<string name="use_while_roaming">Use while roaming</string>
+
+	<!--  Sensor Simulator -->
+	<string name="sensorsimulator">Sensor Simulator</string>
+	<string name="settings">Settings</string>
+	<string name="connect">Connect</string>
+	<string name="testing">Testing</string>
+	<string name="disconnect">Disconnect</string>
+	<string name="IP_address">IP address:</string>
+	<string name="socket">Socket:</string>
+	<string name="real_device_data">Real device data:</string>
+	<string name="sensor_simulator_data">Sensor simulator data:</string>
+	<string name="enable_sensors">Enable sensors</string>
+	<string name="auto_update">Auto update</string>
+	<string name="disabled">disabled</string>
+	<string name="set_update_interval">Set update interval...</string>
+	<string name="ask_update_interval">Enter update interval (ms)</string>
+	<string name="sensorsimulator_settings">SensorSimulator settings...</string>
+	<string name="connect_to_sensorsimulator">Connect to SensorSimulator</string>
+	<string name="sensorsimulator_settings_description">
+		Enter the connection settings below.
+		They are displayed on the Sensor Simulator.</string>
+	<string name="sensorsimulator_testing_description">
+		Test the connection to the Sensor Simulator.
+		Disable the sensors and disconnect after testing.</string>
+	<string name="update_rate">update rate</string>
+	<string name="update_rate_seconds">update rate (1/s)</string>
+	
+	<!-- Sensor service -->
+	<string name="sensor_service">Sensor service</string>
+	<string name="sensor_service_settings">Sensor service settings</string>
+	<string name="bind_service">Bind</string>
+	<string name="unbind_service">Unbind</string>
+	<string name="sensor_service_started">Sensor service started</string>
+	<string name="sensor_service_stopped">Sensor service stopped</string>
+	<string name="sensor_service_connected">Sensor service connected</string>
+	<string name="sensor_service_disconnected">Sensor service disconnected</string>
+	
+	<!--  alert related  -->
+	<string name="alert_edit">Edit alert</string>
+	<string name="alert_add">Add alert</string>
+	<string name="add_alert">add alert</string>
+	<string name="alert_pick_location">pick location</string>
+	<string name="alert_pick_action">pick action</string>
+	<string name="alert_pick_date_time">pick date/time</string>
+	<string name="alert_label_location">Location (geo:x,y)</string>
+	<string name="alert_label_range">Range (m)</string>
+	<string name="alert_label_date_time">Date/time</string>
+	<string name="alert_label_unused">Unused</string>
+	<string name="alert_label_condition1">Condition 1</string>
+	<string name="alert_label_condition2">Condition 2</string>
+	<string name="alert_added">Alert has been added.</string>
+	<string name="alert_not_added">Alert could not be added (see log for information).</string>
+	
+	<string name="new_item">New item</string>
+	
+	
+</resources> 

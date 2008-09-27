@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package name="com.google.android.contacts">
+	<dir
+		name="Contacts"
+		uri="content://contacts/people/"
+		text-columns="name,notes,number"
+		id-column="people._id">
+		<intent
+			uri="content://contacts/people/{_id}"
+			action="android.intent.action.VIEW"/>
+	</dir>
+</package>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package name="com.google.android.media">
+	<dir name="Audio"
+		uri="content://media/internal/audio/media"
+		text-columns="title,artist,album"
+		time-column="timestamp">
+		<intent
+			uri="content://media/internal/audio/media/{_id}"
+			action="android.intent.action.VIEW"/>
+	</dir>
+	<dir name="Images"
+		uri="content://media/internal/images/media"
+		text-columns="name,description"
+		time-column="timestamp">
+		<intent
+			uri="content://media/internal/images/media/{_id}"
+			action="android.intent.action.VIEW"/>
+	</dir>
+	<dir name="Video"
+		uri="content://media/internal/video/media"
+		text-columns="title,artist,album"
+		time-column="timestamp">
+		<intent
+			uri="content://media/internal/video/media/{_id}"
+			action="android.intent.action.VIEW"/>
+	</dir>
+</package>

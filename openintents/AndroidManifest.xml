@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+	* Copyright (C) 2007-2008 OpenIntents.org
+	*
+	* Licensed under the Apache License, Version 2.0 (the "License");
+	* you may not use this file except in compliance with the License.
+	* You may obtain a copy of the License at
+	*
+	*      http://www.apache.org/licenses/LICENSE-2.0
+	*
+	* Unless required by applicable law or agreed to in writing, software
+	* distributed under the License is distributed on an "AS IS" BASIS,
+	* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	* See the License for the specific language governing permissions and
+	* limitations under the License.
+-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="org.openintents">
+
+    <!-- required for ContentBrowserView (in order to view tagged people) -->
+	<uses-permission id="android.permission.READ_CONTACTS" android:name="android.permission.READ_CONTACTS" />
+	<uses-permission id="android.permission.ACCESS_LOCATION" android:name="android.permission.ACCESS_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+	
+	<!-- required for Locations (in order to getCurrentLocation) -->
+	<uses-permission android:name="android.permission.ACCESS_GPS" />
+	<!-- Permission not available in SDJ 72264
+	<uses-permission android:name="android.permission.ACCESS_CELL_ID" />
+	 -->
+	<uses-permission android:name="android.permission.ACCESS_LOCATION" />
+	
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	
+	<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+
+	<!-- required for news service  -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    
+	<!-- required for AlertProvider??? (error message in SDK 72264) -->
+	<uses-permission android:name="com.google.android.googleapps.permission.GOOGLE_AUTH" />
+	
+	<!-- required for SplashPlay (error message in SDK 72264) -->
+	<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+	
+	<!-- 
+	<instrumentation android:name=".Positron" android:targetPackage="org.openintents" 
+	android:label="@string/oi_acceptancetest"/>
+	 -->
+	 
+	<application android:icon="@drawable/openintents002a" android:label="@string/app_name">
+		<!-- Libraries needed since SDK 72264 -->
+        <uses-library android:name="com.google.android.maps" />
+        <uses-library android:name="com.google.android.gtalkservice" />
+        
+		<!-- Providers -->
+		<provider android:name=".locations.LocationsProvider"
+		    android:icon="@drawable/locations_application001a"
+			android:authorities="org.openintents.locations" />
+		<provider android:name=".tags.TagsProvider"
+			android:authorities="org.openintents.tags" />
+	 
+		<provider android:name=".alert.AlertProvider"
+			android:authorities="org.openintents.alert" />		
+		
+
+		<provider android:name=".tags.content.ContentIndexProvider"
+			android:authorities="org.openintents.contentindices" />
+
+
+		<provider android:name=".hardware.HardwareProvider"
+			android:authorities="org.openintents.hardware" />
+
+
+		<!-- Main activity -->
+		<activity android:name=".main.OpenIntentsView"
+			android:label="@string/app_name">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				
+				<category
+					android:name="android.intent.category.LAUNCHER" />
+					
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".main.About"
+			android:label="@string/about_openintents">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<!-- <category
+					android:name="android.intent.category.LAUNCHER" />   -->
+			</intent-filter>
+		</activity>
+		
+		<activity android:name=".main.InitView"
+			android:label="@string/init_databases">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="org.openintents.category.SETTINGS" />
+			</intent-filter>
+		</activity>
+
+		<!-- Locations activity -->
+		<activity android:name=".locations.LocationsView"
+			android:label="@string/list_of_locations"
+			android:icon="@drawable/locations_application001a">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<!--  <category
+					android:name="android.intent.category.LAUNCHER" />  -->
+				<category
+					android:name="org.openintents.category.MAIN" />
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.PICK" />
+				<category
+					android:name="android.intent.category.DEFAULT" /> 
+				<data android:mimeType="vnd.android.cursor.dir/vnd.openintents.location"/>					
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".locations.ExtrasView"/>
+
+		<!-- Location Map activity -->
+		<activity android:name=".locations.LocationsMapView"
+		    android:icon="@drawable/locations_application001a"
+			android:label="@string/locations_map">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="vnd.android.cursor.item/vnd.openintents.location"/>
+			</intent-filter>
+		</activity>
+
+		<!-- Tags activity -->
+		
+		<activity android:name=".tags.content.ContentBrowserView"
+			android:label="@string/content_browser" 
+			android:icon="@drawable/tagging_application001a">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<!-- 
+				<category
+					android:name="android.intent.category.LAUNCHER" />
+					 -->
+				<category android:name="org.openintents.category.MAIN" />
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category
+					android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="vnd.android.cursor.dir/vnd.openintents.tag" />
+
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category
+					android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="vnd.android.cursor.item/vnd.openintents.tag" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".tags.TagsAddView"
+			android:label="@string/tags_add_tag">
+			<intent-filter android:icon="@drawable/tag_add001a">			    
+				<action android:name="org.openintents.action.TAG" />
+				<category
+					android:name="android.intent.category.DEFAULT" />
+				<category
+					android:name="android.intent.category.ALTERNATIVE" />
+				<category
+					android:name="android.intent.category.SELECTED_ALTERNATIVE" />
+				<data android:mimeType="vnd.android.cursor.dir/vnd.openintents.tag" />
+			</intent-filter>
+
+			<intent-filter android:icon="@drawable/tag_add001a">			    
+				<action android:name="android.intent.action.INSERT" />
+				<category
+					android:name="android.intent.category.DEFAULT" />
+				<category
+					android:name="android.intent.category.ALTERNATIVE" />
+				<category
+					android:name="android.intent.category.SELECTED_ALTERNATIVE" />
+				<data android:mimeType="vnd.android.cursor.dir/vnd.openintents.tag" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".tags.TagsCloudView"
+			android:label="@string/tags_cloud">
+			<intent-filter android:icon="@drawable/folder">			    
+				<action android:name="android.intent.action.PICK" />
+				<category
+					android:name="android.intent.category.DEFAULT" />
+				<category
+					android:name="android.intent.category.ALTERNATIVE" />
+				<category
+					android:name="android.intent.category.SELECTED_ALTERNATIVE" />
+				<data android:mimeType="vnd.android.cursor.dir/vnd.openintents.tag" />
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".tags.content.PackageList">
+			<intent-filter>
+				<action android:name="android.intent.action.PICK" />
+				<category
+					android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="vnd.android.cursor.dir/vnd.openintents.contentdirectory" />
+			</intent-filter>
+		</activity>
+		
+		<activity android:name=".tags.content.PackageAdd" android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.INSERT" />
+                <category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="vnd.android.cursor.dir/vnd.openintents.contentdirectory" />
+            </intent-filter>
+        </activity>
+        
+
+		<!-- Media browser activity -->
+		<activity android:name=".media.MediaBrowserActivity"
+			android:label="@string/media_browser" 
+			android:icon="@drawable/mediaplayer_application001a">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="org.openintents.category.SETTINGS" />
+				<!--  <category android:name="android.intent.category.LAUNCHER" />   -->
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<action android:name="android.intent.action.PICK" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="vnd.android.cursor.dir/audio" />
+				<data android:mimeType="vnd.android.cursor.dir/video" />
+				<data android:mimeType="vnd.android.cursor.dir/image" />
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.GET_CONTENT" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="audio/*" />
+				<data android:mimeType="video/*" />
+				<data android:mimeType="image/*" />
+			</intent-filter>
+		</activity>
+
+
+		<!-- Media Player activity -->
+		<activity android:name=".media.MediaPlayerActivity"
+			android:label="@string/media_player" 
+			android:icon="@drawable/mediaplayer_application001a">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="org.openintents.category.MAIN" />
+				<!-- <category android:name="android.intent.category.LAUNCHER" /> 
+				-->  
+				 <!--  -->
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="audio/*" />
+				<data android:mimeType="video/*" />
+				<!--  <data android:mimeType="image/*" />  -->
+				<!--  audio/* contains audio/mpeg, audio/midi, and others -->
+			</intent-filter>
+		</activity>
+
+
+		<!-- Ma.Gnolia Tags activity -->
+		<activity android:name=".tags.MagnoliaSettings"
+			android:label="@string/magnolia_settings"
+			android:icon="@drawable/tagging_magnolia_application001a" >
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="org.openintents.category.SETTINGS" />            					
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="vnd.android.cursor.dir/vnd.openintents.tag"/>               					             					
+			</intent-filter>
+		</activity>		
+		<activity android:name=".tags.MagnoliaTagging"
+			android:label="@string/magnolia_tagging"
+			android:icon="@drawable/tagging_magnolia_application001a">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="org.openintents.category.MAIN" />
+				<!-- 
+				<category
+					android:name="android.intent.category.LAUNCHER" />
+					 -->
+            					
+			</intent-filter>
+
+			<intent-filter>
+				<action android:name="org.openintents.action.TAGMAGNOLIA"
+					android:label="tag" />
+				<category android:name="android.intent.category.DEFAULT" />				
+				<category android:name="android.intent.category.ALTERNATIVE" />				
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.EDIT"
+					android:label="tag" />
+				<category android:name="android.intent.category.DEFAULT" />				
+				<category android:name="android.intent.category.ALTERNATIVE" />				
+			</intent-filter>
+
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="vnd.android.cursor.dir/vnd.openintents.tag"/>               					           					
+			</intent-filter>
+
+		</activity>	
+		
+		<!-- SensorSimulator -->
+		<activity android:name=".hardware.SensorSimulatorSettingsActivity"
+			android:label="@string/sensorsimulator"
+			android:icon="@drawable/mobile_shake_application001a">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="org.openintents.category.SETTINGS" />
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:mimeType="vnd.android.cursor.dir/vnd.openintents.hardware.preference"/>
+			</intent-filter>
+		</activity>
+		
+		<!-- Sensor service -->
+		
+        <service android:name=".hardware.services.SensorService" android:process=":remote">
+            <intent-filter>
+                <!-- The following interface is supported by the service. -->
+                <action android:name="org.openintents.hardware.services.ISensorService" />
+                <!-- This is an action code to select the service
+                     without explicitly supplying the implementation class. -->
+                <action android:name="org.openintents.hardware.services.SENSOR_SERVICE" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".hardware.SensorServiceSettingsActivity" 
+        	android:label="@string/sensor_service_settings"
+			android:icon="@drawable/mobile_shake_application001a">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- 
+				<category android:name="org.openintents.category.SETTINGS" />
+				 -->
+            </intent-filter>
+        </activity>
+
+				
+		<!-- intents list  -->
+		<activity android:name=".actions.IntentsListView" android:label="@string/intents_list">
+		</activity>
+
+		<activity android:name=".actions.TypesListView" android:label="@string/intents_types">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"></action>
+				<category android:name="android.intent.category.DEFAULT"></category>
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.PICK"></action>
+				<category android:name="android.intent.category.DEFAULT"></category>
+				<data android:scheme="openintents" android:host="intents"/>				
+			</intent-filter>
+		</activity>		
+		<activity android:name=".actions.PickStringView" android:label="@string/intents_list">
+		</activity>		
+
+
+	<!-- alert framework -->
+	<activity android:name=".alert.AddGenericAlertActivity"
+			android:label="@string/alert_add"
+			android:icon="@drawable/alert_application001a"
+			>
+
+			<intent-filter>
+				<action android:name="org.openintents.action.ADD_GENERIC_ALERT" />
+				<category android:name="android.intent.category.DEFAULT" />				
+				<category android:name="android.intent.category.ALTERNATIVE" />				
+				<category android:name="org.openintents.category.SETTINGS" />
+			</intent-filter>
+			<intent-filter>
+				<action android:name="org.openintents.action.EDIT_GENERIC_ALERT" />
+				<category android:name="android.intent.category.DEFAULT" />				
+				<category android:name="android.intent.category.ALTERNATIVE" />				
+				<category android:name="org.openintents.category.SETTINGS" />
+			</intent-filter>
+	</activity>
+	<activity android:name=".alert.AlertList"
+			android:label="Alert List"
+			android:icon="@drawable/alert_application001a"
+			>
+
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="org.openintents.category.SETTINGS" />
+			</intent-filter>
+
+	</activity>
+	<receiver android:name=".alert.LocationAlertDispatcher">
+	 <intent-filter>
+	   <action android:name="org.openintents.action.LOCATION_ALERT_DISPATCH" />
+	 </intent-filter>
+	</receiver>
+	<receiver android:name=".alert.AlertTest">
+	 <intent-filter>
+	   <action android:name="org.openintents.action.ALERT_TEST" />
+	 </intent-filter>
+	</receiver>
+		<service android:name=".alert.DebugGPSService"
+				 android:enabled="true"
+		>
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.DEFAULT" />
+				
+				<!--  <category
+					android:name="android.intent.category.LAUNCHER" />  -->              					
+			</intent-filter>
+		</service>
+		<!--  this will register all alerts after the device boots up		-->
+		<receiver android:name=".alert.services.OnBootRegisterAlerts">
+		 <intent-filter>
+		   <action android:name="android.intent.action.BOOT_COMPLETED" />
+		 </intent-filter>
+		</receiver>
+		<service android:name=".alert.services.RegisterAlertsService"
+				 android:enabled="true"
+		>
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.DEFAULT" />
+				
+				<!--  <category
+					android:name="android.intent.category.LAUNCHER" />  -->              					
+			</intent-filter>
+		</service>
+
+ <service android:name=".locations.MockLocationService"
+				 android:enabled="true"
+		>
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.DEFAULT" />
+				
+				<!--  <category
+					android:name="android.intent.category.LAUNCHER" />  -->              					
+			</intent-filter>
+		</service>
+		
+</application>	 
+	
+	
+</manifest>
