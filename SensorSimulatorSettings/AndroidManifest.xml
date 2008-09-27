@@ -20,7 +20,7 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
 	 
-	<application android:icon="@drawable/mobile_shake_application001a" android:label="@string/sensorsimulator">
+	<application android:icon="@drawable/mobile_shake_application001a" android:label="@string/sensorsimulatorsettings">
         
 		<!-- Providers -->
 		<provider android:name=".hardware.HardwareProvider"
@@ -28,12 +28,13 @@
 
 		<!-- SensorSimulator -->
 		<activity android:name=".SensorSimulatorSettingsActivity"
-			android:label="@string/sensorsimulator"
+			android:label="@string/sensorsimulatorsettings"
 			android:icon="@drawable/mobile_shake_application001a">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.DEFAULT" />
 				<category android:name="org.openintents.category.SETTINGS" />
+				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />

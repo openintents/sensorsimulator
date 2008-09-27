@@ -19,6 +19,7 @@
 
 	
 	<!--  Sensor Simulator -->
+	<string name="sensorsimulatorsettings">Sensor Simulator settings</string>
 	<string name="sensorsimulator">Sensor Simulator</string>
 	<string name="settings">Settings</string>
 	<string name="connect">Connect</string>

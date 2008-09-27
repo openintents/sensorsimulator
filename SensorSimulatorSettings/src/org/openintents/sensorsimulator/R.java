@@ -16,9 +16,8 @@ public final class R {
         public static final int mobile_shake001a=0x7f020002;
         public static final int mobile_shake001a_32=0x7f020003;
         public static final int mobile_shake_application001a=0x7f020004;
-        public static final int sensorsimulator01b=0x7f020005;
-        public static final int settings001a=0x7f020006;
-        public static final int settings001a_32=0x7f020007;
+        public static final int settings001a=0x7f020005;
+        public static final int settings001a_32=0x7f020006;
     }
     public static final class id {
         public static final int buttonconnect=0x7f050005;
@@ -39,28 +38,29 @@ public final class R {
         public static final int sensorsimulator_row=0x7f030001;
     }
     public static final class string {
-        public static final int IP_address=0x7f040005;
-        public static final int ask_update_interval=0x7f04000d;
-        public static final int auto_update=0x7f04000a;
-        public static final int connect=0x7f040002;
-        public static final int connect_to_sensorsimulator=0x7f04000f;
-        public static final int disabled=0x7f04000b;
-        public static final int disconnect=0x7f040004;
-        public static final int enable_sensors=0x7f040009;
-        public static final int new_item=0x7f040014;
-        public static final int real_device_data=0x7f040007;
-        public static final int sensor_simulator_data=0x7f040008;
+        public static final int IP_address=0x7f040006;
+        public static final int ask_update_interval=0x7f04000e;
+        public static final int auto_update=0x7f04000b;
+        public static final int connect=0x7f040003;
+        public static final int connect_to_sensorsimulator=0x7f040010;
+        public static final int disabled=0x7f04000c;
+        public static final int disconnect=0x7f040005;
+        public static final int enable_sensors=0x7f04000a;
+        public static final int new_item=0x7f040015;
+        public static final int real_device_data=0x7f040008;
+        public static final int sensor_simulator_data=0x7f040009;
+        public static final int sensorsimulator=0x7f040001;
+        public static final int sensorsimulator_settings=0x7f04000f;
+        public static final int sensorsimulator_settings_description=0x7f040011;
+        public static final int sensorsimulator_testing_description=0x7f040012;
         /**   Sensor Simulator 
          */
-        public static final int sensorsimulator=0x7f040000;
-        public static final int sensorsimulator_settings=0x7f04000e;
-        public static final int sensorsimulator_settings_description=0x7f040010;
-        public static final int sensorsimulator_testing_description=0x7f040011;
-        public static final int set_update_interval=0x7f04000c;
-        public static final int settings=0x7f040001;
-        public static final int socket=0x7f040006;
-        public static final int testing=0x7f040003;
-        public static final int update_rate=0x7f040012;
-        public static final int update_rate_seconds=0x7f040013;
+        public static final int sensorsimulatorsettings=0x7f040000;
+        public static final int set_update_interval=0x7f04000d;
+        public static final int settings=0x7f040002;
+        public static final int socket=0x7f040007;
+        public static final int testing=0x7f040004;
+        public static final int update_rate=0x7f040013;
+        public static final int update_rate_seconds=0x7f040014;
     }
 }
