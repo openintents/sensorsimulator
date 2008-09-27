@@ -141,6 +141,7 @@
 			  The image will not float to the right.
 			  Workaround: specify marginLeft.
 			 -->
+			 <!-- 
 			<ImageView  android:id="@+id/imagetype"
 				android:layout_width="40px"
 		    	android:layout_height="66px"
@@ -149,6 +150,7 @@
 				android:layout_gravity="right"
 				android:visibility="gone"
 		    	/>
+		    	 -->
 		</LinearLayout>
 		<LinearLayout
 			android:orientation="horizontal" 
