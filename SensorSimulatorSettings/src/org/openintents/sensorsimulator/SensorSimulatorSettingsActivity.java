@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.openintents.hardware;
+package org.openintents.sensorsimulator;
 
 import java.text.DecimalFormat;
 
-import org.openintents.R;
-import org.openintents.provider.Hardware;
+import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
+import org.openintents.sensorsimulator.hardware.SensorSimulatorClient;
+import org.openintents.sensorsimulator.provider.Hardware;
 
 import android.app.Activity;
 import android.app.Dialog;
