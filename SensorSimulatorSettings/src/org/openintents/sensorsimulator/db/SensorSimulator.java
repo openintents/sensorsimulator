@@ -60,11 +60,6 @@ public abstract class SensorSimulator {
          * <P>Type: TEXT</P>
          */
         public static final String VALUE = "value";
-        
-        /** 
-         * Name of the table
-         */
-        protected static final String DB_TABLE_NAME = "settings";
 
     }
 

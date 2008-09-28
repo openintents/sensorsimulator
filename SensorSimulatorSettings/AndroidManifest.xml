@@ -23,7 +23,7 @@
 	<application android:icon="@drawable/mobile_shake_application001a" android:label="@string/sensorsimulatorsettings">
         
 		<!-- Providers -->
-		<provider android:name=".db.SensorSimulatorProvider"
+		<provider android:name=".dbprovider.SensorSimulatorProvider"
 			android:authorities="org.openintents.sensorsimulator" />
 
 		<!-- SensorSimulator -->

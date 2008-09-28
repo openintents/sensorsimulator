@@ -1,6 +1,6 @@
 package org.openintents.sensorsimulator.db;
 
-import org.openintents.sensorsimulator.db.SensorSimulator.Settings;
+import org.openintents.sensorsimulator.dbprovider.SensorSimulatorProvider;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -85,7 +85,7 @@ public class SensorSimulatorConvenience {
 				// c.requery();
 				c.getString(SensorSimulator.mProjectionPreferencesVALUE);
 			} else {
-				Log.e(TAG, "table '" + Settings.DB_TABLE_NAME + "' corrupt. Multiple KEY!");
+				Log.e(TAG, "table 'settings' corrupt. Multiple KEY!");
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "setPreference() failed", e);

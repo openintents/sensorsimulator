@@ -1,0 +1,9 @@
+# openintents-lib class files
+#
+# Below is a list of classes that are
+# included in the build of openintents-lib.jar
+#
+# This file is used in build.xml
+
+org/openintents/sensorsimulator/db/*.class
+org/openintents/sensorsimulator/hardware/*.class

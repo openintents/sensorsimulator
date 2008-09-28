@@ -24,7 +24,6 @@ import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
 import org.openintents.sensorsimulator.hardware.SensorSimulatorClient;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.hardware.SensorListener;
@@ -103,11 +102,6 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 			SensorManager.SENSOR_DELAY_GAME, 
 			SensorManager.SENSOR_DELAY_UI, 
 			SensorManager.SENSOR_DELAY_NORMAL};
-    
-	/**
-	 * Dialog: setRefreshDelayDialog.
-	 */
-	private Dialog mDialog;
 	
 	private TabHost mTabHost;
 	
@@ -336,16 +330,14 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 	}
 	
 	public void disconnect() {
-		boolean disableEnable = false; // first disable, then enable
-		
-        mSensorManager.unregisterListener(this);
+		mSensorManager.unregisterListener(this);
 		mSensorManager.disconnectSimulator();
 		
 		readAllSensors();
 		
 		setButtonState();
 		
- 		if (((SensorManagerSimulator) mSensorManager).mClient.connected) {
+ 		if (mSensorManager.isConnectedSimulator()) {
 			mTextSensorType.setText(R.string.sensor_simulator_data);
 		} else {
 			mTextSensorType.setText(R.string.real_device_data);

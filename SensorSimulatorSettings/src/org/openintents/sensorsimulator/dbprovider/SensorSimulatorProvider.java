@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.openintents.sensorsimulator.db;
+package org.openintents.sensorsimulator.dbprovider;
 
 import java.util.HashMap;
 
 import org.openintents.sensorsimulator.R;
+import org.openintents.sensorsimulator.db.SensorSimulator;
 import org.openintents.sensorsimulator.db.SensorSimulator.Settings;
 
 import android.content.ContentProvider;
@@ -52,6 +53,11 @@ public class SensorSimulatorProvider extends ContentProvider {
 	private static final String DATABASE_NAME = "sensorsimulator.db";
 	private static final int DATABASE_VERSION = 1;
 
+	/** 
+	 * Name of the table
+	 */
+	private static final String DATABASE_TABLE_SETTINGS = "settings";
+	
 	private static HashMap<String, String> PREFERENCES_PROJECTION_MAP;
 	
 	// Basic tables
@@ -75,7 +81,7 @@ public class SensorSimulatorProvider extends ContentProvider {
 		 * Creates tables "settings".
 		 */
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL("CREATE TABLE " + SensorSimulator.Settings.DB_TABLE_NAME + " ("
+			db.execSQL("CREATE TABLE " + SensorSimulatorProvider.DATABASE_TABLE_SETTINGS + " ("
 					+ "_id INTEGER PRIMARY KEY," // Database Version 1
 					+ SensorSimulator.Settings.KEY + " VARCHAR," // V1
 					+ SensorSimulator.Settings.VALUE + " VARCHAR" // V1
@@ -85,7 +91,7 @@ public class SensorSimulatorProvider extends ContentProvider {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");
-			db.execSQL("DROP TABLE IF EXISTS " + SensorSimulator.Settings.DB_TABLE_NAME);
+			db.execSQL("DROP TABLE IF EXISTS " + SensorSimulatorProvider.DATABASE_TABLE_SETTINGS);
 			onCreate(db);
 		}
 	}
@@ -104,13 +110,13 @@ public class SensorSimulatorProvider extends ContentProvider {
 		String defaultOrderBy = null;
 		switch (URL_MATCHER.match(url)) {
 		case SETTINGS:
-			qb.setTables(SensorSimulator.Settings.DB_TABLE_NAME);
+			qb.setTables(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS);
 			qb.setProjectionMap(PREFERENCES_PROJECTION_MAP);
 			defaultOrderBy = Settings.DEFAULT_SORT_ORDER;
 			break;
 
 		case SETTING_ID:
-			qb.setTables(SensorSimulator.Settings.DB_TABLE_NAME);
+			qb.setTables(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS);
 			qb.appendWhere("_id=" + url.getPathSegments().get(1));
 			break;
 
@@ -171,7 +177,7 @@ public class SensorSimulatorProvider extends ContentProvider {
 		// TODO: Here we should check, whether item exists already. 
 		// (see TagsProvider)
 		// insert the item. 
-		rowID = db.insert(SensorSimulator.Settings.DB_TABLE_NAME, SensorSimulator.Settings.KEY, values);
+		rowID = db.insert(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS, SensorSimulator.Settings.KEY, values);
 		if (rowID > 0) {
 			Uri uri = ContentUris.withAppendedId(Settings.CONTENT_URI,rowID);
 			getContext().getContentResolver().notifyChange(uri, null);
@@ -188,7 +194,7 @@ public class SensorSimulatorProvider extends ContentProvider {
 		//long rowId;
 		switch (URL_MATCHER.match(url)) {
 		case SETTINGS:
-			count = db.delete(SensorSimulator.Settings.DB_TABLE_NAME, where, whereArgs);
+			count = db.delete(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS, where, whereArgs);
 			break;
 
 		case SETTING_ID:
@@ -202,7 +208,7 @@ public class SensorSimulatorProvider extends ContentProvider {
 			}
 
 			count = db
-					.delete(SensorSimulator.Settings.DB_TABLE_NAME, "_id=" + segment + whereString, whereArgs);
+					.delete(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS, "_id=" + segment + whereString, whereArgs);
 			break;
 
 		default:
@@ -221,7 +227,7 @@ public class SensorSimulatorProvider extends ContentProvider {
 		//long rowId;
 		switch (URL_MATCHER.match(url)) {
 		case SETTINGS:
-			count = db.update(SensorSimulator.Settings.DB_TABLE_NAME, values, where, whereArgs);
+			count = db.update(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS, values, where, whereArgs);
 			break;
 
 		case SETTING_ID:
@@ -235,7 +241,7 @@ public class SensorSimulatorProvider extends ContentProvider {
 			}
 
 			count = db
-					.update(SensorSimulator.Settings.DB_TABLE_NAME, values, 
+					.update(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS, values, 
 							"_id=" + segment + whereString, whereArgs);
 			break;
 
