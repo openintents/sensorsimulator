@@ -126,7 +126,7 @@ public class SensorServerThread implements Runnable {
 	        			out.println("" + mSensorSimulator.mEnabledAccelerometer.isSelected());
 	        			mSensorSimulator.mEnabledAccelerometer.setSelected(enable);
 	        			mSensorSimulator.mRefreshEmulatorAccelerometerLabel.setText("-");
-	        		} else if (inputLine.compareTo(SensorSimulator.COMPASS) == 0
+	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
 	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
 	        			out.println("" + mSensorSimulator.mEnabledCompass.isSelected());
 	        			mSensorSimulator.mEnabledCompass.setSelected(enable);
@@ -136,7 +136,7 @@ public class SensorServerThread implements Runnable {
 	        			out.println("" + mSensorSimulator.mEnabledOrientation.isSelected());
 	        			mSensorSimulator.mEnabledOrientation.setSelected(enable);
 	        			mSensorSimulator.mRefreshEmulatorOrientationLabel.setText("-");
-	        		} else if (inputLine.compareTo(SensorSimulator.THERMOMETER) == 0
+	        		} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
 	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
 	        			out.println("" + mSensorSimulator.mEnabledThermometer.isSelected());
 	        			mSensorSimulator.mEnabledThermometer.setSelected(enable);
@@ -151,13 +151,13 @@ public class SensorServerThread implements Runnable {
 	        		if (inputLine.compareTo(SensorSimulator.ACCELEROMETER) == 0
 	        				&& mSensorSimulator.mSupportedAccelerometer.isSelected()) {
 	        			out.println("3");
-	        		} else if (inputLine.compareTo(SensorSimulator.COMPASS) == 0
+	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
 	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
 	        			out.println("3");
 	        		} else if (inputLine.compareTo(SensorSimulator.ORIENTATION) == 0
 	        				&& mSensorSimulator.mSupportedOrientation.isSelected()) {
 	        			out.println("3");
-	        		} else if (inputLine.compareTo(SensorSimulator.THERMOMETER) == 0
+	        		} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
 	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
 	        			out.println("1");
 	        		} else {
@@ -186,7 +186,7 @@ public class SensorServerThread implements Runnable {
 	        				// This sensor is currently disabled
 	        				out.println("throw IllegalStateException");
 	        			}
-	        		} else if (inputLine.compareTo(SensorSimulator.COMPASS) == 0
+	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
 	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
 	        			if (mSensorSimulator.mEnabledCompass.isSelected()) {
 		        			//out.println("3"); // number of data following
@@ -224,7 +224,7 @@ public class SensorServerThread implements Runnable {
 	        				// This sensor is currently disabled
 	        				out.println("throw IllegalStateException");
 	        			}
-	        		} else if (inputLine.compareTo(SensorSimulator.THERMOMETER) == 0
+	        		} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
 	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
 	        			if (mSensorSimulator.mEnabledThermometer.isSelected()) {
 				        	//out.println("1"); // number of data following
@@ -259,7 +259,7 @@ public class SensorServerThread implements Runnable {
 	        					out.println("" + updatesList[i]);
 	        				}
 	        			}
-	        		} else if (inputLine.compareTo(SensorSimulator.COMPASS) == 0
+	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
 	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
 	        			updatesList = mSensorSimulator.getSafeDoubleList(mSensorSimulator.mUpdateRatesCompassText);
 	        			if (updatesList == null || updatesList.length < 1) {
@@ -283,7 +283,7 @@ public class SensorServerThread implements Runnable {
 	        					out.println("" + updatesList[i]);
 	        				}
 	        			}
-	        		} else if (inputLine.compareTo(SensorSimulator.THERMOMETER) == 0
+	        		} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
 	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
 	        			updatesList = mSensorSimulator.getSafeDoubleList(mSensorSimulator.mUpdateRatesThermometerText);
 	        			if (updatesList == null || updatesList.length < 1) {
@@ -312,7 +312,7 @@ public class SensorServerThread implements Runnable {
 	        				// This sensor is currently disabled
 	        				out.println("throw IllegalStateException");
 	        			}
-	        		} else if (inputLine.compareTo(SensorSimulator.COMPASS) == 0
+	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
 	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
 	        			if (mSensorSimulator.mEnabledCompass.isSelected()) {
 	        				updatesPerSecond = mSensorSimulator.getSafeDouble(
@@ -332,7 +332,7 @@ public class SensorServerThread implements Runnable {
 	        				// This sensor is currently disabled
 	        				out.println("throw IllegalStateException");
 	        			}
-	        		} else if (inputLine.compareTo(SensorSimulator.THERMOMETER) == 0
+	        		} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
 	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
 	        			if (mSensorSimulator.mEnabledThermometer.isSelected()) {
 	        				updatesPerSecond = mSensorSimulator.getSafeDouble(
@@ -355,7 +355,7 @@ public class SensorServerThread implements Runnable {
         				inputLine = in.readLine();
         				updatesPerSecond = Float.parseFloat(inputLine);
         				mSensorSimulator.mCurrentUpdateRateAccelerometerText.setText(inputLine);
-	        		} else if (inputLine.compareTo(SensorSimulator.COMPASS) == 0
+	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
 	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
         				out.println("OK");
         				inputLine = in.readLine();
@@ -367,7 +367,7 @@ public class SensorServerThread implements Runnable {
         				inputLine = in.readLine();
         				updatesPerSecond = Float.parseFloat(inputLine);
         				mSensorSimulator.mCurrentUpdateRateOrientationText.setText(inputLine);
-        			} else if (inputLine.compareTo(SensorSimulator.THERMOMETER) == 0
+        			} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
 	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
         				out.println("OK");
         				inputLine = in.readLine();
@@ -390,7 +390,7 @@ public class SensorServerThread implements Runnable {
 	        				// This sensor is currently disabled
 	        				out.println("throw IllegalStateException");
 	        			}
-	        		} else if (inputLine.compareTo(SensorSimulator.COMPASS) == 0
+	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
 	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
 	        			if (mSensorSimulator.mEnabledCompass.isSelected()) {
 	        				out.println("OK");
@@ -410,7 +410,7 @@ public class SensorServerThread implements Runnable {
 	        				// This sensor is currently disabled
 	        				out.println("throw IllegalStateException");
 	        			}
-	        		} else if (inputLine.compareTo(SensorSimulator.THERMOMETER) == 0
+	        		} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
 	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
 	        			if (mSensorSimulator.mEnabledThermometer.isSelected()) {
 	        				out.println("OK");
@@ -473,7 +473,7 @@ public class SensorServerThread implements Runnable {
 			sensorMax++;
 		}
 		if (mSensorSimulator.mSupportedCompass.isSelected()) {
-			sensorList[sensorMax] = SensorSimulator.COMPASS;
+			sensorList[sensorMax] = SensorSimulator.MAGNETIC_FIELD;
 			sensorMax++;
 		}
 		if (mSensorSimulator.mSupportedOrientation.isSelected()) {
@@ -481,7 +481,7 @@ public class SensorServerThread implements Runnable {
 			sensorMax++;
 		}
 		if (mSensorSimulator.mSupportedThermometer.isSelected()) {
-			sensorList[sensorMax] = SensorSimulator.THERMOMETER;
+			sensorList[sensorMax] = SensorSimulator.TEMPERATURE;
 			sensorMax++;
 		}
 		String[] returnSensorList = new String[sensorMax];

@@ -85,18 +85,24 @@ public class SensorSimulator extends JPanel
 	//static long serialVersionUID = 1234;
 
 	// Supported sensors:
-	static final String ACCELEROMETER = "accelerometer";
-	static final String COMPASS = "compass";
 	static final String ORIENTATION = "orientation";
-	static final String THERMOMETER = "thermometer";
-
+	static final String ACCELEROMETER = "accelerometer";
+	static final String TEMPERATURE = "temperature";
+	static final String MAGNETIC_FIELD = "magnetic field";
+	static final String LIGHT = "light";
+	static final String PROXIMITY = "proximity";
+	static final String TRICORDER = "tricorder";
+	
 	static final String SHOW_ACCELERATION = "show acceleration";
 
-	static final String AVERAGE_ACCELEROMETER = "average accelerometer";
-	static final String AVERAGE_COMPASS = "average compass";
 	static final String AVERAGE_ORIENTATION = "average orientation";
-	static final String AVERAGE_THERMOMETER = "average thermometer";
-
+	static final String AVERAGE_ACCELEROMETER = "average accelerometer";
+	static final String AVERAGE_TEMPERATURE = "average temperature";
+	static final String AVERAGE_MAGNETIC_FIELD = "average magnetic field";
+	static final String AVERAGE_LIGHT = "average light";
+	static final String AVERAGE_PROXIMITY = "average proximity";
+	static final String AVERAGE_TRICORDER = "average tricorder";
+	
 	static final String DISABLED = "DISABLED";
 	
 	// Constant giving the unicode value of degrees symbol.
@@ -469,7 +475,7 @@ public class SensorSimulator extends JPanel
         mSupportedAccelerometer.addItemListener(this);
         supportedSensorsPane.add(mSupportedAccelerometer);
 
-        mSupportedCompass = new JCheckBox(COMPASS);
+        mSupportedCompass = new JCheckBox(MAGNETIC_FIELD);
         mSupportedCompass.setSelected(true);
         mSupportedCompass.addItemListener(this);
         supportedSensorsPane.add(mSupportedCompass);
@@ -479,7 +485,7 @@ public class SensorSimulator extends JPanel
         mSupportedOrientation.addItemListener(this);
         supportedSensorsPane.add(mSupportedOrientation);
 
-        mSupportedThermometer = new JCheckBox(THERMOMETER);
+        mSupportedThermometer = new JCheckBox(TEMPERATURE);
         mSupportedThermometer.setSelected(false);
         mSupportedThermometer.addItemListener(this);
         supportedSensorsPane.add(mSupportedThermometer);
@@ -502,7 +508,7 @@ public class SensorSimulator extends JPanel
         mEnabledAccelerometer.addItemListener(this);
         enabledSensorsPane.add(mEnabledAccelerometer);
 
-        mEnabledCompass = new JCheckBox(COMPASS);
+        mEnabledCompass = new JCheckBox(MAGNETIC_FIELD);
         mEnabledCompass.setSelected(true);
         mEnabledCompass.addItemListener(this);
         enabledSensorsPane.add(mEnabledCompass);
@@ -512,7 +518,7 @@ public class SensorSimulator extends JPanel
         mEnabledOrientation.addItemListener(this);
         enabledSensorsPane.add(mEnabledOrientation);
 
-        mEnabledThermometer = new JCheckBox(THERMOMETER);
+        mEnabledThermometer = new JCheckBox(TEMPERATURE);
         mEnabledThermometer.setSelected(false);
         mEnabledThermometer.addItemListener(this);
         enabledSensorsPane.add(mEnabledThermometer);
@@ -659,7 +665,7 @@ public class SensorSimulator extends JPanel
         c3.gridwidth = 3;
         c3.gridx = 0;
         c3.gridy++;
-        mUpdateAverageCompass = new JCheckBox(AVERAGE_COMPASS);
+        mUpdateAverageCompass = new JCheckBox(AVERAGE_MAGNETIC_FIELD);
         mUpdateAverageCompass.setSelected(true);
         mUpdateAverageCompass.addItemListener(this);
         updateFieldPane.add(mUpdateAverageCompass, c3);
@@ -785,7 +791,7 @@ public class SensorSimulator extends JPanel
         c3.gridwidth = 3;
         c3.gridx = 0;
         c3.gridy++;
-        mUpdateAverageThermometer = new JCheckBox(AVERAGE_THERMOMETER);
+        mUpdateAverageThermometer = new JCheckBox(AVERAGE_TEMPERATURE);
         mUpdateAverageThermometer.setSelected(true);
         mUpdateAverageThermometer.addItemListener(this);
         updateFieldPane.add(mUpdateAverageThermometer, c3);
@@ -1649,7 +1655,7 @@ public class SensorSimulator extends JPanel
 		
     	if (mSupportedCompass.isSelected()) {
     	    // Compass data
-			data += COMPASS + ": ";
+			data += MAGNETIC_FIELD + ": ";
 			if (mEnabledCompass.isSelected()) {
 				data += mf.format(mobile.read_compassx) + ", " 
 						+ mf.format(mobile.read_compassy) + ", "
@@ -1674,7 +1680,7 @@ public class SensorSimulator extends JPanel
 		}
 		
 		if (mSupportedThermometer.isSelected()) {
-			data += THERMOMETER + ": ";
+			data += TEMPERATURE + ": ";
 			if (mEnabledThermometer.isSelected()) {
 				data += mf.format(mobile.read_temperature);
 			} else {

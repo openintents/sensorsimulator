@@ -384,8 +384,8 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
         	if (mSingleSensorView[i].mSensorBit == sensor) {
         		// Update this view
         		String data = "";
-        		//int num = mSensorManager.mClient.getNumSensorValues(sensor);
-        		int num = 3;
+        		int num = SensorNames.getNumSensorValues(sensor);
+        		//int num = 3;
         		
         		for (int j = 0; j < num; j++) {
         			data += mDecimalFormat.format(values[j]);
