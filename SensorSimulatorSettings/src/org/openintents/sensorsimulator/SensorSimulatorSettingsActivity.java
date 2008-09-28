@@ -18,9 +18,10 @@ package org.openintents.sensorsimulator;
 
 import java.text.DecimalFormat;
 
+import org.openintents.sensorsimulator.db.SensorSimulator;
+import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
 import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
 import org.openintents.sensorsimulator.hardware.SensorSimulatorClient;
-import org.openintents.sensorsimulator.provider.Hardware;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -59,7 +60,7 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 	/**
 	 * TAG for logging.
 	 */
-	private static final String TAG = "Hardware";
+	private static final String TAG = "SensorSimulatorSettingsActivity";
 
     private SensorManagerSimulator mSensorManager;
     
@@ -109,6 +110,8 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 	private Dialog mDialog;
 	
 	private TabHost mTabHost;
+	
+	private SensorSimulatorConvenience mSensorSimulatorConvenience;
     
 	/**
 	 * Called when activity starts.
@@ -129,11 +132,13 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 		super.onCreate(icicle);
 		
 		setContentView(R.layout.sensorsimulator);
-		Hardware.mContentResolver = getContentResolver();
+		// SensorSimulatorConvenience.mContentResolver = getContentResolver();
 		
 		// Start with Android's sensor manager
 		//mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		mSensorManager = new SensorManagerSimulator((SensorManager) getSystemService(SENSOR_SERVICE));
+		mSensorManager = new SensorManagerSimulator(this);
+		
+		mSensorSimulatorConvenience = new SensorSimulatorConvenience(this);
 		
 		Context context = this;
         // Get the Resources object from our context
@@ -175,10 +180,10 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 		setButtonState();
 		
 		
-		mEditTextIP.setText(Hardware.getPreference(Hardware.IPADDRESS));
-		String s = Hardware.getPreference(Hardware.SOCKET);
+		mEditTextIP.setText(mSensorSimulatorConvenience.getPreference(SensorSimulator.KEY_IPADDRESS));
+		String s = mSensorSimulatorConvenience.getPreference(SensorSimulator.KEY_SOCKET);
 		if (s.contentEquals("")) {
-			s = Hardware.DEFAULT_SOCKET;
+			s = SensorSimulator.DEFAULT_SOCKET;
 		}
 		mEditTextSocket.setText(s);
 		
@@ -234,17 +239,17 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 
         String newIP = mEditTextIP.getText().toString();
 		String newSocket = mEditTextSocket.getText().toString();
-		String oldIP = Hardware.getPreference(Hardware.IPADDRESS);
-		String oldSocket = Hardware.getPreference(Hardware.SOCKET);
+		String oldIP = mSensorSimulatorConvenience.getPreference(SensorSimulator.KEY_IPADDRESS);
+		String oldSocket = mSensorSimulatorConvenience.getPreference(SensorSimulator.KEY_SOCKET);
 		
 		if (! (newIP.contentEquals(oldIP) && newSocket.contentEquals(oldSocket)) ) {
 			// new values
 	        mSensorManager.unregisterListener(this);
-			SensorManagerSimulator.mClient.disconnect();
+			mSensorManager.mClient.disconnect();
 			
 			// Save the values
-			Hardware.setPreference(Hardware.IPADDRESS, newIP);
-			Hardware.setPreference(Hardware.SOCKET, newSocket);
+			mSensorSimulatorConvenience.setPreference(SensorSimulator.KEY_IPADDRESS, newIP);
+			mSensorSimulatorConvenience.setPreference(SensorSimulator.KEY_SOCKET, newSocket);
 		
 		}
 	}
@@ -282,29 +287,29 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 		Log.i(TAG, "Connect");
 		String newIP = mEditTextIP.getText().toString();
 		String newSocket = mEditTextSocket.getText().toString();
-		String oldIP = Hardware.getPreference(Hardware.IPADDRESS);
-		String oldSocket = Hardware.getPreference(Hardware.SOCKET);
+		String oldIP = mSensorSimulatorConvenience.getPreference(SensorSimulator.KEY_IPADDRESS);
+		String oldSocket = mSensorSimulatorConvenience.getPreference(SensorSimulator.KEY_SOCKET);
 		
 		if (! (newIP.contentEquals(oldIP) && newSocket.contentEquals(oldSocket)) ) {
 			// new values
 	        mSensorManager.unregisterListener(this);
-			SensorManagerSimulator.disconnectSimulator();
+			mSensorManager.disconnectSimulator();
 			
 			// Save the values
-			Hardware.setPreference(Hardware.IPADDRESS, newIP);
-			Hardware.setPreference(Hardware.SOCKET, newSocket);
+			mSensorSimulatorConvenience.setPreference(SensorSimulator.KEY_IPADDRESS, newIP);
+			mSensorSimulatorConvenience.setPreference(SensorSimulator.KEY_SOCKET, newSocket);
 		}
 		
-		if (! SensorManagerSimulator.mClient.connected ) {
+		if (! mSensorManager.isConnectedSimulator() ) {
 			Log.i(TAG, "Not connected yet -> Connect");
-			SensorManagerSimulator.connectSimulator();
+			mSensorManager.connectSimulator();
 		}
 		
 		readAllSensors();
 		
 		setButtonState();
 		
- 		if (SensorManagerSimulator.mClient.connected) {
+ 		if (mSensorManager.isConnectedSimulator()) {
 			mTextSensorType.setText(R.string.sensor_simulator_data);
 		} else {
 			mTextSensorType.setText(R.string.real_device_data);
@@ -334,7 +339,7 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 		boolean disableEnable = false; // first disable, then enable
 		
         mSensorManager.unregisterListener(this);
-		SensorManagerSimulator.disconnectSimulator();
+		mSensorManager.disconnectSimulator();
 		
 		readAllSensors();
 		
@@ -350,7 +355,7 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 	}
 	
 	public void setButtonState() {
-		boolean connected = SensorManagerSimulator.mClient.connected;
+		boolean connected = mSensorManager.isConnectedSimulator();
 		mButtonConnect.setEnabled(!connected);
 		
 		mButtonDisconnect.setEnabled(connected);
@@ -365,7 +370,7 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 	public void readAllSensors() {
 		
         Log.d(TAG, "Sensors: " + mSensorManager.getSensors());
-        Log.d(TAG, "Connected: " + SensorManagerSimulator.mClient.connected);
+        Log.d(TAG, "Connected: " + mSensorManager.isConnectedSimulator());
         
         int sensors = mSensorManager.getSensors();
         Log.d(TAG, "sensors: " + sensors);
@@ -386,7 +391,8 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
         	if (mSingleSensorView[i].mSensorBit == sensor) {
         		// Update this view
         		String data = "";
-        		int num = SensorManagerSimulator.mClient.getNumSensorValues(sensor);
+        		//int num = mSensorManager.mClient.getNumSensorValues(sensor);
+        		int num = 3;
         		
         		for (int j = 0; j < num; j++) {
         			data += mDecimalFormat.format(values[j]);

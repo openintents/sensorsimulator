@@ -23,8 +23,8 @@
 	<application android:icon="@drawable/mobile_shake_application001a" android:label="@string/sensorsimulatorsettings">
         
 		<!-- Providers -->
-		<provider android:name=".hardware.HardwareProvider"
-			android:authorities="org.openintents.hardware" />
+		<provider android:name=".db.SensorSimulatorProvider"
+			android:authorities="org.openintents.sensorsimulator" />
 
 		<!-- SensorSimulator -->
 		<activity android:name=".SensorSimulatorSettingsActivity"
@@ -40,7 +40,7 @@
 				<action android:name="android.intent.action.VIEW" />
 				<action android:name="android.intent.action.EDIT" />
 				<category android:name="android.intent.category.DEFAULT" />
-				<data android:mimeType="vnd.android.cursor.dir/vnd.openintents.hardware.preference"/>
+				<data android:mimeType="vnd.android.cursor.dir/vnd.openintents.sensorsimulator.setting"/>
 			</intent-filter>
 		</activity>
 		
