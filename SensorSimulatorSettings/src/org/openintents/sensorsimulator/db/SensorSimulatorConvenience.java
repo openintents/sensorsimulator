@@ -25,6 +25,11 @@ public class SensorSimulatorConvenience {
 	private Context mContext;
 	private ContentResolver mContentResolver;
 
+	/**
+	 * Constructor. 
+	 * 
+	 * @param context The activity context.
+	 */
 	public SensorSimulatorConvenience(Context context) {
 		mContext = context;
 		mContentResolver = mContext.getContentResolver();
@@ -77,13 +82,13 @@ public class SensorSimulatorConvenience {
 				
 				// This is the key, so we can update it:
 				c.moveToFirst();
-				String id = c.getString(SensorSimulator.mProjectionPreferencesID);
+				String id = c.getString(c.getColumnIndexOrThrow(SensorSimulator.Settings._ID));
 				ContentValues cv = new ContentValues();
 				cv.put(SensorSimulator.Settings.VALUE, value);
 				mContentResolver.update(Uri.withAppendedPath(SensorSimulator.Settings.CONTENT_URI, id), cv, null, null );
 				
 				// c.requery();
-				c.getString(SensorSimulator.mProjectionPreferencesVALUE);
+				c.getString(c.getColumnIndexOrThrow(SensorSimulator.Settings.VALUE));
 			} else {
 				Log.e(TAG, "table 'settings' corrupt. Multiple KEY!");
 			}
@@ -110,7 +115,7 @@ public class SensorSimulatorConvenience {
 					SensorSimulator.Settings.DEFAULT_SORT_ORDER);
 			if (c.getCount() >= 1) {
 				c.moveToFirst();
-				return c.getString(SensorSimulator.mProjectionPreferencesVALUE);
+				return c.getString(c.getColumnIndexOrThrow(SensorSimulator.Settings.VALUE));
 			} else if (c.getCount() == 0) {
 				// This value does not exist yet!
 				return "";

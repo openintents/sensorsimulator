@@ -64,14 +64,27 @@ public abstract class SensorSimulator {
     }
 
 	// Some default settings values
+	/**
+	 * The key for IP address.
+	 * Value: 'IP address'.
+	 */
 	public static final String KEY_IPADDRESS = "IP address";
+	
+	/**
+	 * The key for socket.
+	 * Value: 'socket'.
+	 */
 	public static final String KEY_SOCKET = "Socket";
+	
+	/**
+	 * The default value for socket.
+	 * Value: 8010.
+	 */
 	public static final String DEFAULT_SOCKET = "8010";
 	
-	// Default projection
+	/**
+	 * Default projection of table columns.
+	 */
 	public static final String[] SENSORSIMULATOR_PROJECTION = 
 		new String[] { Settings._ID, Settings.KEY, Settings.VALUE };
-	public static final int mProjectionPreferencesID = 0;
-	public static final int mProjectionPreferencesNAME = 1;
-	public static final int mProjectionPreferencesVALUE = 2;
 }

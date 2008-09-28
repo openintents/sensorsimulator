@@ -21,7 +21,7 @@ import java.text.DecimalFormat;
 import org.openintents.sensorsimulator.db.SensorSimulator;
 import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
 import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
-import org.openintents.sensorsimulator.hardware.SensorSimulatorClient;
+import org.openintents.sensorsimulator.hardware.SensorNames;
 
 import android.app.Activity;
 import android.content.Context;
@@ -239,7 +239,7 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 		if (! (newIP.contentEquals(oldIP) && newSocket.contentEquals(oldSocket)) ) {
 			// new values
 	        mSensorManager.unregisterListener(this);
-			mSensorManager.mClient.disconnect();
+			mSensorManager.disconnectSimulator();
 			
 			// Save the values
 			mSensorSimulatorConvenience.setPreference(SensorSimulator.KEY_IPADDRESS, newIP);
@@ -367,13 +367,14 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
         int sensors = mSensorManager.getSensors();
         Log.d(TAG, "sensors: " + sensors);
         
-        mSupportedSensors = SensorSimulatorClient.getSensorNames(sensors);
+        mSupportedSensors = SensorNames.getSensorNames(sensors);
         Log.d(TAG, "mSupportedSensors: " + mSupportedSensors);
         
 		// Now set values that are related to sensor updates:
 		mNumSensors = mSupportedSensors.length;
         
 	}
+	
 	
 	public void onSensorChanged(int sensor, float[] values) {
         //Log.d(TAG, "onSensorChanged: " + sensor + ", x: " + values[0] + ", y: " + values[1] + ", z: " + values[2]);
@@ -411,14 +412,13 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
     	// First clean the list
     	mSensorsList.removeAllViews();
     	
-    	
     	// Now we fill the list, one by one:
     	int max = mSupportedSensors.length;
     	mSingleSensorView = new SingleSensorView[max];
     	
     	Log.i(TAG, "fillSensorList: " + max);
     	for (int i=0; i < max; i++) {
-    		int sensorbit = SensorSimulatorClient.getSensorsFromNames(new String[] {mSupportedSensors[i]});
+    		int sensorbit = SensorNames.getSensorsFromNames(new String[] {mSupportedSensors[i]});
     		SingleSensorView ssv = 
     			new SingleSensorView(this, 
     					mSupportedSensors[i], 
