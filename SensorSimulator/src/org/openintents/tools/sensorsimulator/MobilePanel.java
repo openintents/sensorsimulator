@@ -601,13 +601,13 @@ public class MobilePanel extends JPanel {
 		double magneticeast;
 		double magneticvertical;
 		
-		if (mSensorSimulator.mEnabledCompass.isSelected()) {
+		if (mSensorSimulator.mEnabledMagneticField.isSelected()) {
 			magneticnorth = mSensorSimulator.getSafeDouble(mSensorSimulator.mMagneticFieldNorthText);
 			magneticeast = mSensorSimulator.getSafeDouble(mSensorSimulator.mMagneticFieldEastText);
 			magneticvertical = mSensorSimulator.getSafeDouble(mSensorSimulator.mMagneticFieldVerticalText);
 
 			// Add random component:
-			random = mSensorSimulator.getSafeDouble(mSensorSimulator.mRandomCompassText);
+			random = mSensorSimulator.getSafeDouble(mSensorSimulator.mRandomMagneticFieldText);
 			if (random > 0) {
 				magneticnorth += getRandom(random);
 				magneticeast += getRandom(random);
@@ -659,7 +659,7 @@ public class MobilePanel extends JPanel {
 		}
 		
 		// Thermometer
-		if (mSensorSimulator.mEnabledThermometer.isSelected()) {
+		if (mSensorSimulator.mEnabledTemperature.isSelected()) {
 			temperature = mSensorSimulator.getSafeDouble(mSensorSimulator.mTemperatureText);
 		
 			// Add random component:

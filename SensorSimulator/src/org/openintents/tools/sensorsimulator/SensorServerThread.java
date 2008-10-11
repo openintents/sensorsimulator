@@ -127,9 +127,9 @@ public class SensorServerThread implements Runnable {
 	        			mSensorSimulator.mEnabledAccelerometer.setSelected(enable);
 	        			mSensorSimulator.mRefreshEmulatorAccelerometerLabel.setText("-");
 	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
-	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
-	        			out.println("" + mSensorSimulator.mEnabledCompass.isSelected());
-	        			mSensorSimulator.mEnabledCompass.setSelected(enable);
+	        				&& mSensorSimulator.mSupportedMagneticField.isSelected()) {
+	        			out.println("" + mSensorSimulator.mEnabledMagneticField.isSelected());
+	        			mSensorSimulator.mEnabledMagneticField.setSelected(enable);
 	        			mSensorSimulator.mRefreshEmulatorCompassLabel.setText("-");
 	        		} else if (inputLine.compareTo(SensorSimulator.ORIENTATION) == 0
 	        				&& mSensorSimulator.mSupportedOrientation.isSelected()) {
@@ -137,9 +137,9 @@ public class SensorServerThread implements Runnable {
 	        			mSensorSimulator.mEnabledOrientation.setSelected(enable);
 	        			mSensorSimulator.mRefreshEmulatorOrientationLabel.setText("-");
 	        		} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
-	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
-	        			out.println("" + mSensorSimulator.mEnabledThermometer.isSelected());
-	        			mSensorSimulator.mEnabledThermometer.setSelected(enable);
+	        				&& mSensorSimulator.mSupportedTemperature.isSelected()) {
+	        			out.println("" + mSensorSimulator.mEnabledTemperature.isSelected());
+	        			mSensorSimulator.mEnabledTemperature.setSelected(enable);
 	        			mSensorSimulator.mRefreshEmulatorThermometerLabel.setText("-");
 	        		} else {
 	        			// This sensor is not supported
@@ -152,13 +152,13 @@ public class SensorServerThread implements Runnable {
 	        				&& mSensorSimulator.mSupportedAccelerometer.isSelected()) {
 	        			out.println("3");
 	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
-	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
+	        				&& mSensorSimulator.mSupportedMagneticField.isSelected()) {
 	        			out.println("3");
 	        		} else if (inputLine.compareTo(SensorSimulator.ORIENTATION) == 0
 	        				&& mSensorSimulator.mSupportedOrientation.isSelected()) {
 	        			out.println("3");
 	        		} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
-	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
+	        				&& mSensorSimulator.mSupportedTemperature.isSelected()) {
 	        			out.println("1");
 	        		} else {
 	        			// This sensor is not supported
@@ -187,8 +187,8 @@ public class SensorServerThread implements Runnable {
 	        				out.println("throw IllegalStateException");
 	        			}
 	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
-	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
-	        			if (mSensorSimulator.mEnabledCompass.isSelected()) {
+	        				&& mSensorSimulator.mSupportedMagneticField.isSelected()) {
+	        			if (mSensorSimulator.mEnabledMagneticField.isSelected()) {
 		        			//out.println("3"); // number of data following
 		        			//out.println(mSensorSimulator.mobile.read_compassx);
 		        			//out.println(mSensorSimulator.mobile.read_compassy);
@@ -225,8 +225,8 @@ public class SensorServerThread implements Runnable {
 	        				out.println("throw IllegalStateException");
 	        			}
 	        		} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
-	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
-	        			if (mSensorSimulator.mEnabledThermometer.isSelected()) {
+	        				&& mSensorSimulator.mSupportedTemperature.isSelected()) {
+	        			if (mSensorSimulator.mEnabledTemperature.isSelected()) {
 				        	//out.println("1"); // number of data following
 				        	//out.println(mSensorSimulator.mobile.read_temperature);
 				        	
@@ -260,7 +260,7 @@ public class SensorServerThread implements Runnable {
 	        				}
 	        			}
 	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
-	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
+	        				&& mSensorSimulator.mSupportedMagneticField.isSelected()) {
 	        			updatesList = mSensorSimulator.getSafeDoubleList(mSensorSimulator.mUpdateRatesCompassText);
 	        			if (updatesList == null || updatesList.length < 1) {
 	        				out.println("0");
@@ -284,7 +284,7 @@ public class SensorServerThread implements Runnable {
 	        				}
 	        			}
 	        		} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
-	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
+	        				&& mSensorSimulator.mSupportedTemperature.isSelected()) {
 	        			updatesList = mSensorSimulator.getSafeDoubleList(mSensorSimulator.mUpdateRatesThermometerText);
 	        			if (updatesList == null || updatesList.length < 1) {
 	        				out.println("0");
@@ -313,8 +313,8 @@ public class SensorServerThread implements Runnable {
 	        				out.println("throw IllegalStateException");
 	        			}
 	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
-	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
-	        			if (mSensorSimulator.mEnabledCompass.isSelected()) {
+	        				&& mSensorSimulator.mSupportedMagneticField.isSelected()) {
+	        			if (mSensorSimulator.mEnabledMagneticField.isSelected()) {
 	        				updatesPerSecond = mSensorSimulator.getSafeDouble(
 	        						mSensorSimulator.mCurrentUpdateRateCompassText, 0);
 	        				out.println("" + updatesPerSecond);
@@ -333,8 +333,8 @@ public class SensorServerThread implements Runnable {
 	        				out.println("throw IllegalStateException");
 	        			}
 	        		} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
-	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
-	        			if (mSensorSimulator.mEnabledThermometer.isSelected()) {
+	        				&& mSensorSimulator.mSupportedTemperature.isSelected()) {
+	        			if (mSensorSimulator.mEnabledTemperature.isSelected()) {
 	        				updatesPerSecond = mSensorSimulator.getSafeDouble(
 	        						mSensorSimulator.mCurrentUpdateRateThermometerText, 0);
 	        				out.println("" + updatesPerSecond);
@@ -356,7 +356,7 @@ public class SensorServerThread implements Runnable {
         				updatesPerSecond = Float.parseFloat(inputLine);
         				mSensorSimulator.mCurrentUpdateRateAccelerometerText.setText(inputLine);
 	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
-	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
+	        				&& mSensorSimulator.mSupportedMagneticField.isSelected()) {
         				out.println("OK");
         				inputLine = in.readLine();
         				updatesPerSecond = Float.parseFloat(inputLine);
@@ -368,7 +368,7 @@ public class SensorServerThread implements Runnable {
         				updatesPerSecond = Float.parseFloat(inputLine);
         				mSensorSimulator.mCurrentUpdateRateOrientationText.setText(inputLine);
         			} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
-	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
+	        				&& mSensorSimulator.mSupportedTemperature.isSelected()) {
         				out.println("OK");
         				inputLine = in.readLine();
         				updatesPerSecond = Float.parseFloat(inputLine);
@@ -391,8 +391,8 @@ public class SensorServerThread implements Runnable {
 	        				out.println("throw IllegalStateException");
 	        			}
 	        		} else if (inputLine.compareTo(SensorSimulator.MAGNETIC_FIELD) == 0
-	        				&& mSensorSimulator.mSupportedCompass.isSelected()) {
-	        			if (mSensorSimulator.mEnabledCompass.isSelected()) {
+	        				&& mSensorSimulator.mSupportedMagneticField.isSelected()) {
+	        			if (mSensorSimulator.mEnabledMagneticField.isSelected()) {
 	        				out.println("OK");
 	        				mSensorSimulator.mCurrentUpdateRateCompassText.setText(
 	        						mSensorSimulator.mDefaultUpdateRateCompassText.getText());
@@ -411,8 +411,8 @@ public class SensorServerThread implements Runnable {
 	        				out.println("throw IllegalStateException");
 	        			}
 	        		} else if (inputLine.compareTo(SensorSimulator.TEMPERATURE) == 0
-	        				&& mSensorSimulator.mSupportedThermometer.isSelected()) {
-	        			if (mSensorSimulator.mEnabledThermometer.isSelected()) {
+	        				&& mSensorSimulator.mSupportedTemperature.isSelected()) {
+	        			if (mSensorSimulator.mEnabledTemperature.isSelected()) {
 	        				out.println("OK");
 	        				mSensorSimulator.mCurrentUpdateRateThermometerText.setText(
 	        						mSensorSimulator.mDefaultUpdateRateThermometerText.getText());
@@ -472,7 +472,7 @@ public class SensorServerThread implements Runnable {
 			sensorList[sensorMax] = SensorSimulator.ACCELEROMETER;
 			sensorMax++;
 		}
-		if (mSensorSimulator.mSupportedCompass.isSelected()) {
+		if (mSensorSimulator.mSupportedMagneticField.isSelected()) {
 			sensorList[sensorMax] = SensorSimulator.MAGNETIC_FIELD;
 			sensorMax++;
 		}
@@ -480,7 +480,7 @@ public class SensorServerThread implements Runnable {
 			sensorList[sensorMax] = SensorSimulator.ORIENTATION;
 			sensorMax++;
 		}
-		if (mSensorSimulator.mSupportedThermometer.isSelected()) {
+		if (mSensorSimulator.mSupportedTemperature.isSelected()) {
 			sensorList[sensorMax] = SensorSimulator.TEMPERATURE;
 			sensorMax++;
 		}

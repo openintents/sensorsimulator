@@ -379,6 +379,20 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 	public void onSensorChanged(int sensor, float[] values) {
         //Log.d(TAG, "onSensorChanged: " + sensor + ", x: " + values[0] + ", y: " + values[1] + ", z: " + values[2]);
         
+		// T-mobile G1 patch
+		/*
+		if (sensor == SensorManager.SENSOR_ORIENTATION) {
+			if (values[1] > 90 || values[1] < -90) {
+				values[2] = - values[2];
+				//values[0] += 180;
+				//if (values[0] > 360) {
+				//	values[0] -= 360;
+				//}
+			}
+		}
+		*/
+		
+		
         // Update the display
         for (int i = 0; i < mNumSensors; i++) {
         	if (mSingleSensorView[i].mSensorBit == sensor) {

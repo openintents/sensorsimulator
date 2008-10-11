@@ -155,16 +155,22 @@ public class SensorSimulator extends JPanel
     
     // Settings
     // Supported sensors
-    JCheckBox mSupportedAccelerometer;
-    JCheckBox mSupportedCompass;
     JCheckBox mSupportedOrientation;
-    JCheckBox mSupportedThermometer;
+    JCheckBox mSupportedAccelerometer;
+    JCheckBox mSupportedTemperature;
+    JCheckBox mSupportedMagneticField;
+    JCheckBox mSupportedLight;
+    JCheckBox mSupportedProximity;
+    JCheckBox mSupportedTricorder;
     
     // Enabled sensors
-    JCheckBox mEnabledAccelerometer;
-    JCheckBox mEnabledCompass;
     JCheckBox mEnabledOrientation;
-    JCheckBox mEnabledThermometer;
+    JCheckBox mEnabledAccelerometer;
+    JCheckBox mEnabledTemperature;
+    JCheckBox mEnabledMagneticField;
+    JCheckBox mEnabledLight;
+    JCheckBox mEnabledProximity;
+    JCheckBox mEnabledTricorder;
     
     // Simulation update
     JTextField mUpdateRatesAccelerometerText;
@@ -221,10 +227,13 @@ public class SensorSimulator extends JPanel
     JTextField mTemperatureText;
     
     // Random contribution
-    JTextField mRandomAccelerometerText;
-    JTextField mRandomCompassText;
     JTextField mRandomOrientationText;
+    JTextField mRandomAccelerometerText;
     JTextField mRandomTemperatureText;
+    JTextField mRandomMagneticFieldText;
+    JTextField mRandomLightText;
+    JTextField mRandomProximityText;
+    JTextField mRandomTricorderText;
     
     // Real device bridge
     JCheckBox mRealDeviceThinkpad;
@@ -475,20 +484,20 @@ public class SensorSimulator extends JPanel
         mSupportedAccelerometer.addItemListener(this);
         supportedSensorsPane.add(mSupportedAccelerometer);
 
-        mSupportedCompass = new JCheckBox(MAGNETIC_FIELD);
-        mSupportedCompass.setSelected(true);
-        mSupportedCompass.addItemListener(this);
-        supportedSensorsPane.add(mSupportedCompass);
+        mSupportedMagneticField = new JCheckBox(MAGNETIC_FIELD);
+        mSupportedMagneticField.setSelected(true);
+        mSupportedMagneticField.addItemListener(this);
+        supportedSensorsPane.add(mSupportedMagneticField);
 
         mSupportedOrientation = new JCheckBox(ORIENTATION);
         mSupportedOrientation.setSelected(true);
         mSupportedOrientation.addItemListener(this);
         supportedSensorsPane.add(mSupportedOrientation);
 
-        mSupportedThermometer = new JCheckBox(TEMPERATURE);
-        mSupportedThermometer.setSelected(false);
-        mSupportedThermometer.addItemListener(this);
-        supportedSensorsPane.add(mSupportedThermometer);
+        mSupportedTemperature = new JCheckBox(TEMPERATURE);
+        mSupportedTemperature.setSelected(false);
+        mSupportedTemperature.addItemListener(this);
+        supportedSensorsPane.add(mSupportedTemperature);
 
         c2.gridy++;
         settingsPane.add(supportedSensorsPane,c2);
@@ -508,20 +517,20 @@ public class SensorSimulator extends JPanel
         mEnabledAccelerometer.addItemListener(this);
         enabledSensorsPane.add(mEnabledAccelerometer);
 
-        mEnabledCompass = new JCheckBox(MAGNETIC_FIELD);
-        mEnabledCompass.setSelected(true);
-        mEnabledCompass.addItemListener(this);
-        enabledSensorsPane.add(mEnabledCompass);
+        mEnabledMagneticField = new JCheckBox(MAGNETIC_FIELD);
+        mEnabledMagneticField.setSelected(true);
+        mEnabledMagneticField.addItemListener(this);
+        enabledSensorsPane.add(mEnabledMagneticField);
 
         mEnabledOrientation = new JCheckBox(ORIENTATION);
         mEnabledOrientation.setSelected(true);
         mEnabledOrientation.addItemListener(this);
         enabledSensorsPane.add(mEnabledOrientation);
 
-        mEnabledThermometer = new JCheckBox(TEMPERATURE);
-        mEnabledThermometer.setSelected(false);
-        mEnabledThermometer.addItemListener(this);
-        enabledSensorsPane.add(mEnabledThermometer);
+        mEnabledTemperature = new JCheckBox(TEMPERATURE);
+        mEnabledTemperature.setSelected(false);
+        mEnabledTemperature.addItemListener(this);
+        enabledSensorsPane.add(mEnabledTemperature);
 
         c2.gridy++;
         settingsPane.add(enabledSensorsPane,c2);
@@ -1252,10 +1261,10 @@ public class SensorSimulator extends JPanel
         c3.gridy++;
         randomFieldPane.add(label, c3);
         
-        mRandomCompassText = new JTextField(5);
-        mRandomCompassText.setText("0");
+        mRandomMagneticFieldText = new JTextField(5);
+        mRandomMagneticFieldText.setText("0");
         c3.gridx = 1;
-        randomFieldPane.add(mRandomCompassText, c3);
+        randomFieldPane.add(mRandomMagneticFieldText, c3);
         
         label = new JLabel(" nT", JLabel.LEFT);
         c3.gridx = 2;
@@ -1653,10 +1662,10 @@ public class SensorSimulator extends JPanel
 			data += "\n";
     	}
 		
-    	if (mSupportedCompass.isSelected()) {
+    	if (mSupportedMagneticField.isSelected()) {
     	    // Compass data
 			data += MAGNETIC_FIELD + ": ";
-			if (mEnabledCompass.isSelected()) {
+			if (mEnabledMagneticField.isSelected()) {
 				data += mf.format(mobile.read_compassx) + ", " 
 						+ mf.format(mobile.read_compassy) + ", "
 						+ mf.format(mobile.read_compassz);
@@ -1679,9 +1688,9 @@ public class SensorSimulator extends JPanel
 			data += "\n";
 		}
 		
-		if (mSupportedThermometer.isSelected()) {
+		if (mSupportedTemperature.isSelected()) {
 			data += TEMPERATURE + ": ";
-			if (mEnabledThermometer.isSelected()) {
+			if (mEnabledTemperature.isSelected()) {
 				data += mf.format(mobile.read_temperature);
 			} else {
 				data += DISABLED;
@@ -1752,9 +1761,9 @@ public class SensorSimulator extends JPanel
     		// We have been connected for the first time.
     		// Disable all sensors:
     		mEnabledAccelerometer.setSelected(false);
-    		mEnabledCompass.setSelected(false);
+    		mEnabledMagneticField.setSelected(false);
     		mEnabledOrientation.setSelected(false);
-    		mEnabledThermometer.setSelected(false);
+    		mEnabledTemperature.setSelected(false);
     		
     		addMessage("First incoming connection:");
     		addMessage("ALL SENSORS DISABLED!");
