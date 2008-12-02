@@ -1187,7 +1187,7 @@ public class SensorSimulator extends JPanel
 
 
         ////////////////////////////////
-        // Temperature (in °C: Centigrade Celsius)
+        // Temperature (in ï¿½C: Centigrade Celsius)
         JPanel temperatureFieldPane = new JPanel(new GridBagLayout());
         c3 = new GridBagConstraints();
         c3.fill = GridBagConstraints.HORIZONTAL;
@@ -1437,11 +1437,14 @@ public class SensorSimulator extends JPanel
 
         //Set up a timer that calls this object's action handler.
         delay = 500;
-        timer = new Timer(delay, this);
+        timer = new Timer(delay, new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                SensorSimulator.this.actionPerformed(new ActionEvent(evt.getSource(), evt.getID(), timerAction));
+            }
+        });
         //timer.setInitialDelay(delay * 7); //We pause animation twice per cycle
                                           //by restarting the timer
         timer.setCoalesce(true);
-        timer.setActionCommand(timerAction);
         
         timer.start();
         

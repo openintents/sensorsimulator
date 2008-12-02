@@ -27,6 +27,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -366,7 +367,7 @@ public class MobilePanel extends JPanel {
 	        }
 	    });
 	
-	    addMouseMotionListener(new MouseAdapter() {
+	    addMouseMotionListener(new MouseMotionListener() {
 	        public void mouseDragged(MouseEvent e) {
 	            //moveSquare(e.getX(),e.getY());
 	        	if (mSensorSimulator.mouseMode 
@@ -412,6 +413,10 @@ public class MobilePanel extends JPanel {
 	        	
 	        	repaint();
 	        }
+
+            public void mouseMoved(MouseEvent evt) {
+                // NOOP
+            }
 	    });
 	}
 	
@@ -616,7 +621,7 @@ public class MobilePanel extends JPanel {
 			
 			// Magnetic vector in phone coordinates:
 			vec = new Vector(magneticeast, magneticnorth, -magneticvertical);
-			vec.scale(0.001); // convert from nT (nano-Tesla) to µT (micro-Tesla)
+			vec.scale(0.001); // convert from nT (nano-Tesla) to ï¿½T (micro-Tesla)
 			
 			// we reverse roll, pitch, and yawDegree,
 			// as this is how the mobile phone sees the coordinate system.
