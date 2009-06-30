@@ -159,11 +159,12 @@
 
     <!-- Compile this project's .java files into .class files. -->
     <target name="compile" depends="dirs, resource-src, aidl">
-        <javac encoding="ascii" target="1.5" debug="true" extdirs=""
+    	<javac encoding="ascii" target="1.5" debug="true" extdirs=""
                 srcdir="."
                 destdir="${outdir-classes}"
                 bootclasspath="${android-jar}">
-            <classpath>
+    		<exclude name="gen/**" /> <!-- SDK 1.5: backward compatibility with SDK 1.1 -->
+    		<classpath>
                 <fileset dir="${external-libs}" includes="*.jar"/>
             </classpath>
          </javac>
