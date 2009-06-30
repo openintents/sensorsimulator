@@ -130,7 +130,7 @@ public class SensorSimulatorSettingsActivity extends Activity implements SensorL
 		
 		// Start with Android's sensor manager
 		//mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		mSensorManager = new SensorManagerSimulator(this);
+		mSensorManager = SensorManagerSimulator.getSystemService(this, SENSOR_SERVICE);
 		
 		mSensorSimulatorConvenience = new SensorSimulatorConvenience(this);
 		
