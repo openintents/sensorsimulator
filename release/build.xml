@@ -73,7 +73,7 @@
 		
 		<!-- Now copy global readme files -->
 		<copy 
-			file="${sensorsimulator-source-dir}/readme_SensorSimulator.txt" 
+			file="../readme.txt" 
 			todir="${sensorsimulator-dir}" />
 
 		<!-- Copy the source files -->
@@ -109,10 +109,12 @@
 			antfile="build.xml"
 			target="all"
 		/>
-		<copy
-			file="${base-dir}/bin/SensorSimulatorSettings.apk"
-			todir="${sensorsimulator-bin-dir}"
-			/>
+		<copy todir="${sensorsimulator-bin-dir}" flatten="true">
+			<fileset dir="${base-dir}">
+				<include name="bin/SensorSimulatorSettings.apk" />
+				<include name="readme_SensorSimulatorSettings.txt" />				
+			</fileset>
+		</copy>
 		<!-- Copy lib to binary release -->
 		<copy
 			file="${base-dir}/bin/sensorsimulator-lib.jar"
