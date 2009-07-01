@@ -27,12 +27,12 @@ It transmits the simulated sensor data to an Android emulator.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ---------------------------------------------------------
-release: 1.0.0
-date: ??
+release: 1.0.0-beta1
+date: 2009-07-01
 
-- apply patch by jonacruz (Issue #165)
-- apply patch by Danne to work around Emulator SDK 1.5
-  issue.
+- apply patch by jonacruz (Issue #165).
+- apply patch by Danne to work around the
+  sensor Emulator bug in the SDK 1.5.
 
 ---------------------------------------------------------
 release: 0.9.0
