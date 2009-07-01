@@ -1,5 +1,5 @@
  ****************************************************************************
- * Copyright (C) 2008 OpenIntents.org                                  *
+ * Copyright (C) 2008-2009 OpenIntents.org                                  *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -31,6 +31,8 @@ release: 1.0.0
 date: ??
 
 - apply patch by jonacruz (Issue #165)
+- apply patch by Danne to work around Emulator SDK 1.5
+  issue.
 
 ---------------------------------------------------------
 release: 0.9.0

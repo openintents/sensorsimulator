@@ -48,6 +48,7 @@
 	<property name="lib-dir" value="../SensorSimulatorSettings/bin" />
 	<property name="thisrelease-dir" value="." />
 	<property name="sensorsimulator-source-dir" value="../SensorSimulator" />
+	<property name="sensorsimulator-samples-dir" value="../samples" />
 
 	<!-- standard lib file -->
 	<property name="sensorsimulator-lib-file" value="${sensorsimulator-lib-dir}/sensorsimulator-lib.jar" />
@@ -156,6 +157,19 @@
 		</copy>
 	</target>	
 
+	<target name="samples">
+		<echo>------------------------------samples----------------------</echo>
+		<!-- Copy to source release -->
+		<copy todir="${sensorsimulator-dir}/samples">
+		    <fileset dir="${sensorsimulator-samples-dir}">
+		    	<exclude name="**/bin/**" />
+		    	<exclude name="**/doc/**" />
+		    	<exclude name="**/gen/**" />
+	    		<exclude name="**/.svn" />
+		    </fileset>
+		</copy>
+	</target>	
+
 	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	<!-- Release -->
 	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -163,7 +177,8 @@
 		name="release"		
 		depends="
 			SensorSimulatorSettings,
-			SensorSimulator"
+			SensorSimulator,
+			samples"
 		>
 	</target>
 
