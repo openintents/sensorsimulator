@@ -30,36 +30,36 @@ public class SensorDemoActivity extends Activity implements SensorListener {
         ////////////////////////////////////////////////////////////////
         // INSTRUCTIONS
         // ============
-        
+
         // 1) Use the separate application SensorSimulatorSettings
         //    to enter the correct IP address of the SensorSimulator.
         //    This should work before you proceed, because the same
         //    settings are used for your custom sensor application.
-        
-		// 2) Include sensorsimulator-lib.jar in your project.
+
+        // 2) Include sensorsimulator-lib.jar in your project.
         //    Put that file into the 'lib' folder.
         //    In Eclipse, right-click on your project in the 
         //    Package Explorer, select
         //    Properties > Java Build Path > (tab) Libraries
         //    then click Add JARs to add this jar.
-        
+
         // 3) You need the permission
-		//    <uses-permission android:name="android.permission.INTERNET"/>
-		//    in your Manifest file!
-        
+        //    <uses-permission android:name="android.permission.INTERNET"/>
+        //    in your Manifest file!
+
         // 4) Instead of calling the system service to obtain the Sensor manager,
         //    you should obtain it from the SensorManagerSimulator:
-        
-		//mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		mSensorManager = SensorManagerSimulator.getSystemService(this, SENSOR_SERVICE);
-		
-		// 5) Connect to the sensor simulator, using the settings
-		//    that have been set previously with SensorSimulatorSettings
-		mSensorManager.connectSimulator();
-		
-		// The rest of your application can stay unmodified.
+
+        //mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mSensorManager = SensorManagerSimulator.getSystemService(this, SENSOR_SERVICE);
+
+        // 5) Connect to the sensor simulator, using the settings
+        //    that have been set previously with SensorSimulatorSettings
+        mSensorManager.connectSimulator();
+
+        // The rest of your application can stay unmodified.
         ////////////////////////////////////////////////////////////////
-		
+
     }
     
 
