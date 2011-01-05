@@ -131,7 +131,12 @@
 		    	<exclude name="**/bin/**" />
 		    	<exclude name="**/doc/**" />
 		    	<exclude name="**/gen/**" />
+				<exclude name="**/release/**" />
+				<exclude name="**/tmp/**" />
+				<exclude name="**/translations/**" />
 	    		<exclude name="**/.svn" />
+	    		<exclude name="**/build-private.properties" />
+	    		<exclude name="**/local.properties" />
 		    </fileset>
 		</copy>
 	</target>
@@ -172,7 +177,12 @@
 		    	<exclude name="**/bin/**" />
 		    	<exclude name="**/doc/**" />
 		    	<exclude name="**/gen/**" />
+				<exclude name="**/release/**" />
+				<exclude name="**/tmp/**" />
+				<exclude name="**/translations/**" />
 	    		<exclude name="**/.svn" />
+	    		<exclude name="**/build-private.properties" />
+	    		<exclude name="**/local.properties" />
 		    </fileset>
 		</copy>
 	</target>	
