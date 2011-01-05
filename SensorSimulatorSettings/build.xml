@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="SensorSimulatorSettings" default="help">
-
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     If Eclipse does not let you build the project because
+     it claims the "help" target above does not exist,
+     go to Window->preferences->Ant->Editor->Problems tab
+     and add "build.xml" to the ignore list.
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+-->
+	
 <!-- #############################################
      OpenIntents modifications to build.xml follow
      ############################################# -->
