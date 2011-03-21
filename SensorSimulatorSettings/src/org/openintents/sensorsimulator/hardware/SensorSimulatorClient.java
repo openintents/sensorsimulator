@@ -29,7 +29,6 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import org.openintents.sensorsimulator.db.SensorSimulator;
 import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
 
@@ -185,7 +184,7 @@ final class SensorSimulatorClient {
 		ArrayList<Integer> sensors = SensorNames.getSensorsFromNames(sensornames);
 		return sensors;
 	}
-		
+    
 	/** Delay in milliseconds */
 	private int DELAY_MS_FASTEST = 0;
 	private int DELAY_MS_GAME = 20;
@@ -744,6 +743,9 @@ final class SensorSimulatorClient {
 		} catch (IOException e) {
 			System.err.println("Couldn't get I/O for the connection to: x.x.x.x.");
             System.exit(1);
+		} catch (NullPointerException e2) {
+		    Log.e(TAG, "Error reading sensors: Is the client running?");
+		    System.exit(1);
 		}
 	}
 	
