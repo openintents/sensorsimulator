@@ -26,6 +26,13 @@ It transmits the simulated sensor data to an Android emulator.
   (requires Java Runtime Environment 1.6.0 or higher).
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+
+---------------------------------------------------------
+release: 1.1.0-rc2?
+date: 2011-01-05
+
+- fix crashing - issue 77 (patch by Emaad Ahmed Manzoor)
+
 ---------------------------------------------------------
 release: 1.1.0-rc1
 date: 2011-01-05
