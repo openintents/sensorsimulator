@@ -30,6 +30,8 @@ public interface IMobilePanel {
 	public double getReadTemperature();
 
 	public String getBarcode();
+	
+	public float getReadLight();
 
 	public void setYawDegree(double yawDegree);
 	public void setPitchDegree(double pitchDegree);

@@ -114,7 +114,8 @@ public class SensorSimulator extends JPanel
 	private long updateEmulatorOrientationTime;
 	private int updateEmulatorThermometerCount;
 	private long updateEmulatorThermometerTime;
-
+	private int updateEmulatorLightCount;
+	private long updateEmulatorLightTime;
 
 	private int mouseMode;
 
@@ -186,6 +187,12 @@ public class SensorSimulator extends JPanel
     /** Whether to form an average at each update */
 	private JCheckBox mUpdateAverageThermometer;
 
+	private JTextField mUpdateRatesLightText;
+	private JTextField mDefaultUpdateRateLightText;
+	private JTextField mCurrentUpdateRateLightText;
+	/** Whether to form an average at each update */
+	private JCheckBox mUpdateAverageLight;
+
 	private JTextField mUpdateText;
 	private JTextField mRefreshCountText;
 	private JLabel mRefreshSensorsLabel;
@@ -193,6 +200,7 @@ public class SensorSimulator extends JPanel
 	private JLabel mRefreshEmulatorCompassLabel;
 	private JLabel mRefreshEmulatorOrientationLabel;
 	private JLabel mRefreshEmulatorThermometerLabel;
+	private JLabel mRefreshEmulatorLightLabel;
 
     // Accelerometer
 	private JTextField mGravityConstantText;
@@ -217,6 +225,9 @@ public class SensorSimulator extends JPanel
 
     //Barcode
 	private JTextField mBarcodeReaderText;
+
+	// Light
+	private JTextField mLightText;
 
     // Random contribution
 	private JTextField mRandomOrientationText;
@@ -519,6 +530,11 @@ public class SensorSimulator extends JPanel
         mSupportedBarcodeReader.addItemListener(this);
         supportedSensorsPane.add(mSupportedBarcodeReader);
 
+        mSupportedLight = new JCheckBox(LIGHT);
+        mSupportedLight.setSelected(false);
+        mSupportedLight.addItemListener(this);
+        supportedSensorsPane.add(mSupportedLight);
+
         c2.gridy++;
         settingsPane.add(supportedSensorsPane,c2);
 
@@ -556,6 +572,11 @@ public class SensorSimulator extends JPanel
         mEnabledBarcodeReader.setSelected(false);
         mEnabledBarcodeReader.addItemListener(this);
         enabledSensorsPane.add(mEnabledBarcodeReader);
+
+        mEnabledLight = new JCheckBox(LIGHT);
+        mEnabledLight.setSelected(false);
+        mEnabledLight.addItemListener(this);
+        enabledSensorsPane.add(mEnabledLight);
 
         c2.gridy++;
         settingsPane.add(enabledSensorsPane,c2);
@@ -829,6 +850,66 @@ public class SensorSimulator extends JPanel
         mUpdateAverageThermometer.addItemListener(this);
         updateFieldPane.add(mUpdateAverageThermometer, c3);
 
+        // ------------------
+        label = new JLabel("Light", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        updateFieldPane.add(label, c3);
+
+        label = new JLabel("Update rates: ", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        updateFieldPane.add(label, c3);
+
+        mUpdateRatesLightText = new JTextField(5);
+        mUpdateRatesLightText.setText("1");
+        c3.gridx = 1;
+        updateFieldPane.add(mUpdateRatesLightText, c3);
+
+        label = new JLabel("1/s", JLabel.LEFT);
+        c3.gridx = 2;
+        updateFieldPane.add(label, c3);
+
+        label = new JLabel("Default rate: ", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        updateFieldPane.add(label, c3);
+
+        mDefaultUpdateRateLightText = new JTextField(5);
+        mDefaultUpdateRateLightText.setText("1");
+        c3.gridx = 1;
+        updateFieldPane.add(mDefaultUpdateRateLightText, c3);
+
+        label = new JLabel("1/s", JLabel.LEFT);
+        c3.gridx = 2;
+        updateFieldPane.add(label, c3);
+
+        label = new JLabel("Current rate: ", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        updateFieldPane.add(label, c3);
+
+        mCurrentUpdateRateLightText = new JTextField(5);
+        mCurrentUpdateRateLightText.setText("1");
+        c3.gridx = 1;
+        updateFieldPane.add(mCurrentUpdateRateLightText, c3);
+
+        label = new JLabel("1/s", JLabel.LEFT);
+        c3.gridx = 2;
+        updateFieldPane.add(label, c3);
+
+        c3.gridwidth = 3;
+        c3.gridx = 0;
+        c3.gridy++;
+        mUpdateAverageLight = new JCheckBox(AVERAGE_LIGHT);
+        mUpdateAverageLight.setSelected(true);
+        mUpdateAverageLight.addItemListener(this);
+        updateFieldPane.add(mUpdateAverageLight, c3);
+
         // Update panel ends
 
         // Add update panel to settings
@@ -945,6 +1026,16 @@ public class SensorSimulator extends JPanel
         mRefreshEmulatorThermometerLabel = new JLabel("-", JLabel.LEFT);
         c3.gridx = 1;
         updateSimulationFieldPane.add(mRefreshEmulatorThermometerLabel, c3);
+
+        label = new JLabel(" * Light: ", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        updateSimulationFieldPane.add(label, c3);
+
+        mRefreshEmulatorLightLabel = new JLabel("-", JLabel.LEFT);
+        c3.gridx = 1;
+        updateSimulationFieldPane.add(mRefreshEmulatorLightLabel, c3);
 
         // Update panel ends
 
@@ -1285,6 +1376,43 @@ public class SensorSimulator extends JPanel
         c2.gridy++;
         settingsPane.add(barcodeReaderFieldPane, c2);
 
+        //////////////////////////////
+        // Light (in lux)
+        JPanel lightFieldPane = new JPanel(new GridBagLayout());
+        c3 = new GridBagConstraints();
+        c3.fill = GridBagConstraints.HORIZONTAL;
+        c3.anchor = GridBagConstraints.NORTHWEST;
+        c3.gridwidth = 3;
+        c3.gridx = 0;
+        c3.gridy = 0;
+
+        lightFieldPane.setBorder(BorderFactory.createCompoundBorder(
+        		BorderFactory.createTitledBorder("Light"),
+        		BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+
+        label = new JLabel("Light: ", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        lightFieldPane.add(label, c3);
+
+        mLightText = new JTextField(5);
+        mLightText.setText("400");
+        c3.gridx = 1;
+        lightFieldPane.add(mLightText, c3);
+
+        label = new JLabel(" lux", JLabel.LEFT);
+        c3.gridx = 2;
+        lightFieldPane.add(label, c3);
+
+        // Light panel ends
+
+        // Add light panel to settings
+        c2.gridx = 0;
+        c2.gridwidth = 1;
+        c2.gridy++;
+        settingsPane.add(lightFieldPane, c2);
+
         ///////////////////////////////
         // Random contribution to sensor values
 
@@ -1358,6 +1486,21 @@ public class SensorSimulator extends JPanel
         randomFieldPane.add(mRandomTemperatureText, c3);
 
         label = new JLabel(" " + DEGREES + "C", JLabel.LEFT);
+        c3.gridx = 2;
+        randomFieldPane.add(label, c3);
+
+        label = new JLabel("Light: ", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        randomFieldPane.add(label, c3);
+
+        mRandomLightText = new JTextField(5);
+        mRandomLightText.setText("0");
+        c3.gridx = 1;
+        randomFieldPane.add(mRandomLightText, c3);
+
+        label = new JLabel(" lux", JLabel.LEFT);
         c3.gridx = 2;
         randomFieldPane.add(label, c3);
 
@@ -1967,6 +2110,23 @@ public class SensorSimulator extends JPanel
 		}
     }
 
+    public void updateEmulatorLightRefresh() {
+    	updateEmulatorLightCount++;
+    	long maxcount = (long) getSafeDouble(mRefreshCountText);
+    	if (maxcount >= 0 && updateEmulatorLightCount >= maxcount) {
+    		long newtime = System.currentTimeMillis();
+    		double ms = (double) (newtime - updateEmulatorLightTime)
+    		/ ((double) maxcount);
+
+    		DecimalFormat mf = new DecimalFormat("#0.0");
+
+    		mRefreshEmulatorLightLabel.setText(mf.format(ms) + " ms");
+
+    		updateEmulatorLightCount = 0;
+    		updateEmulatorLightTime = newtime;
+    	}
+    }
+    
     /**
      * This method is used to show currently enabled sensor values in info pane.
      */
@@ -2031,6 +2191,17 @@ public class SensorSimulator extends JPanel
 			}
 			data += "\n";
 		}
+
+		if (mSupportedLight.isSelected()) {
+			data += LIGHT + ": ";
+			if (mEnabledLight.isSelected()) {
+				data += mf.format(mobile.getReadLight());
+			} else {
+				data += DISABLED;
+			}
+			data += "\n";
+		}
+
 		// Output to textArea:
 		textAreaSensorData.setText(data);
     }
@@ -2238,6 +2409,32 @@ public class SensorSimulator extends JPanel
 
 	public double getSafeDouble(JTextField textfield) {
 		return getSafeDouble(textfield, 0);
+	}
+
+	/**
+	 * Safely retries the float value of a text field.
+	 * If the value is not a valid number, 0 is returned, and the field
+	 * is marked red.
+	 *
+	 * @param textfield Textfield from which the value should be read.
+	 * @param defaultValue default value if input field is invalid.
+	 * @return float value.
+	 */
+	public float getSafeFloat(JTextField textfield, float defaultValue) {
+		float value = defaultValue;
+		try {
+			value = Float.parseFloat(textfield.getText());
+			textfield.setBackground(Color.WHITE);
+		} catch (NumberFormatException e) {
+			// wrong user input in box - take default values.
+			value = defaultValue;
+			textfield.setBackground(Color.RED);
+		}
+		return value;
+	}
+
+	public float getSafeFloat(JTextField textfield) {
+		return getSafeFloat(textfield, 0);
 	}
 
 	/**
@@ -2528,6 +2725,22 @@ public class SensorSimulator extends JPanel
 		return mUpdateAverageThermometer.isSelected();
 	}
 
+	public double[] getUpdateRatesLight() {
+		return getSafeDoubleList(mUpdateRatesLightText);
+	}
+
+	public double getDefaultUpdateRateLight() {
+		return getSafeDouble(mDefaultUpdateRateLightText);
+	}
+
+	public double getCurrentUpdateRateLight() {
+		return getSafeDouble(mCurrentUpdateRateLightText, 0);
+	}
+
+	public boolean updateAverageLight() {
+		return mUpdateAverageLight.isSelected();
+	}
+
 	public void setCurrentUpdateRateAccelerometer(double value) {
 		mCurrentUpdateRateAccelerometerText.setText(Double.toString(value));
 	}
@@ -2542,6 +2755,10 @@ public class SensorSimulator extends JPanel
 
 	public void setCurrentUpdateRateThermometer(double value) {
 		mCurrentUpdateRateThermometerText.setText(Double.toString(value));
+	}
+
+	public void setCurrentUpdateRateLight(double value) {
+		mCurrentUpdateRateLightText.setText(Double.toString(value));
 	}
 
 	public double getUpdateSensors() {
@@ -2604,6 +2821,10 @@ public class SensorSimulator extends JPanel
 		return getSafeDouble(mTemperatureText);
 	}
 
+	public float getLight() {
+		return getSafeFloat(mLightText);
+	}
+
 	public double getRandomAccelerometer() {
 		return getSafeDouble(mRandomAccelerometerText);
 	}
@@ -2618,6 +2839,10 @@ public class SensorSimulator extends JPanel
 
 	public double getRandomTemperature() {
 		return getSafeDouble(mRandomTemperatureText);
+	}
+
+	public double getRandomLight() {
+		return getSafeDouble(mRandomLightText);
 	}
 
 	public boolean useRealDeviceThinkpad() {

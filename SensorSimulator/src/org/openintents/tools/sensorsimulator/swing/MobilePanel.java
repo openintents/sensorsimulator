@@ -93,6 +93,9 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 	/**Current read-out value of barcode. */
 	private String barcode_reader;
 
+	/** Current read-out value of light. */
+	private float read_light;
+
 	/** Duration (in milliseconds) between two updates.
 	 * This is the inverse of the update rate.
 	 */
@@ -132,6 +135,18 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 	 * The time is compared to System.currentTimeMillis().
 	 */
 	private long temperature_next_update;
+
+	/**
+	 * Duration (in milliseconds) between two updates. This is the inverse of
+	 * the update rate.
+	 */
+	private long light_update_duration;
+
+	/**
+	 * Time of next update required. The time is compared to
+	 * System.currentTimeMillis().
+	 */
+	private long light_next_update;
 
 	/** Duration in milliseconds until user setting
 	 * changes are read out.
@@ -196,6 +211,15 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 	 */
 	private boolean average_temperature;
 
+	/** Partial read-out value of light. */
+	private float partial_light;
+	/** Number of summands in partial sum for light. */
+	private int partial_light_n;
+	/**
+	 * Whether to form the average over the last duration when reading out
+	 * sensors. Alternative is to just take the current value.
+	 */
+	private boolean average_light;
 
 	/** Internal state value of accelerometer x-component.
 	 *
@@ -224,6 +248,9 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 
 	//barcode
 	private String barcode;
+
+	// light
+	private float light;
 
 	// orientation sensor raw data (in degree)
 	private double yawDegree;
@@ -705,6 +732,18 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 			repaint();
 		};
 
+		// Light
+		if (mSensorSimulator.isEnabledLight()) {
+			light = mSensorSimulator.getLight();
+
+			// Add random component:
+			random = mSensorSimulator.getRandomLight();
+			if (random > 0) {
+				light += getRandom(random);
+			}
+		} else {
+			light = 0;
+		}
 }
 
 	/**
@@ -743,6 +782,12 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 			// Form the average
 			partial_temperature += temperature;
 			partial_temperature_n++;
+		}
+
+		if (average_light) {
+			// Form the average
+			partial_light += light;
+			partial_light_n++;
 		}
 
 		if (currentTime >= accel_next_update) {
@@ -885,6 +930,30 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 			}
 
 		}
+
+		if (currentTime >= light_next_update) {
+			// Update
+			light_next_update += light_update_duration;
+			if (light_next_update < currentTime) {
+				// Don't lag too much behind.
+				// If we are too slow, then we are too slow.
+				light_next_update = currentTime;
+			}
+
+			if (average_light) {
+				// form average
+				read_light = partial_light / partial_light_n;
+
+				// reset average
+				partial_light = 0;
+				partial_light_n = 0;
+
+			} else {
+				// Only take current value
+				read_light = light;
+			}
+
+		}
 	}
 
 	/**
@@ -935,6 +1004,14 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 				temperature_update_duration = (long) (1000. / rate);
 			} else {
 				temperature_update_duration = 0;
+			}
+
+			average_light = mSensorSimulator.updateAverageLight();
+			rate = mSensorSimulator.getCurrentUpdateRateLight();
+			if (rate != 0) {
+				light_update_duration = (long) (1000. / rate);
+			} else {
+				light_update_duration = 0;
 			}
 		}
 	}
@@ -1087,6 +1164,15 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 	 */
 	public String getBarcode() {
 		return barcode;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openintents.tools.sensorsimulator.IMobilePanel#getReadLight()
+	 */
+	public float getReadLight() {
+		return read_light;
 	}
 
 	/* (non-Javadoc)

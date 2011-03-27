@@ -280,6 +280,9 @@ public class SensorSimulatorSettingsActivity extends Activity{
         		SensorManager.SENSOR_DELAY_FASTEST);
         mSensorManager.registerListener(listener, mSensorManager.getDefaultSensor(Sensor.TYPE_TEMPERATURE), 
         		SensorManager.SENSOR_DELAY_FASTEST);
+        mSensorManager.registerListener(listener,
+        		mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
+        		SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     /**

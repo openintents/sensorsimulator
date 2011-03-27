@@ -145,7 +145,11 @@ public class SensorServerThread implements Runnable {
 	        				&& mSensorSimulator.isSupportedBarcodeReader()) {
 	        			out.println("" + mSensorSimulator.isEnabledBarcodeReader());
 	        			mSensorSimulator.setEnabledBarcodeReader(enable);
-	        		} else {
+	        		} else if (inputLine.compareTo(ISensorSimulator.LIGHT) == 0
+							&& mSensorSimulator.isSupportedLight()) {
+						out.println("" + mSensorSimulator.isEnabledLight());
+						mSensorSimulator.setEnabledLight(enable);
+					} else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -167,7 +171,10 @@ public class SensorServerThread implements Runnable {
 	        		} else if (inputLine.compareTo(ISensorSimulator.BARCODE_READER) == 0
 	        				&& mSensorSimulator.isSupportedBarcodeReader()) {
 	        			out.println("1");
-	        		} else {
+	        		} else if (inputLine.compareTo(ISensorSimulator.LIGHT) == 0
+							&& mSensorSimulator.isSupportedLight()) {
+						out.println("1");
+					} else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -265,7 +272,20 @@ public class SensorServerThread implements Runnable {
 	        				// This sensor is currently disabled
 	        				out.println("throw IllegalStateException");
 	        			}
-	        		} else {
+	        		} else if (inputLine.compareTo(ISensorSimulator.LIGHT) == 0
+							&& mSensorSimulator.isSupportedLight()) {
+						if (mSensorSimulator.isEnabledLight()) {
+							String sensorData = "1\n" // number of data
+														// following
+									+ mSensorSimulator.getMobilePanel()
+											.getReadLight();
+							out.println(sensorData);
+							mSensorSimulator.updateEmulatorLightRefresh();
+						} else {
+							// This sensor is currently disabled
+							out.println("throw IllegalStateException");
+						}
+					} else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -320,7 +340,19 @@ public class SensorServerThread implements Runnable {
 	        					out.println("" + updatesList[i]);
 	        				}
 	        			}
-	        		} else {
+	        		} else if (inputLine.compareTo(ISensorSimulator.LIGHT) == 0
+							&& mSensorSimulator.isSupportedLight()) {
+						updatesList = mSensorSimulator.getUpdateRatesLight();
+						if (updatesList == null || updatesList.length < 1) {
+							out.println("0");
+						} else {
+							len = updatesList.length;
+							out.println("" + len);
+							for (int i = 0; i < len; i++) {
+								out.println("" + updatesList[i]);
+							}
+						}
+					} else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -364,7 +396,17 @@ public class SensorServerThread implements Runnable {
 	        				// This sensor is currently disabled
 	        				out.println("throw IllegalStateException");
 	        			}
-	        		} else {
+	        		} else if (inputLine.compareTo(ISensorSimulator.LIGHT) == 0
+							&& mSensorSimulator.isSupportedLight()) {
+						if (mSensorSimulator.isEnabledLight()) {
+							updatesPerSecond = mSensorSimulator
+									.getCurrentUpdateRateLight();
+							out.println("" + updatesPerSecond);
+						} else {
+							// This sensor is currently disabled
+							out.println("throw IllegalStateException");
+						}
+					} else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -401,7 +443,15 @@ public class SensorServerThread implements Runnable {
         				out.println("OK");
         				inputLine = in.readLine();
         				updatesPerSecond = Float.parseFloat(inputLine);
-        			} else {
+        			}  else if (inputLine.compareTo(ISensorSimulator.LIGHT) == 0
+							&& mSensorSimulator.isSupportedLight()) {
+						out.println("OK");
+						inputLine = in.readLine();
+						updatesPerSecond = Float.parseFloat(inputLine);
+						mSensorSimulator
+								.setCurrentUpdateRateLight(updatesPerSecond);
+
+					} else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -449,7 +499,18 @@ public class SensorServerThread implements Runnable {
 	        				// This sensor is currently disabled
 	        				out.println("throw IllegalStateException");
 	        			}
-	        		} else {
+	        		} else if (inputLine.compareTo(ISensorSimulator.LIGHT) == 0
+							&& mSensorSimulator.isSupportedLight()) {
+						if (mSensorSimulator.isEnabledLight()) {
+							out.println("OK");
+							mSensorSimulator
+									.setCurrentUpdateRateLight(mSensorSimulator
+											.getDefaultUpdateRateLight());
+						} else {
+							// This sensor is currently disabled
+							out.println("throw IllegalStateException");
+						}
+					} else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -493,7 +554,7 @@ public class SensorServerThread implements Runnable {
      * @return String[] filled with names of currently supported sensors.
      */
     public String[] getSupportedSensors() {
-    	String[] sensorList = new String[5]; // currently max. 5 possible!
+    	String[] sensorList = new String[6]; // currently max. 6 possible!
 		int sensorMax = 0;
 		if (mSensorSimulator.isSupportedAccelerometer()) {
 			sensorList[sensorMax] = ISensorSimulator.ACCELEROMETER;
@@ -513,6 +574,10 @@ public class SensorServerThread implements Runnable {
 		}
 		if (mSensorSimulator.isSupportedBarcodeReader()) {
 			sensorList[sensorMax] = ISensorSimulator.BARCODE_READER;
+			sensorMax++;
+		}
+		if (mSensorSimulator.isSupportedLight()) {
+			sensorList[sensorMax] = ISensorSimulator.LIGHT;
 			sensorMax++;
 		}
 		String[] returnSensorList = new String[sensorMax];

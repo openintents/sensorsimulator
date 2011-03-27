@@ -157,11 +157,16 @@ public interface ISensorSimulator {
     public double getDefaultUpdateRateThermometer();
     public double getCurrentUpdateRateThermometer();
     public boolean updateAverageThermometer();
+    public double[] getUpdateRatesLight();
+    public double getDefaultUpdateRateLight();
+    public double getCurrentUpdateRateLight();
+    public boolean updateAverageLight();
 
     public void setCurrentUpdateRateAccelerometer(double value);
     public void setCurrentUpdateRateCompass(double value);
     public void setCurrentUpdateRateOrientation(double value);
     public void setCurrentUpdateRateThermometer(double value);
+    public void setCurrentUpdateRateLight(double value);
 
     /*
      * Simulation Update
@@ -174,6 +179,7 @@ public interface ISensorSimulator {
 	public void updateEmulatorCompassRefresh();
 	public void updateEmulatorOrientationRefresh();
 	public void updateEmulatorThermometerRefresh();
+	public void updateEmulatorLightRefresh();
 
     /*
      * Accelerometer
@@ -211,12 +217,18 @@ public interface ISensorSimulator {
     public String getBarcode();
 
     /*
+     * Light 
+     */
+    public float getLight();
+
+    /*
      * Random Component
      */
     public double getRandomAccelerometer();
     public double getRandomMagneticField();
     public double getRandomOrientation();
     public double getRandomTemperature();
+    public double getRandomLight();
 
     /*
      * Real Sensor Bridge
