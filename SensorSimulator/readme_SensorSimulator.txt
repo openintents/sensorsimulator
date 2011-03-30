@@ -33,6 +33,7 @@ date: 2011-01-05
 
 - fix crashing - issue 77 (patch by Emaad Ahmed Manzoor)
 - add light sensor support (patch by Elena Burceanu)
+- add Record and Playback buttons (patch by Prithvi Raj)
 
 ---------------------------------------------------------
 release: 1.1.0-rc1
