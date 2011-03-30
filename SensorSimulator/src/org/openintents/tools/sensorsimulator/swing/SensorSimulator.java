@@ -70,6 +70,7 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.openintents.tools.sensorsimulator.FileData;
 import org.openintents.tools.sensorsimulator.IMobilePanel;
 import org.openintents.tools.sensorsimulator.ISensorSimulator;
 import org.openintents.tools.sensorsimulator.SensorServer;
@@ -243,7 +244,11 @@ public class SensorSimulator extends JPanel
 	private JCheckBox mRealDeviceWiimote;
 	private JTextField mRealDevicePath;
 	private JLabel mRealDeviceOutputLabel;
-
+	
+	//Replay
+	private JButton replayRecord;
+	private JButton replayPlayback;
+	
     //TelnetSimulations variables
 	private JSlider batterySlider;
 
@@ -274,6 +279,7 @@ public class SensorSimulator extends JPanel
 	private TelnetServer mTelnetServer;
 
     WiiMoteData wiiMoteData = new WiiMoteData();
+    FileData replayData= new FileData();
 
 
 	public SensorSimulator() {
@@ -1565,6 +1571,42 @@ public class SensorSimulator extends JPanel
 
         /////////////////////////////////////////////////////
 
+        ///////////////////////////////
+        // Replay Pane
+
+        JPanel replayFieldPane = new JPanel(new GridBagLayout());
+        c3 = new GridBagConstraints();
+        c3.fill = GridBagConstraints.HORIZONTAL;
+        c3.anchor = GridBagConstraints.NORTHWEST;
+        c3.gridwidth = 3;
+        c3.gridx = 0;
+        c3.gridy = 0;
+
+        replayFieldPane.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Replay"),
+                BorderFactory.createEmptyBorder(5,5,5,5)));
+        
+        replayRecord = new JButton("Record");
+        replayFieldPane.add(replayRecord);
+        replayRecord.setActionCommand(recordReplay);
+        replayRecord.addActionListener(this);
+
+        replayPlayback = new JButton("Playback");
+        replayFieldPane.add(replayPlayback);
+        replayPlayback.setActionCommand(playbackReplay);
+        replayPlayback.addActionListener(this);
+        
+        // Replay panel ends
+
+        // Add replay panel to settings
+        c2.gridx = 0;
+        c2.gridwidth = 1;
+        c2.gridy++;
+        settingsPane.add(replayFieldPane, c2);
+
+
+        /////////////////////////////////////////////////////        
+        
         /////////////////////////////////////////////////////
         // Add settings scroll panel to right pane.
         c.fill = GridBagConstraints.BOTH;
@@ -1998,6 +2040,28 @@ public class SensorSimulator extends JPanel
 
         	}
 
+        } else if(action.equals(recordReplay)){
+        	if(replayData.createFile()){
+        		this.addMessage("Recording Started");
+        		replayRecord.setText("Stop");
+        		
+        	}
+        	else{
+        		this.addMessage("Recording Stopped");
+        		replayRecord.setText("Record");
+        	}
+        	
+        } else if(action.equals(playbackReplay)){
+        	if(replayData.openFile()){
+        		if (replayData.isPlaying()) {
+					this.addMessage("Playing back");
+					replayPlayback.setText("Stop");
+				}else{
+					this.addMessage("Playback Stopped");
+				}
+        	}else{
+        		this.addMessage("Finish recording first");
+        	}
         }
     }
 
@@ -2006,6 +2070,9 @@ public class SensorSimulator extends JPanel
     		updateFromWiimote();
     	}
 
+    	
+    	updateFromFile();
+    	
     	// Update sensors:
     	mobile.updateSensorPhysics();
 
@@ -2017,6 +2084,7 @@ public class SensorSimulator extends JPanel
     	updateSensorRefresh();
 
     	// Now show updated data:
+//    	System.out.println("DATA:"+mobile.getReadAccelerometerX()+"	"+mobile.getReadAccelerometerY()+" "+mobile.getReadAccelerometerZ());
     	showSensorData();
     }
 
@@ -2505,6 +2573,26 @@ public class SensorSimulator extends JPanel
 			pitchSlider.setValue(wiiMoteData.getPitch());
 		}
     }
+    
+    /**
+     * is called from within doTimer() to record/playback values 
+     * recording/playback is triggered from actionListener
+     */
+    private void updateFromFile(){
+		
+    	replayData.recordData(mobile.getReadYaw(),mobile.getReadRoll(),mobile.getReadPitch());
+    	
+		if (replayData.playData()) {
+			// Update sliders
+			yawSlider.setValue(replayData.getYaw());  
+			rollSlider.setValue(replayData.getRoll());
+			pitchSlider.setValue(replayData.getPitch());
+		}else{
+			replayPlayback.setText("Playback");
+		}
+		
+    	
+    }
 
     public static void main(String[] args) {
         //Schedule a job for the event-dispatching thread:
@@ -2860,6 +2948,7 @@ public class SensorSimulator extends JPanel
 	public void setRealDeviceOutput(String text) {
 		mRealDeviceOutputLabel.setText(text);
 	}
+
 
 }
 

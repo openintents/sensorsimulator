@@ -46,7 +46,8 @@ public interface ISensorSimulator {
     //action for telnet connection and send gps
     static String connectViaTelnet = "connectViaTelnet";
     static String sendGPS = "send gps";
-
+    static String recordReplay="replay Record";
+    static String playbackReplay="replay Playback";
     static String emulateBattery = "emulate battery";
     static String nextTimeEvent = "next Time Event";
 
@@ -246,7 +247,6 @@ public interface ISensorSimulator {
 	public float getLatitude();
 	public float getAltitude();
 	public String getLisName();
-
 
 
 

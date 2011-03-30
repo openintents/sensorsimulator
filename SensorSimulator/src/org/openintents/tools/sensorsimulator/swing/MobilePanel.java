@@ -355,6 +355,8 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 			{-dx, dy2, sz}, { dx, dy2, sz},
 			{ dx, dy2, sz}, { dx, dy1, sz},
 		};
+	
+	//File usage
 
 	/**
 	 * Constructor of MobilePanel.
@@ -753,7 +755,7 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 		long currentTime = System.currentTimeMillis();
 
 		// From time to time we
-
+        
 		if (average_accel) {
 			// Form the average
 			partial_accelx += accelx;
