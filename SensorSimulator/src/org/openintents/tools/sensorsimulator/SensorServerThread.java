@@ -149,7 +149,11 @@ public class SensorServerThread implements Runnable {
 							&& mSensorSimulator.isSupportedLight()) {
 						out.println("" + mSensorSimulator.isEnabledLight());
 						mSensorSimulator.setEnabledLight(enable);
-					} else {
+					} else if (inputLine.compareTo(ISensorSimulator.PROXIMITY) == 0
+                            && mSensorSimulator.isSupportedProximity()) {
+                        out.println("" + mSensorSimulator.isEnabledProximity());
+                        mSensorSimulator.setEnabledProximity(enable);
+                    } else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -174,7 +178,10 @@ public class SensorServerThread implements Runnable {
 	        		} else if (inputLine.compareTo(ISensorSimulator.LIGHT) == 0
 							&& mSensorSimulator.isSupportedLight()) {
 						out.println("1");
-					} else {
+					} else if (inputLine.compareTo(ISensorSimulator.PROXIMITY) == 0
+                            && mSensorSimulator.isSupportedProximity()) {
+                        out.println("1");
+                    } else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -285,7 +292,20 @@ public class SensorServerThread implements Runnable {
 							// This sensor is currently disabled
 							out.println("throw IllegalStateException");
 						}
-					} else {
+					} else if (inputLine.compareTo(ISensorSimulator.PROXIMITY) == 0
+                            && mSensorSimulator.isSupportedProximity()) {
+                        if (mSensorSimulator.isEnabledProximity()) {
+                            String sensorData = "1\n" // number of data
+                                                        // following
+                                    + mSensorSimulator.getMobilePanel()
+                                            .getReadProximity();
+                            out.println(sensorData);
+                            mSensorSimulator.updateEmulatorProximityRefresh();
+                        } else {
+                            // This sensor is currently disabled
+                            out.println("throw IllegalStateException");
+                        }
+                    } else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -352,7 +372,19 @@ public class SensorServerThread implements Runnable {
 								out.println("" + updatesList[i]);
 							}
 						}
-					} else {
+					} else if (inputLine.compareTo(ISensorSimulator.PROXIMITY) == 0
+                            && mSensorSimulator.isSupportedProximity()) {
+                        updatesList = mSensorSimulator.getUpdateRatesProximity();
+                        if (updatesList == null || updatesList.length < 1) {
+                            out.println("0");
+                        } else {
+                            len = updatesList.length;
+                            out.println("" + len);
+                            for (int i = 0; i < len; i++) {
+                                out.println("" + updatesList[i]);
+                            }
+                        }
+                    } else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -406,7 +438,17 @@ public class SensorServerThread implements Runnable {
 							// This sensor is currently disabled
 							out.println("throw IllegalStateException");
 						}
-					} else {
+					} else if (inputLine.compareTo(ISensorSimulator.PROXIMITY) == 0
+                            && mSensorSimulator.isSupportedProximity()) {
+                        if (mSensorSimulator.isEnabledProximity()) {
+                            updatesPerSecond = mSensorSimulator
+                                    .getCurrentUpdateRateProximity();
+                            out.println("" + updatesPerSecond);
+                        } else {
+                            // This sensor is currently disabled
+                            out.println("throw IllegalStateException");
+                        }
+                    } else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -451,7 +493,14 @@ public class SensorServerThread implements Runnable {
 						mSensorSimulator
 								.setCurrentUpdateRateLight(updatesPerSecond);
 
-					} else {
+					}  else if (inputLine.compareTo(ISensorSimulator.PROXIMITY) == 0
+                            && mSensorSimulator.isSupportedProximity()) {
+                        out.println("OK");
+                        inputLine = in.readLine();
+                        updatesPerSecond = Float.parseFloat(inputLine);
+                        mSensorSimulator
+                                .setCurrentUpdateRateProximity(updatesPerSecond);
+                    } else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -510,7 +559,18 @@ public class SensorServerThread implements Runnable {
 							// This sensor is currently disabled
 							out.println("throw IllegalStateException");
 						}
-					} else {
+					} else if (inputLine.compareTo(ISensorSimulator.PROXIMITY) == 0
+                            && mSensorSimulator.isSupportedProximity()) {
+                        if (mSensorSimulator.isEnabledProximity()) {
+                            out.println("OK");
+                            mSensorSimulator
+                                    .setCurrentUpdateRateProximity(mSensorSimulator
+                                            .getDefaultUpdateRateProximity());
+                        } else {
+                            // This sensor is currently disabled
+                            out.println("throw IllegalStateException");
+                        }
+                    } else {
 	        			// This sensor is not supported
 	        			out.println("throw IllegalArgumentException");
 	        		}
@@ -554,7 +614,7 @@ public class SensorServerThread implements Runnable {
      * @return String[] filled with names of currently supported sensors.
      */
     public String[] getSupportedSensors() {
-    	String[] sensorList = new String[6]; // currently max. 6 possible!
+    	String[] sensorList = new String[7]; // currently max. 7 possible!
 		int sensorMax = 0;
 		if (mSensorSimulator.isSupportedAccelerometer()) {
 			sensorList[sensorMax] = ISensorSimulator.ACCELEROMETER;
@@ -580,6 +640,10 @@ public class SensorServerThread implements Runnable {
 			sensorList[sensorMax] = ISensorSimulator.LIGHT;
 			sensorMax++;
 		}
+	    if (mSensorSimulator.isSupportedProximity()) {
+	        sensorList[sensorMax] = ISensorSimulator.PROXIMITY;
+	        sensorMax++;
+	    }
 		String[] returnSensorList = new String[sensorMax];
 		for (int i=0; i<sensorMax; i++)
 			returnSensorList[i] = sensorList[i];

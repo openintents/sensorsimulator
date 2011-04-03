@@ -20,7 +20,8 @@ public interface ISensorSimulator {
 	static final String BARCODE_READER = "barcode reader";
 
 	static final String SHOW_ACCELERATION = "show acceleration";
-
+	static final String BINARY_PROXIMITY = "binary proximity";
+	
 	static final String AVERAGE_ORIENTATION = "average orientation";
 	static final String AVERAGE_ACCELEROMETER = "average accelerometer";
 	static final String AVERAGE_TEMPERATURE = "average temperature";
@@ -162,13 +163,18 @@ public interface ISensorSimulator {
     public double getDefaultUpdateRateLight();
     public double getCurrentUpdateRateLight();
     public boolean updateAverageLight();
-
+    public double[] getUpdateRatesProximity();
+    public double getDefaultUpdateRateProximity();
+    public double getCurrentUpdateRateProximity();
+    public boolean updateAverageProximity();
+    
     public void setCurrentUpdateRateAccelerometer(double value);
     public void setCurrentUpdateRateCompass(double value);
     public void setCurrentUpdateRateOrientation(double value);
     public void setCurrentUpdateRateThermometer(double value);
     public void setCurrentUpdateRateLight(double value);
-
+    public void setCurrentUpdateRateProximity(double value);
+    
     /*
      * Simulation Update
      */
@@ -181,7 +187,8 @@ public interface ISensorSimulator {
 	public void updateEmulatorOrientationRefresh();
 	public void updateEmulatorThermometerRefresh();
 	public void updateEmulatorLightRefresh();
-
+	public void updateEmulatorProximityRefresh();
+	
     /*
      * Accelerometer
      */
@@ -223,6 +230,11 @@ public interface ISensorSimulator {
     public float getLight();
 
     /*
+     * Proximity
+     */
+    public float getProximity();
+    
+    /*
      * Random Component
      */
     public double getRandomAccelerometer();
@@ -230,7 +242,8 @@ public interface ISensorSimulator {
     public double getRandomOrientation();
     public double getRandomTemperature();
     public double getRandomLight();
-
+    public double getRandomProximity();
+    
     /*
      * Real Sensor Bridge
      */

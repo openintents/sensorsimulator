@@ -32,7 +32,9 @@ public interface IMobilePanel {
 	public String getBarcode();
 	
 	public float getReadLight();
-
+	
+	public float getReadProximity();
+	
 	public void setYawDegree(double yawDegree);
 	public void setPitchDegree(double pitchDegree);
 	public void setRollDegree(double rollDegree);

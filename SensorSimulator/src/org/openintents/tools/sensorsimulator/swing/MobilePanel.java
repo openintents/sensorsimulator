@@ -96,6 +96,9 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 	/** Current read-out value of light. */
 	private float read_light;
 
+	/** Current read-out value of proximity. */
+    private float read_proximity;
+    
 	/** Duration (in milliseconds) between two updates.
 	 * This is the inverse of the update rate.
 	 */
@@ -148,6 +151,18 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 	 */
 	private long light_next_update;
 
+    /**
+     * Duration (in milliseconds) between two updates. This is the inverse of
+     * the update rate.
+     */
+    private long proximity_update_duration;
+
+    /**
+     * Time of next update required. The time is compared to
+     * System.currentTimeMillis().
+     */
+    private long proximity_next_update;
+    
 	/** Duration in milliseconds until user setting
 	 * changes are read out.
 	 */
@@ -221,6 +236,16 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 	 */
 	private boolean average_light;
 
+	/** Partial read-out value of proximity. */
+    private float partial_proximity;
+    /** Number of summands in partial sum for proximity. */
+    private int partial_proximity_n;
+    /**
+     * Whether to form the average over the last duration when reading out
+     * sensors. Alternative is to just take the current value.
+     */
+    private boolean average_proximity;
+    
 	/** Internal state value of accelerometer x-component.
 	 *
 	 * This value is updated regularly by updateSensorPhysics().
@@ -251,7 +276,10 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 
 	// light
 	private float light;
-
+    
+	// proximity
+    private float proximity;
+    
 	// orientation sensor raw data (in degree)
 	private double yawDegree;
 	private double pitchDegree;
@@ -746,6 +774,19 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 		} else {
 			light = 0;
 		}
+		
+	    // Proximity
+        if (mSensorSimulator.isEnabledProximity()) {
+            proximity = mSensorSimulator.getProximity();
+
+            // Add random component:
+            random = mSensorSimulator.getRandomProximity();
+            if (random > 0) {
+                proximity += getRandom(random);
+            }
+        } else {
+            proximity = 0;
+        }
 }
 
 	/**
@@ -792,6 +833,12 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 			partial_light_n++;
 		}
 
+	    if (average_proximity) {
+	        // Form the average
+	        partial_proximity += proximity;
+	        partial_proximity_n++;
+	    }
+	    
 		if (currentTime >= accel_next_update) {
 			// Update
 			accel_next_update += accel_update_duration;
@@ -956,6 +1003,30 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 			}
 
 		}
+		
+		if (currentTime >= proximity_next_update) {
+            // Update
+            proximity_next_update += proximity_update_duration;
+            if (proximity_next_update < currentTime) {
+                // Don't lag too much behind.
+                // If we are too slow, then we are too slow.
+                proximity_next_update = currentTime;
+            }
+
+            if (average_proximity) {
+                // form average
+                read_proximity = partial_proximity / partial_proximity_n;
+
+                // reset average
+                partial_proximity = 0;
+                partial_proximity_n = 0;
+
+            } else {
+                // Only take current value
+                read_proximity = proximity;
+            }
+
+        }
 	}
 
 	/**
@@ -1015,6 +1086,14 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 			} else {
 				light_update_duration = 0;
 			}
+			
+	         average_proximity = mSensorSimulator.updateAverageProximity();
+	         rate = mSensorSimulator.getCurrentUpdateRateProximity();
+	         if (rate != 0) {
+	             proximity_update_duration = (long) (1000. / rate);
+	         } else {
+	             proximity_update_duration = 0;
+	         }
 		}
 	}
 
@@ -1176,6 +1255,15 @@ public class MobilePanel extends JPanel implements IMobilePanel {
 	public float getReadLight() {
 		return read_light;
 	}
+	
+	/*
+     * (non-Javadoc)
+     * 
+     * @see org.openintents.tools.sensorsimulator.IMobilePanel#getReadProximity()
+     */
+    public float getReadProximity() {
+        return read_proximity;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.openintents.tools.sensorsimulator.IMobilePanel#setYawDegree(double)

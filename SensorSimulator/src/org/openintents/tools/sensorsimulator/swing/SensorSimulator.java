@@ -37,6 +37,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
@@ -46,6 +48,7 @@ import java.net.SocketException;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -69,6 +72,8 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.openintents.tools.sensorsimulator.FileData;
 import org.openintents.tools.sensorsimulator.IMobilePanel;
@@ -117,7 +122,9 @@ public class SensorSimulator extends JPanel
 	private long updateEmulatorThermometerTime;
 	private int updateEmulatorLightCount;
 	private long updateEmulatorLightTime;
-
+    private int updateEmulatorProximityCount;
+    private long updateEmulatorProximityTime;
+    
 	private int mouseMode;
 
     // Displays the mobile phone
@@ -194,6 +201,12 @@ public class SensorSimulator extends JPanel
 	/** Whether to form an average at each update */
 	private JCheckBox mUpdateAverageLight;
 
+	private JTextField mUpdateRatesProximityText;
+	private JTextField mDefaultUpdateRateProximityText;
+	private JTextField mCurrentUpdateRateProximityText;
+	/** Whether to form an average at each update */
+	private JCheckBox mUpdateAverageProximity;
+	    
 	private JTextField mUpdateText;
 	private JTextField mRefreshCountText;
 	private JLabel mRefreshSensorsLabel;
@@ -202,7 +215,8 @@ public class SensorSimulator extends JPanel
 	private JLabel mRefreshEmulatorOrientationLabel;
 	private JLabel mRefreshEmulatorThermometerLabel;
 	private JLabel mRefreshEmulatorLightLabel;
-
+	private JLabel mRefreshEmulatorProximityLabel;
+	
     // Accelerometer
 	private JTextField mGravityConstantText;
 	private JTextField mAccelerometerLimitText;
@@ -229,7 +243,15 @@ public class SensorSimulator extends JPanel
 
 	// Light
 	private JTextField mLightText;
-
+	
+    // Proximity
+    private JTextField mProximityText;
+    private JTextField mProximityRangeText;
+    private JCheckBox mBinaryProximity;
+    private JRadioButton mProximityNear;
+    private JRadioButton mProximityFar;
+    private ButtonGroup mProximityButtonGroup;
+    
     // Random contribution
 	private JTextField mRandomOrientationText;
 	private JTextField mRandomAccelerometerText;
@@ -541,6 +563,11 @@ public class SensorSimulator extends JPanel
         mSupportedLight.addItemListener(this);
         supportedSensorsPane.add(mSupportedLight);
 
+        mSupportedProximity = new JCheckBox(PROXIMITY);
+        mSupportedProximity.setSelected(false);
+        mSupportedProximity.addItemListener(this);
+        supportedSensorsPane.add(mSupportedProximity);
+        
         c2.gridy++;
         settingsPane.add(supportedSensorsPane,c2);
 
@@ -583,7 +610,12 @@ public class SensorSimulator extends JPanel
         mEnabledLight.setSelected(false);
         mEnabledLight.addItemListener(this);
         enabledSensorsPane.add(mEnabledLight);
-
+        
+        mEnabledProximity = new JCheckBox(PROXIMITY);
+        mEnabledProximity.setSelected(false);
+        mEnabledProximity.addItemListener(this);
+        enabledSensorsPane.add(mEnabledProximity);
+        
         c2.gridy++;
         settingsPane.add(enabledSensorsPane,c2);
 
@@ -855,7 +887,10 @@ public class SensorSimulator extends JPanel
         mUpdateAverageThermometer.setSelected(true);
         mUpdateAverageThermometer.addItemListener(this);
         updateFieldPane.add(mUpdateAverageThermometer, c3);
-
+        
+        c3.gridy++;
+        updateFieldPane.add(new JSeparator(SwingConstants.HORIZONTAL), c3);
+        
         // ------------------
         label = new JLabel("Light", JLabel.LEFT);
         c3.gridwidth = 1;
@@ -915,7 +950,70 @@ public class SensorSimulator extends JPanel
         mUpdateAverageLight.setSelected(true);
         mUpdateAverageLight.addItemListener(this);
         updateFieldPane.add(mUpdateAverageLight, c3);
+        
+        c3.gridy++;
+        updateFieldPane.add(new JSeparator(SwingConstants.HORIZONTAL), c3);
+        
+        // ------------------
+        label = new JLabel("Proximity", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        updateFieldPane.add(label, c3);
 
+        label = new JLabel("Update rates: ", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        updateFieldPane.add(label, c3);
+
+        mUpdateRatesProximityText = new JTextField(5);
+        mUpdateRatesProximityText.setText("1");
+        c3.gridx = 1;
+        updateFieldPane.add(mUpdateRatesProximityText, c3);
+
+        label = new JLabel("1/s", JLabel.LEFT);
+        c3.gridx = 2;
+        updateFieldPane.add(label, c3);
+
+        label = new JLabel("Default rate: ", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        updateFieldPane.add(label, c3);
+
+        mDefaultUpdateRateProximityText = new JTextField(5);
+        mDefaultUpdateRateProximityText.setText("1");
+        c3.gridx = 1;
+        updateFieldPane.add(mDefaultUpdateRateProximityText, c3);
+
+        label = new JLabel("1/s", JLabel.LEFT);
+        c3.gridx = 2;
+        updateFieldPane.add(label, c3);
+
+        label = new JLabel("Current rate: ", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        updateFieldPane.add(label, c3);
+
+        mCurrentUpdateRateProximityText = new JTextField(5);
+        mCurrentUpdateRateProximityText.setText("1");
+        c3.gridx = 1;
+        updateFieldPane.add(mCurrentUpdateRateProximityText, c3);
+
+        label = new JLabel("1/s", JLabel.LEFT);
+        c3.gridx = 2;
+        updateFieldPane.add(label, c3);
+
+        c3.gridwidth = 3;
+        c3.gridx = 0;
+        c3.gridy++;
+        mUpdateAverageProximity = new JCheckBox(AVERAGE_PROXIMITY);
+        mUpdateAverageProximity.setSelected(true);
+        mUpdateAverageProximity.addItemListener(this);
+        updateFieldPane.add(mUpdateAverageProximity, c3);       
+        
         // Update panel ends
 
         // Add update panel to settings
@@ -1038,11 +1136,21 @@ public class SensorSimulator extends JPanel
         c3.gridx = 0;
         c3.gridy++;
         updateSimulationFieldPane.add(label, c3);
-
+        
         mRefreshEmulatorLightLabel = new JLabel("-", JLabel.LEFT);
         c3.gridx = 1;
         updateSimulationFieldPane.add(mRefreshEmulatorLightLabel, c3);
 
+        label = new JLabel(" * Proximity: ", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        updateSimulationFieldPane.add(label, c3);
+        
+        mRefreshEmulatorProximityLabel = new JLabel("-", JLabel.LEFT);
+        c3.gridx = 1;
+        updateSimulationFieldPane.add(mRefreshEmulatorProximityLabel, c3);
+        
         // Update panel ends
 
         // Add update panel to settings
@@ -1418,7 +1526,140 @@ public class SensorSimulator extends JPanel
         c2.gridwidth = 1;
         c2.gridy++;
         settingsPane.add(lightFieldPane, c2);
+        
+        /*
+         * Settings for the proximity in centimetres:
+         * Value FAR corresponds to the maximum value of the proximity.
+         * Value NEAR corresponds to any value less than FAR.
+         */
+        JPanel proximityFieldPane = new JPanel(new GridBagLayout());
+        c3 = new GridBagConstraints();
+        c3.fill = GridBagConstraints.HORIZONTAL;
+        c3.anchor = GridBagConstraints.NORTHWEST;
+        c3.gridwidth = 3;
+        c3.gridx = 0;
+        c3.gridy = 0;
 
+        proximityFieldPane.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Proximity"),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+
+        label = new JLabel("Proximity: ", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        proximityFieldPane.add(label, c3);
+
+        mProximityText = new JTextField(5);
+        mProximityText.setText("10");
+        c3.gridx = 1;
+        mProximityText.setEnabled(false);
+        proximityFieldPane.add(mProximityText, c3);
+
+        label = new JLabel(" cm", JLabel.LEFT);
+        c3.gridx = 2;
+        proximityFieldPane.add(label, c3);
+        
+        label = new JLabel("Maximum range: ", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        proximityFieldPane.add(label, c3);
+
+        mProximityRangeText = new JTextField(5);
+        mProximityRangeText.setText("10");
+        
+        /* On key press, update the proximity text to reflect the 
+         * value of the maximum range if the FAR option is selected, 
+         * otherwise set the proximity to any random number less than the
+         * maximum range.
+         */
+        mProximityRangeText.getDocument().addDocumentListener(new DocumentListener() {
+
+            public void changedUpdate(DocumentEvent arg0) {
+                updateProximityText();
+            }
+
+            public void insertUpdate(DocumentEvent arg0) {
+                updateProximityText();
+            }
+
+            public void removeUpdate(DocumentEvent arg0) {
+                updateProximityText();              
+            }        
+            
+            public void updateProximityText() {
+                if (mProximityFar.isSelected()) {
+                    mProximityText.setText(mProximityRangeText.getText());             
+                } else {
+                    Random r = new Random();
+                    int currentMaximumRange = Integer.parseInt(mProximityRangeText.getText());
+                    int reduction = r.nextInt(currentMaximumRange);
+                    int randomNearProximity = currentMaximumRange - reduction;
+                    mProximityText.setText(Integer.toString(randomNearProximity));
+                }
+            }
+  
+        });
+        
+        c3.gridx = 1;
+        proximityFieldPane.add(mProximityRangeText, c3);
+
+        label = new JLabel(" cm", JLabel.LEFT);
+        c3.gridx = 2;
+        proximityFieldPane.add(label, c3);
+        
+        mBinaryProximity = new JCheckBox(BINARY_PROXIMITY);
+        mBinaryProximity.setSelected(true);
+        mBinaryProximity.addItemListener(this);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        proximityFieldPane.add(mBinaryProximity, c3);
+       
+        mProximityNear = new JRadioButton("NEAR", false);
+        mProximityFar = new JRadioButton("FAR", true);
+        mProximityButtonGroup = new ButtonGroup();
+        mProximityButtonGroup.add(mProximityFar);
+        mProximityButtonGroup.add(mProximityNear);
+        
+        ActionListener proximityOptions = new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                String selectedOption = mProximityButtonGroup.getSelection().getActionCommand();
+                if (selectedOption.equalsIgnoreCase("FAR")) {
+                    mProximityText.setText(mProximityRangeText.getText());
+                } else if (selectedOption.equalsIgnoreCase("NEAR")) {
+                    Random r = new Random();
+                    int currentMaximumRange = Integer.parseInt(mProximityRangeText.getText());
+                    int reduction = r.nextInt(currentMaximumRange);
+                    int randomNearProximity = currentMaximumRange - reduction;
+                    mProximityText.setText(Integer.toString(randomNearProximity));                    
+                }
+            }         
+        };
+        
+        mProximityNear.setActionCommand("NEAR");
+        mProximityFar.setActionCommand("FAR");
+        
+        mProximityNear.addActionListener(proximityOptions);
+        mProximityFar.addActionListener(proximityOptions);
+        
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        
+        proximityFieldPane.add(mProximityNear, c3);
+        c3.gridx++;
+        proximityFieldPane.add(mProximityFar, c3);
+        
+        // Proximity panel ends
+
+        // Add proximity panel to settings
+        c2.gridx = 0;
+        c2.gridwidth = 1;
+        c2.gridy++;
+        settingsPane.add(proximityFieldPane, c2);
+        
         ///////////////////////////////
         // Random contribution to sensor values
 
@@ -1509,7 +1750,22 @@ public class SensorSimulator extends JPanel
         label = new JLabel(" lux", JLabel.LEFT);
         c3.gridx = 2;
         randomFieldPane.add(label, c3);
+        
+        label = new JLabel("Proximity: ", JLabel.LEFT);
+        c3.gridwidth = 1;
+        c3.gridx = 0;
+        c3.gridy++;
+        randomFieldPane.add(label, c3);
 
+        mRandomProximityText = new JTextField(5);
+        mRandomProximityText.setText("0");
+        c3.gridx = 1;
+        randomFieldPane.add(mRandomProximityText, c3);
+
+        label = new JLabel(" cm", JLabel.LEFT);
+        c3.gridx = 2;
+        randomFieldPane.add(label, c3);
+        
         // Random field panel ends
 
         // Add random field panel to settings
@@ -1970,7 +2226,24 @@ public class SensorSimulator extends JPanel
         	// changes
         	mobile.doRepaint();
         }
-
+        
+        if (source == mBinaryProximity) {
+            mProximityText.setText(mProximityRangeText.getText());
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                mProximityText.setEnabled(false);
+                mProximityRangeText.setEnabled(true);
+                mProximityNear.setEnabled(true);
+                mProximityNear.setSelected(true);
+                mProximityFar.setEnabled(true);
+                mProximityFar.setSelected(true);
+            } else if (e.getStateChange() == ItemEvent.DESELECTED) {
+                mProximityText.setEnabled(true);
+                mProximityRangeText.setEnabled(false);  
+                mProximityNear.setEnabled(false);
+                mProximityFar.setEnabled(false);
+            }
+        }
+        
         //add for battery
         if (source == batteryPresence && e.getStateChange() == ItemEvent.SELECTED){
         	if(mTelnetServer!=null){
@@ -2194,6 +2467,23 @@ public class SensorSimulator extends JPanel
     		updateEmulatorLightTime = newtime;
     	}
     }
+   
+    public void updateEmulatorProximityRefresh() {
+        updateEmulatorProximityCount++;
+        long maxcount = (long) getSafeDouble(mRefreshCountText);
+        if (maxcount >= 0 && updateEmulatorProximityCount >= maxcount) {
+            long newtime = System.currentTimeMillis();
+            double ms = (double) (newtime - updateEmulatorProximityTime)
+            / ((double) maxcount);
+
+            DecimalFormat mf = new DecimalFormat("#0.0");
+
+            mRefreshEmulatorProximityLabel.setText(mf.format(ms) + " ms");
+
+            updateEmulatorProximityCount = 0;
+            updateEmulatorProximityTime = newtime;
+        }
+    }
     
     /**
      * This method is used to show currently enabled sensor values in info pane.
@@ -2269,7 +2559,17 @@ public class SensorSimulator extends JPanel
 			}
 			data += "\n";
 		}
-
+		
+        if (mSupportedProximity.isSelected()) {
+            data += PROXIMITY + ": ";
+            if (mEnabledProximity.isSelected()) {
+                data += mf.format(mobile.getReadProximity());
+            } else {
+                data += DISABLED;
+            }
+            data += "\n";
+        }
+        
 		// Output to textArea:
 		textAreaSensorData.setText(data);
     }
@@ -2829,6 +3129,22 @@ public class SensorSimulator extends JPanel
 		return mUpdateAverageLight.isSelected();
 	}
 
+    public double[] getUpdateRatesProximity() {
+        return getSafeDoubleList(mUpdateRatesProximityText);
+    }
+
+    public double getDefaultUpdateRateProximity() {
+        return getSafeDouble(mDefaultUpdateRateProximityText);
+    }
+
+    public double getCurrentUpdateRateProximity() {
+        return getSafeDouble(mCurrentUpdateRateProximityText, 0);
+    }
+
+    public boolean updateAverageProximity() {
+        return mUpdateAverageProximity.isSelected();
+    }
+    
 	public void setCurrentUpdateRateAccelerometer(double value) {
 		mCurrentUpdateRateAccelerometerText.setText(Double.toString(value));
 	}
@@ -2849,6 +3165,10 @@ public class SensorSimulator extends JPanel
 		mCurrentUpdateRateLightText.setText(Double.toString(value));
 	}
 
+	public void setCurrentUpdateRateProximity(double value) {
+	    mCurrentUpdateRateProximityText.setText(Double.toString(value));
+	}
+	   
 	public double getUpdateSensors() {
 		return getSafeDouble(mUpdateText);
 	}
@@ -2912,7 +3232,11 @@ public class SensorSimulator extends JPanel
 	public float getLight() {
 		return getSafeFloat(mLightText);
 	}
-
+    
+	public float getProximity() {
+        return getSafeFloat(mProximityText);
+    }
+	
 	public double getRandomAccelerometer() {
 		return getSafeDouble(mRandomAccelerometerText);
 	}
@@ -2932,7 +3256,11 @@ public class SensorSimulator extends JPanel
 	public double getRandomLight() {
 		return getSafeDouble(mRandomLightText);
 	}
-
+    
+	public double getRandomProximity() {
+        return getSafeDouble(mRandomProximityText);
+    }
+    
 	public boolean useRealDeviceThinkpad() {
 		return mRealDeviceThinkpad.isSelected();
 	}
