@@ -29,11 +29,12 @@ It transmits the simulated sensor data to an Android emulator.
 
 ---------------------------------------------------------
 release: 1.1.0-rc2?
-date: 2011-01-05
+date: 2011-?
 
 - fix crashing - issue 77 (patch by Emaad Ahmed Manzoor)
 - add light sensor support (patch by Elena Burceanu)
 - add Record and Playback buttons (patch by Prithvi Raj)
+- add proximity sensor (patch by Emaad Ahmed Manzoor)
 
 ---------------------------------------------------------
 release: 1.1.0-rc1
