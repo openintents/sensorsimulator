@@ -35,6 +35,7 @@ import java.net.SocketException;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Random;
 
 import javax.swing.Timer;
 
@@ -59,6 +60,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
+import org.openintents.tools.sensorsimulator.FileData;
 import org.openintents.tools.sensorsimulator.IMobilePanel;
 import org.openintents.tools.sensorsimulator.ISensorSimulator;
 import org.openintents.tools.sensorsimulator.SensorServer;
@@ -99,7 +101,10 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 	private long updateEmulatorOrientationTime;
 	private int updateEmulatorThermometerCount;
 	private long updateEmulatorThermometerTime;
-
+    private int updateEmulatorLightCount;
+    private long updateEmulatorLightTime;
+    private int updateEmulatorProximityCount;
+    private long updateEmulatorProximityTime;
 
 	private int mouseMode;
 
@@ -195,13 +200,37 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
     /** Whether to form an average at each update */
 //	private Button mUpdateAverageThermometer;
 
-	private Text mUpdateText;
-	private Text mRefreshCountText;
+    private double[] mUpdateRatesLight;
+    private double mDefaultUpdateRateLight;
+    private double mCurrentUpdateRateLight;
+    private boolean mUpdateAverageLight;
+//  private Text mUpdateRatesLightText;
+//  private Text mDefaultUpdateRateLightText;
+    private Text mCurrentUpdateRateLightText;
+    /** Whether to form an average at each update */
+//  private Button mUpdateAverageLight;
+
+    private double[] mUpdateRatesProximity;
+    private double mDefaultUpdateRateProximity;
+    private double mCurrentUpdateRateProximity;
+    private boolean mUpdateAverageProximity;
+//  private Text mUpdateRatesProximityText;
+//  private Text mDefaultUpdateRateProximityText;
+    private Text mCurrentUpdateRateProximityText;
+    /** Whether to form an average at each update */
+//  private Button mUpdateAverageProximity;
+
+//	private Text mUpdateText;
+	private double mUpdateSensors;
+//	private Text mRefreshCountText;
+	private double mRefreshAfter;
 	private Label mRefreshSensorsLabel;
 	private Label mRefreshEmulatorAccelerometerLabel;
 	private Label mRefreshEmulatorCompassLabel;
 	private Label mRefreshEmulatorOrientationLabel;
 	private Label mRefreshEmulatorThermometerLabel;
+	private Label mRefreshEmulatorLightLabel;
+	private Label mRefreshEmulatorProximityLabel;
 
     // Accelerometer
 	private Text mGravityConstantText;
@@ -226,15 +255,25 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 
     //Barcode
 	private Text mBarcodeReaderText;
+	
+	// Light
+	private Text mLightText;
+	
+	// Proximity
+	private Text mProximityText;
+	private Text mProximityRangeText;
+	private Button mBinaryProximity;
+	private Button mProximityNear;
+	private Button mProximityFar;
 
     // Random contribution
 	private Text mRandomOrientationText;
 	private Text mRandomAccelerometerText;
 	private Text mRandomTemperatureText;
 	private Text mRandomMagneticFieldText;
-//	private Text mRandomLightText;
-//	private Text mRandomProximityText;
-//	private Text mRandomTricorderText;
+	private Text mRandomLightText;
+	private Text mRandomProximityText;
+	private Text mRandomTricorderText;
 
     // Real device bridge
 	private Button mRealDeviceThinkpad;
@@ -242,6 +281,10 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 	private Text mRealDevicePath;
 	private Label mRealDeviceOutputLabel;
 
+	//Replay
+	private Button replayRecord;
+	private Button replayPlayback;
+	
     //TelnetSimulations variables
 	private Scale batterySlider;
 
@@ -272,11 +315,10 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 	private TelnetServer mTelnetServer;
 
 	private WiiMoteData wiiMoteData = new WiiMoteData();
-
+	private FileData replayData = new FileData();
 
 	/**
 	 * @param parent
-	 * @param style
 	 */
 	public SensorSimulatorSwt(Composite parent) {
 		super(parent, SWT.NONE);
@@ -362,9 +404,9 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		mobile = mobileComposite;
 
 		Button yawPitchButton = createButton(content, SWT.RADIO, "yaw && pitch");
-		yawPitchButton.setSelection(true);
 		yawPitchButton.setData(ACTION_COMMAND, yawPitch);
 		yawPitchButton.addListener(SWT.Selection, this);
+		yawPitchButton.setSelection(true);
 		mouseMode = mouseYawPitch;
 
 		Button rollPitchButton = createButton(content, SWT.RADIO, "roll && pitch");
@@ -409,7 +451,7 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 
 		textAreaSensorData = createText(content, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL, "");
 		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.heightHint = 100;
+		gd.heightHint = 150;
 		gd.horizontalSpan = 4;
 		textAreaSensorData.setLayoutData(gd);
 
@@ -436,16 +478,19 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		yawSlider = createScale(content, SWT.HORIZONTAL, 360, 160);	// actually, -180 ~ 180 and initial value is -20.
 		yawSlider.addListener(SWT.Selection, this);
 		yawSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		mobile.setYawDegree(yawSlider.getSelection() - 180); // initial value is -20
 
 		createLabel(content, SWT.NONE, "Pitch");
 		pitchSlider = createScale(content, SWT.HORIZONTAL, 360, 120);	// actually, -180 ~ 180 and initial value is -60.
 		pitchSlider.addListener(SWT.Selection, this);
 		pitchSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		mobile.setPitchDegree(pitchSlider.getSelection() - 180); // initial value is -60
 
 		createLabel(content, SWT.NONE, "Roll");
 		rollSlider = createScale(content, SWT.HORIZONTAL, 360, 180);	// actually, -180 ~ 180 and initial value is 0.
 		rollSlider.addListener(SWT.Selection, this);
 		rollSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        mobile.setRollDegree(rollSlider.getSelection() - 180); // initial value is 0
 
 		createLabel(content, SWT.NONE, "");
 		createTickLabels(content, -180, 180);
@@ -479,8 +524,11 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		createMagneticFieldGroup(settingsComposite);
 		createTemperatureGroup(settingsComposite);
 		createBarcodeGroup(settingsComposite);
+		createLightGroup(settingsComposite);
+		createProximityGroup(settingsComposite);
 		createRandomComponentGroup(settingsComposite);
 		createRealSensorBridgetGroup(settingsComposite);
+		createReplayGroup(settingsComposite);
 
 		settingsComposite.setSize(settingsComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 //		settingsComposite.layout();
@@ -496,44 +544,67 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		group.setLayout(new GridLayout());
 
 		Button mSupportedAccelerometer = createButton(group, SWT.CHECK, ACCELEROMETER);
-		mSupportedAccelerometer.setSelection(true);
 		mSupportedAccelerometer.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				isSupportedAccelerometer = ((Button)e.widget).getSelection();
 			}
 		});
+		mSupportedAccelerometer.setSelection(true);
+		isSupportedAccelerometer = true;
 
 		Button mSupportedMagneticField = createButton(group, SWT.CHECK, MAGNETIC_FIELD);
-		mSupportedMagneticField.setSelection(true);
 		mSupportedMagneticField.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				isSupportedMagneticField = ((Button)e.widget).getSelection();
 			}
 		});
+		mSupportedMagneticField.setSelection(true);
+		isSupportedMagneticField = true;
 
 		Button mSupportedOrientation = createButton(group, SWT.CHECK, ORIENTATION);
-		mSupportedOrientation.setSelection(true);
 		mSupportedOrientation.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				isSupportedOrientation = ((Button)e.widget).getSelection();
 			}
 		});
+		mSupportedOrientation.setSelection(true);
+		isSupportedOrientation = true;
 
 		Button mSupportedTemperature = createButton(group, SWT.CHECK, TEMPERATURE);
-		mSupportedTemperature.setSelection(false);
 		mSupportedTemperature.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				isSupportedTemperature = ((Button)e.widget).getSelection();
 			}
 		});
+		mSupportedTemperature.setSelection(false);
+		isSupportedTemperature = false;
 
 		Button mSupportedBarcodeReader = createButton(group, SWT.CHECK, BARCODE_READER);
-		mSupportedBarcodeReader.setSelection(false);
 		mSupportedBarcodeReader.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				isSupportedBarcodeReader = ((Button)e.widget).getSelection();
 			}
 		});
+		mSupportedBarcodeReader.setSelection(false);
+		isSupportedBarcodeReader = false;
+
+        Button mSupportedLight = createButton(group, SWT.CHECK, LIGHT);
+        mSupportedLight.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                isSupportedLight = ((Button)e.widget).getSelection();
+            }
+        });
+        mSupportedLight.setSelection(false);
+        isSupportedLight = false;
+
+        Button mSupportedProximity = createButton(group, SWT.CHECK, PROXIMITY);
+        mSupportedProximity.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                isSupportedProximity = ((Button)e.widget).getSelection();
+            }
+        });
+        mSupportedProximity.setSelection(false);
+        isSupportedProximity = false;
 	}
 
 	/**
@@ -544,44 +615,67 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		group.setLayout(new GridLayout());
 
 		mEnabledAccelerometer = createButton(group, SWT.CHECK, ACCELEROMETER);
-		mEnabledAccelerometer.setSelection(true);
 		mEnabledAccelerometer.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				isEnabledAccelerometer = ((Button)e.widget).getSelection();
 			}
 		});
+		mEnabledAccelerometer.setSelection(true);
+		isEnabledAccelerometer = true;
 
 		mEnabledMagneticField = createButton(group, SWT.CHECK, MAGNETIC_FIELD);
-		mEnabledMagneticField.setSelection(true);
 		mEnabledMagneticField.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				isEnabledMagneticField = ((Button)e.widget).getSelection();
 			}
 		});
+		mEnabledMagneticField.setSelection(true);
+		isEnabledMagneticField = true;
 
 		mEnabledOrientation = createButton(group, SWT.CHECK, ORIENTATION);
-		mEnabledOrientation.setSelection(true);
 		mEnabledOrientation.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				isEnabledOrientation = ((Button)e.widget).getSelection();
 			}
 		});
+		mEnabledOrientation.setSelection(true);
+		isEnabledOrientation = true;
 
 		mEnabledTemperature = createButton(group, SWT.CHECK, TEMPERATURE);
-		mEnabledTemperature.setSelection(false);
 		mEnabledTemperature.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				isEnabledTemperature = ((Button)e.widget).getSelection();
 			}
 		});
+		mEnabledTemperature.setSelection(false);
+		isEnabledTemperature = false;
 
 		mEnabledBarcodeReader = createButton(group, SWT.CHECK, BARCODE_READER);
-		mEnabledBarcodeReader.setSelection(false);
 		mEnabledBarcodeReader.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				isEnabledBarcodeReader = ((Button)e.widget).getSelection();
 			}
 		});
+		mEnabledBarcodeReader.setSelection(false);
+		isEnabledBarcodeReader = false;
+
+        mEnabledLight = createButton(group, SWT.CHECK, LIGHT);
+        mEnabledLight.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                isEnabledLight = ((Button)e.widget).getSelection();
+            }
+        });
+        mEnabledLight.setSelection(false);
+        isEnabledLight = false;
+
+        mEnabledProximity = createButton(group, SWT.CHECK, PROXIMITY);
+        mEnabledProximity.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                isEnabledProximity = ((Button)e.widget).getSelection();
+            }
+        });
+        mEnabledProximity.setSelection(false);
+        isEnabledProximity = false;
 	}
 
 	/**
@@ -604,41 +698,45 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		label.setLayoutData(gd);
 
 		createLabel(group, SWT.NONE, "Update rates: ");
-		Text mUpdateRatesAccelerometerText = createText(group, SWT.BORDER, "1, 10, 50");
+		Text mUpdateRatesAccelerometerText = createText(group, SWT.BORDER);
 		mUpdateRatesAccelerometerText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				mUpdateRatesAccelerometer = getSafeDoubleList((Text) e.widget);
 			}
 		});
+		mUpdateRatesAccelerometerText.setText("1, 10, 50");
 		createLabel(group, SWT.NONE, "1/s");
 
 
 		createLabel(group, SWT.NONE, "Default rates: ");
-		Text mDefaultUpdateRateAccelerometerText = createText(group, SWT.BORDER, "50");
+		Text mDefaultUpdateRateAccelerometerText = createText(group, SWT.BORDER);
 		mDefaultUpdateRateAccelerometerText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				mDefaultUpdateRateAccelerometer = getSafeDouble((Text) e.widget);
 			}
 		});
+		mDefaultUpdateRateAccelerometerText.setText("50");
 		createLabel(group, SWT.NONE, "1/s");
 
 
 		createLabel(group, SWT.NONE, "Current rates: ");
-		mCurrentUpdateRateAccelerometerText = createText(group, SWT.BORDER, "50");
+		mCurrentUpdateRateAccelerometerText = createText(group, SWT.BORDER);
 		mCurrentUpdateRateAccelerometerText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				mCurrentUpdateRateAccelerometer = getSafeDouble((Text) e.widget, 0);
 			}
 		});
+		mCurrentUpdateRateAccelerometerText.setText("50");
 		createLabel(group, SWT.NONE, "1/s");
 
 		Button mUpdateAverageAccelerometerButton = createButton(group, SWT.CHECK, AVERAGE_ACCELEROMETER);
-		mUpdateAverageAccelerometerButton.setSelection(true);
 		mUpdateAverageAccelerometerButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				mUpdateAverageAccelerometer = ((Button)e.widget).getSelection();
 			}
 		});
+		mUpdateAverageAccelerometerButton.setSelection(true);
+		mUpdateAverageAccelerometer = true;
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 3;
 		mUpdateAverageAccelerometerButton.setLayoutData(gd);
@@ -654,41 +752,45 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		label.setLayoutData(gd);
 
 		createLabel(group, SWT.NONE, "Update rates: ");
-		Text mUpdateRatesCompassText = createText(group, SWT.BORDER, "1, 10");
+		Text mUpdateRatesCompassText = createText(group, SWT.BORDER);
 		mUpdateRatesCompassText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				mUpdateRatesCompass = getSafeDoubleList((Text) e.widget);
 			}
 		});
+		mUpdateRatesCompassText.setText("1, 10");
 		createLabel(group, SWT.NONE, "1/s");
 
 
 		createLabel(group, SWT.NONE, "Default rates: ");
-		Text mDefaultUpdateRateCompassText = createText(group, SWT.BORDER, "10");
+		Text mDefaultUpdateRateCompassText = createText(group, SWT.BORDER);
 		mDefaultUpdateRateCompassText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				mDefaultUpdateRateCompass = getSafeDouble((Text) e.widget);
 			}
 		});
+		mDefaultUpdateRateCompassText.setText("10");
 		createLabel(group, SWT.NONE, "1/s");
 
 
 		createLabel(group, SWT.NONE, "Current rates: ");
-		mCurrentUpdateRateCompassText = createText(group, SWT.BORDER, "10");
+		mCurrentUpdateRateCompassText = createText(group, SWT.BORDER);
 		mCurrentUpdateRateCompassText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				mCurrentUpdateRateCompass = getSafeDouble((Text) e.widget, 0);
 			}
 		});
+		mCurrentUpdateRateCompassText.setText("10");
 		createLabel(group, SWT.NONE, "1/s");
 
 		Button mUpdateAverageCompassButton = createButton(group, SWT.CHECK, AVERAGE_MAGNETIC_FIELD);
-		mUpdateAverageCompassButton.setSelection(true);
 		mUpdateAverageCompassButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				mUpdateAverageAccelerometer = ((Button)e.widget).getSelection();
+			    mUpdateAverageCompass = ((Button)e.widget).getSelection();
 			}
 		});
+		mUpdateAverageCompassButton.setSelection(true);
+		mUpdateAverageCompass = true;
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 3;
 		mUpdateAverageCompassButton.setLayoutData(gd);
@@ -704,41 +806,45 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		label.setLayoutData(gd);
 
 		createLabel(group, SWT.NONE, "Update rates: ");
-		Text mUpdateRatesOrientationText = createText(group, SWT.BORDER, "1, 10, 50");
+		Text mUpdateRatesOrientationText = createText(group, SWT.BORDER);
 		mUpdateRatesOrientationText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				mUpdateRatesOrientation = getSafeDoubleList((Text) e.widget);
 			}
 		});
+		mUpdateRatesOrientationText.setText("1, 10, 50");
 		createLabel(group, SWT.NONE, "1/s");
 
 
 		createLabel(group, SWT.NONE, "Default rates: ");
-		Text mDefaultUpdateRateOrientationText = createText(group, SWT.BORDER, "50");
+		Text mDefaultUpdateRateOrientationText = createText(group, SWT.BORDER);
 		mDefaultUpdateRateOrientationText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				mDefaultUpdateRateOrientation = getSafeDouble((Text) e.widget);
 			}
 		});
+		mDefaultUpdateRateOrientationText.setText("50");
 		createLabel(group, SWT.NONE, "1/s");
 
 
 		createLabel(group, SWT.NONE, "Current rates: ");
-		mCurrentUpdateRateOrientationText = createText(group, SWT.BORDER, "50");
+		mCurrentUpdateRateOrientationText = createText(group, SWT.BORDER);
 		mCurrentUpdateRateOrientationText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				mCurrentUpdateRateOrientation = getSafeDouble((Text) e.widget, 0);
 			}
 		});
+		mCurrentUpdateRateOrientationText.setText("50");
 		createLabel(group, SWT.NONE, "1/s");
 
 		Button mUpdateAverageOrientationButton = createButton(group, SWT.CHECK, AVERAGE_ORIENTATION);
-		mUpdateAverageOrientationButton.setSelection(true);
 		mUpdateAverageOrientationButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				mUpdateAverageAccelerometer = ((Button)e.widget).getSelection();
+				mUpdateAverageOrientation = ((Button)e.widget).getSelection();
 			}
 		});
+		mUpdateAverageOrientationButton.setSelection(true);
+		mUpdateAverageOrientation = true;
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 3;
 		mUpdateAverageOrientationButton.setLayoutData(gd);
@@ -754,45 +860,156 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		label.setLayoutData(gd);
 
 		createLabel(group, SWT.NONE, "Update rates: ");
-		Text mUpdateRatesThermometerText = createText(group, SWT.BORDER, "0.1, 1");
+		Text mUpdateRatesThermometerText = createText(group, SWT.BORDER);
 		mUpdateRatesThermometerText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				mUpdateRatesThermometer = getSafeDoubleList((Text) e.widget);
 			}
 		});
+		mUpdateRatesThermometerText.setText("0.1, 1");
 		createLabel(group, SWT.NONE, "1/s");
 
 
 		createLabel(group, SWT.NONE, "Default rates: ");
-		Text mDefaultUpdateRateThermometerText = createText(group, SWT.BORDER, "1");
+		Text mDefaultUpdateRateThermometerText = createText(group, SWT.BORDER);
 		mDefaultUpdateRateThermometerText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				mDefaultUpdateRateThermometer = getSafeDouble((Text) e.widget);
 			}
 		});
+		mDefaultUpdateRateThermometerText.setText("1");
 		createLabel(group, SWT.NONE, "1/s");
 
 
 		createLabel(group, SWT.NONE, "Current rates: ");
-		mCurrentUpdateRateThermometerText = createText(group, SWT.BORDER, "1");
+		mCurrentUpdateRateThermometerText = createText(group, SWT.BORDER);
 		mCurrentUpdateRateThermometerText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				mCurrentUpdateRateThermometer = getSafeDouble((Text) e.widget, 0);
 			}
 		});
+		mCurrentUpdateRateThermometerText.setText("1");
 		createLabel(group, SWT.NONE, "1/s");
 
 		Button mUpdateAverageThermometerButton = createButton(group, SWT.CHECK, AVERAGE_TEMPERATURE);
-		mUpdateAverageThermometerButton.setSelection(true);
 		mUpdateAverageThermometerButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				mUpdateAverageAccelerometer = ((Button)e.widget).getSelection();
+				mUpdateAverageThermometer = ((Button)e.widget).getSelection();
 			}
 		});
+		mUpdateAverageThermometerButton.setSelection(true);
+		mUpdateAverageThermometer = true;
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 3;
 		mUpdateAverageThermometerButton.setLayoutData(gd);
 
+
+        /*
+         * Light
+         */
+
+        label = createLabel(group, SWT.NONE, "Light");
+        gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = 3;
+        label.setLayoutData(gd);
+
+        createLabel(group, SWT.NONE, "Update rates: ");
+        Text mUpdateRatesLightText = createText(group, SWT.BORDER);
+        mUpdateRatesLightText.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                mUpdateRatesLight = getSafeDoubleList((Text) e.widget);
+            }
+        });
+        mUpdateRatesLightText.setText("1");
+        createLabel(group, SWT.NONE, "1/s");
+
+
+        createLabel(group, SWT.NONE, "Default rates: ");
+        Text mDefaultUpdateRateLightText = createText(group, SWT.BORDER);
+        mDefaultUpdateRateLightText.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                mDefaultUpdateRateLight = getSafeDouble((Text) e.widget);
+            }
+        });
+        mDefaultUpdateRateLightText.setText("1");
+        createLabel(group, SWT.NONE, "1/s");
+
+
+        createLabel(group, SWT.NONE, "Current rates: ");
+        mCurrentUpdateRateLightText = createText(group, SWT.BORDER);
+        mCurrentUpdateRateLightText.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                mCurrentUpdateRateLight = getSafeDouble((Text) e.widget, 0);
+            }
+        });
+        mCurrentUpdateRateLightText.setText("1");
+        createLabel(group, SWT.NONE, "1/s");
+
+        Button mUpdateAverageLightButton = createButton(group, SWT.CHECK, AVERAGE_LIGHT);
+        mUpdateAverageLightButton.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                mUpdateAverageLight = ((Button)e.widget).getSelection();
+            }
+        });
+        mUpdateAverageLightButton.setSelection(true);
+        mUpdateAverageLight = true;
+        gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = 3;
+        mUpdateAverageLightButton.setLayoutData(gd);
+
+
+        /*
+         * Proximity
+         */
+
+        label = createLabel(group, SWT.NONE, "Proximity");
+        gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = 3;
+        label.setLayoutData(gd);
+
+        createLabel(group, SWT.NONE, "Update rates: ");
+        Text mUpdateRatesProximityText = createText(group, SWT.BORDER);
+        mUpdateRatesProximityText.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                mUpdateRatesProximity = getSafeDoubleList((Text) e.widget);
+            }
+        });
+        mUpdateRatesProximityText.setText("1");
+        createLabel(group, SWT.NONE, "1/s");
+
+
+        createLabel(group, SWT.NONE, "Default rates: ");
+        Text mDefaultUpdateRateProximityText = createText(group, SWT.BORDER);
+        mDefaultUpdateRateProximityText.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                mDefaultUpdateRateProximity = getSafeDouble((Text) e.widget);
+            }
+        });
+        mDefaultUpdateRateProximityText.setText("1");
+        createLabel(group, SWT.NONE, "1/s");
+
+
+        createLabel(group, SWT.NONE, "Current rates: ");
+        mCurrentUpdateRateProximityText = createText(group, SWT.BORDER);
+        mCurrentUpdateRateProximityText.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                mCurrentUpdateRateProximity = getSafeDouble((Text) e.widget, 0);
+            }
+        });
+        mCurrentUpdateRateProximityText.setText("1");
+        createLabel(group, SWT.NONE, "1/s");
+
+        Button mUpdateAverageProximityButton = createButton(group, SWT.CHECK, AVERAGE_PROXIMITY);
+        mUpdateAverageProximityButton.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                mUpdateAverageProximity = ((Button)e.widget).getSelection();
+            }
+        });
+        mUpdateAverageProximityButton.setSelection(true);
+        mUpdateAverageProximity = true;
+        gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = 3;
+        mUpdateAverageProximityButton.setLayoutData(gd);
 	}
 
 	/**
@@ -805,12 +1022,25 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		GridData gd;
 
 		createLabel(group, SWT.NONE, "Update sensors: ");
-		mUpdateText = createText(group, SWT.BORDER, "10");
+		final Text updateText = createText(group, SWT.BORDER, "10");
+		updateText.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                mUpdateSensors = getSafeDouble(updateText);
+            }
+        });
+		mUpdateSensors = 10;
 		createLabel(group, SWT.NONE, "ms");
 
-
 		createLabel(group, SWT.NONE, "Refresh after: ");
-		mRefreshCountText = createText(group, SWT.BORDER, "10");
+		final Text refreshCountText = createText(group, SWT.BORDER, "10");
+		refreshCountText.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                mRefreshAfter = getSafeDouble(refreshCountText);
+            }
+        });
+		mRefreshAfter = 10;
 		createLabel(group, SWT.NONE, "times");
 
 		createLabel(group, SWT.NONE, "Sensor update: ");
@@ -830,13 +1060,11 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		gd.horizontalSpan = 2;
 		mRefreshEmulatorAccelerometerLabel.setLayoutData(gd);
 
-
 		createLabel(group, SWT.NONE, " * Compass: ");
 		mRefreshEmulatorCompassLabel = createLabel(group, SWT.NONE, "-");
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 2;
 		mRefreshEmulatorCompassLabel.setLayoutData(gd);
-
 
 		createLabel(group, SWT.NONE, " * Orientation: ");
 		mRefreshEmulatorOrientationLabel = createLabel(group, SWT.NONE, "-");
@@ -844,13 +1072,23 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		gd.horizontalSpan = 2;
 		mRefreshEmulatorOrientationLabel.setLayoutData(gd);
 
-
 		createLabel(group, SWT.NONE, " * Thermometer: ");
 		mRefreshEmulatorThermometerLabel = createLabel(group, SWT.NONE, "-");
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 2;
 		mRefreshEmulatorThermometerLabel.setLayoutData(gd);
 
+        createLabel(group, SWT.NONE, " * Light: ");
+        mRefreshEmulatorLightLabel = createLabel(group, SWT.NONE, "-");
+        gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = 2;
+        mRefreshEmulatorLightLabel.setLayoutData(gd);
+
+        createLabel(group, SWT.NONE, " * Proximity: ");
+        mRefreshEmulatorProximityLabel = createLabel(group, SWT.NONE, "-");
+        gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = 2;
+        mRefreshEmulatorProximityLabel.setLayoutData(gd);
 	}
 
 	/**
@@ -904,7 +1142,7 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		createLabel(group, SWT.NONE, "m/s" + SQUARED);
 
 		createLabel(group, SWT.NONE, "z: ");
-		mGravityZText = createText(group, SWT.BORDER, "0");
+		mGravityZText = createText(group, SWT.BORDER, "-9.80665");
 		createLabel(group, SWT.NONE, "m/s" + SQUARED);
 	}
 
@@ -951,6 +1189,68 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		mBarcodeReaderText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	}
 
+    /**
+     * @param parent
+     */
+    private void createLightGroup(Composite parent) {
+        Group group = createGroup(parent, SWT.NONE, "Light");
+        group.setLayout(new GridLayout(3, false));
+
+        createLabel(group, SWT.NONE, "Light: ");
+        mLightText = createText(group, SWT.BORDER, "400");
+        createLabel(group, SWT.NONE, "lux");
+    }
+
+    /**
+     * @param parent
+     */
+    private void createProximityGroup(Composite parent) {
+        Group group = createGroup(parent, SWT.NONE, "Proximity");
+        group.setLayout(new GridLayout(3, false));
+
+        GridData gd;
+        
+        createLabel(group, SWT.NONE, "Proximity: ");
+        mProximityText = createText(group, SWT.BORDER, "10");
+        mProximityText.setEnabled(false);
+        createLabel(group, SWT.NONE, "cm");
+
+        createLabel(group, SWT.NONE, "Maximum range: ");
+        mProximityRangeText = createText(group, SWT.BORDER, "10");
+        mProximityRangeText.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent arg0) {
+                if (mProximityFar.getSelection()) {
+                    mProximityText.setText(mProximityRangeText.getText());
+                } else {
+                    Random r = new Random();
+                    int currentMaximumRange = Integer.parseInt(mProximityRangeText.getText());
+                    int reduction = r.nextInt(currentMaximumRange);
+                    int randomNearProximity = currentMaximumRange - reduction;
+                    mProximityText.setText(Integer.toString(randomNearProximity));
+                }
+            }
+        });
+        createLabel(group, SWT.NONE, "cm");
+
+        mBinaryProximity = createButton(group, SWT.CHECK, BINARY_PROXIMITY);
+        gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = 3;
+        mBinaryProximity.setLayoutData(gd);
+        mBinaryProximity.addListener(SWT.Selection, this);
+        mBinaryProximity.setSelection(true);
+        
+        Composite comp = new Composite(group, SWT.NONE);
+        comp.setLayout(new GridLayout(2, true));
+        comp.setLayoutData(new GridData());
+        
+        mProximityNear = createButton(comp, SWT.RADIO, "NEAR");
+        mProximityNear.addListener(SWT.Selection, this);
+        
+        mProximityFar = createButton(comp, SWT.RADIO, "FAR");
+        mProximityFar.addListener(SWT.Selection, this);
+        mProximityFar.setSelection(true);
+    }
 	/**
 	 * @param parent
 	 */
@@ -973,6 +1273,14 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		createLabel(group, SWT.NONE, "Temperature: ");
 		mRandomTemperatureText = createText(group, SWT.BORDER, "0");
 		createLabel(group, SWT.NONE, DEGREES + "C");
+
+        createLabel(group, SWT.NONE, "Light: ");
+        mRandomLightText = createText(group, SWT.BORDER, "0");
+        createLabel(group, SWT.NONE, "lux");
+
+        createLabel(group, SWT.NONE, "Proximity: ");
+        mRandomProximityText = createText(group, SWT.BORDER, "0");
+        createLabel(group, SWT.NONE, "cm");
 	}
 
 	/**
@@ -983,18 +1291,32 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		group.setLayout(new GridLayout());
 
 		mRealDeviceThinkpad = createButton(group, SWT.CHECK, "Use Thinkpad accelerometer");
-		mRealDeviceThinkpad.setSelection(false);
 		mRealDeviceThinkpad.addListener(SWT.Selection, this);
+		mRealDeviceThinkpad.setSelection(false);
 
 		mRealDeviceWiimote = createButton(group, SWT.CHECK, "Use Wii-mote accelerometer");
-		mRealDeviceWiimote.setSelection(false);
 		mRealDeviceWiimote.addListener(SWT.Selection, this);
+		mRealDeviceWiimote.setSelection(false);
 
 		mRealDevicePath = createText(group, SWT.BORDER, "/sys/devices/platform/hdaps/position");
 		mRealDevicePath.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		mRealDeviceOutputLabel = createLabel(group, SWT.NONE, "-");
 		mRealDeviceOutputLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+	}
+	
+	/**
+	 * @param parent
+	 */
+	private void createReplayGroup(Composite parent) {
+	    Group group = createGroup(parent, SWT.NONE, "Replay");
+	    group.setLayout(new GridLayout(2, true));
+	    
+	    replayRecord = createButton(group, SWT.PUSH, "Record");
+	    replayRecord.addListener(SWT.Selection, this);
+	    
+	    replayPlayback = createButton(group, SWT.PUSH, "Playback");
+	    replayPlayback.addListener(SWT.Selection, this);
 	}
 
 	/**
@@ -1059,12 +1381,12 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		group.setLayout(new GridLayout());
 
 		batteryPresence = createButton(group, SWT.CHECK, "Is Present");
-		batteryPresence.setSelection(true);
 		batteryPresence.addListener(SWT.Selection, this);
+		batteryPresence.setSelection(true);
 
 		batteryAC = createButton(group, SWT.CHECK, "AC plugged");
-		batteryAC.setSelection(true);
 		batteryAC.addListener(SWT.Selection, this);
+		batteryAC.setSelection(true);
 	}
 
 	/**
@@ -1148,6 +1470,12 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		((GridData)gpsButton.getLayoutData()).horizontalSpan = 3;
 	}
 
+	/**
+	 * @param parent
+	 * @param style
+	 * @param text
+	 * @return
+	 */
 	private Button createButton(Composite parent, int style, String text) {
 		Button button = new Button(parent, style);
 		button.setText(text);
@@ -1156,6 +1484,12 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		return button;
 	}
 
+	/**
+	 * @param parent
+	 * @param style
+	 * @param text
+	 * @return
+	 */
 	private Label createLabel(Composite parent, int style, String text) {
 		Label label = new Label(parent, style);
 		label.setText(text);
@@ -1163,15 +1497,37 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		return label;
 	}
 
+	/**
+	 * @param parent
+	 * @param style
+	 * @return
+	 */
+	private Text createText(Composite parent, int style) {
+	    return createText(parent, style, null);
+	}
+	
+	/**
+	 * @param parent
+	 * @param style
+	 * @param text
+	 * @return
+	 */
 	private Text createText(Composite parent, int style, String text) {
 		Text txt = new Text(parent, style);
-		txt.setText(text);
+		if (text != null) txt.setText(text);
 		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		gd.widthHint = 80;
 		txt.setLayoutData(gd);
 		return txt;
 	}
 
+	/**
+	 * @param parent
+	 * @param style
+	 * @param items
+	 * @param selectedIndex
+	 * @return
+	 */
 	private Combo createCombo(Composite parent, int style, String[] items, int selectedIndex) {
 		Combo combo = new Combo(parent, style);
 		combo.setItems(items);
@@ -1180,6 +1536,12 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		return combo;
 	}
 
+	/**
+	 * @param parent
+	 * @param style
+	 * @param text
+	 * @return
+	 */
 	private Group createGroup(Composite parent, int style, String text) {
 		Group group = new Group(parent, style);
 		group.setText(text);
@@ -1187,6 +1549,13 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		return group;
 	}
 
+	/**
+	 * @param parent
+	 * @param style
+	 * @param max
+	 * @param value
+	 * @return
+	 */
 	private Scale createScale(Composite parent, int style, int max, int value) {
 		Scale scale = new Scale(parent, style);
 		scale.setMinimum(0);
@@ -1196,6 +1565,11 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		return scale;
 	}
 
+	/**
+	 * @param parent
+	 * @param min
+	 * @param max
+	 */
 	private void createTickLabels(Composite parent, int min, int max) {
 		Composite body = new Composite(parent, SWT.NONE);
 		body.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -1266,13 +1640,13 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 				}
 			}
 		} else if (yawSlider.equals(source)) {
-			mobile.setYawDegree(yawSlider.getSelection() - 180);
+			mobile.setYawDegree(getYaw());
         	mobile.doRepaint();
 		} else if (pitchSlider.equals(source)) {
-			mobile.setPitchDegree(pitchSlider.getSelection() - 180);
+			mobile.setPitchDegree(getPitch());
         	mobile.doRepaint();
 		} else if (rollSlider.equals(source)) {
-			mobile.setRollDegree(rollSlider.getSelection() - 180);
+			mobile.setRollDegree(getRoll());
         	mobile.doRepaint();
 		} else if (batterySlider.equals(source)) {
         	if(mTelnetServer!=null){
@@ -1284,6 +1658,29 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 			mRealDeviceThinkpad.setSelection(false);
 		} else if (mShowAcceleration.equals(source)) {
 			mobile.doRepaint();
+		} else if (mBinaryProximity.equals(source)) {
+		    mProximityText.setText(mProximityRangeText.getText());
+		    if (mBinaryProximity.getSelection()) {
+                mProximityText.setEnabled(false);
+                mProximityRangeText.setEnabled(true);
+                mProximityNear.setEnabled(true);
+                mProximityNear.setSelection(false);
+                mProximityFar.setEnabled(true);
+                mProximityFar.setSelection(true);
+            } else {
+                mProximityText.setEnabled(true);
+                mProximityRangeText.setEnabled(false);  
+                mProximityNear.setEnabled(false);
+                mProximityFar.setEnabled(false);
+            }
+		} else if (mProximityNear.equals(source)) {
+            Random r = new Random();
+            int currentMaximumRange = Integer.parseInt(mProximityRangeText.getText());
+            int reduction = r.nextInt(currentMaximumRange);
+            int randomNearProximity = currentMaximumRange - reduction;
+            mProximityText.setText(Integer.toString(randomNearProximity));
+		} else if (mProximityFar.equals(source)) {
+		    mProximityText.setText(mProximityRangeText.getText());
 		} else if (batteryPresence.equals(source)) {
 			if (mTelnetServer != null) {
 				mTelnetServer.changePresence(batteryPresence.getSelection());
@@ -1292,6 +1689,25 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 			if (mTelnetServer != null) {
 				mTelnetServer.changePresence(batteryAC.getSelection());
 			}
+        } else if (replayRecord.equals(source)) {
+            if (replayData.createFile()) {
+                this.addMessage("Recording Started");
+                replayRecord.setText("Stop");
+            } else {
+                this.addMessage("Recording Stopped");
+                replayRecord.setText("Record");
+            }
+        } else if (replayPlayback.equals(source)) {
+            if (replayData.openFile()) {
+                if (replayData.isPlaying()) {
+                    this.addMessage("Playing back");
+                    replayPlayback.setText("Stop");
+                } else {
+                    this.addMessage("Playback Stopped");
+                }
+            } else {
+                this.addMessage("Finish recording first");
+            }
 		}
 	}
 
@@ -1301,47 +1717,59 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 	@Override
 	public void dispose() {
 		timer.stop();
+		mSensorServer.stop();
 		super.dispose();
 	}
 
+	/**
+	 * 
+	 */
 	private void doTimer() {
 		Display display;
 
 		try {
 			display = getDisplay();
-		} catch (SWTException e1) {
+		} catch (SWTException e) {
 			// Maybe, UI disposed already.
 			timer.stop();
 			return;
 		}
 
-		display.asyncExec(new Runnable() {
-			public void run() {
-				try {
-					if (mRealDeviceWiimote.getSelection()) {
-						updateFromWiimote();
-					}
+		try {
+            display.asyncExec(new Runnable() {
+            	public void run() {
+            		try {
+            			if (mRealDeviceWiimote.getSelection()) {
+            				updateFromWiimote();
+            			}
+            			
+            			updateFromFile();
 
-					// Update sensors:
-					mobile.updateSensorPhysics();
+            			// Update sensors:
+            			mobile.updateSensorPhysics();
 
-					mobile.updateSensorReadoutValues();
+            			mobile.updateSensorReadoutValues();
 
-					mobile.updateUserSettings();
+            			mobile.updateUserSettings();
 
-					// Measure refresh
-					updateSensorRefresh();
+            			// Measure refresh
+            			updateSensorRefresh();
 
-					// Now show updated data:
-					showSensorData();
-				} catch (SWTException e) {
-					// Maybe, UI disposed already.
-					timer.stop();
-				}
-			}
-		});
+            			// Now show updated data:
+            			showSensorData();
+            		} catch (SWTException e) {
+            		}
+            	}
+            });
+        } catch (SWTException e) {
+            // Maybe, UI disposed already.
+            timer.stop();
+        }
 	}
 
+    /**
+     * 
+     */
     private void updateFromWiimote() {
     	// Read raw data
 		wiiMoteData.setDataFilePath(mRealDevicePath.getText());
@@ -1355,6 +1783,28 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 			rollSlider.setSelection(180 + wiiMoteData.getRoll());
 			pitchSlider.setSelection(180 + wiiMoteData.getPitch());
 		}
+    }
+
+    /**
+     * is called from within doTimer() to record/playback values 
+     * recording/playback is triggered from actionListener
+     */
+    private void updateFromFile() {
+        replayData.recordData(mobile.getReadYaw(), mobile.getReadRoll(), mobile.getReadPitch());
+
+        if (replayData.playData()) {
+            // Update sliders
+            setYaw(replayData.getYaw());
+            setRoll(replayData.getRoll());
+            setPitch(replayData.getPitch());
+            
+            mobile.setYawDegree(getYaw());
+            mobile.setRollDegree(getRoll());
+            mobile.setPitchDegree(getPitch());
+            mobile.doRepaint();
+        } else {
+            replayPlayback.setText("Playback");
+        }
     }
 
     /**
@@ -1421,6 +1871,27 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 			}
 			data += "\n";
 		}
+
+        if (isSupportedLight) {
+            data += LIGHT + ": ";
+            if (isEnabledLight) {
+                data += mf.format(mobile.getReadLight());
+            } else {
+                data += DISABLED;
+            }
+            data += "\n";
+        }
+
+        if (isSupportedProximity) {
+            data += PROXIMITY + ": ";
+            if (isEnabledProximity) {
+                data += mf.format(mobile.getReadProximity());
+            } else {
+                data += DISABLED;
+            }
+            data += "\n";
+        }
+        
 		// Output to textArea:
 		textAreaSensorData.setText(data);
     }
@@ -1500,10 +1971,15 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		    		// We have been connected for the first time.
 		    		// Disable all sensors:
 		    		mEnabledAccelerometer.setSelection(false);
+		    		isEnabledAccelerometer = false;
 		    		mEnabledMagneticField.setSelection(false);
+		    		isEnabledMagneticField = false;
 		    		mEnabledOrientation.setSelection(false);
+		    		isEnabledOrientation = false;
 		    		mEnabledTemperature.setSelection(false);
+		    		isEnabledTemperature = false;
 		    		mEnabledBarcodeReader.setSelection(false);
+		    		isEnabledBarcodeReader = false;
 				}
 			});
     		addMessage("First incoming connection:");
@@ -1715,9 +2191,14 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 	/* (non-Javadoc)
 	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#setEnabledOrientation(boolean)
 	 */
-	public void setEnabledOrientation(boolean enable) {
-		mEnabledOrientation.setSelection(enable);
-		mRefreshEmulatorOrientationLabel.setText("-");
+	public void setEnabledOrientation(final boolean enable) {
+        getDisplay().asyncExec(new Runnable() {
+            public void run() {
+                mEnabledOrientation.setSelection(enable);
+                isEnabledOrientation = enable;
+                mRefreshEmulatorOrientationLabel.setText("-");
+            }
+        });
 	}
 
 	/* (non-Javadoc)
@@ -1729,6 +2210,7 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 				if (mEnabledAccelerometer != null && mRefreshEmulatorAccelerometerLabel != null &&
 					!mEnabledAccelerometer.isDisposed() && !mRefreshEmulatorAccelerometerLabel.isDisposed()) {
 					mEnabledAccelerometer.setSelection(enable);
+					isEnabledAccelerometer = enable;
 					mRefreshEmulatorAccelerometerLabel.setText("-");
 				}
 			}
@@ -1744,6 +2226,7 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 				if (mEnabledTemperature != null && mRefreshEmulatorThermometerLabel != null &&
 					!mEnabledTemperature.isDisposed() && !mRefreshEmulatorThermometerLabel.isDisposed()) {
 					mEnabledTemperature.setSelection(enable);
+					isEnabledTemperature = enable;
 					mRefreshEmulatorThermometerLabel.setText("-");
 				}
 			}
@@ -1759,6 +2242,7 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 				if (mEnabledMagneticField != null && mRefreshEmulatorCompassLabel != null &&
 					!mEnabledMagneticField.isDisposed() && !mRefreshEmulatorCompassLabel.isDisposed()) {
 					mEnabledMagneticField.setSelection(enable);
+					isEnabledMagneticField = enable;
 					mRefreshEmulatorCompassLabel.setText("-");
 				}
 			}
@@ -1771,9 +2255,12 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 	public void setEnabledLight(final boolean enable) {
 		getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				if (mEnabledLight != null && !mEnabledLight.isDisposed()) {
-					mEnabledLight.setSelection(enable);
-				}
+			    if (mEnabledLight != null && mRefreshEmulatorLightLabel != null &&
+                    !mEnabledLight.isDisposed() && !mRefreshEmulatorLightLabel.isDisposed()) {
+			        mEnabledLight.setSelection(enable);
+			        isEnabledLight = enable;
+			        mRefreshEmulatorLightLabel.setText("-");
+                }
 			}
 		});
 	}
@@ -1784,9 +2271,12 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 	public void setEnabledProximity(final boolean enable) {
 		getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				if (mEnabledProximity != null && !mEnabledProximity.isDisposed()) {
-					mEnabledProximity.setSelection(enable);
-				}
+			    if (mEnabledProximity != null && mRefreshEmulatorProximityLabel != null &&
+                    !mEnabledProximity.isDisposed() && !mRefreshEmulatorProximityLabel.isDisposed()) {
+			        mEnabledProximity.setSelection(enable);
+			        isEnabledProximity = enable;
+			        mRefreshEmulatorProximityLabel.setText("-");
+                }
 			}
 		});
 	}
@@ -1799,6 +2289,7 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 			public void run() {
 				if (mEnabledTricorder != null && !mEnabledTricorder.isDisposed()) {
 					mEnabledTricorder.setSelection(enable);
+					isEnabledTricorder = enable;
 				}
 			}
 		});
@@ -1812,6 +2303,7 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 			public void run() {
 				if (mEnabledBarcodeReader != null && !mEnabledBarcodeReader.isDisposed()) {
 					mEnabledBarcodeReader.setSelection(enable);
+					isEnabledBarcodeReader = enable;
 				}
 			}
 		});
@@ -1859,46 +2351,135 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		return mDefaultUpdateRateCompass;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getCurrentUpdateRateCompass()
+	 */
 	public double getCurrentUpdateRateCompass() {
 		return mCurrentUpdateRateCompass;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#updateAverageCompass()
+	 */
 	public boolean updateAverageCompass() {
 		return mUpdateAverageCompass;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getUpdateRatesOrientation()
+	 */
 	public double[] getUpdateRatesOrientation() {
 		return mUpdateRatesOrientation;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getDefaultUpdateRateOrientation()
+	 */
 	public double getDefaultUpdateRateOrientation() {
 		return mDefaultUpdateRateOrientation;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getCurrentUpdateRateOrientation()
+	 */
 	public double getCurrentUpdateRateOrientation() {
 		return mCurrentUpdateRateOrientation;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#updateAverageOrientation()
+	 */
 	public boolean updateAverageOrientation() {
 		return mUpdateAverageOrientation;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getUpdateRatesThermometer()
+	 */
 	public double[] getUpdateRatesThermometer() {
 		return mUpdateRatesThermometer;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getDefaultUpdateRateThermometer()
+	 */
 	public double getDefaultUpdateRateThermometer() {
 		return mDefaultUpdateRateThermometer;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getCurrentUpdateRateThermometer()
+	 */
 	public double getCurrentUpdateRateThermometer() {
 		return mCurrentUpdateRateThermometer;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#updateAverageThermometer()
+	 */
 	public boolean updateAverageThermometer() {
 		return mUpdateAverageThermometer;
 	}
 
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getUpdateRatesLight()
+     */
+    public double[] getUpdateRatesLight() {
+        return mUpdateRatesLight;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getDefaultUpdateRateLight()
+     */
+    public double getDefaultUpdateRateLight() {
+        return mDefaultUpdateRateLight;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getCurrentUpdateRateLight()
+     */
+    public double getCurrentUpdateRateLight() {
+        return mCurrentUpdateRateLight;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#updateAverageLight()
+     */
+    public boolean updateAverageLight() {
+        return mUpdateAverageLight;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getUpdateRatesProximity()
+     */
+    public double[] getUpdateRatesProximity() {
+        return mUpdateRatesProximity;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getDefaultUpdateRateProximity()
+     */
+    public double getDefaultUpdateRateProximity() {
+        return mDefaultUpdateRateProximity;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getCurrentUpdateRateProximity()
+     */
+    public double getCurrentUpdateRateProximity() {
+        return mCurrentUpdateRateProximity;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#updateAverageProximity()
+     */
+    public boolean updateAverageProximity() {
+        return mUpdateAverageProximity;
+    }
+
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#setCurrentUpdateRateAccelerometer(double)
+	 */
 	public void setCurrentUpdateRateAccelerometer(final double value) {
 		getDisplay().asyncExec(new Runnable() {
 			public void run() {
@@ -1907,6 +2488,9 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		});
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#setCurrentUpdateRateCompass(double)
+	 */
 	public void setCurrentUpdateRateCompass(final double value) {
 		getDisplay().asyncExec(new Runnable() {
 			public void run() {
@@ -1915,6 +2499,9 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		});
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#setCurrentUpdateRateOrientation(double)
+	 */
 	public void setCurrentUpdateRateOrientation(final double value) {
 		getDisplay().asyncExec(new Runnable() {
 			public void run() {
@@ -1923,6 +2510,9 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		});
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#setCurrentUpdateRateThermometer(double)
+	 */
 	public void setCurrentUpdateRateThermometer(final double value) {
 		getDisplay().asyncExec(new Runnable() {
 			public void run() {
@@ -1930,29 +2520,68 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 			}
 		});
 	}
-
-	public double getUpdateSensors() {
-		return getSafeDouble(mUpdateText);
+	
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#setCurrentUpdateRateLight(double)
+	 */
+	public void setCurrentUpdateRateLight(final double value) {
+	    getDisplay().asyncExec(new Runnable() {
+	        public void run() {
+	            mCurrentUpdateRateLightText.setText(Double.toString(value));
+	        }
+	    });
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#setCurrentUpdateRateProximity(double)
+	 */
+	public void setCurrentUpdateRateProximity(final double value) {
+	    getDisplay().asyncExec(new Runnable() {
+	        public void run() {
+	            mCurrentUpdateRateProximityText.setText(Double.toString(value));
+	        }
+	    });
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getUpdateSensors()
+	 */
+	public double getUpdateSensors() {
+		return mUpdateSensors;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getRefreshAfter()
+	 */
 	public double getRefreshAfter() {
-		return getSafeDouble(mRefreshCountText);
+		return mRefreshAfter;
 	}
 
     /**
      * Updates the information about sensor updates.
      */
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#updateSensorRefresh()
+     */
     public void updateSensorRefresh() {
     	updateSensorCount++;
-    	long maxcount = (long) getSafeDouble(mRefreshCountText);
+    	long maxcount = (long) mRefreshAfter;
 		if (maxcount >= 0 && updateSensorCount >= maxcount) {
 			long newtime = System.currentTimeMillis();
-			double ms = (double) (newtime - updateSensorTime)
+			final double ms = (double) (newtime - updateSensorTime)
 						/ ((double) maxcount);
 
-			DecimalFormat mf = new DecimalFormat("#0.0");
-
-			mRefreshSensorsLabel.setText(mf.format(ms) + " ms");
+            try {
+                getDisplay().asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        DecimalFormat mf = new DecimalFormat("#0.0");
+                        mRefreshSensorsLabel.setText(mf.format(ms) + " ms");
+                    }
+                });
+            } catch (SWTException e) {
+                // Maybe, UI disposed already.
+            }
 
 			updateSensorCount = 0;
 			updateSensorTime = newtime;
@@ -1962,123 +2591,276 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
     /**
      * Updates information about emulator updates.
      */
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#updateEmulatorAccelerometerRefresh()
+     */
     public void updateEmulatorAccelerometerRefresh() {
 	    updateEmulatorAccelerometerCount++;
-    	long maxcount = (long) getSafeDouble(mRefreshCountText);
+    	long maxcount = (long) mRefreshAfter;
     	if (maxcount >= 0 && updateEmulatorAccelerometerCount >= maxcount) {
 			long newtime = System.currentTimeMillis();
-			double ms = (double) (newtime - updateEmulatorAccelerometerTime)
+			final double ms = (double) (newtime - updateEmulatorAccelerometerTime)
 						/ ((double) maxcount);
 
-			DecimalFormat mf = new DecimalFormat("#0.0");
-
-			mRefreshEmulatorAccelerometerLabel.setText(mf.format(ms) + " ms");
+            try {
+                getDisplay().asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        DecimalFormat mf = new DecimalFormat("#0.0");
+                        mRefreshEmulatorAccelerometerLabel.setText(mf.format(ms) + " ms");
+                    }
+                });
+            } catch (SWTException e) {
+                // Maybe, UI disposed already.
+            }
 
 			updateEmulatorAccelerometerCount = 0;
 			updateEmulatorAccelerometerTime = newtime;
 		}
     }
 
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#updateEmulatorCompassRefresh()
+     */
     public void updateEmulatorCompassRefresh() {
 	    updateEmulatorCompassCount++;
-    	long maxcount = (long) getSafeDouble(mRefreshCountText);
+    	long maxcount = (long) mRefreshAfter;
 		if (maxcount >= 0 && updateEmulatorCompassCount >= maxcount) {
 			long newtime = System.currentTimeMillis();
-			double ms = (double) (newtime - updateEmulatorCompassTime)
+			final double ms = (double) (newtime - updateEmulatorCompassTime)
 						/ ((double) maxcount);
 
-			DecimalFormat mf = new DecimalFormat("#0.0");
-
-			mRefreshEmulatorCompassLabel.setText(mf.format(ms) + " ms");
+            try {
+                getDisplay().asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        DecimalFormat mf = new DecimalFormat("#0.0");
+                        mRefreshEmulatorCompassLabel.setText(mf.format(ms) + " ms");
+                    }
+                });
+            } catch (SWTException e) {
+                // Maybe, UI disposed already.
+            }
 
 			updateEmulatorCompassCount = 0;
 			updateEmulatorCompassTime = newtime;
 		}
     }
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#updateEmulatorOrientationRefresh()
+     */
     public void updateEmulatorOrientationRefresh() {
 	    updateEmulatorOrientationCount++;
-    	long maxcount = (long) getSafeDouble(mRefreshCountText);
+    	long maxcount = (long) mRefreshAfter;
 		if (maxcount >= 0 && updateEmulatorOrientationCount >= maxcount) {
 			long newtime = System.currentTimeMillis();
-			double ms = (double) (newtime - updateEmulatorOrientationTime)
+			final double ms = (double) (newtime - updateEmulatorOrientationTime)
 						/ ((double) maxcount);
 
-			DecimalFormat mf = new DecimalFormat("#0.0");
-
-			mRefreshEmulatorOrientationLabel.setText(mf.format(ms) + " ms");
-
+            try {
+                getDisplay().asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        DecimalFormat mf = new DecimalFormat("#0.0");
+                        mRefreshEmulatorOrientationLabel.setText(mf.format(ms) + " ms");
+                    }
+                });
+            } catch (SWTException e) {
+                // Maybe, UI disposed already.
+            }
+            
 			updateEmulatorOrientationCount = 0;
 			updateEmulatorOrientationTime = newtime;
 		}
     }
 
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#updateEmulatorThermometerRefresh()
+     */
     public void updateEmulatorThermometerRefresh() {
-	    updateEmulatorAccelerometerCount++;
-    	long maxcount = (long) getSafeDouble(mRefreshCountText);
+	    updateEmulatorThermometerCount++;
+    	long maxcount = (long) mRefreshAfter;
 		if (maxcount >= 0 && updateEmulatorThermometerCount >= maxcount) {
 			long newtime = System.currentTimeMillis();
-			double ms = (double) (newtime - updateEmulatorThermometerTime)
+			final double ms = (double) (newtime - updateEmulatorThermometerTime)
 						/ ((double) maxcount);
 
-			DecimalFormat mf = new DecimalFormat("#0.0");
-
-			mRefreshEmulatorThermometerLabel.setText(mf.format(ms) + " ms");
-
+            try {
+                getDisplay().asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        DecimalFormat mf = new DecimalFormat("#0.0");
+                        mRefreshEmulatorThermometerLabel.setText(mf.format(ms) + " ms");
+                    }
+                });
+            } catch (SWTException e) {
+                // Maybe, UI disposed already.
+            }
+			
 			updateEmulatorThermometerCount = 0;
 			updateEmulatorThermometerTime = newtime;
 		}
     }
+    
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#updateEmulatorLightRefresh()
+     */
+    public void updateEmulatorLightRefresh() {
+        updateEmulatorLightCount++;
+        long maxcount = (long) mRefreshAfter;
+        if (maxcount >= 0 && updateEmulatorLightCount >= maxcount) {
+            long newtime = System.currentTimeMillis();
+            final double ms = (double) (newtime - updateEmulatorLightTime)
+                        / ((double) maxcount);
 
+            try {
+                getDisplay().asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        DecimalFormat mf = new DecimalFormat("#0.0");
+                        mRefreshEmulatorLightLabel.setText(mf.format(ms) + " ms");
+                    }
+                });
+            } catch (SWTException e) {
+                // Maybe, UI disposed already.
+            }
+            
+            updateEmulatorLightCount = 0;
+            updateEmulatorLightTime = newtime;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#updateEmulatorProximityRefresh()
+     */
+    public void updateEmulatorProximityRefresh() {
+        updateEmulatorProximityCount++;
+        long maxcount = (long) mRefreshAfter;
+        if (maxcount >= 0 && updateEmulatorProximityCount >= maxcount) {
+            long newtime = System.currentTimeMillis();
+            final double ms = (double) (newtime - updateEmulatorProximityTime)
+                        / ((double) maxcount);
+
+            try {
+                getDisplay().asyncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        DecimalFormat mf = new DecimalFormat("#0.0");
+                        mRefreshEmulatorLightLabel.setText(mf.format(ms) + " ms");
+                    }
+                });
+            } catch (SWTException e) {
+                // Maybe, UI disposed already.
+            }
+            
+            updateEmulatorProximityCount = 0;
+            updateEmulatorProximityTime = newtime;
+        }
+    }
+
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getGravityConstant()
+	 */
 	public double getGravityConstant() {
 		return getSafeDouble(mGravityConstantText, 9.80665);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getAccelerometerLimit()
+	 */
 	public double getAccelerometerLimit() {
 		return getSafeDouble(mAccelerometerLimitText);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getPixelsPerMeter()
+	 */
 	public double getPixelsPerMeter() {
 		return getSafeDouble(mPixelPerMeterText, 3000);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getSpringConstant()
+	 */
 	public double getSpringConstant() {
 		return getSafeDouble(mSpringConstantText, 500);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getDampingConstant()
+	 */
 	public double getDampingConstant() {
 		return getSafeDouble(mDampingConstantText, 50);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#isShowAcceleration()
+	 */
 	public boolean isShowAcceleration() {
 		return mShowAcceleration.getSelection();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getGravityX()
+	 */
 	public double getGravityX() {
 		return getSafeDouble(mGravityXText);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getGravityY()
+	 */
 	public double getGravityY() {
 		return getSafeDouble(mGravityYText);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getGravityZ()
+	 */
 	public double getGravityZ() {
 		return getSafeDouble(mGravityZText);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getMagneticFieldNorth()
+	 */
 	public double getMagneticFieldNorth() {
 		return getSafeDouble(mMagneticFieldNorthText);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getMagneticFieldEast()
+	 */
 	public double getMagneticFieldEast() {
 		return getSafeDouble(mMagneticFieldEastText);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getMagneticFieldVertical()
+	 */
 	public double getMagneticFieldVertical() {
 		return getSafeDouble(mMagneticFieldVerticalText);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getTemperature()
+	 */
 	public double getTemperature() {
 		return getSafeDouble(mTemperatureText);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getLight()
+	 */
+	public float getLight() {
+	    return getSafeFloat(mLightText);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getProximity()
+	 */
+	public float getProximity() {
+	    return getSafeFloat(mProximityText);
 	}
 
 	/* (non-Javadoc)
@@ -2088,34 +2870,72 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 		return mBarcodeReaderText.getText();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getRandomAccelerometer()
+	 */
 	public double getRandomAccelerometer() {
 		return getSafeDouble(mRandomAccelerometerText);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getRandomMagneticField()
+	 */
 	public double getRandomMagneticField() {
 		return getSafeDouble(mRandomMagneticFieldText);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getRandomOrientation()
+	 */
 	public double getRandomOrientation() {
 		return getSafeDouble(mRandomOrientationText);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getRandomTemperature()
+	 */
 	public double getRandomTemperature() {
 		return getSafeDouble(mRandomTemperatureText);
 	}
 
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getRandomLight()
+     */
+    public double getRandomLight() {
+        return getSafeDouble(mRandomLightText);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getRandomProximity()
+     */
+    public double getRandomProximity() {
+        return getSafeDouble(mRandomProximityText);
+    }
+    
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#useRealDeviceThinkpad()
+	 */
 	public boolean useRealDeviceThinkpad() {
 		return mRealDeviceThinkpad.getSelection();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#useRealDeviceWiimtoe()
+	 */
 	public boolean useRealDeviceWiimtoe() {
 		return mRealDeviceWiimote.getSelection();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getRealDevicePath()
+	 */
 	public String getRealDevicePath() {
 		return mRealDevicePath.getText();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.ISensorSimulator#setRealDeviceOutput(java.lang.String)
+	 */
 	public void setRealDeviceOutput(String text) {
 		mRealDeviceOutputLabel.setText(text);
 	}
@@ -2123,6 +2943,9 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
     /**
      * Get Longitude from TextField.
      * @return longitude, float longitude
+     */
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getLongitude()
      */
     public float getLongitude() {
     	String s = gpsLongitudeText.getText();
@@ -2138,6 +2961,9 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
      * Get Latitude for TextField.
      * @return latitude, float latitude
      */
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getLatitude()
+     */
     public float getLatitude() {
     	String s = gpsLatitudeText.getText();
     	float latitude = 0;
@@ -2151,6 +2977,9 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
     /**
      * Get Altitude from TextField.
      * @return altitude, float altitude
+     */
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getAltitude()
      */
     public float getAltitude() {
     	String s = gpsAltitudeText.getText();
@@ -2166,6 +2995,9 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
      * Get LIS Name
      * @return name, String lis name
      */
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.ISensorSimulator#getLisName()
+     */
     public String getLisName() {
     	String name = lisName.getText();
     	return name;
@@ -2180,7 +3012,7 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 	 * @param defaultValue default value if input field is invalid.
 	 * @return double value.
 	 */
-	public double getSafeDouble(Text textfield, double defaultValue) {
+	private double getSafeDouble(Text textfield, double defaultValue) {
 		double value = defaultValue;
 
 		try {
@@ -2195,9 +3027,40 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 	}
 
 
-	public double getSafeDouble(Text textfield) {
+	/**
+	 * @param textfield
+	 * @return
+	 */
+	private double getSafeDouble(Text textfield) {
 		return getSafeDouble(textfield, 0);
 	}
+
+    /**
+     * Safely retries the float value of a text field.
+     * If the value is not a valid number, 0 is returned, and the field
+     * is marked red.
+     *
+     * @param textfield Textfield from which the value should be read.
+     * @param defaultValue default value if input field is invalid.
+     * @return float value.
+     */
+    private float getSafeFloat(Text textfield, float defaultValue) {
+        float value = defaultValue;
+
+        try {
+            value = Float.parseFloat(textfield.getText());
+            textfield.setBackground(null);
+        } catch (NumberFormatException e) {
+            // wrong user input in box - take default values.
+            value = defaultValue;
+            textfield.setBackground(getDisplay().getSystemColor(SWT.COLOR_RED));
+        }
+        return value;
+    }
+
+    private float getSafeFloat(Text textfield) {
+        return getSafeFloat(textfield, 0);
+    }
 
 	/**
 	 * Safely retries the a list of double values of a text field.
@@ -2207,7 +3070,7 @@ public class SensorSimulatorSwt extends Composite implements ISensorSimulator, L
 	 * @param textfield Textfield from which the value should be read.
 	 * @return list double[] with values or null.
 	 */
-	public double[] getSafeDoubleList(Text textfield) {
+	private double[] getSafeDoubleList(Text textfield) {
 		double[] valuelist = null;
 
 		try {

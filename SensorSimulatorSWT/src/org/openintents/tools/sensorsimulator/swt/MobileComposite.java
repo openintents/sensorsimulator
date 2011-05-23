@@ -67,6 +67,12 @@ public class MobileComposite extends Composite implements IMobilePanel, PaintLis
 	/**Current read-out value of barcode. */
 	private String barcode_reader;
 
+    /** Current read-out value of light. */
+    private float read_light;
+
+    /** Current read-out value of proximity. */
+    private float read_proximity;
+    
 	/** Duration (in milliseconds) between two updates.
 	 * This is the inverse of the update rate.
 	 */
@@ -107,6 +113,30 @@ public class MobileComposite extends Composite implements IMobilePanel, PaintLis
 	 */
 	private long temperature_next_update;
 
+    /**
+     * Duration (in milliseconds) between two updates. This is the inverse of
+     * the update rate.
+     */
+    private long light_update_duration;
+
+    /**
+     * Time of next update required. The time is compared to
+     * System.currentTimeMillis().
+     */
+    private long light_next_update;
+
+    /**
+     * Duration (in milliseconds) between two updates. This is the inverse of
+     * the update rate.
+     */
+    private long proximity_update_duration;
+
+    /**
+     * Time of next update required. The time is compared to
+     * System.currentTimeMillis().
+     */
+    private long proximity_next_update;
+    
 	/** Duration in milliseconds until user setting
 	 * changes are read out.
 	 */
@@ -170,7 +200,26 @@ public class MobileComposite extends Composite implements IMobilePanel, PaintLis
 	 */
 	private boolean average_temperature;
 
+    /** Partial read-out value of light. */
+    private float partial_light;
+    /** Number of summands in partial sum for light. */
+    private int partial_light_n;
+    /**
+     * Whether to form the average over the last duration when reading out
+     * sensors. Alternative is to just take the current value.
+     */
+    private boolean average_light;
 
+    /** Partial read-out value of proximity. */
+    private float partial_proximity;
+    /** Number of summands in partial sum for proximity. */
+    private int partial_proximity_n;
+    /**
+     * Whether to form the average over the last duration when reading out
+     * sensors. Alternative is to just take the current value.
+     */
+    private boolean average_proximity;
+    
 	/** Internal state value of accelerometer x-component.
 	 *
 	 * This value is updated regularly by updateSensorPhysics().
@@ -198,6 +247,12 @@ public class MobileComposite extends Composite implements IMobilePanel, PaintLis
 
 	//barcode
 	private String barcode;
+	
+	// light
+	private float light;
+	
+	// proximity
+	private float proximity;
 
 	// orientation sensor raw data (in degree)
 	private double yawDegree;
@@ -307,7 +362,7 @@ public class MobileComposite extends Composite implements IMobilePanel, PaintLis
 
 	/**
 	 * @param parent
-	 * @param style
+	 * @param newSensorSimulator
 	 */
 	public MobileComposite(Composite parent, ISensorSimulator newSensorSimulator) {
 		super(parent, SWT.BORDER);
@@ -461,7 +516,7 @@ public class MobileComposite extends Composite implements IMobilePanel, PaintLis
 		// Calculate acceleration induced by mouse:
 		ax = (vx - oldvx) / dt;
 		az = (vz - oldvz) / dt;
-*/
+	 */
 		// New physical model of acceleration:
 		// Have accelerometer be steered by string.
 		// We will treat this 2D only, as the rest is a linear
@@ -688,9 +743,34 @@ public class MobileComposite extends Composite implements IMobilePanel, PaintLis
 			// otherwise the phone does not change as long as there is
 			// no user interaction.
 			doRepaint();
-		};
+        }
 
-}
+        // Light
+        if (mSensorSimulator.isEnabledLight()) {
+            light = mSensorSimulator.getLight();
+
+            // Add random component:
+            random = mSensorSimulator.getRandomLight();
+            if (random > 0) {
+                light += getRandom(random);
+            }
+        } else {
+            light = 0;
+        }
+        
+        // Proximity
+        if (mSensorSimulator.isEnabledProximity()) {
+            proximity = mSensorSimulator.getProximity();
+
+            // Add random component:
+            random = mSensorSimulator.getRandomProximity();
+            if (random > 0) {
+                proximity += getRandom(random);
+            }
+        } else {
+            proximity = 0;
+        }
+    }
 
 	/**
 	 * Updates sensor values in time intervals as specified by updateSensorRate().
@@ -730,6 +810,18 @@ public class MobileComposite extends Composite implements IMobilePanel, PaintLis
 			partial_temperature_n++;
 		}
 
+        if (average_light) {
+            // Form the average
+            partial_light += light;
+            partial_light_n++;
+        }
+
+        if (average_proximity) {
+            // Form the average
+            partial_proximity += proximity;
+            partial_proximity_n++;
+        }
+        
 		if (currentTime >= accel_next_update) {
 			// Update
 			accel_next_update += accel_update_duration;
@@ -870,6 +962,54 @@ public class MobileComposite extends Composite implements IMobilePanel, PaintLis
 			}
 
 		}
+
+        if (currentTime >= light_next_update) {
+            // Update
+            light_next_update += light_update_duration;
+            if (light_next_update < currentTime) {
+                // Don't lag too much behind.
+                // If we are too slow, then we are too slow.
+                light_next_update = currentTime;
+            }
+
+            if (average_light) {
+                // form average
+                read_light = partial_light / partial_light_n;
+
+                // reset average
+                partial_light = 0;
+                partial_light_n = 0;
+
+            } else {
+                // Only take current value
+                read_light = light;
+            }
+
+        }
+        
+        if (currentTime >= proximity_next_update) {
+            // Update
+            proximity_next_update += proximity_update_duration;
+            if (proximity_next_update < currentTime) {
+                // Don't lag too much behind.
+                // If we are too slow, then we are too slow.
+                proximity_next_update = currentTime;
+            }
+
+            if (average_proximity) {
+                // form average
+                read_proximity = partial_proximity / partial_proximity_n;
+
+                // reset average
+                partial_proximity = 0;
+                partial_proximity_n = 0;
+
+            } else {
+                // Only take current value
+                read_proximity = proximity;
+            }
+
+        }
 	}
 
 	/**
@@ -921,6 +1061,22 @@ public class MobileComposite extends Composite implements IMobilePanel, PaintLis
 			} else {
 				temperature_update_duration = 0;
 			}
+
+            average_light = mSensorSimulator.updateAverageLight();
+            rate = mSensorSimulator.getCurrentUpdateRateLight();
+            if (rate != 0) {
+                light_update_duration = (long) (1000. / rate);
+            } else {
+                light_update_duration = 0;
+            }
+            
+             average_proximity = mSensorSimulator.updateAverageProximity();
+             rate = mSensorSimulator.getCurrentUpdateRateProximity();
+             if (rate != 0) {
+                 proximity_update_duration = (long) (1000. / rate);
+             } else {
+                 proximity_update_duration = 0;
+             }
 		}
 	}
 
@@ -1068,6 +1224,20 @@ public class MobileComposite extends Composite implements IMobilePanel, PaintLis
 	}
 
 	/* (non-Javadoc)
+	 * @see org.openintents.tools.sensorsimulator.IMobilePanel#getReadLight()
+	 */
+    public float getReadLight() {
+        return read_light;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openintents.tools.sensorsimulator.IMobilePanel#getReadProximity()
+     */
+    public float getReadProximity() {
+        return read_proximity;
+    }
+
+    /* (non-Javadoc)
 	 * @see org.openintents.tools.sensorsimulator.IMobilePanel#setYawDegree(double)
 	 */
 	public void setYawDegree(double yawDegree) {
