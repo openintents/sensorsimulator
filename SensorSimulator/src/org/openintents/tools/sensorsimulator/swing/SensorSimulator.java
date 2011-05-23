@@ -2435,7 +2435,7 @@ public class SensorSimulator extends JPanel
     }
 
     public void updateEmulatorThermometerRefresh() {
-	    updateEmulatorAccelerometerCount++;
+        updateEmulatorThermometerCount++;
     	long maxcount = (long) getSafeDouble(mRefreshCountText);
 		if (maxcount >= 0 && updateEmulatorThermometerCount >= maxcount) {
 			long newtime = System.currentTimeMillis();
