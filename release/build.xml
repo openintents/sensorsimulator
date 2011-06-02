@@ -165,6 +165,8 @@
 		    	<exclude name="**/doc/**" />
 		    	<exclude name="**/gen/**" />
 	    		<exclude name="**/.svn" />
+	    		<exclude name="**/MANIFEST.MF" />
+	    		<exclude name="**/SensorData.txt" />
 		    </fileset>
 		</copy>
 	</target>	

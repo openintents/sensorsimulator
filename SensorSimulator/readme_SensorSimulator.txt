@@ -28,8 +28,8 @@ It transmits the simulated sensor data to an Android emulator.
 
 
 ---------------------------------------------------------
-release: 1.1.0-rc2?
-date: 2011-?
+release: 1.1.1
+date: 2011-06-03
 
 - fix crashing - issue 77 (patch by Emaad Ahmed Manzoor)
 - add light sensor support (patch by Elena Burceanu)
