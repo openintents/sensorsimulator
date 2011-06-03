@@ -1,0 +1,383 @@
+/*
+ * Port of OpenIntents simulator to Android 2.1, extension to multi
+ * emulator support, and GPS and battery simulation is developed as a
+ * diploma thesis of Josip Balic at the University of Zagreb, Faculty of
+ * Electrical Engineering and Computing.
+ *
+ * Copyright (C) 2008-2010 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * 09/Apr/08 Dale Thatcher <openintents at dalethatcher dot com>
+ *           Added wii-mote data collection.
+ */
+
+package org.openintents.tools.simulator.view.sensor;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.geom.Line2D;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
+import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
+import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
+import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.telnet.Vector;
+
+/**
+ * Displays a mobile phone in a panel and calculates sensor physics.
+ * 
+ * @author Peli
+ * @author Josip Balic
+ */
+public class DeviceView extends JPanel implements IDeviceView {
+
+	private static final long serialVersionUID = -112203026209081563L;
+	public static final int MOUSE_MODE_YAW_PITCH = 1;
+	public static final int MOUSE_MODE_ROLL_PITCH = 2;
+	public static final int MOUSE_MODE_MOVE = 3;
+
+	public static int mouseYawPitch = 1;
+	public static int mouseRollPitch = 2;
+	public static int mouseMove = 3;
+
+	private int mouseMode;
+
+	/**
+	 * Reference to SensorSimulator for accessing widgets.
+	 */
+	private SensorSimulatorModel model;
+
+	/*
+	 * http://code.google.com/android/reference/android/hardware/Sensors.html
+	 * 
+	 * With the device lying flat on a horizontal surface in front of the user,
+	 * oriented so the screen is readable by the user in the normal fashion, the
+	 * X axis goes from left to right, the Y axis goes from the user toward the
+	 * device, and the Z axis goes upwards perpendicular to the surface.
+	 */
+	// Mobile size
+	private final double sx = 15; // size x
+	private final double sy = 40; // size y
+	private final double sz = 5; // size z
+
+	// Display size
+	private final double dx = 12; // size x
+	private final double dy1 = 33; // size y
+	private final double dy2 = -15;
+
+	/** Contains the grid model of the phone. */
+	private double[][] phone = {
+			// bottom shape
+			{ sx, sy, -sz }, { -sx, sy, -sz },
+			{ -sx, sy, -sz },
+			{ -sx, -sy, -sz },
+			{ -sx, -sy, -sz },
+			{ sx, -sy, -sz },
+			{ sx, -sy, -sz },
+			{ sx, sy, -sz },
+			// top shape
+			{ sx, sy, sz }, { -sx, sy, sz }, { -sx, sy, sz }, { -sx, -sy, sz },
+			{ -sx, -sy, sz },
+			{ sx, -sy, sz },
+			{ sx, -sy, sz },
+			{ sx, sy, sz },
+			// connectint top and bottom
+			{ sx, sy, -sz }, { sx, sy, sz }, { -sx, sy, -sz }, { -sx, sy, sz },
+			{ -sx, -sy, -sz }, { -sx, -sy, sz },
+			{ sx, -sy, -sz },
+			{ sx, -sy, sz },
+			// display
+			{ dx, dy1, sz }, { -dx, dy1, sz }, { -dx, dy1, sz },
+			{ -dx, dy2, sz }, { -dx, dy2, sz }, { dx, dy2, sz },
+			{ dx, dy2, sz }, { dx, dy1, sz }, };
+	private JRadioButton rollPitchButton;
+	private JRadioButton moveButton;
+	private JRadioButton yawPitchButton;
+
+	// Sliders:
+	private JSlider yawSlider;
+	private JSlider pitchSlider;
+	private JSlider rollSlider;
+
+	// File usage
+
+	/**
+	 * Constructor of MobilePanel.
+	 * 
+	 * @param model
+	 *            , SensorSimulator that needs MobilePanel in it's frame.
+	 */
+	public DeviceView(SensorSimulatorModel model) {
+		this.model = model;
+
+		mouseMode = MOUSE_MODE_YAW_PITCH;
+
+		// Add mouse action selection
+		// through radio buttons.
+		yawPitchButton = new JRadioButton(SensorModel.ACTION_YAW_PITCH);
+		yawPitchButton.setSelected(true);
+		rollPitchButton = new JRadioButton(SensorModel.ACTION_ROLL_PITCH);
+		moveButton = new JRadioButton(SensorModel.ACTION_MOVE);
+
+		// Group the radio buttons.
+		ButtonGroup group = new ButtonGroup();
+		group.add(yawPitchButton);
+		group.add(rollPitchButton);
+		group.add(moveButton);
+
+		// Create the slider.
+		yawSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, -20);
+		pitchSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, -60);
+		rollSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, 0);
+
+		// Turn on labels at major tick marks.
+		yawSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+		pitchSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+
+		rollSlider.setMajorTickSpacing(90);
+		rollSlider.setMinorTickSpacing(10);
+		rollSlider.setPaintTicks(true);
+		rollSlider.setPaintLabels(true);
+		rollSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy++;
+		c.gridwidth = 1;
+		add(yawPitchButton, c);
+		c.gridx++;
+		add(rollPitchButton, c);
+		c.gridx++;
+		add(moveButton, c);
+
+		// Create the label.
+		JLabel yawLabel = new JLabel("Yaw", JLabel.CENTER);
+		yawLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel pitchLabel = new JLabel("Pitch", JLabel.CENTER);
+		pitchLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel rollLabel = new JLabel("Roll", JLabel.CENTER);
+		rollLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		// GridBagLayout
+		GridBagLayout myGridBagLayout = new GridBagLayout();
+		// myGridLayout.
+		// GridBagConstraints
+		JPanel centerPanel = new JPanel(myGridBagLayout);
+
+		// Put everything together.
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = GridBagConstraints.NORTHWEST;
+		c.gridwidth = 1;
+		c.gridx = 0;
+		c.gridy++;
+		centerPanel.add(yawLabel, c);
+		c.gridx = 1;
+		centerPanel.add(yawSlider, c);
+		c.gridx = 0;
+		c.gridy++;
+		centerPanel.add(pitchLabel, c);
+		c.gridx = 1;
+		centerPanel.add(pitchSlider, c);
+		c.gridx = 0;
+		c.gridy++;
+		centerPanel.add(rollLabel, c);
+		c.gridx = 1;
+		centerPanel.add(rollSlider, c);
+		centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+		add(centerPanel);
+		setDoubleBuffered(true);
+
+		registerSliders();
+	}
+
+	private void registerSliders() {
+		ChangeListener changeListener = new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				OrientationModel orientModel = model.getOrientation();
+				JSlider source = (JSlider) e.getSource();
+				if (source == yawSlider) {
+					orientModel.setYaw(source.getValue());
+				} else if (source == pitchSlider) {
+					orientModel.setPitch(source.getValue());
+				} else if (source == rollSlider) {
+					orientModel.setRoll(source.getValue());
+				}
+				doRepaint();
+			}
+		};
+		yawSlider.addChangeListener(changeListener);
+		pitchSlider.addChangeListener(changeListener);
+		rollSlider.addChangeListener(changeListener);
+
+		OrientationModel orient = model.getOrientation();
+		orient.setYaw(yawSlider.getValue());
+		orient.setPitch(pitchSlider.getValue());
+		orient.setRoll(rollSlider.getValue());
+	}
+
+	/**
+	 * Method that sets size of our Mobile Panel.
+	 */
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(250, 250);
+	}
+
+	/**
+	 * Draws the phone.
+	 * 
+	 * @param graphics
+	 */
+	@Override
+	protected void paintComponent(Graphics graphics) {
+		super.paintComponent(graphics);
+		OrientationModel orientation = model.getOrientation();
+		AccelerometerModel accelerometer = model.getAccelerometer();
+		Graphics2D g2 = (Graphics2D) graphics;
+		// draw Line2D.Double
+		double centerx = 125;
+		double centery = 205;
+		double centerz = -150;
+		for (int i = 0; i < phone.length; i += 2) {
+			if (i == 0)
+				g2.setColor(Color.RED);
+			if (i == 24)
+				g2.setColor(Color.BLUE);
+
+			Vector v1 = new Vector(phone[i]);
+			Vector v2 = new Vector(phone[i + 1]);
+			v1.rollpitchyaw(orientation.getRoll(), orientation.getPitch(),
+					orientation.getYaw());
+			v2.rollpitchyaw(orientation.getRoll(), orientation.getPitch(),
+					orientation.getYaw());
+			g2.draw(new Line2D.Double(centerx
+					+ (v1.x + accelerometer.getMoveX()) * centerz
+					/ (centerz - v1.y), centery
+					- (v1.z + accelerometer.getMoveZ()) * centerz
+					/ (centerz - v1.y), centerx
+					+ (v2.x + accelerometer.getMoveX()) * centerz
+					/ (centerz - v2.y), centery
+					- (v2.z + accelerometer.getMoveZ()) * centerz
+					/ (centerz - v2.y)));
+
+		}
+		if (accelerometer.isShown()) {
+			// Now we also draw the acceleration:
+			g2.setColor(Color.GREEN);
+			Vector v1 = new Vector(0, 0, 0);
+			Vector v2 = new Vector(accelerometer.getAccelx(),
+					accelerometer.getAccely(), accelerometer.getAccelz());
+			v2.scale(20 * accelerometer.getGInverse());
+			// Vector v2 = new Vector(1, 0, 0);
+			v1.rollpitchyaw(orientation.getRoll(), orientation.getPitch(),
+					orientation.getYaw());
+			v2.rollpitchyaw(orientation.getRoll(), orientation.getPitch(),
+					orientation.getYaw());
+			g2.draw(new Line2D.Double(centerx
+					+ (v1.x + accelerometer.getMoveX()) * centerz
+					/ (centerz - v1.y), centery
+					- (v1.z + accelerometer.getMoveZ()) * centerz
+					/ (centerz - v1.y), centerx
+					+ (v2.x + accelerometer.getMoveX()) * centerz
+					/ (centerz - v2.y), centery
+					- (v2.z + accelerometer.getMoveZ()) * centerz
+					/ (centerz - v2.y)));
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openintents.tools.sensorsimulator.IMobilePanel#doRepaint()
+	 */
+	public void doRepaint() {
+		repaint();
+	}
+
+	@Override
+	public int getMouseMode() {
+		return mouseMode;
+	}
+
+	public JRadioButton getYawPitchButton() {
+		return yawPitchButton;
+	}
+
+	public JRadioButton getRollPitchButton() {
+		return rollPitchButton;
+	}
+
+	public JRadioButton getMoveButton() {
+		return moveButton;
+	}
+
+	public void changeMouseMode(int mode) {
+		mouseMode = mode;
+	}
+
+	public JSlider getYawSlider() {
+		return yawSlider;
+	}
+
+	public JSlider getPitchSlider() {
+		return pitchSlider;
+	}
+
+	public JSlider getRollSlider() {
+		return rollSlider;
+	}
+
+	public void setYawSlider(int newYaw) {
+		yawSlider.setValue(newYaw);
+	}
+
+	public void setRollSlider(int newRoll) {
+		rollSlider.setValue(newRoll);
+	}
+
+	public void setPitchSlider(int newPitch) {
+		pitchSlider.setValue(newPitch);
+	}
+
+	public int getRollSliderValue() {
+		return rollSlider.getValue();
+	}
+
+	public int getYawSliderValue() {
+		return yawSlider.getValue();
+	}
+
+	public int getPitchSliderValue() {
+		return pitchSlider.getValue();
+	}
+
+}
