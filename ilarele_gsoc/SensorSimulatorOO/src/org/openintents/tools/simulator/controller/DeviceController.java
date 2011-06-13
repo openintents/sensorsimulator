@@ -13,7 +13,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.view.sensor.DeviceView;
 
-public class DeviceCtrl {
+public class DeviceController {
 
 	protected int mousedownx;
 	protected int mousedowny;
@@ -26,7 +26,7 @@ public class DeviceCtrl {
 	private DeviceView view;
 	private SensorSimulatorModel model;
 
-	public DeviceCtrl(final SensorSimulatorModel model, final DeviceView view) {
+	public DeviceController(final SensorSimulatorModel model, final DeviceView view) {
 		this.model = model;
 		this.view = view;
 

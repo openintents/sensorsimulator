@@ -1,6 +1,5 @@
 package org.openintents.tools.simulator.view.telnet;
 
-import hr.fer.tel.simulator.Global;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -17,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.telnet.TelnetSimulatorModel;
 import org.openintents.tools.simulator.view.telnet.addons.BatteryAddonView;
 import org.openintents.tools.simulator.view.telnet.addons.GPSAddonView;
@@ -68,10 +68,11 @@ public class TelnetSimulatorView extends JPanel {
 		c3.gridx = 0;
 		c3.gridy = 0;
 
-		gpsPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("GPS"),
-				BorderFactory.createEmptyBorder(0, 0, 0, 0)));
 
+		gpsPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createTitledBorder("GPS"), BorderFactory
+				.createMatteBorder(5, 5, 5, 5, Global.BORDER_COLOR)));
+		
 		gpsAddonView.fillPane(gpsPanel, c3);
 
 		// GPS
@@ -83,9 +84,11 @@ public class TelnetSimulatorView extends JPanel {
 
 		// battery
 		JPanel batterySimulationsPanel = new JPanel(new BorderLayout());
-		batterySimulationsPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Battery"),
-				BorderFactory.createEmptyBorder(0, 0, 0, 0)));
+		batterySimulationsPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createTitledBorder("Battery"), BorderFactory
+				.createMatteBorder(5, 5, 5, 5, Global.BORDER_COLOR)));
+
+		
 		JPanel batteryCapacityPanel = new JPanel(new BorderLayout());
 
 		JLabel batteryLabel = new JLabel("Charged", JLabel.CENTER);

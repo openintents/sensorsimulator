@@ -50,7 +50,6 @@ public abstract class SensorModel {
 	final static public String SQUARED = "\u00b2"; // superscript two
 
 	private static Random rand = new Random();
-
 	protected boolean mEnabled;
 
 	// Simulation update
@@ -222,7 +221,7 @@ public abstract class SensorModel {
 		}
 	}
 
-	public void getSensorUpdateRate(PrintWriter out) {
+	public void setSensorUpdateRate(PrintWriter out) {
 		if (isEnabled()) {
 			double updatesPerSecond = getCurrentUpdateRate();
 			out.println("" + updatesPerSecond);
@@ -276,4 +275,5 @@ public abstract class SensorModel {
 	public void setUpdateEmulatorTime(long newtime) {
 		updateEmulatorTime = newtime;
 	}
+
 }

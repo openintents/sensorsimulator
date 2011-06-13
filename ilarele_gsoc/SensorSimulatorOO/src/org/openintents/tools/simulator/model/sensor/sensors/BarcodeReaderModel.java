@@ -11,6 +11,7 @@ public class BarcodeReaderModel extends SensorModel {
 	// private String barcode_reader;
 
 	public BarcodeReaderModel() {
+		super();
 		barcodeValue = "1234567890123";
 		mIsUpdating = false;
 	}

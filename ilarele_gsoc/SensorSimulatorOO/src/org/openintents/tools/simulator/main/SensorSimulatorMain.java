@@ -21,10 +21,6 @@
 
 package org.openintents.tools.simulator.main;
 
-import hr.fer.tel.simulator.Global;
-import hr.fer.tel.simulator.SensorSimulator;
-import hr.fer.tel.simulator.SimulatorInstances;
-import hr.fer.tel.simulator.TelnetSimulator;
 
 import java.awt.Dimension;
 import java.awt.Window;
@@ -50,6 +46,11 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import org.openintents.tools.simulator.Global;
+import org.openintents.tools.simulator.SensorSimulator;
+import org.openintents.tools.simulator.SimulatorInstances;
+import org.openintents.tools.simulator.TelnetSimulator;
 
 /**
  * Main class of our sensor simulator. This class creates a Frame that is filled

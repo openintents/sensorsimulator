@@ -36,7 +36,6 @@ public class AccelerometerView extends SensorView {
 
 	@Override
 	public JPanel fillSensorSettingsPanel() {
-
 		JPanel resultPanel = new JPanel(new GridBagLayout());
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Settings"),

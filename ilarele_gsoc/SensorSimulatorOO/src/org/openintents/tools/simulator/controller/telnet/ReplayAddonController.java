@@ -9,12 +9,12 @@ import javax.swing.JTextArea;
 import org.openintents.tools.simulator.model.telnet.addons.ReplayAddonModel;
 import org.openintents.tools.simulator.view.telnet.addons.ReplayAddonView;
 
-public class ReplayAddonCtrl {
+public class ReplayAddonController {
 	// Replay
 	private ReplayAddonModel model;
 	private ReplayAddonView view;
 
-	public ReplayAddonCtrl(final ReplayAddonModel model, ReplayAddonView view,
+	public ReplayAddonController(final ReplayAddonModel model, ReplayAddonView view,
 			final JTextArea messagePanel) {
 		this.model = model;
 		this.view = view;

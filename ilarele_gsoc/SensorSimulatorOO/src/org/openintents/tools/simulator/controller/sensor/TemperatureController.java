@@ -1,16 +1,16 @@
 package org.openintents.tools.simulator.controller.sensor;
 
-import hr.fer.tel.simulator.Global;
 
+import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.sensors.TemperatureView;
 
-public class TemperatureCtrl extends SensorCtrl {
+public class TemperatureController extends SensorController {
 
-	public TemperatureCtrl(TemperatureModel model, TemperatureView view) {
+	public TemperatureController(TemperatureModel model, TemperatureView view) {
 		super(model, view);
 	}
 

@@ -17,9 +17,9 @@ import javax.swing.event.ChangeListener;
 import org.openintents.tools.simulator.model.telnet.addons.BatteryAddonModel;
 import org.openintents.tools.simulator.view.telnet.addons.BatteryAddonView;
 
-public class BatteryAddonCtrl {
+public class BatteryAddonController {
 
-	public BatteryAddonCtrl(final BatteryAddonModel model,
+	public BatteryAddonController(final BatteryAddonModel model,
 			final BatteryAddonView view) {
 		JSlider batterySlider = view.getBatterySlider();
 

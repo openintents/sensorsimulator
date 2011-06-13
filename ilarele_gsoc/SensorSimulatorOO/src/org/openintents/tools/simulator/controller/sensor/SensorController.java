@@ -1,6 +1,5 @@
 package org.openintents.tools.simulator.controller.sensor;
 
-import hr.fer.tel.simulator.Global;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,32 +7,45 @@ import java.io.PrintWriter;
 
 import javax.swing.JButton;
 
+import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 
-public abstract class SensorCtrl {
+public abstract class SensorController {
 
 	protected SensorModel model;
 	protected SensorView view;
+	private boolean isFixed;
 
-	public SensorCtrl(final SensorModel model, final SensorView view) {
+	public SensorController(final SensorModel model, final SensorView view) {
 		this.model = model;
 		this.view = view;
+		isFixed = false;
 		final JButton enableButton = view.getEnabled();
 		enableButton.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (model.isEnabled()) {
-					model.setEnabled(false);
-					enableButton.setBackground(Global.DISABLE);
-					view.setVisible(false);
-				} else {
-					model.setEnabled(true);
-					enableButton.setBackground(Global.ENABLE);
-					view.setVisible(true);
+				if (!isFixed) {
+					if (model.isEnabled()) {
+						model.setEnabled(false);
+						enableButton.setBackground(Global.DISABLE);
+						view.setVisible(false);
+					} else {
+						model.setEnabled(true);
+						enableButton.setBackground(Global.ENABLE);
+						view.setVisible(true);
+					}
 				}
+			}
+		});
+		JButton expandBtn = view.getExpandButton();
+		expandBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				view.switchExpand();
 			}
 		});
 	}
@@ -97,5 +109,13 @@ public abstract class SensorCtrl {
 			updateEmulatorCount = 0;
 			model.setUpdateEmulatorTime(newtime);
 		}
+	}
+
+	public void fixEnabledSensors() {
+		isFixed = true;
+	}
+	
+	public void unfixEnabledSensors() {
+		isFixed = false;
 	}
 }

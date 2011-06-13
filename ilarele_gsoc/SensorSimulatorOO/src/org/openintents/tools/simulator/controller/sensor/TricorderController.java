@@ -5,9 +5,9 @@ import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerMode
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 
-public class TricorderCtrl extends SensorCtrl {
+public class TricorderController extends SensorController {
 
-	public TricorderCtrl(SensorModel model, SensorView view) {
+	public TricorderController(SensorModel model, SensorView view) {
 		super(model, view);
 	}
 

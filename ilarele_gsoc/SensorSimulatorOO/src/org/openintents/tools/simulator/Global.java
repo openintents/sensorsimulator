@@ -1,7 +1,9 @@
-package hr.fer.tel.simulator;
+package org.openintents.tools.simulator;
 
 import java.awt.Color;
 import java.text.DecimalFormat;
+
+import javax.swing.ImageIcon;
 
 public class Global {
 	public final static int WIDTH = 1000;
@@ -22,4 +24,9 @@ public class Global {
 			"#0.00");
 	public static final DecimalFormat ONE_DECIMAL_FORMAT = new DecimalFormat(
 			"#0.0");
+
+	public static final ImageIcon EXPAND_MINUS = new ImageIcon(
+			"pics/minus.gif");
+	public static final ImageIcon EXPAND_PLUS = new ImageIcon(
+			"pics/plus.gif");
 }

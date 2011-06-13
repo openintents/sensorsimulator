@@ -1,9 +1,6 @@
 package org.openintents.tools.simulator.model.sensor.sensors;
 
-import hr.fer.tel.simulator.Global;
-
 import java.io.PrintWriter;
-import java.text.DecimalFormat;
 import java.util.Random;
 
 import org.openintents.tools.simulator.model.telnet.Vector;
@@ -99,11 +96,10 @@ public class AccelerometerModel extends SensorModel {
 
 	private WiiAccelerometerModel wiiAccelerometerModel;
 
-	public AccelerometerModel(int posX, int posY) {
+	public AccelerometerModel() {
 		super();
-		accx = posX;
-		accz = posY;
-		// mEnabled = true;
+		accx = 0;
+		accz = 0;
 
 		mShowAcceleration = true;
 
@@ -413,5 +409,9 @@ public class AccelerometerModel extends SensorModel {
 
 	public double getAccX() {
 		return accx;
+	}
+
+	public void setCurrentUpdateRate(float updatesPerSecond) {
+		mCurrentUpdateRate = updatesPerSecond;		
 	}
 }

@@ -1,16 +1,16 @@
 package org.openintents.tools.simulator.controller.sensor;
 
-import hr.fer.tel.simulator.Global;
 
+import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.view.sensor.sensors.LightView;
 
-public class LightCtrl extends SensorCtrl {
+public class LightController extends SensorController {
 
-	public LightCtrl(LightModel model, LightView view) {
+	public LightController(LightModel model, LightView view) {
 		super(model, view);
 	}
 

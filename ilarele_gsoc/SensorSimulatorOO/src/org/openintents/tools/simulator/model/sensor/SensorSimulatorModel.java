@@ -26,10 +26,10 @@
 
 package org.openintents.tools.simulator.model.sensor;
 
-import hr.fer.tel.simulator.SensorSimulator;
 
 import java.util.ArrayList;
 
+import org.openintents.tools.simulator.SensorSimulator;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
 import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
@@ -104,7 +104,7 @@ public class SensorSimulatorModel {
 
 		// sensors
 		sensors = new ArrayList<SensorModel>();
-		sensors.add(new AccelerometerModel(0, 0));
+		sensors.add(new AccelerometerModel());
 		sensors.add(new MagneticFieldModel());
 		sensors.add(new OrientationModel());
 		sensors.add(new TemperatureModel());
@@ -125,13 +125,6 @@ public class SensorSimulatorModel {
 	 */
 	public void newClient() {
 		mIncomingConnections++;
-		if (mIncomingConnections <= 1) {
-			// We have been connected for the first time.
-			// Disable all sensors:
-			for (SensorModel sensor : sensors) {
-				sensor.setEnabled(false);
-			}
-		}
 	}
 
 	public MagneticFieldModel getMagneticField() {

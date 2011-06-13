@@ -41,6 +41,7 @@ public class MagneticFieldModel extends SensorModel {
 	private double mVertical;
 
 	public MagneticFieldModel() {
+		super();
 		mEnabled = true;
 		mNorth = 22874.1;
 		mEast = 5939.5;

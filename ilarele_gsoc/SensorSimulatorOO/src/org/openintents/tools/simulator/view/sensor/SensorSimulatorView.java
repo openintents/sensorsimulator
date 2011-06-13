@@ -26,7 +26,6 @@
 
 package org.openintents.tools.simulator.view.sensor;
 
-import hr.fer.tel.simulator.Global;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -50,7 +49,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.CompoundBorder;
 
+import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
@@ -103,6 +104,12 @@ public class SensorSimulatorView extends JPanel {
 	private ArrayList<SensorView> sensors;
 	private ReplayAddonView replayAddonView;
 
+	private JPanel enabledSensorsPane;
+
+	private CompoundBorder enabledBorder;
+
+	private CompoundBorder disabledBorder;
+
 	public SensorSimulatorView(SensorSimulatorModel model) {
 		this.model = model;
 		// sensors
@@ -117,6 +124,15 @@ public class SensorSimulatorView extends JPanel {
 
 		replayAddonView = new ReplayAddonView(model.getReplayAddon());
 
+		enabledBorder = BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder("Enabled sensors"),
+				BorderFactory
+						.createMatteBorder(5, 5, 5, 5, Global.BORDER_COLOR));
+		disabledBorder = BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder("Enabled sensors - readonly"),
+				BorderFactory
+						.createMatteBorder(5, 5, 5, 5, Global.NOTIFY_COLOR));
+		
 		// up/down & split
 		JPanel upPanel = fillUpPanel();
 		JPanel downPanel = fillDownPanel();
@@ -316,13 +332,11 @@ public class SensorSimulatorView extends JPanel {
 
 		layout.gridx = 0;
 		layout.gridy = 1;
+		
 		// Enabled Sensors
-		JPanel enabledSensorsPane = new JPanel();
+		enabledSensorsPane = new JPanel();
 		enabledSensorsPane.setLayout(new GridLayout(0, 2));
-		enabledSensorsPane.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Enabled sensors"),
-				BorderFactory
-						.createMatteBorder(5, 5, 5, 5, Global.BORDER_COLOR)));
+		enabledSensorsPane.setBorder(enabledBorder);
 		for (SensorView sensor : sensors) {
 			sensor.addEnable(enabledSensorsPane);
 		}
@@ -576,6 +590,14 @@ public class SensorSimulatorView extends JPanel {
 
 	public JTextArea getMessagePanel() {
 		return messageTextArea;
+	}
+
+	public void fixEnabledSensors() {
+		enabledSensorsPane.setBorder(disabledBorder);
+	}
+
+	public void unfixEnabledSensors() {
+		enabledSensorsPane.setBorder(enabledBorder);
 	}
 
 }

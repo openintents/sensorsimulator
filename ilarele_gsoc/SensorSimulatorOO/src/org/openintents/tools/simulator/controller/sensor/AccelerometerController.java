@@ -1,12 +1,12 @@
 package org.openintents.tools.simulator.controller.sensor;
 
-import hr.fer.tel.simulator.Global;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.JCheckBox;
 
+import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
@@ -15,14 +15,14 @@ import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.view.sensor.IDeviceView;
 import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
 
-public class AccelerometerCtrl extends SensorCtrl {
+public class AccelerometerController extends SensorController {
 
-	private WiiAccelerometerCtrl wiiAccelerometerCtrl;
+	private WiiAccelerometerController wiiAccelerometerCtrl;
 
-	public AccelerometerCtrl(final AccelerometerModel model,
+	public AccelerometerController(final AccelerometerModel model,
 			AccelerometerView view) {
 		super(model, view);
-		wiiAccelerometerCtrl = new WiiAccelerometerCtrl(
+		wiiAccelerometerCtrl = new WiiAccelerometerController(
 				model.getRealDeviceBridgeAddon(),
 				view.getRealDeviceBridgeAddon());
 	}

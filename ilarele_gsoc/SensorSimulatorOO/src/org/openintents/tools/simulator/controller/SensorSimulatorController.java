@@ -35,15 +35,15 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.Timer;
 
-import org.openintents.tools.simulator.controller.sensor.AccelerometerCtrl;
-import org.openintents.tools.simulator.controller.sensor.BarcodeReaderCtrl;
-import org.openintents.tools.simulator.controller.sensor.LightCtrl;
-import org.openintents.tools.simulator.controller.sensor.MagneticFieldCtrl;
-import org.openintents.tools.simulator.controller.sensor.OrientationCtrl;
-import org.openintents.tools.simulator.controller.sensor.ProximityCtrl;
-import org.openintents.tools.simulator.controller.sensor.SensorCtrl;
-import org.openintents.tools.simulator.controller.sensor.TemperatureCtrl;
-import org.openintents.tools.simulator.controller.telnet.ReplayAddonCtrl;
+import org.openintents.tools.simulator.controller.sensor.AccelerometerController;
+import org.openintents.tools.simulator.controller.sensor.BarcodeReaderController;
+import org.openintents.tools.simulator.controller.sensor.LightController;
+import org.openintents.tools.simulator.controller.sensor.MagneticFieldController;
+import org.openintents.tools.simulator.controller.sensor.OrientationController;
+import org.openintents.tools.simulator.controller.sensor.ProximityController;
+import org.openintents.tools.simulator.controller.sensor.SensorController;
+import org.openintents.tools.simulator.controller.sensor.TemperatureController;
+import org.openintents.tools.simulator.controller.telnet.ReplayAddonController;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
@@ -65,43 +65,43 @@ import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
  * @author Peli
  * @author Josip Balic
  */
-public class SensorSimulatorCtrl implements WindowListener {
-	private ReplayAddonCtrl replayAddonCtrl;
+public class SensorSimulatorController implements WindowListener {
+	private ReplayAddonController replayAddonCtrl;
 
-	private ArrayList<SensorCtrl> sensors;
+	private ArrayList<SensorController> sensors;
 
-	private DeviceCtrl deviceCtrl;
+	private DeviceController deviceCtrl;
 
 	private SensorSimulatorModel model;
 	private SensorSimulatorView view;
 
 	private Timer timer;
 
-	public SensorSimulatorCtrl(final SensorSimulatorModel model,
+	public SensorSimulatorController(final SensorSimulatorModel model,
 			SensorSimulatorView view) {
 		this.model = model;
 		this.view = view;
 
 		// sensors
-		sensors = new ArrayList<SensorCtrl>();
-		sensors.add(new AccelerometerCtrl(model.getAccelerometer(), view
+		sensors = new ArrayList<SensorController>();
+		sensors.add(new AccelerometerController(model.getAccelerometer(), view
 				.getAccelerometer()));
-		sensors.add(new MagneticFieldCtrl(model.getMagneticField(), view
+		sensors.add(new MagneticFieldController(model.getMagneticField(), view
 				.getMagneticField()));
-		sensors.add(new OrientationCtrl(model.getOrientation(), view
+		sensors.add(new OrientationController(model.getOrientation(), view
 				.getOrientation()));
-		sensors.add(new TemperatureCtrl(model.getTemperature(), view
+		sensors.add(new TemperatureController(model.getTemperature(), view
 				.getTemperature()));
-		sensors.add(new BarcodeReaderCtrl(model.getBarcodeReader(), view
+		sensors.add(new BarcodeReaderController(model.getBarcodeReader(), view
 				.getBarcodeReader()));
-		sensors.add(new LightCtrl(model.getLight(), view.getLight()));
-		sensors.add(new ProximityCtrl(model.getProximity(), view.getProximity()));
+		sensors.add(new LightController(model.getLight(), view.getLight()));
+		sensors.add(new ProximityController(model.getProximity(), view.getProximity()));
 
 		// add-ons
-		replayAddonCtrl = new ReplayAddonCtrl(model.getReplayAddon(),
+		replayAddonCtrl = new ReplayAddonController(model.getReplayAddon(),
 				view.getReplayAddon(), view.getMessagePanel());
 
-		deviceCtrl = new DeviceCtrl(model, view.getDevice());
+		deviceCtrl = new DeviceController(model, view.getDevice());
 
 		JButton sensorPortButton = view.getSensorPortButton();
 		sensorPortButton.addActionListener(new ActionListener() {
@@ -140,11 +140,11 @@ public class SensorSimulatorCtrl implements WindowListener {
 		int delay = model.getDelay();
 
 		// Update sensors:
-		for (SensorCtrl sensorCtrl : sensors) {
+		for (SensorController sensorCtrl : sensors) {
 			sensorCtrl.updateSensorPhysics(orientation, wiiAccelerometerModel,
 					delay);
 		}
-		for (SensorCtrl sensorCtrl : sensors) {
+		for (SensorController sensorCtrl : sensors) {
 			sensorCtrl.getModel().updateSensorReadoutValues();
 		}
 
@@ -157,7 +157,7 @@ public class SensorSimulatorCtrl implements WindowListener {
 				// Skip time if we are already behind:
 				model.setNextUpdate(System.currentTimeMillis());
 			}
-			for (SensorCtrl sensorCtrl : sensors) {
+			for (SensorController sensorCtrl : sensors) {
 				sensorCtrl.updateUserSettings();
 			}
 		}
@@ -167,7 +167,7 @@ public class SensorSimulatorCtrl implements WindowListener {
 
 		// Now show updated data
 		StringBuffer newData = new StringBuffer();
-		for (SensorCtrl sensorCtrl : sensors) {
+		for (SensorController sensorCtrl : sensors) {
 			newData.append(sensorCtrl.showSensorData());
 		}
 		view.setOutput(newData.toString());
@@ -273,31 +273,42 @@ public class SensorSimulatorCtrl implements WindowListener {
 
 	}
 
-	public MagneticFieldCtrl getMagneticField() {
-		return (MagneticFieldCtrl) sensors.get(SensorModel.POZ_MAGNETIC_FIELD);
+	public MagneticFieldController getMagneticField() {
+		return (MagneticFieldController) sensors.get(SensorModel.POZ_MAGNETIC_FIELD);
 	}
 
-	public TemperatureCtrl getTemperature() {
-		return (TemperatureCtrl) sensors.get(SensorModel.POZ_TEMPERATURE);
+	public TemperatureController getTemperature() {
+		return (TemperatureController) sensors.get(SensorModel.POZ_TEMPERATURE);
 	}
 
-	public BarcodeReaderCtrl getBarcodeReader() {
-		return (BarcodeReaderCtrl) sensors.get(SensorModel.POZ_BARCODE_READER);
+	public BarcodeReaderController getBarcodeReader() {
+		return (BarcodeReaderController) sensors.get(SensorModel.POZ_BARCODE_READER);
 	}
 
-	public LightCtrl getLight() {
-		return (LightCtrl) sensors.get(SensorModel.POZ_LIGHT);
+	public LightController getLight() {
+		return (LightController) sensors.get(SensorModel.POZ_LIGHT);
 	}
 
-	public ProximityCtrl getProximity() {
-		return (ProximityCtrl) sensors.get(SensorModel.POZ_PROXIMITY);
+	public ProximityController getProximity() {
+		return (ProximityController) sensors.get(SensorModel.POZ_PROXIMITY);
 	}
 
-	public AccelerometerCtrl getAccelerometer() {
-		return (AccelerometerCtrl) sensors.get(SensorModel.POZ_ACCELEROMETER);
+	public AccelerometerController getAccelerometer() {
+		return (AccelerometerController) sensors.get(SensorModel.POZ_ACCELEROMETER);
 	}
 
-	public OrientationCtrl getOrientation() {
-		return (OrientationCtrl) sensors.get(SensorModel.POZ_ORIENTATION);
+	public OrientationController getOrientation() {
+		return (OrientationController) sensors.get(SensorModel.POZ_ORIENTATION);
+	}
+
+	public void fixEnabledSensors() {
+		for (SensorController sensor: sensors) {
+			sensor.fixEnabledSensors();
+		}
+	}
+	public void unfixEnabledSensors() {
+		for (SensorController sensor: sensors) {
+			sensor.unfixEnabledSensors();
+		}
 	}
 }

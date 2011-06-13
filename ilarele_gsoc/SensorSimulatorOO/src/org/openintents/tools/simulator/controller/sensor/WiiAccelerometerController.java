@@ -15,7 +15,7 @@ import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.model.telnet.WiiMoteData;
 import org.openintents.tools.simulator.view.sensor.sensors.WiiAccelerometerView;
 
-public class WiiAccelerometerCtrl {
+public class WiiAccelerometerController {
 
 	// Real device bridge
 	private JCheckBox mRealDeviceThinkpad;
@@ -25,7 +25,7 @@ public class WiiAccelerometerCtrl {
 
 	private WiiMoteData wiiMoteData = new WiiMoteData();
 
-	public WiiAccelerometerCtrl(WiiAccelerometerModel model,
+	public WiiAccelerometerController(WiiAccelerometerModel model,
 			WiiAccelerometerView view) {
 		mRealDeviceThinkpad = new JCheckBox("Use Thinkpad accelerometer");
 		mRealDeviceThinkpad.setSelected(false);

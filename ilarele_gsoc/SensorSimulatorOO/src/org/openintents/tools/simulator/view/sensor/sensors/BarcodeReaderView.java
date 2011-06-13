@@ -18,6 +18,7 @@ public class BarcodeReaderView extends SensorView {
 
 	public BarcodeReaderView(SensorModel model) {
 		super(model);
+		System.out.println("done");
 	}
 
 	// Barcode

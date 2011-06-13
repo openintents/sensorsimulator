@@ -8,12 +8,12 @@ import javax.swing.JButton;
 import org.openintents.tools.simulator.model.telnet.addons.GPSAddonModel;
 import org.openintents.tools.simulator.view.telnet.addons.GPSAddonView;
 
-public class GPSAddonCtrl {
+public class GPSAddonController {
 	// GPS variables
 	private GPSAddonView view;
 	private GPSAddonModel model;
 
-	public GPSAddonCtrl(final GPSAddonModel model, final GPSAddonView view) {
+	public GPSAddonController(final GPSAddonModel model, final GPSAddonView view) {
 		this.model = model;
 		this.view = view;
 

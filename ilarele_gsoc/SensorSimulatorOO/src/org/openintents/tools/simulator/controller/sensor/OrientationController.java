@@ -1,15 +1,15 @@
 package org.openintents.tools.simulator.controller.sensor;
 
-import hr.fer.tel.simulator.Global;
 
+import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.sensors.OrientationView;
 
-public class OrientationCtrl extends SensorCtrl {
+public class OrientationController extends SensorController {
 
-	public OrientationCtrl(OrientationModel model, OrientationView view) {
+	public OrientationController(OrientationModel model, OrientationView view) {
 		super(model, view);
 	}
 

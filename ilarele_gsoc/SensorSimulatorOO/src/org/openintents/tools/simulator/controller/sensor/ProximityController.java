@@ -1,16 +1,16 @@
 package org.openintents.tools.simulator.controller.sensor;
 
-import hr.fer.tel.simulator.Global;
 
+import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.ProximityModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.sensors.ProximityView;
 
-public class ProximityCtrl extends SensorCtrl {
+public class ProximityController extends SensorController {
 
-	public ProximityCtrl(ProximityModel model, ProximityView view) {
+	public ProximityController(ProximityModel model, ProximityView view) {
 		super(model, view);
 	}
 

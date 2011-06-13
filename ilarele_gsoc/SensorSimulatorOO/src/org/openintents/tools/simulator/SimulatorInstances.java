@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package hr.fer.tel.simulator;
+package org.openintents.tools.simulator;
 
 import java.util.ArrayList;
 

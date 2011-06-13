@@ -20,6 +20,7 @@ public class LightModel extends SensorModel {
 	private int partial_light_n;
 
 	public LightModel() {
+		super();
 		lightValue = 400;
 	}
 

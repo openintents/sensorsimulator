@@ -21,6 +21,7 @@ public class TemperatureModel extends SensorModel {
 	private int partial_temperature_n;
 
 	public TemperatureModel() {
+		super();
 		temperatureValue = 17.7;
 	}
 

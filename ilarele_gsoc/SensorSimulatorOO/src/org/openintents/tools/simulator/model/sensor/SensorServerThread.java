@@ -21,16 +21,17 @@
 
 package org.openintents.tools.simulator.model.sensor;
 
-import hr.fer.tel.simulator.SensorSimulator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
-import org.openintents.tools.simulator.controller.SensorSimulatorCtrl;
-import org.openintents.tools.simulator.controller.sensor.SensorCtrl;
+import org.openintents.tools.simulator.SensorSimulator;
+import org.openintents.tools.simulator.controller.SensorSimulatorController;
+import org.openintents.tools.simulator.controller.sensor.SensorController;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 
 /**
@@ -76,6 +77,8 @@ public class SensorServerThread implements Runnable {
 		mClientSocket = newClientSocket;
 		talking = true;
 
+		mSensorSimulator.fixEnabledSensors();
+		
 		// start ourselves:
 		mThread = new Thread(this);
 		mThread.start();
@@ -111,67 +114,37 @@ public class SensorServerThread implements Runnable {
 			while ((inputLine = in.readLine()) != null) {
 				if (inputLine.compareTo("getSupportedSensors()") == 0) {
 					String[] supportedSensors = getSupportedSensors();
-					out.println("" + supportedSensors.length);
+					out.println(supportedSensors.length);
 					for (int i = 0; i < supportedSensors.length; i++) {
 						out.println(supportedSensors[i]);
 					}
-				} else if (inputLine.compareTo("disableSensor()") == 0
-						|| inputLine.compareTo("enableSensor()") == 0) {
-					boolean enable = (inputLine.compareTo("enableSensor()") == 0);
-					inputLine = in.readLine();
-					// get sensor
-					SensorModel sensor = getSensorModelFromName(inputLine);
-					if (sensor != null)
-						sensor.enableSensor(out, enable);
-					else
-						out.println("throw IllegalArgumentException");
-				} else if (inputLine.compareTo("getNumSensorValues()") == 0) {
-					inputLine = in.readLine();
-					// get sensor
-					SensorModel sensor = getSensorModelFromName(inputLine);
-					if (sensor != null)
-						sensor.getNumSensorValues(out);
-					else
-						out.println("throw IllegalArgumentException");
 				} else if (inputLine.compareTo("readSensor()") == 0) {
 					inputLine = in.readLine();
-					// get sensor
-					SensorCtrl sensorCtrl = getSensorCtrlFromName(inputLine);
+					SensorController sensorCtrl = getSensorCtrlFromName(inputLine);
 					if (sensorCtrl != null)
 						sensorCtrl.readSensor(out);
 					else
 						out.println("throw IllegalArgumentException");
-				} else if (inputLine.compareTo("getSensorUpdateRates()") == 0) {
-					inputLine = in.readLine();
-					// get sensor
-					SensorModel sensor = getSensorModelFromName(inputLine);
-					if (sensor != null)
-						sensor.getSensorUpdateRates(out);
-					else
-						out.println("throw IllegalArgumentException");
-				} else if (inputLine.compareTo("getSensorUpdateRate()") == 0) {
-					inputLine = in.readLine();
-					// get sensor
-					SensorModel sensor = getSensorModelFromName(inputLine);
-					if (sensor != null)
-						sensor.getSensorUpdateRate(out);
-					else
-						out.println("throw IllegalArgumentException");
-				} else if (inputLine.compareTo("unsetSensorUpdateRate()") == 0) {
-					inputLine = in.readLine();
-					// get sensor
-					SensorModel sensor = getSensorModelFromName(inputLine);
-					if (sensor != null)
-						sensor.unsetSensorUpdateRate(out);
-					else
-						out.println("throw IllegalArgumentException");
 				} else {
-					// ??? The client is violating the protocol.
-					// mSensorSimulator
-					// .addMessage("WARNING: Client sent unexpected command: "
-					// + inputLine);
+					SensorModel sensor = getSensorModelFromName(inputLine);
+					if (sensor != null) {
+						System.out.println("else sensor is " + sensor.getName());
+						inputLine = in.readLine();
+						System.out.println("cmd is " + inputLine);
+						executeCommand(sensor, out, in, inputLine);
+					} else {
+						out.println("throw IllegalArgumentException");
+						System.out
+								.println("WARNING: Client sent unexpected command: "
+										+ inputLine);
+						// ??? The client is violating the protocol.
+						// mSensorSimulator
+						// .addMessage("WARNING: Client sent unexpected command: "
+						// + inputLine);
+					}
 				}
 			}
+			mSensorSimulator.unfixEnabledSensors();
 			out.close();
 			in.close();
 			mClientSocket.close();
@@ -201,8 +174,25 @@ public class SensorServerThread implements Runnable {
 		// mSensorSimulator.addMessage("Incoming connection closed.");
 	}
 
-	private SensorCtrl getSensorCtrlFromName(String inputLine) {
-		SensorSimulatorCtrl ctrl = mSensorSimulator.ctrl;
+	private void executeCommand(SensorModel sensor, PrintWriter out, BufferedReader inArgs, String cmd) throws IOException {
+		if (cmd.compareTo("getNumSensorValues()") == 0)
+			sensor.getNumSensorValues(out);
+		else if (cmd.compareTo("getSensorUpdateRates()") == 0)
+			sensor.getSensorUpdateRates(out);
+		else if (cmd.compareTo("setSensorUpdateRate()") == 0) {
+			sensor.setSensorUpdateRate(out);
+			String args = inArgs.readLine();
+			float updatesPerSecond = Float.parseFloat(args);
+			mSensorSimulator.model.getAccelerometer().setCurrentUpdateRate(updatesPerSecond);
+		}
+		else if (cmd.compareTo("unsetSensorUpdateRate()") == 0)
+			sensor.unsetSensorUpdateRate(out);
+		else
+			out.println("throw IllegalArgumentException");
+	}
+
+	private SensorController getSensorCtrlFromName(String inputLine) {
+		SensorSimulatorController ctrl = mSensorSimulator.ctrl;
 		if (inputLine.compareTo(SensorModel.ACCELEROMETER) == 0)
 			return ctrl.getAccelerometer();
 		else if (inputLine.compareTo(SensorModel.MAGNETIC_FIELD) == 0)
@@ -245,11 +235,19 @@ public class SensorServerThread implements Runnable {
 	 * @return String[] filled with names of currently supported sensors.
 	 */
 	public String[] getSupportedSensors() {
-		String[] result = new String[mSensorSimulator.model.getSensors().size()];
-		int i = 0;
+		ArrayList<String> resultArray = new ArrayList<String>();
 		for (SensorModel sensor : mSensorSimulator.model.getSensors()) {
-			result[i++] = sensor.getName();
+			System.out.println(sensor.getName() + " " + sensor.isEnabled());
+			if (sensor.isEnabled()) {
+				resultArray.add(sensor.getName());
+			}
 		}
+		String[] result = new String[resultArray.size()];
+		int i = 0;
+		for (String sensor : resultArray) {
+			result[i++] = sensor;
+		}
+		System.out.println("getSupportedSensors " + result.length);
 		return result;
 	}
 
@@ -260,6 +258,7 @@ public class SensorServerThread implements Runnable {
 		try {
 			talking = false;
 			mClientSocket.close();
+			mSensorSimulator.unfixEnabledSensors();
 		} catch (IOException e) {
 			System.err.println("Close failed.");
 			System.exit(1);

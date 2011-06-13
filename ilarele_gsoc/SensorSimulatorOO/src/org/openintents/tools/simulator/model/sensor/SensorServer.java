@@ -16,11 +16,12 @@
 
 package org.openintents.tools.simulator.model.sensor;
 
-import hr.fer.tel.simulator.SensorSimulator;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import org.openintents.tools.simulator.SensorSimulator;
 
 /**
  * Listens for incoming connections from an Android phone or emulator.
@@ -145,7 +146,6 @@ public class SensorServer implements Runnable {
 			// sst.mThread.interrupt();
 			sst.stop();
 		}
-
 		// finally kill ourselves:
 		listening = false;
 

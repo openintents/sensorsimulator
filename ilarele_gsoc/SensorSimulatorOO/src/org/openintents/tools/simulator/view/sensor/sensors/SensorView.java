@@ -1,9 +1,9 @@
 package org.openintents.tools.simulator.view.sensor.sensors;
 
-import hr.fer.tel.simulator.Global;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.PrintWriter;
@@ -17,7 +17,9 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.MatteBorder;
 
+import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 
 public abstract class SensorView extends JPanel {
@@ -48,6 +50,8 @@ public abstract class SensorView extends JPanel {
 	private JTextField mRefreshCountText;
 
 	protected SensorModel model;
+	private JButton expandButton;
+	private JPanel insidePanel;
 
 	public SensorView(SensorModel model) {
 		this.model = model;
@@ -72,10 +76,21 @@ public abstract class SensorView extends JPanel {
 	}
 
 	private void fillSensorPanel() {
-		setLayout(new GridBagLayout());
-		setBorder(BorderFactory.createCompoundBorder(BorderFactory
-				.createTitledBorder(model.getName()), BorderFactory
-				.createMatteBorder(5, 5, 5, 5, Global.BORDER_COLOR)));
+		setLayout(new BorderLayout());
+		JPanel expandPanel = new JPanel(new BorderLayout());
+		expandButton = new JButton();
+		expandButton.setBackground(new Color(0, 0, 0, 0));
+		expandButton.setIcon(Global.EXPAND_MINUS);
+		expandPanel.add(expandButton, BorderLayout.WEST);
+		JLabel nameLabel = new JLabel(model.getName());
+		nameLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+		expandPanel.add(nameLabel, BorderLayout.CENTER);
+		add(expandPanel, BorderLayout.NORTH);
+		insidePanel = new JPanel();
+		add(insidePanel, BorderLayout.CENTER);
+		MatteBorder b = BorderFactory.createMatteBorder(5, 5, 5, 5,
+				Global.BORDER_COLOR);
+		insidePanel.setBorder(b);
 		GridBagConstraints layout = new GridBagConstraints();
 
 		// panel settings
@@ -83,12 +98,12 @@ public abstract class SensorView extends JPanel {
 		layout.gridy = 0;
 		layout.fill = GridBagConstraints.HORIZONTAL;
 		layout.anchor = GridBagConstraints.NORTHWEST;
-		add(fillSensorSettingsPanel(), layout);
+		insidePanel.add(fillSensorSettingsPanel(), layout);
 
 		// update rates
 		layout.gridx = 0;
 		layout.gridy = 1;
-		add(fillSensorUpdatePanel(), layout);
+		insidePanel.add(fillSensorUpdatePanel(), layout);
 
 		// random component and update simulation
 		layout.gridx = 1;
@@ -96,7 +111,7 @@ public abstract class SensorView extends JPanel {
 		JPanel updateRandomPanel = new JPanel(new BorderLayout());
 		updateRandomPanel.add(fillSensorRandomPanel(), BorderLayout.NORTH);
 		updateRandomPanel.add(updateSimulationField(), BorderLayout.SOUTH);
-		add(updateRandomPanel, layout);
+		insidePanel.add(updateRandomPanel, layout);
 	}
 
 	public boolean isEnabled() {
@@ -300,8 +315,8 @@ public abstract class SensorView extends JPanel {
 	public JPanel updateSimulationField() {
 		JPanel resultPanel = new JPanel();
 
-		if (!model.isUpdating())
-			return resultPanel;
+//		if (!model.isUpdating())
+//			return resultPanel;
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Simulation update"),
 				BorderFactory.createEmptyBorder(0, 0, 0, 0)));
@@ -379,6 +394,20 @@ public abstract class SensorView extends JPanel {
 
 	public void setRefreshEmulatorTime(String message) {
 		mRefreshEmulatorLabel.setText(message);
+	}
+
+	public JButton getExpandButton() {
+		return expandButton;
+	}
+
+	public void switchExpand() {
+		if (insidePanel.isVisible()) {
+			expandButton.setIcon(Global.EXPAND_PLUS);
+			insidePanel.setVisible(false);
+		} else {
+			expandButton.setIcon(Global.EXPAND_MINUS);
+			insidePanel.setVisible(true);
+		}
 	}
 
 }

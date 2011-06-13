@@ -145,7 +145,7 @@ public class DeviceView extends JPanel implements IDeviceView {
 		yawPitchButton.setSelected(true);
 		rollPitchButton = new JRadioButton(SensorModel.ACTION_ROLL_PITCH);
 		moveButton = new JRadioButton(SensorModel.ACTION_MOVE);
-
+		
 		// Group the radio buttons.
 		ButtonGroup group = new ButtonGroup();
 		group.add(yawPitchButton);
@@ -167,36 +167,38 @@ public class DeviceView extends JPanel implements IDeviceView {
 		rollSlider.setPaintLabels(true);
 		rollSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy++;
-		c.gridwidth = 1;
-		add(yawPitchButton, c);
-		c.gridx++;
-		add(rollPitchButton, c);
-		c.gridx++;
-		add(moveButton, c);
+		// sliders
+		JPanel sliderPanel = getSlidersPanel();
+		add(sliderPanel);
 
-		// Create the label.
+		// radio buttons
+		add(yawPitchButton);
+		add(rollPitchButton);
+		add(moveButton);
+		
+		setDoubleBuffered(true);
+
+		registerSliders();
+	}
+
+	private JPanel getSlidersPanel() {
+		JPanel centerPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		
+		// labels
 		JLabel yawLabel = new JLabel("Yaw", JLabel.CENTER);
 		yawLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		JLabel pitchLabel = new JLabel("Pitch", JLabel.CENTER);
 		pitchLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		JLabel rollLabel = new JLabel("Roll", JLabel.CENTER);
 		rollLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		// GridBagLayout
-		GridBagLayout myGridBagLayout = new GridBagLayout();
-		// myGridLayout.
-		// GridBagConstraints
-		JPanel centerPanel = new JPanel(myGridBagLayout);
-
-		// Put everything together.
+		
+		// sliders
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.NORTHWEST;
 		c.gridwidth = 1;
 		c.gridx = 0;
-		c.gridy++;
+		c.gridy = 0;
 		centerPanel.add(yawLabel, c);
 		c.gridx = 1;
 		centerPanel.add(yawSlider, c);
@@ -211,11 +213,7 @@ public class DeviceView extends JPanel implements IDeviceView {
 		c.gridx = 1;
 		centerPanel.add(rollSlider, c);
 		centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-		add(centerPanel);
-		setDoubleBuffered(true);
-
-		registerSliders();
+		return centerPanel;
 	}
 
 	private void registerSliders() {

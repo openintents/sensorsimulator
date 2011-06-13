@@ -1,6 +1,6 @@
-package hr.fer.tel.simulator;
+package org.openintents.tools.simulator;
 
-import org.openintents.tools.simulator.controller.TelnetSimulatorCtrl;
+import org.openintents.tools.simulator.controller.TelnetSimulatorController;
 import org.openintents.tools.simulator.model.telnet.TelnetSimulatorModel;
 import org.openintents.tools.simulator.model.telnet.addons.GPSAddonModel;
 import org.openintents.tools.simulator.view.telnet.TelnetSimulatorView;
@@ -10,7 +10,7 @@ import org.openintents.tools.simulator.view.telnet.addons.GPSAddonView;
 public class TelnetSimulator {
 	public TelnetSimulatorModel model = new TelnetSimulatorModel();
 	public TelnetSimulatorView view = new TelnetSimulatorView(model);
-	public TelnetSimulatorCtrl ctrl = new TelnetSimulatorCtrl(model, view);
+	public TelnetSimulatorController ctrl = new TelnetSimulatorController(model, view);
 
 	public int getTelnetPort() {
 		return model.getPort();
