@@ -3,8 +3,6 @@ package org.openintents.tools.simulator;
 import java.awt.Color;
 import java.text.DecimalFormat;
 
-import javax.swing.ImageIcon;
-
 public class Global {
 	public final static int WIDTH = 1000;
 	public final static int HEIGHT = 680;
@@ -15,7 +13,7 @@ public class Global {
 	public final static double SENSOR_SPLIT_LEFT = 0.4;
 	public final static double SENSOR_SPLIT_RIGHT = 1 - SENSOR_SPLIT_LEFT;
 
-	public final static Color ENABLE = Color.WHITE;
+	public final static Color ENABLE = new Color(0x00BB00);
 	public final static Color DISABLE = null;
 	public static final Color BORDER_COLOR = Color.BLACK;
 	public static final Color NOTIFY_COLOR = Color.RED;
@@ -25,8 +23,4 @@ public class Global {
 	public static final DecimalFormat ONE_DECIMAL_FORMAT = new DecimalFormat(
 			"#0.0");
 
-	public static final ImageIcon EXPAND_MINUS = new ImageIcon(
-			"pics/minus.gif");
-	public static final ImageIcon EXPAND_PLUS = new ImageIcon(
-			"pics/plus.gif");
 }

@@ -26,7 +26,6 @@
 
 package org.openintents.tools.simulator.view.sensor;
 
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -47,9 +46,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.border.CompoundBorder;
+import javax.swing.border.Border;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
@@ -104,9 +104,11 @@ public class SensorSimulatorView extends JPanel {
 
 	private JPanel enabledSensorsPane;
 
-	private CompoundBorder enabledBorder;
+	private Border enabledBorder;
 
-	private CompoundBorder disabledBorder;
+	private Border disabledBorder;
+
+	private JTabbedPane mSensorsTabbedPane;
 
 	public SensorSimulatorView(SensorSimulatorModel model) {
 		this.model = model;
@@ -120,16 +122,10 @@ public class SensorSimulatorView extends JPanel {
 		sensors.add(new LightView(model.getLight()));
 		sensors.add(new ProximityView(model.getProximity()));
 
+		enabledBorder = BorderFactory.createTitledBorder("Enabled sensors");
+		disabledBorder = BorderFactory
+				.createTitledBorder("Enabled sensors - readonly");
 
-		enabledBorder = BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Enabled sensors"),
-				BorderFactory
-						.createMatteBorder(5, 5, 5, 5, Global.BORDER_COLOR));
-		disabledBorder = BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Enabled sensors - readonly"),
-				BorderFactory
-						.createMatteBorder(5, 5, 5, 5, Global.NOTIFY_COLOR));
-		
 		// up/down & split
 		JPanel upPanel = fillUpPanel();
 		JPanel downPanel = fillDownPanel();
@@ -137,7 +133,7 @@ public class SensorSimulatorView extends JPanel {
 		JSplitPane splitPaneVertical = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, upPanel, downPanel);
 		splitPaneVertical.setResizeWeight(Global.SENSOR_SPLIT_UP);
-		
+
 		add(splitPaneVertical);
 	}
 
@@ -257,34 +253,24 @@ public class SensorSimulatorView extends JPanel {
 		JPanel upPanel = new JPanel(new BorderLayout());
 
 		JScrollPane leftScrollPane = fillLeftPanel();
-		JScrollPane rightScrollPane = fillRightPanel();
+		mSensorsTabbedPane = fillRightPanel();
 
 		JSplitPane splitUpPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				leftScrollPane, rightScrollPane);
+				leftScrollPane, mSensorsTabbedPane);
 		splitUpPane.setResizeWeight(Global.SENSOR_SPLIT_LEFT);
 
 		upPanel.add(splitUpPane);
 		return upPanel;
 	}
 
-	private JScrollPane fillRightPanel() {
-		JPanel rightPanel = new JPanel(new GridBagLayout());
-		JScrollPane rightScrollPane = new JScrollPane(rightPanel);
-		rightScrollPane
-				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		rightScrollPane.setPreferredSize(new Dimension(
-				(int) (Global.WIDTH * Global.SENSOR_SPLIT_RIGHT),
-				(int) (Global.HEIGHT * Global.SENSOR_SPLIT_UP)));
-		GridBagConstraints layout = new GridBagConstraints();
-		layout.gridx = 0;
-		layout.gridy = 0;
-		layout.fill = GridBagConstraints.HORIZONTAL;
-		layout.anchor = GridBagConstraints.NORTHWEST;
+	private JTabbedPane fillRightPanel() {
+		JTabbedPane rightPanel = new JTabbedPane();
 		for (SensorView sensor : sensors) {
-			rightPanel.add(sensor, layout);
-			layout.gridy++;
+			SensorModel sensorModel = sensor.getModel();
+			if (sensorModel.isEnabled())
+				rightPanel.addTab(sensorModel.getName(), sensor);
 		}
-		return rightScrollPane;
+		return rightPanel;
 	}
 
 	private JScrollPane fillLeftPanel() {
@@ -315,7 +301,7 @@ public class SensorSimulatorView extends JPanel {
 
 		layout.gridx = 0;
 		layout.gridy = 1;
-		
+
 		// Enabled Sensors
 		enabledSensorsPane = new JPanel();
 		enabledSensorsPane.setLayout(new GridLayout(0, 2));
@@ -570,12 +556,15 @@ public class SensorSimulatorView extends JPanel {
 		return messageTextArea;
 	}
 
-	public void fixEnabledSensors() {
-		enabledSensorsPane.setBorder(disabledBorder);
+	public void setFix(boolean value) {
+		if (value)
+			enabledSensorsPane.setBorder(disabledBorder);
+		else
+			enabledSensorsPane.setBorder(enabledBorder);
 	}
 
-	public void unfixEnabledSensors() {
-		enabledSensorsPane.setBorder(enabledBorder);
+	public JTabbedPane getSensorsTabbedPanel() {
+		return mSensorsTabbedPane;
 	}
 
 }

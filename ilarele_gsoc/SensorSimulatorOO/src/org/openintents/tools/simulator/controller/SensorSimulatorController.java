@@ -33,8 +33,10 @@ import java.awt.event.WindowListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JTabbedPane;
 import javax.swing.Timer;
 
+import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.controller.sensor.AccelerometerController;
 import org.openintents.tools.simulator.controller.sensor.BarcodeReaderController;
 import org.openintents.tools.simulator.controller.sensor.LightController;
@@ -51,6 +53,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerMode
 import org.openintents.tools.simulator.view.sensor.DeviceView;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
+import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 
 /**
  * Class of SensorSimulator.
@@ -75,7 +78,7 @@ public class SensorSimulatorController implements WindowListener {
 	private Timer timer;
 
 	public SensorSimulatorController(final SensorSimulatorModel model,
-			SensorSimulatorView view) {
+			final SensorSimulatorView view) {
 		this.model = model;
 		this.view = view;
 
@@ -107,6 +110,30 @@ public class SensorSimulatorController implements WindowListener {
 			}
 		});
 
+		for (final SensorController sensorCtrl : sensors) {
+			final SensorView sensorView = sensorCtrl.getView();
+			final SensorModel sensorModel = sensorCtrl.getModel();
+
+			final JButton enableBtn = sensorView.getEnabled();
+			enableBtn.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					JTabbedPane tabbedPanel = view.getSensorsTabbedPanel();
+					if (!sensorCtrl.isFixed()) {
+						if (sensorModel.isEnabled()) {
+							sensorModel.setEnabled(false);
+							enableBtn.setBackground(Global.DISABLE);
+							tabbedPanel.remove(sensorView);
+						} else {
+							sensorModel.setEnabled(true);
+							enableBtn.setBackground(Global.ENABLE);
+							tabbedPanel.add(sensorModel.getName(), sensorView);
+						}
+					}
+				}
+			});
+		}
+
 		timer = new Timer(model.getDelay(), new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -116,7 +143,6 @@ public class SensorSimulatorController implements WindowListener {
 		timer.setCoalesce(true);
 
 		timer.start();
-
 	}
 
 	private void doTimer() {
@@ -277,15 +303,9 @@ public class SensorSimulatorController implements WindowListener {
 		return (OrientationController) sensors.get(SensorModel.POZ_ORIENTATION);
 	}
 
-	public void fixEnabledSensors() {
+	public void setFix(boolean value) {
 		for (SensorController sensor : sensors) {
-			sensor.fixEnabledSensors();
-		}
-	}
-
-	public void unfixEnabledSensors() {
-		for (SensorController sensor : sensors) {
-			sensor.unfixEnabledSensors();
+			sensor.setFix(value);
 		}
 	}
 }

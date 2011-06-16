@@ -2,7 +2,7 @@ package org.openintents.tools.simulator.view.sensor.sensors;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Font;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.PrintWriter;
@@ -13,15 +13,15 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.border.MatteBorder;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 
-public abstract class SensorView extends JPanel {
+public abstract class SensorView extends JScrollPane {
 	private static final long serialVersionUID = 6732292499469735861L;
 	private static final String EMPTY_LABEL = "                 -                ";
 	private static Random rand = new Random();
@@ -42,20 +42,22 @@ public abstract class SensorView extends JPanel {
 	protected JLabel mRefreshEmulatorLabel;
 
 	protected SensorModel model;
-	private JButton expandButton;
 	private JPanel insidePanel;
 
 	public SensorView(SensorModel model) {
 		this.model = model;
 
+		
+		setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		setPreferredSize(new Dimension(
+				(int) (Global.WIDTH * Global.SENSOR_SPLIT_RIGHT),
+				(int) (Global.HEIGHT * Global.SENSOR_SPLIT_UP)));
+		
 		mEnabled = new JButton(model.getName());
-		if (model.isEnabled()) {
+		if (model.isEnabled())
 			mEnabled.setBackground(Global.ENABLE);
-			setVisible(true);
-		} else {
+		else
 			mEnabled.setBackground(Global.DISABLE);
-			setVisible(false);
-		}
 
 		mCurrentUpdateRateText = new JTextField(5);
 
@@ -66,26 +68,13 @@ public abstract class SensorView extends JPanel {
 	}
 
 	private void fillSensorPanel() {
-		setLayout(new BorderLayout());
-		JPanel expandPanel = new JPanel(new BorderLayout());
-		expandButton = new JButton();
-		expandButton.setBackground(new Color(0, 0, 0, 0));
-		expandButton.setIcon(Global.EXPAND_MINUS);
-		expandPanel.add(expandButton, BorderLayout.WEST);
-		JLabel nameLabel = new JLabel(model.getName());
-		nameLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-		expandPanel.add(nameLabel, BorderLayout.CENTER);
-		add(expandPanel, BorderLayout.NORTH);
 		insidePanel = new JPanel(new GridBagLayout());
-		add(insidePanel, BorderLayout.WEST);
-		MatteBorder b = BorderFactory.createMatteBorder(5, 5, 5, 5,
-				Global.BORDER_COLOR);
-		insidePanel.setBorder(b);
-		
+		getViewport().add(insidePanel);
+
 		GridBagConstraints layout = new GridBagConstraints();
 		layout.fill = GridBagConstraints.HORIZONTAL;
 		layout.anchor = GridBagConstraints.NORTHWEST;
-		
+
 		// update rates
 		layout.gridx = 0;
 		layout.gridy = 0;
@@ -100,16 +89,15 @@ public abstract class SensorView extends JPanel {
 		updateRandomPanel.add(fillSensorRandomPanel(), BorderLayout.NORTH);
 		updateRandomPanel.add(updateSimulationField(), BorderLayout.SOUTH);
 		insidePanel.add(updateRandomPanel, layout);
-		
+
 		// panel settings
 		layout.gridx = 1;
 		layout.gridy = 0;
 		layout.gridheight = 5;
 		insidePanel.add(fillSensorSettingsPanel(), layout);
-		
 	}
 
-	public boolean isEnabled() {
+	public boolean isSensorEnabled() {
 		return mEnabled.isSelected();
 	}
 
@@ -326,7 +314,7 @@ public abstract class SensorView extends JPanel {
 	}
 
 	public void enableSensor(PrintWriter out, boolean enable) {
-		out.println("" + isEnabled());
+		out.println("" + isSensorEnabled());
 		setEnabled(enable);
 	}
 
@@ -344,7 +332,7 @@ public abstract class SensorView extends JPanel {
 	}
 
 	public void getSensorUpdateRate(PrintWriter out) {
-		if (isEnabled()) {
+		if (isSensorEnabled()) {
 			double updatesPerSecond = getCurrentUpdateRate();
 			out.println("" + updatesPerSecond);
 		} else {
@@ -354,7 +342,7 @@ public abstract class SensorView extends JPanel {
 	}
 
 	public void unsetSensorUpdateRate(PrintWriter out) {
-		if (isEnabled()) {
+		if (isSensorEnabled()) {
 			out.println("OK");
 			mCurrentUpdateRateText.setText("" + getDefaultUpdateRate());
 		} else {
@@ -375,17 +363,7 @@ public abstract class SensorView extends JPanel {
 		mRefreshEmulatorLabel.setText(message);
 	}
 
-	public JButton getExpandButton() {
-		return expandButton;
-	}
-
-	public void switchExpand() {
-		if (insidePanel.isVisible()) {
-			expandButton.setIcon(Global.EXPAND_PLUS);
-			insidePanel.setVisible(false);
-		} else {
-			expandButton.setIcon(Global.EXPAND_MINUS);
-			insidePanel.setVisible(true);
-		}
+	public SensorModel getModel() {
+		return model;
 	}
 }

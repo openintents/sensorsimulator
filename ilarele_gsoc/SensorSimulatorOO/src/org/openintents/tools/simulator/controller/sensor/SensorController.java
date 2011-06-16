@@ -3,7 +3,6 @@ package org.openintents.tools.simulator.controller.sensor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.PrintWriter;
-import java.text.DecimalFormat;
 
 import javax.swing.JButton;
 
@@ -17,6 +16,7 @@ public abstract class SensorController {
 
 	protected SensorModel model;
 	protected SensorView view;
+	// if the connection with the emulator has started
 	private boolean isFixed;
 
 	public SensorController(final SensorModel model, final SensorView view) {
@@ -25,27 +25,9 @@ public abstract class SensorController {
 		isFixed = false;
 		final JButton enableButton = view.getEnabled();
 		enableButton.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!isFixed) {
-					if (model.isEnabled()) {
-						model.setEnabled(false);
-						enableButton.setBackground(Global.DISABLE);
-						view.setVisible(false);
-					} else {
-						model.setEnabled(true);
-						enableButton.setBackground(Global.ENABLE);
-						view.setVisible(true);
-					}
-				}
-			}
-		});
-		JButton expandBtn = view.getExpandButton();
-		expandBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				view.switchExpand();
+			
 			}
 		});
 	}
@@ -109,11 +91,11 @@ public abstract class SensorController {
 		}
 	}
 
-	public void fixEnabledSensors() {
-		isFixed = true;
+	public void setFix(boolean value) {
+		isFixed = value;
 	}
 
-	public void unfixEnabledSensors() {
-		isFixed = false;
+	public boolean isFixed() {
+		return isFixed;
 	}
 }

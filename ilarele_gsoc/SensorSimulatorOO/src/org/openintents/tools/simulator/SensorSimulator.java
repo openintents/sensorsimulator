@@ -18,12 +18,12 @@ public class SensorSimulator {
 	}
 
 	public void fixEnabledSensors() {
-		view.fixEnabledSensors();
-		ctrl.fixEnabledSensors();
+		view.setFix(true);
+		ctrl.setFix(true);
 	}
 
 	public void unfixEnabledSensors() {
-		view.unfixEnabledSensors();
-		ctrl.unfixEnabledSensors();
+		view.setFix(false);
+		ctrl.setFix(false);
 	}
 }
