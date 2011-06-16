@@ -121,16 +121,15 @@ public class SensorServerThread implements Runnable {
 				} else if (inputLine.compareTo("readSensor()") == 0) {
 					inputLine = in.readLine();
 					SensorController sensorCtrl = getSensorCtrlFromName(inputLine);
-					if (sensorCtrl != null)
+					if (sensorCtrl != null) {
 						sensorCtrl.readSensor(out);
-					else
+						sensorCtrl.updateEmulatorRefresh(mSensorSimulator.view.getRefreshCount());
+					} else
 						out.println("throw IllegalArgumentException");
 				} else {
 					SensorModel sensor = getSensorModelFromName(inputLine);
 					if (sensor != null) {
-						System.out.println("else sensor is " + sensor.getName());
 						inputLine = in.readLine();
-						System.out.println("cmd is " + inputLine);
 						executeCommand(sensor, out, in, inputLine);
 					} else {
 						out.println("throw IllegalArgumentException");

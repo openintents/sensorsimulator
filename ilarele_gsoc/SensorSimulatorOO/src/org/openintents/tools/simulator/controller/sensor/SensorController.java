@@ -1,9 +1,9 @@
 package org.openintents.tools.simulator.controller.sensor;
 
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 
 import javax.swing.JButton;
 
@@ -86,27 +86,25 @@ public abstract class SensorController {
 	public void readSensor(PrintWriter out) {
 		if (model.isEnabled()) {
 			model.printSensorData(out);
-			updateEmulatorRefresh();
 		} else {
 			// This sensor is currently disabled
 			out.println("throw IllegalStateException");
 		}
 	}
 
-	public void updateEmulatorRefresh() {
+	public void updateEmulatorRefresh(long maxCount) {
 		long updateEmulatorCount = model.incUpdateEmulatorCount();
 		long updateEmulatorTime = model.getEmulatorTime();
 
-		long maxcount = model.getRefreshCount();
-		if (maxcount >= 0 && updateEmulatorCount >= maxcount) {
+		if (maxCount >= 0 && updateEmulatorCount >= maxCount) {
 			long newtime = System.currentTimeMillis();
 			double ms = (double) (newtime - updateEmulatorTime)
-					/ ((double) maxcount);
+					/ ((double) maxCount);
 
 			view.setRefreshEmulatorTime(Global.TWO_DECIMAL_FORMAT.format(ms)
 					+ " ms");
 
-			updateEmulatorCount = 0;
+			model.setUpdateEmulatorCount(0);
 			model.setUpdateEmulatorTime(newtime);
 		}
 	}
@@ -114,7 +112,7 @@ public abstract class SensorController {
 	public void fixEnabledSensors() {
 		isFixed = true;
 	}
-	
+
 	public void unfixEnabledSensors() {
 		isFixed = false;
 	}

@@ -26,7 +26,6 @@
 
 package org.openintents.tools.simulator.model.sensor;
 
-
 import java.util.ArrayList;
 
 import org.openintents.tools.simulator.SensorSimulator;
@@ -38,7 +37,6 @@ import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.ProximityModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
-import org.openintents.tools.simulator.model.telnet.addons.ReplayAddonModel;
 
 /**
  * Class of SensorSimulator.
@@ -84,7 +82,6 @@ public class SensorSimulatorModel {
 	// sensors
 	private ArrayList<SensorModel> sensors;
 
-	private ReplayAddonModel replayAddonModel;
 	// Server for sending out sensor data
 	private SensorServer mSensorServer;
 	private int mIncomingConnections;
@@ -111,13 +108,17 @@ public class SensorSimulatorModel {
 		sensors.add(new BarcodeReaderModel());
 		sensors.add(new LightModel());
 		sensors.add(new ProximityModel());
-		replayAddonModel = new ReplayAddonModel();
 		mSensorServer = new SensorServer(sensorSimulator);
 
 		userSettingsDuration = 500; // Update every half second. This should
 		// be enough.
 		userSettingsNextUpdate = System.currentTimeMillis(); // First update
 		// is now.
+		
+
+		// Variables for timing:
+		updateSensorCount = 0;
+		updateSensorTime = System.currentTimeMillis();
 	}
 
 	/**
@@ -180,10 +181,6 @@ public class SensorSimulatorModel {
 		return delay;
 	}
 
-	public ReplayAddonModel getReplayAddon() {
-		return replayAddonModel;
-	}
-
 	public int incUpdateSensorCount() {
 		return ++updateSensorCount;
 	}
@@ -223,4 +220,9 @@ public class SensorSimulatorModel {
 	public void setNextUpdate(long ms) {
 		userSettingsNextUpdate = ms;
 	}
+
+	public void setDelay(int newdelay) {
+		delay = newdelay;
+	}
+
 }

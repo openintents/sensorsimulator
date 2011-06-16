@@ -1,6 +1,5 @@
 package org.openintents.tools.simulator.controller.sensor;
 
-
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
@@ -17,10 +16,10 @@ public class OrientationController extends SensorController {
 	public void updateSensorPhysics(OrientationModel orientation,
 			WiiAccelerometerModel realDeviceBridgeAddon, int delay) {
 		OrientationModel orientModel = (OrientationModel) model;
-		// TODO: refresh sliders - there are listeners => no need for update
+		OrientationView orientView = (OrientationView) view;
 		if (orientModel.isEnabled()) {
 			// Add random component:
-			double random = orientModel.getRandom();
+			double random = orientView.getRandom();
 			if (random > 0) {
 				orientModel.addYaw(SensorModel.getRandom(random));
 				orientModel.addPitch(SensorModel.getRandom(random));

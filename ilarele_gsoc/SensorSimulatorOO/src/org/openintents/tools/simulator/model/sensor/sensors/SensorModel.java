@@ -68,9 +68,6 @@ public abstract class SensorModel {
 	protected int updateEmulatorCount;
 	protected long updateEmulatorTime;
 
-	// Settings
-	private long mRefreshCount;
-
 	/**
 	 * Duration (in milliseconds) between two updates. This is the inverse of
 	 * the update rate.
@@ -264,16 +261,20 @@ public abstract class SensorModel {
 
 	}
 
-	public long getRefreshCount() {
-		return mRefreshCount;
-	}
-
 	public long getEmulatorTime() {
 		return updateEmulatorTime;
 	}
 
 	public void setUpdateEmulatorTime(long newtime) {
 		updateEmulatorTime = newtime;
+	}
+
+	public void setUpdateEmulatorCount(int value) {
+		updateEmulatorCount = value;		
+	}
+
+	public long getUpdateDuration() {
+		return updateDuration;
 	}
 
 }

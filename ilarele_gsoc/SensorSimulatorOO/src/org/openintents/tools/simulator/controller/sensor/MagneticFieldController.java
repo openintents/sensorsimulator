@@ -30,7 +30,7 @@ public class MagneticFieldController extends SensorController {
 			magneticvertical = magView.getVertical();
 
 			// Add random component:
-			double random = magModel.getRandom();
+			double random = magView.getRandom();
 			if (random > 0) {
 				magneticnorth += SensorModel.getRandom(random);
 				magneticeast += SensorModel.getRandom(random);

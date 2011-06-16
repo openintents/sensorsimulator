@@ -43,7 +43,6 @@ import org.openintents.tools.simulator.controller.sensor.OrientationController;
 import org.openintents.tools.simulator.controller.sensor.ProximityController;
 import org.openintents.tools.simulator.controller.sensor.SensorController;
 import org.openintents.tools.simulator.controller.sensor.TemperatureController;
-import org.openintents.tools.simulator.controller.telnet.ReplayAddonController;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
@@ -66,8 +65,6 @@ import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
  * @author Josip Balic
  */
 public class SensorSimulatorController implements WindowListener {
-	private ReplayAddonController replayAddonCtrl;
-
 	private ArrayList<SensorController> sensors;
 
 	private DeviceController deviceCtrl;
@@ -95,11 +92,10 @@ public class SensorSimulatorController implements WindowListener {
 		sensors.add(new BarcodeReaderController(model.getBarcodeReader(), view
 				.getBarcodeReader()));
 		sensors.add(new LightController(model.getLight(), view.getLight()));
-		sensors.add(new ProximityController(model.getProximity(), view.getProximity()));
+		sensors.add(new ProximityController(model.getProximity(), view
+				.getProximity()));
 
 		// add-ons
-		replayAddonCtrl = new ReplayAddonController(model.getReplayAddon(),
-				view.getReplayAddon(), view.getMessagePanel());
 
 		deviceCtrl = new DeviceController(model, view.getDevice());
 
@@ -135,14 +131,15 @@ public class SensorSimulatorController implements WindowListener {
 			updateFromWiimote();
 		}
 
-		updateFromFile();
-
-		int delay = model.getDelay();
+		int newDelay = (int) view.getUpdateSensors();
+		if (newDelay > 0) {
+			setDelay(newDelay);
+		}
 
 		// Update sensors:
 		for (SensorController sensorCtrl : sensors) {
 			sensorCtrl.updateSensorPhysics(orientation, wiiAccelerometerModel,
-					delay);
+					newDelay);
 		}
 		for (SensorController sensorCtrl : sensors) {
 			sensorCtrl.getModel().updateSensorReadoutValues();
@@ -173,6 +170,11 @@ public class SensorSimulatorController implements WindowListener {
 		view.setOutput(newData.toString());
 	}
 
+	private void setDelay(int newdelay) {
+		timer.setDelay(newdelay);
+		model.setDelay(newdelay);
+	}
+
 	private void updateFromWiimote() {
 		DeviceView deviceView = deviceCtrl.getView();
 		AccelerometerModel accModel = (AccelerometerModel) sensors.get(
@@ -194,38 +196,15 @@ public class SensorSimulatorController implements WindowListener {
 	}
 
 	/**
-	 * is called from within doTimer() to record/playback values
-	 * recording/playback is triggered from actionListener
-	 */
-	private void updateFromFile() {
-		DeviceView deviceView = deviceCtrl.getView();
-		OrientationModel orientModel = (OrientationModel) sensors.get(
-				SensorModel.POZ_ORIENTATION).getModel();
-		replayAddonCtrl.recordData(orientModel.getReadYaw(),
-				orientModel.getReadRoll(), orientModel.getReadPitch());
-
-		if (replayAddonCtrl.playData()) {
-			// Update sliders
-			deviceView.setYawSlider(replayAddonCtrl.getYaw());
-			deviceView.setRollSlider(replayAddonCtrl.getRoll());
-			deviceView.setPitchSlider(replayAddonCtrl.getPitch());
-		} else {
-			replayAddonCtrl.setPlaybackText("Playback");
-		}
-
-	}
-
-	/**
 	 * Updates the information about sensor updates.
 	 */
 	public void updateSensorRefresh() {
 		int updateSensorCount = model.incUpdateSensorCount();
-		long maxcount = model.getRefreshCount();
+		long maxcount = view.getRefreshCount();
 		if (maxcount >= 0 && updateSensorCount >= maxcount) {
 			long newtime = System.currentTimeMillis();
 			double ms = (double) (newtime - model.getUpdateSensorTime())
 					/ ((double) maxcount);
-
 			model.setRefreshSensors(ms);
 			view.setRefreshSensorsLabel(ms);
 
@@ -245,36 +224,31 @@ public class SensorSimulatorController implements WindowListener {
 
 	@Override
 	public void windowActivated(WindowEvent arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void windowClosed(WindowEvent arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void windowClosing(WindowEvent arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void windowDeactivated(WindowEvent arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void windowOpened(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public MagneticFieldController getMagneticField() {
-		return (MagneticFieldController) sensors.get(SensorModel.POZ_MAGNETIC_FIELD);
+		return (MagneticFieldController) sensors
+				.get(SensorModel.POZ_MAGNETIC_FIELD);
 	}
 
 	public TemperatureController getTemperature() {
@@ -282,7 +256,8 @@ public class SensorSimulatorController implements WindowListener {
 	}
 
 	public BarcodeReaderController getBarcodeReader() {
-		return (BarcodeReaderController) sensors.get(SensorModel.POZ_BARCODE_READER);
+		return (BarcodeReaderController) sensors
+				.get(SensorModel.POZ_BARCODE_READER);
 	}
 
 	public LightController getLight() {
@@ -294,7 +269,8 @@ public class SensorSimulatorController implements WindowListener {
 	}
 
 	public AccelerometerController getAccelerometer() {
-		return (AccelerometerController) sensors.get(SensorModel.POZ_ACCELEROMETER);
+		return (AccelerometerController) sensors
+				.get(SensorModel.POZ_ACCELEROMETER);
 	}
 
 	public OrientationController getOrientation() {
@@ -302,12 +278,13 @@ public class SensorSimulatorController implements WindowListener {
 	}
 
 	public void fixEnabledSensors() {
-		for (SensorController sensor: sensors) {
+		for (SensorController sensor : sensors) {
 			sensor.fixEnabledSensors();
 		}
 	}
+
 	public void unfixEnabledSensors() {
-		for (SensorController sensor: sensors) {
+		for (SensorController sensor : sensors) {
 			sensor.unfixEnabledSensors();
 		}
 	}

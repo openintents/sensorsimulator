@@ -62,7 +62,6 @@ import org.openintents.tools.simulator.view.sensor.sensors.OrientationView;
 import org.openintents.tools.simulator.view.sensor.sensors.ProximityView;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 import org.openintents.tools.simulator.view.sensor.sensors.TemperatureView;
-import org.openintents.tools.simulator.view.telnet.addons.ReplayAddonView;
 
 /**
  * Class of SensorSimulator.
@@ -102,7 +101,6 @@ public class SensorSimulatorView extends JPanel {
 
 	private SensorSimulatorModel model;
 	private ArrayList<SensorView> sensors;
-	private ReplayAddonView replayAddonView;
 
 	private JPanel enabledSensorsPane;
 
@@ -122,7 +120,6 @@ public class SensorSimulatorView extends JPanel {
 		sensors.add(new LightView(model.getLight()));
 		sensors.add(new ProximityView(model.getProximity()));
 
-		replayAddonView = new ReplayAddonView(model.getReplayAddon());
 
 		enabledBorder = BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Enabled sensors"),
@@ -140,6 +137,7 @@ public class SensorSimulatorView extends JPanel {
 		JSplitPane splitPaneVertical = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, upPanel, downPanel);
 		splitPaneVertical.setResizeWeight(Global.SENSOR_SPLIT_UP);
+		
 		add(splitPaneVertical);
 	}
 
@@ -147,22 +145,13 @@ public class SensorSimulatorView extends JPanel {
 		JPanel downPanel = new JPanel(new GridBagLayout());
 
 		GridBagConstraints layout = new GridBagConstraints();
-		layout.fill = GridBagConstraints.VERTICAL;
+		layout.fill = GridBagConstraints.BOTH;
+		layout.anchor = GridBagConstraints.NORTHEAST;
 		layout.gridx = 0;
 		layout.gridy = 0;
 		// Sensor output update/measure frequency
 		JPanel updateSimulationPanel = fillUpdateSimulationPanel();
 		downPanel.add(updateSimulationPanel, layout);
-
-		layout.gridx++;
-		layout.gridy = 0;
-		// Replay Pane
-		JPanel replayFieldPane = new JPanel(new GridBagLayout());
-		replayFieldPane.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Replay"),
-				BorderFactory.createEmptyBorder(0, 0, 0, 0)));
-		replayAddonView.fillPane(replayFieldPane);
-		downPanel.add(replayFieldPane, layout);
 
 		layout.gridx++;
 		layout.gridy = 0;
@@ -173,11 +162,11 @@ public class SensorSimulatorView extends JPanel {
 		layout.gridx++;
 		layout.gridy = 0;
 		// sensors log/values
-		textAreaSensorData = new JTextArea(3, 100);
+		textAreaSensorData = new JTextArea(3, 10);
 		JScrollPane scrollPaneSensorData = new JScrollPane(textAreaSensorData);
 		scrollPaneSensorData
 				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPaneSensorData.setPreferredSize(new Dimension(250, 80));
+		scrollPaneSensorData.setPreferredSize(new Dimension(350, 80));
 		downPanel.add(scrollPaneSensorData, layout);
 
 		return downPanel;
@@ -208,7 +197,7 @@ public class SensorSimulatorView extends JPanel {
 		JScrollPane areaScrollPane = new JScrollPane(messageTextArea);
 		areaScrollPane
 				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		areaScrollPane.setPreferredSize(new Dimension(250, 80));
+		areaScrollPane.setPreferredSize(new Dimension(350, 80));
 		return areaScrollPane;
 	}
 
@@ -260,12 +249,6 @@ public class SensorSimulatorView extends JPanel {
 		mRefreshSensorsLabel = new JLabel("0", JLabel.LEFT);
 		layout.gridx++;
 		updateSimulationPanel.add(mRefreshSensorsLabel, layout);
-
-		// Emulator update
-		layout.gridy++;
-		label = new JLabel("Emulator update: ", JLabel.LEFT);
-		layout.gridx = 0;
-		updateSimulationPanel.add(label, layout);
 
 		return updateSimulationPanel;
 	}
@@ -570,13 +553,8 @@ public class SensorSimulatorView extends JPanel {
 		return mobile;
 	}
 
-	public ReplayAddonView getReplayAddon() {
-		return replayAddonView;
-	}
-
 	public long getRefreshCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return (long) getSafeDouble(mRefreshCountText);
 	}
 
 	public void setRefreshSensorsLabel(double ms) {

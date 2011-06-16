@@ -24,7 +24,7 @@ public class LightController extends SensorController {
 			lightModel.setLight(lightView.getLight());
 
 			// Add random component:
-			double random = lightModel.getRandom();
+			double random = lightView.getRandom();
 			if (random > 0) {
 				lightModel.addLight(SensorModel.getRandom(random));
 			}

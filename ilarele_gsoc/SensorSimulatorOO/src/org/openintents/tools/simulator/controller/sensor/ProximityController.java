@@ -24,7 +24,7 @@ public class ProximityController extends SensorController {
 			proximityModel.setProximity(proximityView.getProximity());
 
 			// Add random component:
-			double random = proximityModel.getRandom();
+			double random = proximityView.getRandom();
 			if (random > 0) {
 				proximityModel.addProximity(SensorModel.getRandom(random));
 			}

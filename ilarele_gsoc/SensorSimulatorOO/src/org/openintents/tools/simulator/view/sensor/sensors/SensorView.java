@@ -1,6 +1,5 @@
 package org.openintents.tools.simulator.view.sensor.sensors;
 
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -42,13 +41,6 @@ public abstract class SensorView extends JPanel {
 
 	protected JLabel mRefreshEmulatorLabel;
 
-	// for measuring updates:
-	protected int updateEmulatorCount;
-	protected long updateEmulatorTime;
-
-	// Settings
-	private JTextField mRefreshCountText;
-
 	protected SensorModel model;
 	private JButton expandButton;
 	private JPanel insidePanel;
@@ -64,8 +56,6 @@ public abstract class SensorView extends JPanel {
 			mEnabled.setBackground(Global.DISABLE);
 			setVisible(false);
 		}
-		updateEmulatorCount = 0;
-		updateEmulatorTime = System.currentTimeMillis();
 
 		mCurrentUpdateRateText = new JTextField(5);
 
@@ -86,32 +76,37 @@ public abstract class SensorView extends JPanel {
 		nameLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
 		expandPanel.add(nameLabel, BorderLayout.CENTER);
 		add(expandPanel, BorderLayout.NORTH);
-		insidePanel = new JPanel();
-		add(insidePanel, BorderLayout.CENTER);
+		insidePanel = new JPanel(new GridBagLayout());
+		add(insidePanel, BorderLayout.WEST);
 		MatteBorder b = BorderFactory.createMatteBorder(5, 5, 5, 5,
 				Global.BORDER_COLOR);
 		insidePanel.setBorder(b);
+		
 		GridBagConstraints layout = new GridBagConstraints();
-
-		// panel settings
-		layout.gridx = 0;
-		layout.gridy = 0;
 		layout.fill = GridBagConstraints.HORIZONTAL;
 		layout.anchor = GridBagConstraints.NORTHWEST;
-		insidePanel.add(fillSensorSettingsPanel(), layout);
-
+		
 		// update rates
 		layout.gridx = 0;
-		layout.gridy = 1;
+		layout.gridy = 0;
+		layout.gridheight = 1;
 		insidePanel.add(fillSensorUpdatePanel(), layout);
 
 		// random component and update simulation
-		layout.gridx = 1;
+		layout.gridx = 0;
 		layout.gridy = 1;
+		layout.gridheight = 1;
 		JPanel updateRandomPanel = new JPanel(new BorderLayout());
 		updateRandomPanel.add(fillSensorRandomPanel(), BorderLayout.NORTH);
 		updateRandomPanel.add(updateSimulationField(), BorderLayout.SOUTH);
 		insidePanel.add(updateRandomPanel, layout);
+		
+		// panel settings
+		layout.gridx = 1;
+		layout.gridy = 0;
+		layout.gridheight = 5;
+		insidePanel.add(fillSensorSettingsPanel(), layout);
+		
 	}
 
 	public boolean isEnabled() {
@@ -141,22 +136,6 @@ public abstract class SensorView extends JPanel {
 
 	public double getRandom() {
 		return getSafeDouble(mRandomText);
-	}
-
-	public void updateEmulatorRefresh() {
-		updateEmulatorCount++;
-		long maxcount = (long) getSafeDouble(mRefreshCountText);
-		if (maxcount >= 0 && updateEmulatorCount >= maxcount) {
-			long newtime = System.currentTimeMillis();
-			double ms = (double) (newtime - updateEmulatorTime)
-					/ ((double) maxcount);
-
-			mRefreshEmulatorLabel.setText(Global.ONE_DECIMAL_FORMAT.format(ms)
-					+ " ms");
-
-			updateEmulatorCount = 0;
-			updateEmulatorTime = newtime;
-		}
 	}
 
 	/**
@@ -315,8 +294,8 @@ public abstract class SensorView extends JPanel {
 	public JPanel updateSimulationField() {
 		JPanel resultPanel = new JPanel();
 
-//		if (!model.isUpdating())
-//			return resultPanel;
+		// if (!model.isUpdating())
+		// return resultPanel;
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Simulation update"),
 				BorderFactory.createEmptyBorder(0, 0, 0, 0)));
@@ -409,5 +388,4 @@ public abstract class SensorView extends JPanel {
 			insidePanel.setVisible(true);
 		}
 	}
-
 }

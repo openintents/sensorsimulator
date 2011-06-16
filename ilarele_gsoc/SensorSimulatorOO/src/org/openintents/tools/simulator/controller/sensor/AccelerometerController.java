@@ -103,11 +103,11 @@ public class AccelerometerController extends SensorController {
 			} else {
 				accModel.setXYZ(vec);
 				// Add random component:
-				double random = accModel.getRandom();
+				double random = accView.getRandom();
 				if (random > 0) {
 					accModel.addRandom(random);
 				}
-
+				
 				// Add accelerometer limit:
 				double limit = g * accView.getAccelerometerLimit();
 				if (limit > 0) {

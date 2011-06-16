@@ -23,7 +23,7 @@ public class TemperatureController extends SensorController {
 			tempModel.setTemp(tempView.getTemperature());
 
 			// Add random component:
-			double random = tempModel.getRandom();
+			double random = tempView.getRandom();
 			if (random > 0) {
 				tempModel.addTemp(SensorModel.getRandom(random));
 			}
