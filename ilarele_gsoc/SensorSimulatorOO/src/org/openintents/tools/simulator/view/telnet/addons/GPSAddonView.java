@@ -1,7 +1,9 @@
 package org.openintents.tools.simulator.view.telnet.addons;
 
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,64 +30,6 @@ public class GPSAddonView extends JPanel {
 		gpsAltitudeText = new JTextField(10);
 		gpsAltitudeText.setText("" + model.getAltitude());
 		gpsButton = new JButton("Send GPS");
-	}
-
-	public void fillPane(JPanel gpsPanel, GridBagConstraints c3) {
-		JLabel gpsLongitudeLabel = new JLabel("GPS Longitude: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		gpsPanel.add(gpsLongitudeLabel, c3);
-
-		c3.gridx = 1;
-		gpsPanel.add(gpsLongitudeText, c3);
-
-		JLabel gpsLongitudeUnitLabel = new JLabel("degress", JLabel.LEFT);
-		c3.gridx = 2;
-		gpsPanel.add(gpsLongitudeUnitLabel, c3);
-
-		JLabel gpsLatitudeLabel = new JLabel("GPS Latitude: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		gpsPanel.add(gpsLatitudeLabel, c3);
-
-		c3.gridx = 1;
-		gpsPanel.add(gpsLatitudeText, c3);
-
-		JLabel gpsLatitudeUnitLabel = new JLabel("degress", JLabel.LEFT);
-		c3.gridx = 2;
-		gpsPanel.add(gpsLatitudeUnitLabel, c3);
-
-		JLabel gpsAltitudeLabel = new JLabel("GPS Altitude: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		gpsPanel.add(gpsAltitudeLabel, c3);
-
-		c3.gridx = 1;
-		gpsPanel.add(gpsAltitudeText, c3);
-
-		JLabel gpsAltitudeUnitLabel = new JLabel("meters", JLabel.LEFT);
-		c3.gridx = 2;
-		gpsPanel.add(gpsAltitudeUnitLabel, c3);
-
-		JLabel gpsLisNameLabel = new JLabel("LIS name: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		gpsPanel.add(gpsLisNameLabel, c3);
-
-		lisName = new JTextField(10);
-		c3.gridx = 1;
-		gpsPanel.add(lisName, c3);
-
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-
-		gpsPanel.add(gpsButton, c3);
-
 	}
 
 	/**
@@ -159,5 +103,66 @@ public class GPSAddonView extends JPanel {
 
 	public JButton getGpsButton() {
 		return gpsButton;
+	}
+
+	public JPanel getPanel() {
+		JPanel gpsPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints layout = new GridBagConstraints();
+		gpsPanel.setBorder(BorderFactory.createTitledBorder("GPS"));
+		JLabel gpsLongitudeLabel = new JLabel("GPS Longitude: ", JLabel.LEFT);
+		layout.gridwidth = 1;
+		layout.gridx = 0;
+		layout.gridy++;
+		gpsPanel.add(gpsLongitudeLabel, layout);
+
+		layout.gridx = 1;
+		gpsPanel.add(gpsLongitudeText, layout);
+
+		JLabel gpsLongitudeUnitLabel = new JLabel("degress", JLabel.LEFT);
+		layout.gridx = 2;
+		gpsPanel.add(gpsLongitudeUnitLabel, layout);
+
+		JLabel gpsLatitudeLabel = new JLabel("GPS Latitude: ", JLabel.LEFT);
+		layout.gridwidth = 1;
+		layout.gridx = 0;
+		layout.gridy++;
+		gpsPanel.add(gpsLatitudeLabel, layout);
+
+		layout.gridx = 1;
+		gpsPanel.add(gpsLatitudeText, layout);
+
+		JLabel gpsLatitudeUnitLabel = new JLabel("degress", JLabel.LEFT);
+		layout.gridx = 2;
+		gpsPanel.add(gpsLatitudeUnitLabel, layout);
+
+		JLabel gpsAltitudeLabel = new JLabel("GPS Altitude: ", JLabel.LEFT);
+		layout.gridwidth = 1;
+		layout.gridx = 0;
+		layout.gridy++;
+		gpsPanel.add(gpsAltitudeLabel, layout);
+
+		layout.gridx = 1;
+		gpsPanel.add(gpsAltitudeText, layout);
+
+		JLabel gpsAltitudeUnitLabel = new JLabel("meters", JLabel.LEFT);
+		layout.gridx = 2;
+		gpsPanel.add(gpsAltitudeUnitLabel, layout);
+
+		JLabel gpsLisNameLabel = new JLabel("LIS name: ", JLabel.LEFT);
+		layout.gridwidth = 1;
+		layout.gridx = 0;
+		layout.gridy++;
+		gpsPanel.add(gpsLisNameLabel, layout);
+
+		lisName = new JTextField(10);
+		layout.gridx = 1;
+		gpsPanel.add(lisName, layout);
+
+		layout.gridwidth = 1;
+		layout.gridx = 0;
+		layout.gridy++;
+
+		gpsPanel.add(gpsButton, layout);
+		return gpsPanel;
 	}
 }

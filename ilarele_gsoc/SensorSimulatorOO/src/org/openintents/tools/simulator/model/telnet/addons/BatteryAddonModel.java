@@ -72,7 +72,6 @@ public class BatteryAddonModel {
 	}
 
 	public void openFile(File file) {
-		System.out.println(mTelnetServer);
 		mTelnetServer.openFile(file);
 	}
 }

@@ -21,7 +21,7 @@
 
 package org.openintents.tools.simulator.main;
 
-
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -30,6 +30,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -84,9 +87,10 @@ public class SensorSimulatorMain extends JPanel implements ActionListener,
 		myMenuBar.setPreferredSize(new Dimension(200, 30));
 
 		// Add menu items
-		JMenu menu;
-		menu = new JMenu("File");
-		myMenuBar.add(menu);
+		JMenu menuFile = new JMenu("File");
+		myMenuBar.add(menuFile);
+		JMenu menuHelp = new JMenu("Help");
+		myMenuBar.add(menuHelp);
 
 		// Create a group of JMenuItems
 		JMenuItem menuItem1;
@@ -99,6 +103,7 @@ public class SensorSimulatorMain extends JPanel implements ActionListener,
 		// Create MenuListener
 		MenuListener menuListener = new MenuListener(tabbedPane,
 				simulatorInstances);
+
 		// Create MenuItems
 		menuItem1 = new JMenuItem("New Tab");
 		menuItem2 = new JMenuItem("Close Tab");
@@ -112,9 +117,31 @@ public class SensorSimulatorMain extends JPanel implements ActionListener,
 		menuItem2.addActionListener(menuListener);
 		menuItem4.addActionListener(menuListener);
 		// Add MenuItems to Menu
-		menu.add(menuItem1);
-		menu.add(menuItem2);
-		menu.add(menuItem4);
+		menuFile.add(menuItem1);
+		menuFile.add(menuItem2);
+		menuFile.add(menuItem4);
+
+		JMenuItem menuItemHelpOnline = new JMenuItem("Online Help");
+		menuItemHelpOnline.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (Desktop.isDesktopSupported()) {
+					Desktop desktop = Desktop.getDesktop();
+					if (desktop.isSupported(Desktop.Action.BROWSE)) {
+						URI uri;
+						try {
+							uri = new URI(Global.ONLINE_HELP_URI);
+							desktop.browse(uri);
+						} catch (URISyntaxException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		});
+		menuHelp.add(menuItemHelpOnline);
 
 		tabbedPane.setPreferredSize(new Dimension(Global.WIDTH, Global.HEIGHT));
 		// Create tab pane and add first simulator tab to it

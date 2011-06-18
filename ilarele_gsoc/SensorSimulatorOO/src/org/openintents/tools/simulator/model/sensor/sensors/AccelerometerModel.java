@@ -113,8 +113,8 @@ public class AccelerometerModel extends SensorModel {
 
 		g = 9.80665; // meter per second^2
 		mAccelerometerLimit = 10;
-		mEnabled = true;
 		wiiAccelerometerModel = new WiiAccelerometerModel();
+		mEnabled = true;
 	}
 
 	public void setXYZ(Vector vec) {
@@ -413,5 +413,10 @@ public class AccelerometerModel extends SensorModel {
 
 	public void setCurrentUpdateRate(float updatesPerSecond) {
 		mCurrentUpdateRate = updatesPerSecond;		
+	}
+
+	@Override
+	public String getTypeConstant() {
+		return TYPE_ACCELEROMETER;
 	}
 }

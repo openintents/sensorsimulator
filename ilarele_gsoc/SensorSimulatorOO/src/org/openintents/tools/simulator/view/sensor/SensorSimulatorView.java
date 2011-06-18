@@ -49,6 +49,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.border.Border;
 
 import org.openintents.tools.simulator.Global;
@@ -59,6 +60,7 @@ import org.openintents.tools.simulator.view.sensor.sensors.BarcodeReaderView;
 import org.openintents.tools.simulator.view.sensor.sensors.LightView;
 import org.openintents.tools.simulator.view.sensor.sensors.MagneticFieldView;
 import org.openintents.tools.simulator.view.sensor.sensors.OrientationView;
+import org.openintents.tools.simulator.view.sensor.sensors.PressureView;
 import org.openintents.tools.simulator.view.sensor.sensors.ProximityView;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 import org.openintents.tools.simulator.view.sensor.sensors.TemperatureView;
@@ -112,6 +114,8 @@ public class SensorSimulatorView extends JPanel {
 
 	public SensorSimulatorView(SensorSimulatorModel model) {
 		this.model = model;
+		SpringLayout layout = new SpringLayout();
+		setLayout(layout);
 		// sensors
 		sensors = new ArrayList<SensorView>();
 		sensors.add(new AccelerometerView(model.getAccelerometer()));
@@ -121,6 +125,7 @@ public class SensorSimulatorView extends JPanel {
 		sensors.add(new BarcodeReaderView(model.getBarcodeReader()));
 		sensors.add(new LightView(model.getLight()));
 		sensors.add(new ProximityView(model.getProximity()));
+		sensors.add(new PressureView(model.getPressure()));
 
 		enabledBorder = BorderFactory.createTitledBorder("Enabled sensors");
 		disabledBorder = BorderFactory
@@ -135,37 +140,69 @@ public class SensorSimulatorView extends JPanel {
 		splitPaneVertical.setResizeWeight(Global.SENSOR_SPLIT_UP);
 
 		add(splitPaneVertical);
+		layout.putConstraint(SpringLayout.WEST, splitPaneVertical, 10,
+				SpringLayout.WEST, this);
+		layout.putConstraint(SpringLayout.EAST, splitPaneVertical, 10,
+				SpringLayout.EAST, this);
+
+		layout.putConstraint(SpringLayout.NORTH, splitPaneVertical, 10,
+				SpringLayout.NORTH, this);
+		layout.putConstraint(SpringLayout.SOUTH, splitPaneVertical, 10,
+				SpringLayout.SOUTH, this);
 	}
 
 	private JPanel fillDownPanel() {
-		JPanel downPanel = new JPanel(new GridBagLayout());
+		SpringLayout layout = new SpringLayout();
+		JPanel downPanel = new JPanel(layout);
 
-		GridBagConstraints layout = new GridBagConstraints();
-		layout.fill = GridBagConstraints.BOTH;
-		layout.anchor = GridBagConstraints.NORTHEAST;
-		layout.gridx = 0;
-		layout.gridy = 0;
 		// Sensor output update/measure frequency
 		JPanel updateSimulationPanel = fillUpdateSimulationPanel();
-		downPanel.add(updateSimulationPanel, layout);
-
-		layout.gridx++;
-		layout.gridy = 0;
+		downPanel.add(updateSimulationPanel);
+		Dimension minSize = updateSimulationPanel.getPreferredSize();
+		downPanel.setMinimumSize(new Dimension(minSize.width,
+				minSize.height + 20));
 		// info output
 		JScrollPane areaScrollPane = fillInfoOutput();
-		downPanel.add(areaScrollPane, layout);
+		downPanel.add(areaScrollPane);
 
-		layout.gridx++;
-		layout.gridy = 0;
 		// sensors log/values
+		JScrollPane scrollPaneSensorData = fillTextArea();
+		downPanel.add(scrollPaneSensorData);
+
+		// updateSimulationPanel - left
+		layout.putConstraint(SpringLayout.WEST, downPanel, 10,
+				SpringLayout.WEST, updateSimulationPanel);
+		layout.putConstraint(SpringLayout.NORTH, updateSimulationPanel, 10,
+				SpringLayout.NORTH, downPanel);
+
+		// areaScrollPane - center
+		layout.putConstraint(SpringLayout.WEST, areaScrollPane, 10,
+				SpringLayout.EAST, updateSimulationPanel);
+		layout.putConstraint(SpringLayout.WEST, scrollPaneSensorData, 10,
+				SpringLayout.EAST, areaScrollPane);
+		layout.putConstraint(SpringLayout.NORTH, areaScrollPane, 10,
+				SpringLayout.NORTH, downPanel);
+		layout.putConstraint(SpringLayout.SOUTH, downPanel, 10,
+				SpringLayout.SOUTH, areaScrollPane);
+
+		// scrollPaneSensorData - right
+		layout.putConstraint(SpringLayout.EAST, downPanel, 10,
+				SpringLayout.EAST, scrollPaneSensorData);
+		layout.putConstraint(SpringLayout.NORTH, scrollPaneSensorData, 10,
+				SpringLayout.NORTH, downPanel);
+		layout.putConstraint(SpringLayout.SOUTH, scrollPaneSensorData, -10,
+				SpringLayout.SOUTH, downPanel);
+
+		return downPanel;
+	}
+
+	private JScrollPane fillTextArea() {
 		textAreaSensorData = new JTextArea(3, 10);
 		JScrollPane scrollPaneSensorData = new JScrollPane(textAreaSensorData);
 		scrollPaneSensorData
 				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPaneSensorData.setPreferredSize(new Dimension(350, 80));
-		downPanel.add(scrollPaneSensorData, layout);
-
-		return downPanel;
+		scrollPaneSensorData.setPreferredSize(new Dimension(350, 10));
+		return scrollPaneSensorData;
 	}
 
 	private JScrollPane fillInfoOutput() {
@@ -193,7 +230,7 @@ public class SensorSimulatorView extends JPanel {
 		JScrollPane areaScrollPane = new JScrollPane(messageTextArea);
 		areaScrollPane
 				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		areaScrollPane.setPreferredSize(new Dimension(350, 80));
+		areaScrollPane.setPreferredSize(new Dimension(350, 10));
 		return areaScrollPane;
 	}
 
@@ -274,33 +311,23 @@ public class SensorSimulatorView extends JPanel {
 	}
 
 	private JScrollPane fillLeftPanel() {
-		JPanel leftPanel = new JPanel(new GridBagLayout());
+		SpringLayout layout = new SpringLayout();
+		JPanel leftPanel = new JPanel(layout);
 		JScrollPane leftScrollPane = new JScrollPane(leftPanel);
-		leftScrollPane
-				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-		GridBagConstraints layout = new GridBagConstraints();
-
-		layout.gridx = 0;
-		layout.gridy = 0;
+		
 		// Add IP address properties:
 		Font fontNotify = new Font("SansSerif", Font.BOLD, 12);
 		sensorPortText = new JTextField(5);
 		sensorPortText.setText("" + model.getSimulationPort());
-		JPanel ipPanel = new JPanel(new GridLayout(1, 0));
-		JLabel socketLabel = new JLabel("Socket  ", JLabel.LEFT);
+		JLabel socketLabel = new JLabel("Socket ", JLabel.LEFT);
 		socketLabel.setFont(fontNotify);
 		socketLabel.setForeground(Global.NOTIFY_COLOR);
-		ipPanel.add(socketLabel, layout);
-		ipPanel.add(sensorPortText, layout);
+		leftPanel.add(socketLabel);
+		leftPanel.add(sensorPortText);
 		sensorPortButton = new JButton("Set");
 		sensorPortButton.setFont(fontNotify);
 		sensorPortButton.setForeground(Global.NOTIFY_COLOR);
-		ipPanel.add(sensorPortButton);
-		leftPanel.add(ipPanel, layout);
-
-		layout.gridx = 0;
-		layout.gridy = 1;
+		leftPanel.add(sensorPortButton);
 
 		// Enabled Sensors
 		enabledSensorsPane = new JPanel();
@@ -309,13 +336,46 @@ public class SensorSimulatorView extends JPanel {
 		for (SensorView sensor : sensors) {
 			sensor.addEnable(enabledSensorsPane);
 		}
-		leftPanel.add(enabledSensorsPane, layout);
+		leftPanel.add(enabledSensorsPane);
 
-		layout.gridx = 0;
-		layout.gridy = 2;
-		// Add the mobile
+		// Add the device
 		mobile = new DeviceView(model);
-		leftPanel.add(mobile, layout);
+		leftPanel.add(mobile);
+
+		// ip
+		layout.putConstraint(SpringLayout.NORTH, socketLabel, 10,
+				SpringLayout.NORTH, leftPanel);
+		layout.putConstraint(SpringLayout.NORTH, sensorPortText, 5,
+				SpringLayout.NORTH, leftPanel);
+		layout.putConstraint(SpringLayout.NORTH, sensorPortButton, 5,
+				SpringLayout.NORTH, leftPanel);
+
+		layout.putConstraint(SpringLayout.WEST, socketLabel, 16,
+				SpringLayout.WEST, leftPanel);
+		layout.putConstraint(SpringLayout.WEST, sensorPortText, 5,
+				SpringLayout.EAST, socketLabel);
+		layout.putConstraint(SpringLayout.WEST, sensorPortButton, 10,
+				SpringLayout.EAST, sensorPortText);
+		layout.putConstraint(SpringLayout.EAST, leftPanel, 10,
+				SpringLayout.EAST, sensorPortButton);
+
+		// enable sensors
+		layout.putConstraint(SpringLayout.WEST, enabledSensorsPane, 0,
+				SpringLayout.WEST, leftPanel);
+		layout.putConstraint(SpringLayout.NORTH, enabledSensorsPane, 10,
+				SpringLayout.SOUTH, socketLabel);
+		layout.putConstraint(SpringLayout.EAST, leftPanel, 10,
+				SpringLayout.EAST, enabledSensorsPane);
+
+		// device
+		layout.putConstraint(SpringLayout.WEST, mobile, 0, SpringLayout.WEST,
+				leftPanel);
+		layout.putConstraint(SpringLayout.NORTH, mobile, 10,
+				SpringLayout.SOUTH, enabledSensorsPane);
+		layout.putConstraint(SpringLayout.EAST, leftPanel, 10,
+				SpringLayout.EAST, mobile);
+		layout.putConstraint(SpringLayout.SOUTH, leftPanel, 5,
+				SpringLayout.SOUTH, mobile);
 
 		return leftScrollPane;
 	}
@@ -565,6 +625,10 @@ public class SensorSimulatorView extends JPanel {
 
 	public JTabbedPane getSensorsTabbedPanel() {
 		return mSensorsTabbedPane;
+	}
+
+	public PressureView getPressure() {
+		return (PressureView) sensors.get(SensorModel.POZ_PRESSURE);
 	}
 
 }

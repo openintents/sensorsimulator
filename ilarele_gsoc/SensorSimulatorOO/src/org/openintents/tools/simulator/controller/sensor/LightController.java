@@ -36,7 +36,7 @@ public class LightController extends SensorController {
 	@Override
 	public String getString() {
 		LightModel lightModel = (LightModel) model;
-		return Global.TWO_DECIMAL_FORMAT.format(lightModel.getLight());
+		return Global.TWO_DECIMAL_FORMAT.format(lightModel.getReadLight());
 	}
 
 }

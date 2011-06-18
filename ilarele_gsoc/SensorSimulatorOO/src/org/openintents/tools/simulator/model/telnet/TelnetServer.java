@@ -239,7 +239,6 @@ public class TelnetServer {
 			runnable.run();
 		} catch (Exception e) {
 			// messagePanel.append("Open file for battery emulation first!\n");
-			System.out.println();
 		}
 	}
 

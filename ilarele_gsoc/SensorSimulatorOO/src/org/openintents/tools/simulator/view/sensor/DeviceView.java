@@ -41,6 +41,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
+import javax.swing.SpringLayout;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -136,7 +137,8 @@ public class DeviceView extends JPanel implements IDeviceView {
 	 */
 	public DeviceView(SensorSimulatorModel model) {
 		this.model = model;
-
+		SpringLayout layout = new SpringLayout();
+		setLayout(layout);
 		mouseMode = MOUSE_MODE_YAW_PITCH;
 
 		// Add mouse action selection
@@ -145,7 +147,7 @@ public class DeviceView extends JPanel implements IDeviceView {
 		yawPitchButton.setSelected(true);
 		rollPitchButton = new JRadioButton(SensorModel.ACTION_ROLL_PITCH);
 		moveButton = new JRadioButton(SensorModel.ACTION_MOVE);
-		
+
 		// Group the radio buttons.
 		ButtonGroup group = new ButtonGroup();
 		group.add(yawPitchButton);
@@ -175,7 +177,16 @@ public class DeviceView extends JPanel implements IDeviceView {
 		add(yawPitchButton);
 		add(rollPitchButton);
 		add(moveButton);
+
+		// slider
+		layout.putConstraint(SpringLayout.NORTH, sliderPanel, 10, SpringLayout.NORTH, this);
+		// radio buttons
+		layout.putConstraint(SpringLayout.NORTH, yawPitchButton, 10, SpringLayout.SOUTH, sliderPanel);
+		layout.putConstraint(SpringLayout.NORTH, rollPitchButton, 10, SpringLayout.SOUTH, sliderPanel);
+		layout.putConstraint(SpringLayout.NORTH, moveButton, 10, SpringLayout.SOUTH, sliderPanel);
 		
+		layout.putConstraint(SpringLayout.WEST, rollPitchButton, 10, SpringLayout.EAST, yawPitchButton);
+		layout.putConstraint(SpringLayout.WEST, moveButton, 10, SpringLayout.EAST, rollPitchButton);
 		setDoubleBuffered(true);
 
 		registerSliders();
@@ -184,15 +195,15 @@ public class DeviceView extends JPanel implements IDeviceView {
 	private JPanel getSlidersPanel() {
 		JPanel centerPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-		
+
 		// labels
-		JLabel yawLabel = new JLabel("Yaw", JLabel.CENTER);
+		JLabel yawLabel = new JLabel("Yaw  ", JLabel.CENTER);
 		yawLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		JLabel pitchLabel = new JLabel("Pitch", JLabel.CENTER);
 		pitchLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		JLabel rollLabel = new JLabel("Roll", JLabel.CENTER);
+		JLabel rollLabel = new JLabel("Roll ", JLabel.CENTER);
 		rollLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
+
 		// sliders
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.NORTHWEST;

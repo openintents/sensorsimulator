@@ -106,5 +106,8 @@ public class TemperatureModel extends SensorModel {
 		// number of data following + data
 		out.println("1\n" + read_temperature);
 	}
-
+	@Override
+	public String getTypeConstant() {
+		return TYPE_TEMPERATURE;
+	}
 }

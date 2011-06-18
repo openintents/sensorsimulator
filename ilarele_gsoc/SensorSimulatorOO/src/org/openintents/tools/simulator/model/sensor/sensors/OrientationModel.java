@@ -186,6 +186,10 @@ public class OrientationModel extends SensorModel {
 	@Override
 	public String toString() {
 		return "[y=" + yaw + ", r=" + roll + ", p=" + pitch + "]";
-
+	}
+	
+	@Override
+	public String getTypeConstant() {
+		return TYPE_ORIENTATION;
 	}
 }

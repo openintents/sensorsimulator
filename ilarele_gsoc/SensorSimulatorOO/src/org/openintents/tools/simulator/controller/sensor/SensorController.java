@@ -23,11 +23,11 @@ public abstract class SensorController {
 		this.model = model;
 		this.view = view;
 		isFixed = false;
-		final JButton enableButton = view.getEnabled();
-		enableButton.addActionListener(new ActionListener() {
+		JButton helpBtn = view.getHelpButton();
+		helpBtn.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-			
+			public void actionPerformed(ActionEvent arg0) {
+				view.getHelpWindow().setVisible(true);
 			}
 		});
 	}

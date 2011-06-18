@@ -42,10 +42,10 @@ public class MagneticFieldModel extends SensorModel {
 
 	public MagneticFieldModel() {
 		super();
-		mEnabled = true;
 		mNorth = 22874.1;
 		mEast = 5939.5;
 		mVertical = 43180.5;
+		mEnabled = true;
 	}
 
 	@Override
@@ -169,5 +169,10 @@ public class MagneticFieldModel extends SensorModel {
 
 	public double getReadCompassZ() {
 		return read_compassz;
+	}
+
+	@Override
+	public String getTypeConstant() {
+		return TYPE_MAGNETIC_FIELD;
 	}
 }

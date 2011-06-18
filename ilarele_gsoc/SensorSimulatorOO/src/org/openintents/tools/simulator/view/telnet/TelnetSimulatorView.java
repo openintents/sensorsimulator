@@ -1,12 +1,9 @@
 package org.openintents.tools.simulator.view.telnet;
 
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -14,6 +11,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
 import org.openintents.tools.simulator.Global;
@@ -26,69 +25,40 @@ public class TelnetSimulatorView extends JPanel {
 	private JButton telnetSocketButton;
 	// Text fields and button for Telnet socket port
 	private JTextField telnetSocketText;
+
 	private BatteryAddonView batteryAddonView;
 	private GPSAddonView gpsAddonView;
 
 	public TelnetSimulatorView(TelnetSimulatorModel model) {
-		setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-
-		// add-ons
-		batteryAddonView = new BatteryAddonView(model.getBatteryAddon());
 		gpsAddonView = new GPSAddonView(model.getGpsAddon());
+		batteryAddonView = new BatteryAddonView(model.getBatteryAddon());
 
-		// add telnet JLabel, text field and button
-		JPanel connectPanel = new JPanel(new GridLayout(1, 0));
-		Font fontNotify = new Font("SansSerif", Font.BOLD, 12);
+		// split [left|right]
+		JPanel leftPanel = fillLeftPanel(model);
+		JTabbedPane rightPanel = fillRightPanel(model);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+				leftPanel, rightPanel);
+		splitPane.setResizeWeight(Global.SENSOR_SPLIT_LEFT);
+		add(splitPane);
 
-		JLabel telnetSocketLabel = new JLabel("Telnet socket port", JLabel.LEFT);
-		telnetSocketLabel.setFont(fontNotify);
-		telnetSocketLabel.setForeground(Global.NOTIFY_COLOR);
-		connectPanel.add(telnetSocketLabel);
+		// TODO down split for output
+	}
 
-		telnetSocketText = new JTextField(5);
-		telnetSocketText.setText("" + model.getPort());
-		connectPanel.add(telnetSocketText);
+	private JTabbedPane fillRightPanel(TelnetSimulatorModel model) {
+		JTabbedPane rightPanel = new JTabbedPane();
 
-		telnetSocketButton = new JButton("Connect");
-		telnetSocketButton.setFont(fontNotify);
-		telnetSocketButton.setForeground(Global.NOTIFY_COLOR);
-		connectPanel.add(telnetSocketButton);
+		rightPanel.addTab("GPS", fillGPSAddonView());
+		rightPanel.addTab("Battery", fillBatteryAddonView());
 
-		c.gridx = 0;
-		c.gridy = 0;
-		add(connectPanel, c);
+		return rightPanel;
+	}
 
-		// add neccesary things for GPS emulation
-		JPanel gpsPanel = new JPanel(new GridBagLayout());
-		GridBagConstraints c3 = new GridBagConstraints();
-		c3.fill = GridBagConstraints.HORIZONTAL;
-		c3.anchor = GridBagConstraints.NORTHWEST;
-		c3.gridwidth = 2;
-		c3.gridx = 0;
-		c3.gridy = 0;
-
-
-		gpsPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-				.createTitledBorder("GPS"), BorderFactory
-				.createMatteBorder(5, 5, 5, 5, Global.BORDER_COLOR)));
-		
-		gpsAddonView.fillPane(gpsPanel, c3);
-
-		// GPS
-		c.anchor = GridBagConstraints.NORTHWEST;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = 1;
-		add(gpsPanel, c);
-
+	private JPanel fillBatteryAddonView() {
 		// battery
 		JPanel batterySimulationsPanel = new JPanel(new BorderLayout());
-		batterySimulationsPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-				.createTitledBorder("Battery"), BorderFactory
-				.createMatteBorder(5, 5, 5, 5, Global.BORDER_COLOR)));
+		batterySimulationsPanel.setBorder(BorderFactory
+				.createTitledBorder("Battery"));
 
-		
 		JPanel batteryCapacityPanel = new JPanel(new BorderLayout());
 
 		JLabel batteryLabel = new JLabel("Charged", JLabel.CENTER);
@@ -104,9 +74,6 @@ public class TelnetSimulatorView extends JPanel {
 		// Now add a scrollable panel with more controls and GridBagLayout
 		JPanel telnetSettingsPanel = new JPanel(new GridBagLayout());
 		// define GridBagConstraints
-		GridBagConstraints c2 = new GridBagConstraints();
-		c2.fill = GridBagConstraints.HORIZONTAL;
-		c2.anchor = GridBagConstraints.NORTHWEST;
 		// Create ScrollPane for simulations through telnet connection
 		JScrollPane telnetSettingsScrollPane = new JScrollPane(
 				telnetSettingsPanel);
@@ -126,8 +93,7 @@ public class TelnetSimulatorView extends JPanel {
 
 		batteryPanel.add(batteryAddonView.getBatteryAC());
 
-		c2.gridy++;
-		telnetSettingsPanel.add(batteryPanel, c2);
+		telnetSettingsPanel.add(batteryPanel);
 
 		// Now add neccesary things for battery simulation
 		JPanel batteryStatusPanel = new JPanel();
@@ -141,8 +107,7 @@ public class TelnetSimulatorView extends JPanel {
 		// Create the combo box, select item at index 4.
 		batteryStatusPanel.add(batteryAddonView.getBatteryStatusList());
 
-		c2.gridy++;
-		telnetSettingsPanel.add(batteryStatusPanel, c2);
+		telnetSettingsPanel.add(batteryStatusPanel);
 
 		// Now add neccesary things for battery simulation
 		JPanel batteryHealthPanel = new JPanel();
@@ -157,8 +122,7 @@ public class TelnetSimulatorView extends JPanel {
 
 		batteryHealthPanel.add(batteryAddonView.getBatteryHealthList());
 
-		c2.gridy++;
-		telnetSettingsPanel.add(batteryHealthPanel, c2);
+		telnetSettingsPanel.add(batteryHealthPanel);
 
 		// Now add neccesary things for battery simulation
 		JPanel batteryFilePanel = new JPanel(new BorderLayout());
@@ -169,18 +133,42 @@ public class TelnetSimulatorView extends JPanel {
 
 		// create everything need for battery emulation from file
 		batteryAddonView.fillFileEmulationPane(batteryFilePanel);
-		c2.gridy++;
-		telnetSettingsPanel.add(batteryFilePanel, c2);
+		telnetSettingsPanel.add(batteryFilePanel);
 
 		// add telnetSettingsScrollPane to telnetSimulationsPanel
 		batterySimulationsPanel.add(telnetSettingsScrollPane,
 				BorderLayout.CENTER);
 
 		// add telnetSimulationsPanel to rightPanel
-		c.gridx = 3;
-		c.gridy = 1;
-		add(batterySimulationsPanel, c);
+		return batterySimulationsPanel;
+	}
 
+	private Component fillGPSAddonView() {
+		JPanel gpsPanel = gpsAddonView.getPanel();
+		return gpsPanel;
+	}
+
+	private JPanel fillLeftPanel(TelnetSimulatorModel model) {
+		// telnet JLabel, text field and button
+		
+		JPanel connectPanel = new JPanel();
+		Font fontNotify = new Font("SansSerif", Font.BOLD, 12);
+
+		JLabel telnetSocketLabel = new JLabel("Telnet socket port", JLabel.LEFT);
+		telnetSocketLabel.setFont(fontNotify);
+		telnetSocketLabel.setForeground(Global.NOTIFY_COLOR);
+		connectPanel.add(telnetSocketLabel);
+
+		telnetSocketText = new JTextField(5);
+		telnetSocketText.setText("" + model.getPort());
+		connectPanel.add(telnetSocketText);
+		
+		telnetSocketButton = new JButton("Connect");
+		telnetSocketButton.setFont(fontNotify);
+		telnetSocketButton.setForeground(Global.NOTIFY_COLOR);
+		connectPanel.add(telnetSocketButton);
+
+		return connectPanel;
 	}
 
 	/**

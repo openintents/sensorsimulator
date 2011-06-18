@@ -2,10 +2,16 @@ package org.openintents.tools.simulator.view.sensor.sensors;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Random;
 
 import javax.swing.BorderFactory;
@@ -16,9 +22,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.Global;
+import org.openintents.tools.simulator.help.HelpWindow;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 
 public abstract class SensorView extends JScrollPane {
@@ -27,6 +35,7 @@ public abstract class SensorView extends JScrollPane {
 	private static Random rand = new Random();
 
 	protected JButton mEnabled;
+	private HelpWindow helpWindow;
 
 	// Simulation update
 	protected JTextField mUpdateRatesText;
@@ -43,16 +52,14 @@ public abstract class SensorView extends JScrollPane {
 
 	protected SensorModel model;
 	private JPanel insidePanel;
+	private JButton helpBtn;
 
 	public SensorView(SensorModel model) {
+		super();
 		this.model = model;
-
-		
-		setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		setPreferredSize(new Dimension(
 				(int) (Global.WIDTH * Global.SENSOR_SPLIT_RIGHT),
 				(int) (Global.HEIGHT * Global.SENSOR_SPLIT_UP)));
-		
 		mEnabled = new JButton(model.getName());
 		if (model.isEnabled())
 			mEnabled.setBackground(Global.ENABLE);
@@ -64,37 +71,70 @@ public abstract class SensorView extends JScrollPane {
 		mUpdateAverage = new JCheckBox("average");
 		mUpdateAverage.setSelected(true);
 
+		helpWindow = new HelpWindow(this);
+
 		fillSensorPanel();
 	}
 
 	private void fillSensorPanel() {
-		insidePanel = new JPanel(new GridBagLayout());
+		SpringLayout layout = new SpringLayout();
+		insidePanel = new JPanel(layout);
 		getViewport().add(insidePanel);
-
-		GridBagConstraints layout = new GridBagConstraints();
-		layout.fill = GridBagConstraints.HORIZONTAL;
-		layout.anchor = GridBagConstraints.NORTHWEST;
+		// help label
+		helpBtn = new JButton(Global.ICON_HELP);
+		helpBtn.setOpaque(false);
+		helpBtn.setContentAreaFilled(false);
+		helpBtn.setBorderPainted(false);
+		insidePanel.add(helpBtn);
 
 		// update rates
-		layout.gridx = 0;
-		layout.gridy = 0;
-		layout.gridheight = 1;
-		insidePanel.add(fillSensorUpdatePanel(), layout);
+		JPanel sensorUpdate = fillSensorUpdatePanel();
+		insidePanel.add(sensorUpdate);
 
 		// random component and update simulation
-		layout.gridx = 0;
-		layout.gridy = 1;
-		layout.gridheight = 1;
 		JPanel updateRandomPanel = new JPanel(new BorderLayout());
 		updateRandomPanel.add(fillSensorRandomPanel(), BorderLayout.NORTH);
 		updateRandomPanel.add(updateSimulationField(), BorderLayout.SOUTH);
-		insidePanel.add(updateRandomPanel, layout);
+		insidePanel.add(updateRandomPanel);
 
 		// panel settings
-		layout.gridx = 1;
-		layout.gridy = 0;
-		layout.gridheight = 5;
-		insidePanel.add(fillSensorSettingsPanel(), layout);
+		JPanel sensorSettings = fillSensorSettingsPanel();
+		insidePanel.add(sensorSettings);
+
+		// sensorUpdate
+		layout.putConstraint(SpringLayout.NORTH, sensorUpdate, 10,
+				SpringLayout.NORTH, insidePanel);
+		layout.putConstraint(SpringLayout.WEST, sensorUpdate, 10,
+				SpringLayout.WEST, insidePanel);
+
+		// updateRandomPanel
+		layout.putConstraint(SpringLayout.NORTH, updateRandomPanel, 10,
+				SpringLayout.SOUTH, sensorUpdate);
+		layout.putConstraint(SpringLayout.WEST, updateRandomPanel, 10,
+				SpringLayout.WEST, insidePanel);
+
+		// helpBtn
+		layout.putConstraint(SpringLayout.NORTH, helpBtn, 10,
+				SpringLayout.SOUTH, updateRandomPanel);
+		layout.putConstraint(SpringLayout.WEST, insidePanel, 10,
+				SpringLayout.WEST, helpBtn);
+
+		// sensorSettings
+		layout.putConstraint(SpringLayout.SOUTH, insidePanel, 10,
+				SpringLayout.SOUTH, sensorSettings);
+		layout.putConstraint(SpringLayout.EAST, sensorSettings, -10,
+				SpringLayout.EAST, insidePanel);
+
+		Dimension size1 = sensorSettings.getPreferredSize();
+		Dimension size2 = sensorUpdate.getPreferredSize();
+		setMinimumSize(new Dimension(40 + size1.width + size2.width, 100));
+
+		Dimension size3 = helpBtn.getPreferredSize();
+		Dimension size4 = updateRandomPanel.getPreferredSize();
+		sensorSettings
+				.setPreferredSize(new Dimension(size1.width, Math.max(
+						size1.height, 20 + size2.height + size3.height
+								+ size4.height)));
 	}
 
 	public boolean isSensorEnabled() {
@@ -344,7 +384,7 @@ public abstract class SensorView extends JScrollPane {
 	public void unsetSensorUpdateRate(PrintWriter out) {
 		if (isSensorEnabled()) {
 			out.println("OK");
-			mCurrentUpdateRateText.setText("" + getDefaultUpdateRate());
+			mCurrentUpdateRateText.setText("" + model.getDefaultUpdateRate());
 		} else {
 			// This sensor is currently disabled
 			out.println("throw IllegalStateException");
@@ -365,5 +405,41 @@ public abstract class SensorView extends JScrollPane {
 
 	public SensorModel getModel() {
 		return model;
+	}
+
+	public JButton getHelpButton() {
+		return helpBtn;
+	}
+
+	public HelpWindow getHelpWindow() {
+		return helpWindow;
+	}
+
+	public JPanel getHelpPanel() {
+		JPanel panel = new JPanel();
+		JButton button = new JButton("Get me online info");
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (Desktop.isDesktopSupported()) {
+					Desktop desktop = Desktop.getDesktop();
+					if (desktop.isSupported(Desktop.Action.BROWSE)) {
+						URI uri;
+						try {
+							uri = new URI(Global.HELP_ONE_SENSOR_URL
+									+ model.getTypeConstant());
+							desktop.browse(uri);
+						} catch (URISyntaxException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		});
+
+		panel.add(BorderLayout.CENTER, button);
+		return panel;
 	}
 }

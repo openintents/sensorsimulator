@@ -19,9 +19,8 @@
  * limitations under the License.
  */
 
-package org.openintents.sensorsimulator;
+package org.openintents.sensorsimulator.db;
 
-import org.openintents.sensorsimulator.db.SensorSimulator;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;

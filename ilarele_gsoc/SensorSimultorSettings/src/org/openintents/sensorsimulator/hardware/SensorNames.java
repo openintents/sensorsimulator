@@ -20,7 +20,6 @@
  */
 
 package org.openintents.sensorsimulator.hardware;
-
 import java.util.ArrayList;
 
 /**

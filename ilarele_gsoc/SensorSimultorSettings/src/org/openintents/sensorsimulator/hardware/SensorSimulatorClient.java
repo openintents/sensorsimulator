@@ -18,7 +18,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.openintents.sensorsimulator.hardware;
 
 import java.io.BufferedReader;
@@ -31,8 +30,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.openintents.sensorsimulator.SensorSimulatorConvenience;
 import org.openintents.sensorsimulator.db.SensorSimulator;
+import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
 
 import android.content.Context;
 import android.hardware.SensorManager;
@@ -57,7 +56,6 @@ final class SensorSimulatorClient {
 	 * TAG for logging.
 	 */
 	static final String TAG = "Hardware";
-	private static final String TAG2 = "Hardware2";
 
 	/**
 	 * Whether to log sensor protocol data (send and receive) through LogCat.
@@ -663,7 +661,6 @@ final class SensorSimulatorClient {
 		}
 		if (LOG_PROTOCOL)
 			Log.i(TAG, "Send: getNumSensorValues()");
-		System.out.println("sensor: " + sensor);
 		mOut.println("readSensor()\n" + sensor);
 		int num = 0;
 

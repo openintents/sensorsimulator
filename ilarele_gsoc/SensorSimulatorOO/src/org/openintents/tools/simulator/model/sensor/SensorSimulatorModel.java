@@ -34,6 +34,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
 import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
 import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
+import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
 import org.openintents.tools.simulator.model.sensor.sensors.ProximityModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
@@ -108,6 +109,8 @@ public class SensorSimulatorModel {
 		sensors.add(new BarcodeReaderModel());
 		sensors.add(new LightModel());
 		sensors.add(new ProximityModel());
+		sensors.add(new PressureModel());
+		
 		mSensorServer = new SensorServer(sensorSimulator);
 
 		userSettingsDuration = 500; // Update every half second. This should
@@ -223,6 +226,10 @@ public class SensorSimulatorModel {
 
 	public void setDelay(int newdelay) {
 		delay = newdelay;
+	}
+
+	public PressureModel getPressure() {
+		return (PressureModel) sensors.get(SensorModel.POZ_PRESSURE);
 	}
 
 }

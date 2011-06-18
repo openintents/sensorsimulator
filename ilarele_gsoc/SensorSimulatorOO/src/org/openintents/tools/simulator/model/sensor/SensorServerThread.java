@@ -206,6 +206,8 @@ public class SensorServerThread implements Runnable {
 			return ctrl.getLight();
 		else if (inputLine.compareTo(SensorModel.PROXIMITY) == 0)
 			return ctrl.getProximity();
+		else if (inputLine.compareTo(SensorModel.PRESSURE) == 0)
+			return ctrl.getPressure();
 		return null;
 	}
 
@@ -225,6 +227,8 @@ public class SensorServerThread implements Runnable {
 			return model.getLight();
 		else if (inputLine.compareTo(SensorModel.PROXIMITY) == 0)
 			return model.getProximity();
+		else if (inputLine.compareTo(SensorModel.PRESSURE) == 0)
+			return model.getPressure();
 		return null;
 	}
 
@@ -236,7 +240,6 @@ public class SensorServerThread implements Runnable {
 	public String[] getSupportedSensors() {
 		ArrayList<String> resultArray = new ArrayList<String>();
 		for (SensorModel sensor : mSensorSimulator.model.getSensors()) {
-			System.out.println(sensor.getName() + " " + sensor.isEnabled());
 			if (sensor.isEnabled()) {
 				resultArray.add(sensor.getName());
 			}
@@ -246,7 +249,6 @@ public class SensorServerThread implements Runnable {
 		for (String sensor : resultArray) {
 			result[i++] = sensor;
 		}
-		System.out.println("getSupportedSensors " + result.length);
 		return result;
 	}
 

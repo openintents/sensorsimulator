@@ -36,6 +36,6 @@ public class ProximityController extends SensorController {
 	@Override
 	public String getString() {
 		ProximityModel proximityModel = (ProximityModel) model;
-		return Global.TWO_DECIMAL_FORMAT.format(proximityModel.getProximity());
+		return Global.TWO_DECIMAL_FORMAT.format(proximityModel.getReadProximity());
 	}
 }

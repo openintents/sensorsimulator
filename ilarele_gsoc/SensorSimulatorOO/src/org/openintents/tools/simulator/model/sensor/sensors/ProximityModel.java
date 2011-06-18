@@ -127,4 +127,13 @@ public class ProximityModel extends SensorModel {
 	public void addProximity(double value) {
 		proximityValue += value;
 	}
+	
+	@Override
+	public String getTypeConstant() {
+		return TYPE_PROXIMITY;
+	}
+
+	public double getReadProximity() {
+		return read_proximity;
+	}
 }

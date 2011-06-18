@@ -42,6 +42,7 @@ import org.openintents.tools.simulator.controller.sensor.BarcodeReaderController
 import org.openintents.tools.simulator.controller.sensor.LightController;
 import org.openintents.tools.simulator.controller.sensor.MagneticFieldController;
 import org.openintents.tools.simulator.controller.sensor.OrientationController;
+import org.openintents.tools.simulator.controller.sensor.PressureController;
 import org.openintents.tools.simulator.controller.sensor.ProximityController;
 import org.openintents.tools.simulator.controller.sensor.SensorController;
 import org.openintents.tools.simulator.controller.sensor.TemperatureController;
@@ -97,6 +98,7 @@ public class SensorSimulatorController implements WindowListener {
 		sensors.add(new LightController(model.getLight(), view.getLight()));
 		sensors.add(new ProximityController(model.getProximity(), view
 				.getProximity()));
+		sensors.add(new PressureController(model.getPressure(), view.getPressure()));
 
 		// add-ons
 
@@ -307,5 +309,9 @@ public class SensorSimulatorController implements WindowListener {
 		for (SensorController sensor : sensors) {
 			sensor.setFix(value);
 		}
+	}
+
+	public PressureController getPressure() {
+		return (PressureController) sensors.get(SensorModel.POZ_PRESSURE);
 	}
 }

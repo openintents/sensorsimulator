@@ -14,21 +14,31 @@ public abstract class SensorModel {
 	public static final int POZ_BARCODE_READER = 4;
 	public static final int POZ_LIGHT = 5;
 	public static final int POZ_PROXIMITY = 6;
+	public static final int POZ_PRESSURE = 7;
 
 	// Action Commands:
 	public static String ACTION_YAW_PITCH = "yaw & pitch";
 	public static String ACTION_ROLL_PITCH = "roll & pitch";
 	public static String ACTION_MOVE = "move";
 
-	// Supported sensors:
+	// Sensors Type
+	public static final String TYPE_ORIENTATION = "TYPE_ORIENTATION";
+	public static final String TYPE_ACCELEROMETER = "TYPE_ACCELEROMETER";
+	public static final String TYPE_TEMPERATURE = "TYPE_TEMPERATURE";
+	public static final String TYPE_MAGNETIC_FIELD = "TYPE_MAGNETIC_FIELD";
+	public static final String TYPE_LIGHT = "TYPE_LIGHT";
+	public static final String TYPE_PROXIMITY = "TYPE_PROXIMITY";
+	public static final String TYPE_PRESSURE = "TYPE_PRESSURE";
+
+	// Supported sensors
 	public static final String ORIENTATION = "orientation";
 	public static final String ACCELEROMETER = "accelerometer";
 	public static final String TEMPERATURE = "temperature";
 	public static final String MAGNETIC_FIELD = "magnetic field";
 	public static final String LIGHT = "light";
 	public static final String PROXIMITY = "proximity";
-	public static final String TRICORDER = "tricorder";
 	public static final String BARCODE_READER = "barcode reader";
+	public static final String PRESSURE = "pressure";
 
 	public static final String SHOW_ACCELERATION = "show acceleration";
 	public static final String BINARY_PROXIMITY = "binary proximity";
@@ -39,7 +49,7 @@ public abstract class SensorModel {
 	public static final String AVERAGE_MAGNETIC_FIELD = "average magnetic field";
 	public static final String AVERAGE_LIGHT = "average light";
 	public static final String AVERAGE_PROXIMITY = "average proximity";
-	public static final String AVERAGE_TRICORDER = "average tricorder";
+	public static final String AVERAGE_PRESSURE = "average pressure";
 
 	public static final String DISABLED = "DISABLED";
 
@@ -270,11 +280,12 @@ public abstract class SensorModel {
 	}
 
 	public void setUpdateEmulatorCount(int value) {
-		updateEmulatorCount = value;		
+		updateEmulatorCount = value;
 	}
 
 	public long getUpdateDuration() {
 		return updateDuration;
 	}
 
+	public abstract String getTypeConstant();
 }

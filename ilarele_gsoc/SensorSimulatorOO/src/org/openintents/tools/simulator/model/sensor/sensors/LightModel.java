@@ -21,7 +21,7 @@ public class LightModel extends SensorModel {
 
 	public LightModel() {
 		super();
-		lightValue = 400;
+		read_light = lightValue = 400;
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class LightModel extends SensorModel {
 	}
 
 	public double getLight() {
-		return lightValue;
+		return read_light;
 	}
 
 	@Override
@@ -100,5 +100,14 @@ public class LightModel extends SensorModel {
 
 	public void addLight(double value) {
 		lightValue += value;
+	}
+
+	@Override
+	public String getTypeConstant() {
+		return TYPE_LIGHT;
+	}
+
+	public double getReadLight() {
+		return read_light;
 	}
 }
