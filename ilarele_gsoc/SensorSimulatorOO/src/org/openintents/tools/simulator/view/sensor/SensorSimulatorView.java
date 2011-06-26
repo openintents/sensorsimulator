@@ -57,7 +57,9 @@ import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
 import org.openintents.tools.simulator.view.sensor.sensors.BarcodeReaderView;
+import org.openintents.tools.simulator.view.sensor.sensors.GravityView;
 import org.openintents.tools.simulator.view.sensor.sensors.LightView;
+import org.openintents.tools.simulator.view.sensor.sensors.LinearAccelerationView;
 import org.openintents.tools.simulator.view.sensor.sensors.MagneticFieldView;
 import org.openintents.tools.simulator.view.sensor.sensors.OrientationView;
 import org.openintents.tools.simulator.view.sensor.sensors.PressureView;
@@ -118,7 +120,12 @@ public class SensorSimulatorView extends JPanel {
 		setLayout(layout);
 		// sensors
 		sensors = new ArrayList<SensorView>();
-		sensors.add(new AccelerometerView(model.getAccelerometer()));
+		AccelerometerView accelerometer = new AccelerometerView(
+				model.getAccelerometer());
+		LinearAccelerationView linearAcceleration = new LinearAccelerationView(
+				model.getLinearAcceleration());
+		GravityView gravity = new GravityView(model.getGravity());
+		sensors.add(accelerometer);
 		sensors.add(new MagneticFieldView(model.getMagneticField()));
 		sensors.add(new OrientationView(model.getOrientation()));
 		sensors.add(new TemperatureView(model.getTemperature()));
@@ -126,6 +133,10 @@ public class SensorSimulatorView extends JPanel {
 		sensors.add(new LightView(model.getLight()));
 		sensors.add(new ProximityView(model.getProximity()));
 		sensors.add(new PressureView(model.getPressure()));
+		sensors.add(linearAcceleration);
+		sensors.add(gravity);
+
+		accelerometer.setRelatedSensors(gravity, linearAcceleration);
 
 		enabledBorder = BorderFactory.createTitledBorder("Enabled sensors");
 		disabledBorder = BorderFactory
@@ -314,7 +325,7 @@ public class SensorSimulatorView extends JPanel {
 		SpringLayout layout = new SpringLayout();
 		JPanel leftPanel = new JPanel(layout);
 		JScrollPane leftScrollPane = new JScrollPane(leftPanel);
-		
+
 		// Add IP address properties:
 		Font fontNotify = new Font("SansSerif", Font.BOLD, 12);
 		sensorPortText = new JTextField(5);
@@ -629,6 +640,15 @@ public class SensorSimulatorView extends JPanel {
 
 	public PressureView getPressure() {
 		return (PressureView) sensors.get(SensorModel.POZ_PRESSURE);
+	}
+
+	public LinearAccelerationView getLinearAceleration() {
+		return (LinearAccelerationView) sensors
+				.get(SensorModel.POZ_LINEAR_ACCELERATION);
+	}
+
+	public GravityView getGravity() {
+		return (GravityView) sensors.get(SensorModel.POZ_GRAVITY);
 	}
 
 }

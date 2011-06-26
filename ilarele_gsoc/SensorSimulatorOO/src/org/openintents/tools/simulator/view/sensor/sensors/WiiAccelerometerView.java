@@ -18,6 +18,7 @@ public class WiiAccelerometerView extends JPanel {
 	private JTextField mRealDevicePath;
 	private JLabel mRealDeviceOutputLabel;
 
+	@SuppressWarnings("unused")
 	private WiiAccelerometerModel model;
 
 	public WiiAccelerometerView(WiiAccelerometerModel model) {

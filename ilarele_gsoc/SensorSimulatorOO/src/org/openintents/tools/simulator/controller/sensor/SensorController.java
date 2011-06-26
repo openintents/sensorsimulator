@@ -98,4 +98,5 @@ public abstract class SensorController {
 	public boolean isFixed() {
 		return isFixed;
 	}
+
 }

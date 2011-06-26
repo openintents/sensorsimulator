@@ -6,6 +6,9 @@ import java.util.Random;
 import org.openintents.tools.simulator.model.telnet.Vector;
 
 public class AccelerometerModel extends SensorModel {
+	private GravityModel gravity;
+	private LinearAccelerationModel linearAcceleration;
+
 	private static Random rand = new Random();
 	/**
 	 * Current read-out value of accelerometer x-component.
@@ -115,6 +118,12 @@ public class AccelerometerModel extends SensorModel {
 		mAccelerometerLimit = 10;
 		wiiAccelerometerModel = new WiiAccelerometerModel();
 		mEnabled = true;
+	}
+
+	public void setRelatedSensors(GravityModel gravity,
+			LinearAccelerationModel linearAcceleration) {
+		this.gravity = gravity;
+		this.linearAcceleration = linearAcceleration;
 	}
 
 	public void setXYZ(Vector vec) {
@@ -412,11 +421,19 @@ public class AccelerometerModel extends SensorModel {
 	}
 
 	public void setCurrentUpdateRate(float updatesPerSecond) {
-		mCurrentUpdateRate = updatesPerSecond;		
+		mCurrentUpdateRate = updatesPerSecond;
 	}
 
 	@Override
 	public String getTypeConstant() {
 		return TYPE_ACCELEROMETER;
+	}
+
+	public GravityModel getGravity() {
+		return gravity;
+	}
+	
+	public LinearAccelerationModel getLinearAcceleration() {
+		return linearAcceleration;
 	}
 }

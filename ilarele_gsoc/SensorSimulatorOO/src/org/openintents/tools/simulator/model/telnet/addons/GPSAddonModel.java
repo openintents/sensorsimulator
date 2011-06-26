@@ -7,7 +7,6 @@ public class GPSAddonModel {
 	private float longitude;
 	private float latitude;
 	private float altitude;
-	private String lisName;
 	private TelnetServer mTelnetServer;
 
 	public GPSAddonModel(TelnetServer telnetServer) {

@@ -7,7 +7,7 @@ import org.openintents.tools.simulator.view.telnet.addons.BatteryAddonView;
 
 public class BatteryAddonModel {
 	// TelnetSimulations variables
-	private int batteryPercent;
+	// private int batteryPercent;
 
 	// Battery variables
 	private boolean batteryPresence;
@@ -19,7 +19,7 @@ public class BatteryAddonModel {
 
 	public BatteryAddonModel(final TelnetServer telnetServer) {
 		this.mTelnetServer = telnetServer;
-		batteryPercent = 100;
+		// batteryPercent = 100;
 		batteryPresence = true;
 		batteryAC = true;
 		batteryStatus = "unknown";

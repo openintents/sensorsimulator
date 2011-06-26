@@ -11,7 +11,9 @@ import org.openintents.tools.simulator.model.telnet.TelnetSimulatorModel;
 import org.openintents.tools.simulator.view.telnet.TelnetSimulatorView;
 
 public class TelnetSimulatorController {
+	@SuppressWarnings("unused")
 	private BatteryAddonController batteryAddonCtrl;
+	@SuppressWarnings("unused")
 	private GPSAddonController gpsAddonCtrl;
 
 	public TelnetSimulatorController(final TelnetSimulatorModel model,

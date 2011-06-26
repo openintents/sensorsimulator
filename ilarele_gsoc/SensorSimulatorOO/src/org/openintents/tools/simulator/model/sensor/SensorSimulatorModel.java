@@ -31,7 +31,9 @@ import java.util.ArrayList;
 import org.openintents.tools.simulator.SensorSimulator;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
+import org.openintents.tools.simulator.model.sensor.sensors.GravityModel;
 import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
+import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
@@ -63,6 +65,7 @@ public class SensorSimulatorModel {
 	private float mUpdate;
 	private long mRefreshCount;
 
+	@SuppressWarnings("unused")
 	private double mRefreshSensors;
 
 	// for measuring updates:
@@ -102,7 +105,10 @@ public class SensorSimulatorModel {
 
 		// sensors
 		sensors = new ArrayList<SensorModel>();
-		sensors.add(new AccelerometerModel());
+		AccelerometerModel accelerometer = new AccelerometerModel();
+		LinearAccelerationModel linearAcceleration = new LinearAccelerationModel();
+		GravityModel gravity = new GravityModel();
+		sensors.add(accelerometer);
 		sensors.add(new MagneticFieldModel());
 		sensors.add(new OrientationModel());
 		sensors.add(new TemperatureModel());
@@ -110,6 +116,9 @@ public class SensorSimulatorModel {
 		sensors.add(new LightModel());
 		sensors.add(new ProximityModel());
 		sensors.add(new PressureModel());
+		sensors.add(linearAcceleration);
+		sensors.add(gravity);
+		accelerometer.setRelatedSensors(gravity, linearAcceleration);
 		
 		mSensorServer = new SensorServer(sensorSimulator);
 
@@ -232,4 +241,11 @@ public class SensorSimulatorModel {
 		return (PressureModel) sensors.get(SensorModel.POZ_PRESSURE);
 	}
 
+	public LinearAccelerationModel getLinearAcceleration() {
+		return (LinearAccelerationModel) sensors.get(SensorModel.POZ_LINEAR_ACCELERATION);
+	}
+	public GravityModel getGravity() {
+		return (GravityModel) sensors.get(SensorModel.POZ_GRAVITY);
+	}
 }
+

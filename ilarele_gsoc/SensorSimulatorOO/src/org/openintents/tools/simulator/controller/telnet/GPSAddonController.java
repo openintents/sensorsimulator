@@ -10,7 +10,9 @@ import org.openintents.tools.simulator.view.telnet.addons.GPSAddonView;
 
 public class GPSAddonController {
 	// GPS variables
+	@SuppressWarnings("unused")
 	private GPSAddonView view;
+	@SuppressWarnings("unused")
 	private GPSAddonModel model;
 
 	public GPSAddonController(final GPSAddonModel model, final GPSAddonView view) {

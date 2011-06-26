@@ -10,10 +10,18 @@ import android.widget.TextView;
 
 public class SensorRealDeviceActivity extends Activity {
 
+	protected static final long DELTA = 1000;
+	protected long lastUpdateAcc = System.currentTimeMillis();
+	protected long lastUpdateLinearAcc = lastUpdateAcc ;
+	protected long lastUpdateGravity = lastUpdateAcc ;
+	
+
 	// private SensorManagerSimulator mSensorManager;
 	private SensorManager mSensorManager;
 
 	private TextView mTextViewAccelerometer;
+	private TextView mTextViewGravity;
+	private TextView mTextViewLinearAcceleration;
 	private TextView mTextViewLight;
 	private TextView mTextViewTemperature;
 	private TextView mTextViewOrientation;
@@ -21,6 +29,8 @@ public class SensorRealDeviceActivity extends Activity {
 	private TextView mTextViewPressure;
 
 	private SensorEventListener mEventListenerAccelerometer;
+	private SensorEventListener mEventListenerGravity;
+	private SensorEventListener mEventListenerLinearAcceleration;
 	private SensorEventListener mEventListenerLight;
 	private SensorEventListener mEventListenerTemperature;
 	private SensorEventListener mEventListenerOrientation;
@@ -33,12 +43,14 @@ public class SensorRealDeviceActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		mTextViewAccelerometer = (TextView) findViewById(R.id.text1);
-		mTextViewLight = (TextView) findViewById(R.id.text2);
-		mTextViewTemperature = (TextView) findViewById(R.id.text3);
-		mTextViewOrientation = (TextView) findViewById(R.id.text4);
-		mTextViewMagneticField = (TextView) findViewById(R.id.text5);
-		mTextViewPressure = (TextView) findViewById(R.id.text6);
+		mTextViewAccelerometer = (TextView) findViewById(R.id.textAccelerometer);
+		mTextViewGravity = (TextView) findViewById(R.id.textGravity);
+		mTextViewLinearAcceleration = (TextView) findViewById(R.id.textLinearAcceleration);
+		mTextViewLight = (TextView) findViewById(R.id.textLight);
+		mTextViewTemperature = (TextView) findViewById(R.id.textTemperature);
+		mTextViewOrientation = (TextView) findViewById(R.id.textOrientation);
+		mTextViewMagneticField = (TextView) findViewById(R.id.textMagneticField);
+		mTextViewPressure = (TextView) findViewById(R.id.textPressure);
 
 		// //////////////////////////////////////////////////////////////
 		// INSTRUCTIONS
@@ -84,9 +96,42 @@ public class SensorRealDeviceActivity extends Activity {
 
 			@Override
 			public void onSensorChanged(SensorEvent event) {
-				float[] values = event.values;
-				mTextViewAccelerometer.setText("Accelerometer: " + values[0] + ", "
-						+ values[1] + ", " + values[2]);
+				if (lastUpdateAcc + DELTA < System.currentTimeMillis()) {
+					lastUpdateAcc = System.currentTimeMillis();
+					float[] values = event.values;
+					mTextViewAccelerometer.setText("Accelerometer: "
+							+ values[0] + ", " + values[1] + ", " + values[2]);
+				}
+			}
+
+			@Override
+			public void onAccuracyChanged(Sensor sensor, int accuracy) {
+			}
+		};
+		mEventListenerGravity = new SensorEventListener() {
+			@Override
+			public void onSensorChanged(SensorEvent event) {
+				if (lastUpdateGravity + DELTA < System.currentTimeMillis()) {
+					lastUpdateGravity = System.currentTimeMillis();
+					float[] values = event.values;
+					mTextViewGravity.setText("Gravity: " + values[0] + ", "
+							+ values[1] + ", " + values[2]);
+				}
+			}
+
+			@Override
+			public void onAccuracyChanged(Sensor sensor, int accuracy) {
+			}
+		};
+		mEventListenerLinearAcceleration = new SensorEventListener() {
+			@Override
+			public void onSensorChanged(SensorEvent event) {
+				if (lastUpdateLinearAcc + DELTA < System.currentTimeMillis()) {
+					lastUpdateLinearAcc = System.currentTimeMillis();
+					float[] values = event.values;
+					mTextViewLinearAcceleration.setText("LinearAcceleration: "
+							+ values[0] + ", " + values[1] + ", " + values[2]);
+				}
 			}
 
 			@Override
@@ -98,8 +143,8 @@ public class SensorRealDeviceActivity extends Activity {
 			@Override
 			public void onSensorChanged(SensorEvent event) {
 				float[] values = event.values;
-				mTextViewLight.setText("Compass: " + values[0] + ", " + values[1]
-						+ ", " + values[2]);
+				mTextViewLight.setText("Compass: " + values[0] + ", "
+						+ values[1] + ", " + values[2]);
 			}
 
 			@Override
@@ -111,7 +156,7 @@ public class SensorRealDeviceActivity extends Activity {
 			@Override
 			public void onSensorChanged(SensorEvent event) {
 				float[] values = event.values;
-				mTextViewTemperature.setText("Orientation: " + values[0] + ", "
+				mTextViewOrientation.setText("Orientation: " + values[0] + ", "
 						+ values[1] + ", " + values[2]);
 			}
 
@@ -124,7 +169,7 @@ public class SensorRealDeviceActivity extends Activity {
 			@Override
 			public void onSensorChanged(SensorEvent event) {
 				float[] values = event.values;
-				mTextViewOrientation.setText("Temperature: " + values[0] + ", "
+				mTextViewTemperature.setText("Temperature: " + values[0] + ", "
 						+ values[1] + ", " + values[2]);
 			}
 
@@ -144,10 +189,11 @@ public class SensorRealDeviceActivity extends Activity {
 			public void onAccuracyChanged(Sensor sensor, int accuracy) {
 			}
 		};
-		
+
 		mEventListenerPressure = new SensorEventListener() {
 			@Override
 			public void onSensorChanged(SensorEvent event) {
+
 				float[] values = event.values;
 				mTextViewPressure.setText("Pressure: " + values[0]);
 			}
@@ -163,7 +209,14 @@ public class SensorRealDeviceActivity extends Activity {
 		super.onResume();
 		mSensorManager.registerListener(mEventListenerAccelerometer,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				SensorManager.SENSOR_DELAY_FASTEST);
+				SensorManager.SENSOR_DELAY_GAME);
+		mSensorManager.registerListener(mEventListenerGravity,
+				mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
+				SensorManager.SENSOR_DELAY_NORMAL);
+		mSensorManager.registerListener(mEventListenerLinearAcceleration,
+				mSensorManager
+						.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
+				SensorManager.SENSOR_DELAY_UI);
 		mSensorManager.registerListener(mEventListenerMagneticField,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
 				SensorManager.SENSOR_DELAY_FASTEST);
@@ -184,6 +237,8 @@ public class SensorRealDeviceActivity extends Activity {
 	@Override
 	protected void onStop() {
 		mSensorManager.unregisterListener(mEventListenerAccelerometer);
+		mSensorManager.unregisterListener(mEventListenerGravity);
+		mSensorManager.unregisterListener(mEventListenerLinearAcceleration);
 		mSensorManager.unregisterListener(mEventListenerMagneticField);
 		mSensorManager.unregisterListener(mEventListenerOrientation);
 		mSensorManager.unregisterListener(mEventListenerTemperature);

@@ -39,7 +39,9 @@ import javax.swing.Timer;
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.controller.sensor.AccelerometerController;
 import org.openintents.tools.simulator.controller.sensor.BarcodeReaderController;
+import org.openintents.tools.simulator.controller.sensor.GravityController;
 import org.openintents.tools.simulator.controller.sensor.LightController;
+import org.openintents.tools.simulator.controller.sensor.LinearAccelerationController;
 import org.openintents.tools.simulator.controller.sensor.MagneticFieldController;
 import org.openintents.tools.simulator.controller.sensor.OrientationController;
 import org.openintents.tools.simulator.controller.sensor.PressureController;
@@ -99,6 +101,8 @@ public class SensorSimulatorController implements WindowListener {
 		sensors.add(new ProximityController(model.getProximity(), view
 				.getProximity()));
 		sensors.add(new PressureController(model.getPressure(), view.getPressure()));
+		sensors.add(new LinearAccelerationController(model.getLinearAcceleration(), view.getLinearAceleration()));
+		sensors.add(new GravityController(model.getGravity(), view.getGravity()));
 
 		// add-ons
 

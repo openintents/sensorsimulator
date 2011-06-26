@@ -15,6 +15,8 @@ public abstract class SensorModel {
 	public static final int POZ_LIGHT = 5;
 	public static final int POZ_PROXIMITY = 6;
 	public static final int POZ_PRESSURE = 7;
+	public static final int POZ_LINEAR_ACCELERATION = 8;
+	public static final int POZ_GRAVITY = 9;
 
 	// Action Commands:
 	public static String ACTION_YAW_PITCH = "yaw & pitch";
@@ -24,6 +26,8 @@ public abstract class SensorModel {
 	// Sensors Type
 	public static final String TYPE_ORIENTATION = "TYPE_ORIENTATION";
 	public static final String TYPE_ACCELEROMETER = "TYPE_ACCELEROMETER";
+	public static final String TYPE_GRAVITY = "TYPE_GRAVITY";
+	public static final String TYPE_LINEAR_ACCELERATION = "TYPE_LINEAR_ACCELERATION";
 	public static final String TYPE_TEMPERATURE = "TYPE_TEMPERATURE";
 	public static final String TYPE_MAGNETIC_FIELD = "TYPE_MAGNETIC_FIELD";
 	public static final String TYPE_LIGHT = "TYPE_LIGHT";
@@ -33,6 +37,8 @@ public abstract class SensorModel {
 	// Supported sensors
 	public static final String ORIENTATION = "orientation";
 	public static final String ACCELEROMETER = "accelerometer";
+	public static final String GRAVITY = "gravity";
+	public static final String LINEAR_ACCELERATION = "linear acceleration";
 	public static final String TEMPERATURE = "temperature";
 	public static final String MAGNETIC_FIELD = "magnetic field";
 	public static final String LIGHT = "light";
@@ -45,6 +51,8 @@ public abstract class SensorModel {
 
 	public static final String AVERAGE_ORIENTATION = "average orientation";
 	public static final String AVERAGE_ACCELEROMETER = "average accelerometer";
+	public static final String AVERAGE_GRAVITY = "average gravity";
+	public static final String AVERAGE_LINEAR_ACCELERATION = "average linear acceleration";
 	public static final String AVERAGE_TEMPERATURE = "average temperature";
 	public static final String AVERAGE_MAGNETIC_FIELD = "average magnetic field";
 	public static final String AVERAGE_LIGHT = "average light";
@@ -288,4 +296,5 @@ public abstract class SensorModel {
 	}
 
 	public abstract String getTypeConstant();
+
 }
