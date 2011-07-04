@@ -197,8 +197,8 @@ public class SensorSimulatorDemoActivity extends Activity {
 
 			@Override
 			public void onSensorChanged(SensorEvent event) {
-				float[] values = event.values;
-				mTextViewBarcode.setText("Barcode: " + values[0]);
+				String barcode = event.barcode;
+				mTextViewBarcode.setText("Barcode: " + barcode);
 			}
 
 			@Override
