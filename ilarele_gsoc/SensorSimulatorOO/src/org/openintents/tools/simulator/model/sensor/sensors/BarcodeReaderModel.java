@@ -55,9 +55,7 @@ public class BarcodeReaderModel extends SensorModel {
 		return barcodeValue;
 	}
 
-	@Override
 	public void setUpdateRates() {
-		mUpdateRates = new double[] {};
 	}
 
 	@Override

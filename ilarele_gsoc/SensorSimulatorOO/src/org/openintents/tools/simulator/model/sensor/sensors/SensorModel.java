@@ -61,6 +61,17 @@ public abstract class SensorModel {
 
 	public static final String DISABLED = "DISABLED";
 
+	public static final String SENSOR_DELAY_FASTEST = "SENSOR_DELAY_FASTEST (0)";
+	public static final String SENSOR_DELAY_GAME = "SENSOR_DELAY_GAME(20/s)";
+	public static final String SENSOR_DELAY_UI = "SENSOR_DELAY_UI(60/s)";
+	public static final String SENSOR_DELAY_NORMAL = "SENSOR_DELAY_NORMAL(200/s)";
+
+	/** Delay in milliseconds */
+	public static final int DELAY_MS_FASTEST = 0;
+	public static final int DELAY_MS_GAME = 20;
+	public static final int DELAY_MS_UI = 60;
+	public static final int DELAY_MS_NORMAL = 200;
+
 	// Constant giving the unicode value of degrees symbol.
 	final static public String DEGREES = "\u00B0";
 	final static public String MICRO = "\u00b5";
@@ -71,7 +82,6 @@ public abstract class SensorModel {
 	protected boolean mEnabled;
 
 	// Simulation update
-	protected double[] mUpdateRates;
 	protected float mDefaultUpdateRate;
 	protected double mCurrentUpdateRate;
 	/** Whether to form an average at each update */
@@ -111,10 +121,6 @@ public abstract class SensorModel {
 
 	public void setEnabled(boolean enable) {
 		mEnabled = enable;
-	}
-
-	public double[] getUpdateRates() {
-		return mUpdateRates;
 	}
 
 	public double getDefaultUpdateRate() {
@@ -222,19 +228,6 @@ public abstract class SensorModel {
 	}
 
 	protected abstract void printNumValues(PrintWriter out);
-
-	public void getSensorUpdateRates(PrintWriter out) {
-		double[] updatesList = getUpdateRates();
-		if (updatesList == null || updatesList.length < 1) {
-			out.println("0");
-		} else {
-			int len = updatesList.length;
-			out.println("" + len);
-			for (int i = 0; i < len; i++) {
-				out.println("" + updatesList[i]);
-			}
-		}
-	}
 
 	public void setSensorUpdateRate(PrintWriter out) {
 		if (isEnabled()) {

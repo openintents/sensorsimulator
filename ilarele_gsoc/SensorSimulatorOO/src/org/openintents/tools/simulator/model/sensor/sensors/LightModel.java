@@ -84,7 +84,6 @@ public class LightModel extends SensorModel {
 
 	@Override
 	public void setUpdateRates() {
-		mUpdateRates = new double[] { 1 };
 		mDefaultUpdateRate = 1;
 		mCurrentUpdateRate = 1;
 	}

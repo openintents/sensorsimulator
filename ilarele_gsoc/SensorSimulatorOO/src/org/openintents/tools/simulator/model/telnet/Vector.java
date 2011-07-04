@@ -119,4 +119,8 @@ public class Vector {
 	public String toString() {
 		return "[" + x + ", " + y + ", " + z + "]";
 	}
+
+	public static Vector addVectors(Vector a, Vector b) {
+		return new Vector(a.x + b.x, a.y + b.y, a.z + b.z);
+	}
 }

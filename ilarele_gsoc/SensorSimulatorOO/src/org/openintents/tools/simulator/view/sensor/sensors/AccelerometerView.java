@@ -1,16 +1,18 @@
 package org.openintents.tools.simulator.view.sensor.sensors;
 
+import java.awt.Color;
 import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 
@@ -29,11 +31,6 @@ public class AccelerometerView extends SensorView {
 	private JTextField mSpringConstantText;
 	private JTextField mDampingConstantText;
 
-	// Gravity
-	private JTextField mGravityXText;
-	private JTextField mGravityYText;
-	private JTextField mGravityZText;
-
 	private JCheckBox mShowAcceleration;
 
 	private WiiAccelerometerView wiiAccelerometerView;
@@ -41,12 +38,12 @@ public class AccelerometerView extends SensorView {
 	// Sensors Values
 	private JPanel sensorGravityPane;
 	private JPanel sensorLinearAccelerationPane;
-	
+
 	// Gravity
 	private JLabel mSensorGravityXText;
 	private JLabel mSensorGravityYText;
 	private JLabel mSensorGravityZText;
-	
+
 	// Linear Acceleration
 	private JLabel mSensorLinearAccelerationXText;
 	private JLabel mSensorLinearAccelerationYText;
@@ -66,319 +63,203 @@ public class AccelerometerView extends SensorView {
 	}
 
 	@Override
-	public JPanel fillSensorSettingsPanel() {
-		JPanel resultPanel = new JPanel(new GridBagLayout());
-		resultPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Settings"),
-				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		GridBagConstraints c3 = new GridBagConstraints();
-		GridBagConstraints c2 = new GridBagConstraints();
-
+	public JPanel fillSensorSpecificSettingsPanel() {
 		AccelerometerModel accModel = ((AccelerometerModel) model);
-		computedGravity = new JPanel(new GridBagLayout());
-		computedLinearAcceleration = new JPanel(new GridBagLayout());
-
-		// computedGravity
-		computedGravity.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Computed Gravity"),
+		JPanel resultPanel = new JPanel();
+		resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
+		resultPanel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder("Sensor Specific Settings"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		c3.fill = GridBagConstraints.HORIZONTAL;
-		c3.anchor = GridBagConstraints.NORTHWEST;
-		c3.gridwidth = 3;
-		c3.gridx = 0;
-		c3.gridy = 0;
 
-		JLabel label = new JLabel("Gravity constant g: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		computedGravity.add(label, c3);
-
-		mGravityConstantText = new JTextField(5);
-		mGravityConstantText.setText("9.80665");
-		c3.gridx = 1;
-		computedGravity.add(mGravityConstantText, c3);
-
-		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
-		c3.gridx = 2;
-		computedGravity.add(label, c3);
-
-		label = new JLabel("Accelerometer limit: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		computedGravity.add(label, c3);
-
-		mAccelerometerLimitText = new JTextField(5);
-		mAccelerometerLimitText.setText("" + accModel.getAccelLimit());
-		c3.gridx = 1;
-		computedGravity.add(mAccelerometerLimitText, c3);
-
-		label = new JLabel(" g", JLabel.LEFT);
-		c3.gridx = 2;
-		computedGravity.add(label, c3);
-		
-		// gravity x, y, z
-		label = new JLabel("x: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		computedGravity.add(label, c3);
-		mGravityXText = new JTextField(5);
-		mGravityXText.setText("0");
-		c3.gridx = 1;
-		computedGravity.add(mGravityXText, c3);
-
-		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
-		c3.gridx = 2;
-		computedGravity.add(label, c3);
-
-		label = new JLabel("y: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		computedGravity.add(label, c3);
-
-		mGravityYText = new JTextField(5);
-		mGravityYText.setText("0");
-		c3.gridx = 1;
-		computedGravity.add(mGravityYText, c3);
-
-		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
-		c3.gridx = 2;
-		computedGravity.add(label, c3);
-
-		label = new JLabel("z: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		computedGravity.add(label, c3);
-
-		mGravityZText = new JTextField(5);
-		mGravityZText.setText("-9.80665");
-		c3.gridx = 1;
-		computedGravity.add(mGravityZText, c3);
-
-		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
-		c3.gridx = 2;
-		computedGravity.add(label, c3);
-		
-		// computedLinearAcceleration
-		computedLinearAcceleration.setBorder(BorderFactory
-				.createCompoundBorder(BorderFactory
-						.createTitledBorder("Computed Linear Acceleration"),
-						BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		label = new JLabel("Pixels per meter: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		computedLinearAcceleration.add(label, c3);
-
-		mPixelPerMeterText = new JTextField(5);
-		mPixelPerMeterText.setText("3000");
-		c3.gridx = 1;
-		computedLinearAcceleration.add(mPixelPerMeterText, c3);
-
-		label = new JLabel(" p/m", JLabel.LEFT);
-		c3.gridx = 2;
-		computedLinearAcceleration.add(label, c3);
-
-		label = new JLabel("Spring constant (k/m) ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		computedLinearAcceleration.add(label, c3);
-
-		mSpringConstantText = new JTextField(5);
-		mSpringConstantText.setText("500");
-		c3.gridx = 1;
-		computedLinearAcceleration.add(mSpringConstantText, c3);
-
-		label = new JLabel(" p/s" + SensorModel.SQUARED, JLabel.LEFT);
-		c3.gridx = 2;
-		computedLinearAcceleration.add(label, c3);
-
-		label = new JLabel("Damping constant: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		computedLinearAcceleration.add(label, c3);
-
-		mDampingConstantText = new JTextField(5);
-		mDampingConstantText.setText("50");
-		c3.gridx = 1;
-		computedLinearAcceleration.add(mDampingConstantText, c3);
-
-		label = new JLabel(" p/s", JLabel.LEFT);
-		c3.gridx = 2;
-		computedLinearAcceleration.add(label, c3);
-
-		c3.gridwidth = 3;
-		c3.gridx = 0;
-		c3.gridy++;
 		mShowAcceleration = new JCheckBox(SensorModel.SHOW_ACCELERATION);
 		mShowAcceleration.setSelected(accModel.isShown());
-		mShowAcceleration.setSelected(false);
+		mShowAcceleration.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		resultPanel.add(mShowAcceleration);
 
-		computedLinearAcceleration.add(mShowAcceleration, c3);
+		// computedGravity
+		fillComputedGravity(accModel);
+		resultPanel.add(computedGravity);
 
-		c2.gridx = 0;
-		c2.gridy = 0;
-		resultPanel.add(computedGravity, c2);
-		c2.gridy = 1;
-		resultPanel.add(computedLinearAcceleration, c2);
-		// Accelerometer field panel ends
-
-		// //////////////////////////////
 		// Sensor Gravity (in g = m/s^2)
-		sensorGravityPane = new JPanel(new GridBagLayout());
-		c3 = new GridBagConstraints();
-		c3.fill = GridBagConstraints.HORIZONTAL;
-		c3.anchor = GridBagConstraints.NORTHWEST;
-		c3.gridwidth = 3;
-		c3.gridx = 0;
-		c3.gridy = 0;
+		fillSensorGravity();
+		resultPanel.add(sensorGravityPane);
 
-		sensorGravityPane.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Sensor Gravity"),
-				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		// computedLinearAcceleration
+		fillComputedLinearAcceleration(accModel);
+		resultPanel.add(computedLinearAcceleration);
 
-		label = new JLabel("x: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		sensorGravityPane.add(label, c3);
-
-		mSensorGravityXText = new JLabel();
-		mSensorGravityXText.setText("0");
-		c3.gridx = 1;
-		sensorGravityPane.add(mSensorGravityXText, c3);
-
-		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
-		c3.gridx = 2;
-		sensorGravityPane.add(label, c3);
-
-		label = new JLabel("y: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		sensorGravityPane.add(label, c3);
-
-		mSensorGravityYText = new JLabel();
-		mSensorGravityYText.setText("0");
-		c3.gridx = 1;
-		sensorGravityPane.add(mSensorGravityYText, c3);
-
-		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
-		c3.gridx = 2;
-		sensorGravityPane.add(label, c3);
-
-		label = new JLabel("z: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		sensorGravityPane.add(label, c3);
-
-		mSensorGravityZText = new JLabel();
-		mSensorGravityZText.setText("-9.80665");
-		c3.gridx = 1;
-		sensorGravityPane.add(mSensorGravityZText, c3);
-
-		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
-		c3.gridx = 2;
-		sensorGravityPane.add(label, c3);
-
-		// Gravity field panel ends
-
-		// Add gravity field panel to settings
-		c2.gridx = 1;
-		c2.gridy = 0;
-		resultPanel.add(sensorGravityPane, c2);
-		// //////////////////////////////
 		// Sensor Linear Acceleration(in g = m/s^2)
-		sensorLinearAccelerationPane = new JPanel(new GridBagLayout());
-		c3 = new GridBagConstraints();
-		c3.fill = GridBagConstraints.HORIZONTAL;
-		c3.anchor = GridBagConstraints.NORTHWEST;
-		c3.gridwidth = 3;
-		c3.gridx = 0;
-		c3.gridy = 0;
+		fillSensorLinearAcceleration();
+		resultPanel.add(sensorLinearAccelerationPane);
 
-		sensorLinearAccelerationPane.setBorder(BorderFactory
-				.createCompoundBorder(BorderFactory
-						.createTitledBorder("Sensor Linear Acceleration"),
-						BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		// Real sensor bridge
+		JPanel realSensorBridgeFieldPane = fillRealSensorBridge(accModel);
+		resultPanel.add(realSensorBridgeFieldPane);
 
-		label = new JLabel("x: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		sensorLinearAccelerationPane.add(label, c3);
+		return resultPanel;
+	}
+
+	private JPanel fillRealSensorBridge(AccelerometerModel accModel) {
+		JPanel realSensorBridgeFieldPane = new JPanel(new GridLayout(0, 1));
+		realSensorBridgeFieldPane.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(3, 0, 15, 0),
+						"Real sensor bridge")));
+
+		wiiAccelerometerView = new WiiAccelerometerView(
+				accModel.getRealDeviceBridgeAddon());
+		realSensorBridgeFieldPane.add(wiiAccelerometerView);
+		return realSensorBridgeFieldPane;
+	}
+
+	private void fillSensorLinearAcceleration() {
+		sensorLinearAccelerationPane = new JPanel(new GridLayout(0, 3));
+
+		sensorLinearAccelerationPane
+				.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+						.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+						BorderFactory.createTitledBorder(
+								BorderFactory.createEmptyBorder(3, 0, 15, 0),
+								"Sensor Linear Acceleration")));
+
+		JLabel label = new JLabel("x: ", JLabel.LEFT);
+		sensorLinearAccelerationPane.add(label);
 		mSensorLinearAccelerationXText = new JLabel();
-		mSensorLinearAccelerationXText .setText("0");
-		c3.gridx = 1;
-		sensorLinearAccelerationPane.add(mSensorLinearAccelerationXText , c3);
+		mSensorLinearAccelerationXText.setText("0");
+		sensorLinearAccelerationPane.add(mSensorLinearAccelerationXText);
 
 		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
-		c3.gridx = 2;
-		sensorLinearAccelerationPane.add(label, c3);
+		sensorLinearAccelerationPane.add(label);
 
 		label = new JLabel("y: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		sensorLinearAccelerationPane.add(label, c3);
+		sensorLinearAccelerationPane.add(label);
 
 		mSensorLinearAccelerationYText = new JLabel();
 		mSensorLinearAccelerationYText.setText("0");
-		c3.gridx = 1;
-		sensorLinearAccelerationPane.add(mSensorLinearAccelerationYText, c3);
+		sensorLinearAccelerationPane.add(mSensorLinearAccelerationYText);
 
 		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
-		c3.gridx = 2;
-		sensorLinearAccelerationPane.add(label, c3);
+		sensorLinearAccelerationPane.add(label);
 
 		label = new JLabel("z: ", JLabel.LEFT);
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy++;
-		sensorLinearAccelerationPane.add(label, c3);
+		sensorLinearAccelerationPane.add(label);
 
 		mSensorLinearAccelerationZText = new JLabel();
 		mSensorLinearAccelerationZText.setText("-9.80665");
-		c3.gridx = 1;
-		sensorLinearAccelerationPane.add(mSensorLinearAccelerationZText, c3);
+		sensorLinearAccelerationPane.add(mSensorLinearAccelerationZText);
 
 		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
-		c3.gridx = 2;
-		sensorLinearAccelerationPane.add(label, c3);
+		sensorLinearAccelerationPane.add(label);
+	}
 
-		// Gravity field panel ends
+	private void fillComputedLinearAcceleration(AccelerometerModel accModel) {
+		computedLinearAcceleration = new JPanel(new GridLayout(0, 3));
 
-		// Add gravity field panel to settings
-		c2.gridx = 1;
-		c2.gridy = 1;
-		c2.gridwidth = 1;
-		resultPanel.add(sensorLinearAccelerationPane, c2);
+		computedLinearAcceleration
+				.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+						.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+						BorderFactory.createTitledBorder(
+								BorderFactory.createEmptyBorder(3, 0, 15, 0),
+								"For Computing Linear Acc")));
 
-		// /////////////////////////////
-		// Real sensor bridge
-		JPanel realSensorBridgeFieldPane = new JPanel(new GridBagLayout());
-		realSensorBridgeFieldPane.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Real sensor bridge"),
-				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		wiiAccelerometerView = new WiiAccelerometerView(
-				accModel.getRealDeviceBridgeAddon());
-		wiiAccelerometerView.fillPane(realSensorBridgeFieldPane);
-		realSensorBridgeFieldPane.add(wiiAccelerometerView);
+		JLabel label = new JLabel("Pixels per meter: ", JLabel.LEFT);
+		computedLinearAcceleration.add(label);
 
-		// // Add real sensor bridge field panel to settings
-		c2.gridx = 0;
-		c2.gridwidth = 1;
-		c2.gridy++;
-		resultPanel.add(realSensorBridgeFieldPane, c2);
+		mPixelPerMeterText = new JTextField(5);
+		mPixelPerMeterText.setText("3000");
+		computedLinearAcceleration.add(mPixelPerMeterText);
 
-		return resultPanel;
+		label = new JLabel(" p/m", JLabel.LEFT);
+		computedLinearAcceleration.add(label);
+
+		label = new JLabel("Spring constant:", JLabel.LEFT);
+		computedLinearAcceleration.add(label);
+
+		mSpringConstantText = new JTextField(5);
+		mSpringConstantText.setText("500");
+		computedLinearAcceleration.add(mSpringConstantText);
+
+		label = new JLabel(" p/s" + SensorModel.SQUARED, JLabel.LEFT);
+		computedLinearAcceleration.add(label);
+
+		label = new JLabel("Damping constant: ", JLabel.LEFT);
+		computedLinearAcceleration.add(label);
+
+		mDampingConstantText = new JTextField(5);
+		mDampingConstantText.setText("50");
+		computedLinearAcceleration.add(mDampingConstantText);
+
+		label = new JLabel(" p/s", JLabel.LEFT);
+		computedLinearAcceleration.add(label);
+	}
+
+	private void fillSensorGravity() {
+		sensorGravityPane = new JPanel(new GridLayout(0, 3));
+		sensorGravityPane.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(3, 0, 15, 0),
+						"Sensor Gravity")));
+
+		JLabel label = new JLabel("x: ", JLabel.LEFT);
+		sensorGravityPane.add(label);
+
+		mSensorGravityXText = new JLabel();
+		mSensorGravityXText.setText("0");
+		sensorGravityPane.add(mSensorGravityXText);
+
+		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
+		sensorGravityPane.add(label);
+
+		label = new JLabel("y: ", JLabel.LEFT);
+		sensorGravityPane.add(label);
+
+		mSensorGravityYText = new JLabel();
+		mSensorGravityYText.setText("0");
+		sensorGravityPane.add(mSensorGravityYText);
+
+		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
+		sensorGravityPane.add(label);
+
+		label = new JLabel("z: ", JLabel.LEFT);
+		sensorGravityPane.add(label);
+
+		mSensorGravityZText = new JLabel();
+		mSensorGravityZText.setText("-9.80665");
+		sensorGravityPane.add(mSensorGravityZText);
+
+		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
+		sensorGravityPane.add(label);
+	}
+
+	private void fillComputedGravity(AccelerometerModel accModel) {
+		computedGravity = new JPanel(new GridLayout(0, 3));
+
+		computedGravity.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(3, 0, 15, 0),
+						"For Computing Gravity")));
+		JLabel label = new JLabel("Constant g: ", JLabel.LEFT);
+		computedGravity.add(label);
+
+		mGravityConstantText = new JTextField(5);
+		mGravityConstantText.setText("9.80665");
+		computedGravity.add(mGravityConstantText);
+
+		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
+		computedGravity.add(label);
+
+		label = new JLabel("Acceleration limit: ", JLabel.LEFT);
+		computedGravity.add(label);
+
+		mAccelerometerLimitText = new JTextField(5);
+		mAccelerometerLimitText.setText("" + accModel.getAccelLimit());
+		computedGravity.add(mAccelerometerLimitText);
+
+		label = new JLabel(" g", JLabel.LEFT);
+		computedGravity.add(label);
 	}
 
 	public JCheckBox getShow() {
@@ -403,18 +284,6 @@ public class AccelerometerView extends SensorView {
 
 	public double getDampingConstant() {
 		return getSafeDouble(mDampingConstantText, 50);
-	}
-
-	public double getGravityX() {
-		return getSafeDouble(mGravityXText);
-	}
-
-	public double getGravityY() {
-		return getSafeDouble(mGravityYText);
-	}
-
-	public double getGravityZ() {
-		return getSafeDouble(mGravityZText);
 	}
 
 	public JCheckBox getShowAcceleration() {
@@ -465,5 +334,65 @@ public class AccelerometerView extends SensorView {
 
 	public LinearAccelerationView getLinearAcceleration() {
 		return linearAcceleration;
+	}
+
+	public void setSensorGravityX(double readGravityX) {
+		mSensorGravityXText.setText(Global.TWO_DECIMAL_FORMAT.format(readGravityX));
+	}
+
+	public void setSensorGravityY(double readGravityY) {
+		mSensorGravityYText.setText(Global.TWO_DECIMAL_FORMAT.format(readGravityY));
+	}
+
+	public void setSensorGravityZ(double readGravityZ) {
+		mSensorGravityZText.setText(Global.TWO_DECIMAL_FORMAT.format(readGravityZ));
+	}
+
+	public void setSensorLinearAccX(double value) {
+		mSensorLinearAccelerationXText.setText(Global.TWO_DECIMAL_FORMAT.format(value));
+	}
+	public void setSensorLinearAccY(double value) {
+		mSensorLinearAccelerationYText.setText(Global.TWO_DECIMAL_FORMAT.format(value));
+	}
+	public void setSensorLinearAccZ(double value) {
+		mSensorLinearAccelerationZText.setText(Global.TWO_DECIMAL_FORMAT.format(value));
+	}
+
+	public void setCurrentUpdateRate(int updatesPerSecond) {
+		switch (updatesPerSecond) {
+		case SensorModel.DELAY_MS_FASTEST:
+			mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_FASTEST);
+			break;
+		case SensorModel.DELAY_MS_GAME:
+			mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_GAME);
+			break;
+		case SensorModel.DELAY_MS_NORMAL:
+			mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_NORMAL);
+			break;
+		case SensorModel.DELAY_MS_UI:
+			mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_UI);
+			break;
+			default:
+				mCurrentUpdateRateText.setText("Wrong update rate!");
+				break;
+		}
+	}
+
+	@Override
+	protected JPanel getSensorSpecificHelp() {
+		JPanel panel = new JPanel(new GridLayout(0, 1));
+		JPanel panel1 = new JPanel(new GridLayout(0, 1));
+		panel1.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(3, 0, 15, 0),
+						"Description")));
+		panel1.add(new JLabel("- measures the acceleration applied to the device"));
+		panel1.add(new JLabel("- has values for all 3 axis"));
+		panel1.add(new JLabel("- accelerometer = gravity + linear acceleration"));
+		
+	
+		panel.add(panel1);
+		return panel;
 	}
 }

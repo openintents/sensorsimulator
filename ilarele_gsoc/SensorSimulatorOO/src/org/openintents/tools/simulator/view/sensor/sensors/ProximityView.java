@@ -1,7 +1,9 @@
 package org.openintents.tools.simulator.view.sensor.sensors;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.util.Random;
 
 import javax.swing.BorderFactory;
@@ -33,7 +35,7 @@ public class ProximityView extends SensorView {
 	private ButtonGroup mProximityButtonGroup;
 
 	@Override
-	public JPanel fillSensorSettingsPanel() {
+	public JPanel fillSensorSpecificSettingsPanel() {
 		JPanel resultPanel = new JPanel(new GridBagLayout());
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Settings"),
@@ -160,6 +162,22 @@ public class ProximityView extends SensorView {
 
 	public double getProximity() {
 		return getSafeDouble(mProximityText);
+	}
+
+	@Override
+	protected JPanel getSensorSpecificHelp() {
+		JPanel panel = new JPanel(new GridLayout(0, 1));
+		JPanel panel1 = new JPanel(new GridLayout(0, 1));
+		panel1.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(3, 0, 15, 0),
+						"Description")));
+		panel1.add(new JLabel("- measures the distance from the sensor, in centimeters"));
+		panel1.add(new JLabel("- depending on device, may have only far or near values"));
+		
+		panel.add(panel1);
+		return panel;
 	}
 
 }

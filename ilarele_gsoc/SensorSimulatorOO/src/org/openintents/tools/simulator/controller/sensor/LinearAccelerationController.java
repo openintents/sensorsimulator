@@ -5,6 +5,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationMo
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.view.sensor.sensors.LinearAccelerationView;
 
 public class LinearAccelerationController extends SensorController {
@@ -22,10 +23,12 @@ public class LinearAccelerationController extends SensorController {
 
 		// LinearAcceleration
 		if (linearAccelerationModel.isEnabled()) {
-			linearAccelerationModel.setLinearAcceleration(
-					linearAccelerationView.getAccX(),
+			Vector linearVec = new Vector(linearAccelerationView.getAccX(),
 					linearAccelerationView.getAccY(),
 					linearAccelerationView.getAccZ());
+			linearVec.reverserollpitchyaw(orientation.getRoll(),
+					orientation.getPitch(), orientation.getYaw());
+			linearAccelerationModel.setLinearAcceleration(linearVec);
 
 			// Add random component:
 			double random = linearAccelerationView.getRandom();

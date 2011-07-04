@@ -79,7 +79,6 @@ public class TemperatureModel extends SensorModel {
 
 	@Override
 	public void setUpdateRates() {
-		mUpdateRates = new double[] { 0.1, 1 };
 		mDefaultUpdateRate = 1;
 		mCurrentUpdateRate = 1;
 	}

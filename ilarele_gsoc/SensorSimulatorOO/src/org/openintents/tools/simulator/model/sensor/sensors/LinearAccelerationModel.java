@@ -2,6 +2,8 @@ package org.openintents.tools.simulator.model.sensor.sensors;
 
 import java.io.PrintWriter;
 
+import org.openintents.tools.simulator.model.telnet.Vector;
+
 public class LinearAccelerationModel extends SensorModel {
 	// linear_acceleration
 	private double linear_acc_x_value;
@@ -95,7 +97,7 @@ public class LinearAccelerationModel extends SensorModel {
 	public void printSensorData(PrintWriter out) {
 		// number of data following + data
 		out.println("3\n" + read_linear_acc_x + "\n" + read_linear_acc_y + "\n"
-				+ read_linear_acc_y);
+				+ read_linear_acc_z);
 
 	}
 
@@ -113,7 +115,6 @@ public class LinearAccelerationModel extends SensorModel {
 
 	@Override
 	public void setUpdateRates() {
-		mUpdateRates = new double[] { 1, 10, 50 };
 		mDefaultUpdateRate = 50;
 		mCurrentUpdateRate = 50;
 	}
@@ -150,5 +151,11 @@ public class LinearAccelerationModel extends SensorModel {
 
 	public double getReadLinearAccelerationZ() {
 		return read_linear_acc_z;
+	}
+
+	public void setLinearAcceleration(Vector vec) {
+		linear_acc_x_value = vec.x;
+		linear_acc_y_value = vec.y;
+		linear_acc_z_value = vec.z;
 	}
 }

@@ -1,7 +1,9 @@
 package org.openintents.tools.simulator.view.sensor.sensors;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -34,7 +36,7 @@ public class MagneticFieldView extends SensorView {
 	}
 
 	@Override
-	public JPanel fillSensorSettingsPanel() {
+	public JPanel fillSensorSpecificSettingsPanel() {
 		JPanel resultPanel = new JPanel(new GridBagLayout());
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Settings"),
@@ -110,5 +112,32 @@ public class MagneticFieldView extends SensorView {
 		c2.gridy++;
 		resultPanel.add(magneticFieldPane, c2);
 		return resultPanel;
+	}
+
+	@Override
+	protected JPanel getSensorSpecificHelp() {
+		JPanel panel = new JPanel(new GridLayout(0, 1));
+		JPanel panel1 = new JPanel(new GridLayout(0, 1));
+		panel1.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(3, 0, 15, 0),
+						"Description")));
+		panel1.add(new JLabel("- measures the magnetic field"));
+		panel1.add(new JLabel("- has values for all 3 axis"));
+		
+	
+		JPanel panel2 = new JPanel(new GridLayout(0, 1));
+		panel2.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(3, 0, 15, 0),
+						"Magnetic field values on Earth:")));
+		panel2.add(new JLabel("Minimum = 30 uT"));
+		panel2.add(new JLabel("Maximum = 60 uT"));
+		
+		panel.add(panel1);
+		panel.add(panel2);
+		return panel;
 	}
 }

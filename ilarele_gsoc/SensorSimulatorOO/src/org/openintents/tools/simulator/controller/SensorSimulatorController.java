@@ -171,7 +171,7 @@ public class SensorSimulatorController implements WindowListener {
 		// Update sensors:
 		for (SensorController sensorCtrl : sensors) {
 			sensorCtrl.updateSensorPhysics(orientation, wiiAccelerometerModel,
-					newDelay);
+					1000);
 		}
 		for (SensorController sensorCtrl : sensors) {
 			sensorCtrl.getModel().updateSensorReadoutValues();
@@ -317,5 +317,12 @@ public class SensorSimulatorController implements WindowListener {
 
 	public PressureController getPressure() {
 		return (PressureController) sensors.get(SensorModel.POZ_PRESSURE);
+	}
+
+	public GravityController getGravity() {
+		return (GravityController) sensors.get(SensorModel.POZ_GRAVITY);
+	}
+	public LinearAccelerationController getLinearAcceleration() {
+		return (LinearAccelerationController) sensors.get(SensorModel.POZ_LINEAR_ACCELERATION);
 	}
 }

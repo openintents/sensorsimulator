@@ -2,6 +2,7 @@ package org.openintents.tools.simulator.view.sensor.sensors;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -15,6 +16,7 @@ import java.net.URISyntaxException;
 import java.util.Random;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -22,12 +24,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
-import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.Global;
-import org.openintents.tools.simulator.help.HelpWindow;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.view.help.HelpWindow;
 
 public abstract class SensorView extends JScrollPane {
 	private static final long serialVersionUID = 6732292499469735861L;
@@ -38,9 +39,8 @@ public abstract class SensorView extends JScrollPane {
 	private HelpWindow helpWindow;
 
 	// Simulation update
-	protected JTextField mUpdateRatesText;
-	protected JTextField mDefaultUpdateRateText;
-	protected JTextField mCurrentUpdateRateText;
+	protected JLabel mDefaultUpdateRateText;
+	protected JLabel mCurrentUpdateRateText;
 
 	/** Whether to form an average at each update */
 	protected JCheckBox mUpdateAverage;
@@ -66,9 +66,9 @@ public abstract class SensorView extends JScrollPane {
 		else
 			mEnabled.setBackground(Global.DISABLE);
 
-		mCurrentUpdateRateText = new JTextField(5);
+		mCurrentUpdateRateText = new JLabel();
 
-		mUpdateAverage = new JCheckBox("average");
+		mUpdateAverage = new JCheckBox("average values");
 		mUpdateAverage.setSelected(true);
 
 		helpWindow = new HelpWindow(this);
@@ -77,64 +77,55 @@ public abstract class SensorView extends JScrollPane {
 	}
 
 	private void fillSensorPanel() {
-		SpringLayout layout = new SpringLayout();
-		insidePanel = new JPanel(layout);
+		insidePanel = new JPanel(new GridBagLayout());
+
+		GridBagConstraints l = new GridBagConstraints();
+		l.fill = GridBagConstraints.HORIZONTAL;
+		l.anchor = GridBagConstraints.NORTHWEST;
+		l.gridx = 0;
+		l.gridy = 0;
 		getViewport().add(insidePanel);
-		// help label
-		helpBtn = new JButton(Global.ICON_HELP);
-		helpBtn.setOpaque(false);
-		helpBtn.setContentAreaFilled(false);
-		helpBtn.setBorderPainted(false);
-		insidePanel.add(helpBtn);
 
 		// update rates
+		JPanel generalSettingsPanel = fillGeneralSettingsPanel();
+		insidePanel.add(generalSettingsPanel, l);
+
+		// panel settings
+		JPanel sensorSettings = fillSensorSpecificSettingsPanel();
+		l.gridx = 1;
+		insidePanel.add(sensorSettings, l);
+
+		Dimension size1 = sensorSettings.getPreferredSize();
+		Dimension size2 = generalSettingsPanel.getPreferredSize();
+
+		insidePanel.setPreferredSize(new Dimension(
+				(int) (Global.WIDTH * Global.SENSOR_SPLIT_RIGHT), Math.max(
+						size1.height, size2.height) - 130));
+	}
+
+	private JPanel fillGeneralSettingsPanel() {
+		JPanel generalSettingsPanel = new JPanel();
+		generalSettingsPanel.setLayout(new BoxLayout(generalSettingsPanel,
+				BoxLayout.Y_AXIS));
+
+		generalSettingsPanel.setBorder(BorderFactory
+				.createTitledBorder("General Settings"));
 		JPanel sensorUpdate = fillSensorUpdatePanel();
-		insidePanel.add(sensorUpdate);
+		generalSettingsPanel.add(sensorUpdate);
 
 		// random component and update simulation
 		JPanel updateRandomPanel = new JPanel(new BorderLayout());
 		updateRandomPanel.add(fillSensorRandomPanel(), BorderLayout.NORTH);
 		updateRandomPanel.add(updateSimulationField(), BorderLayout.SOUTH);
-		insidePanel.add(updateRandomPanel);
+		generalSettingsPanel.add(updateRandomPanel);
 
-		// panel settings
-		JPanel sensorSettings = fillSensorSettingsPanel();
-		insidePanel.add(sensorSettings);
-
-		// sensorUpdate
-		layout.putConstraint(SpringLayout.NORTH, sensorUpdate, 10,
-				SpringLayout.NORTH, insidePanel);
-		layout.putConstraint(SpringLayout.WEST, sensorUpdate, 10,
-				SpringLayout.WEST, insidePanel);
-
-		// updateRandomPanel
-		layout.putConstraint(SpringLayout.NORTH, updateRandomPanel, 10,
-				SpringLayout.SOUTH, sensorUpdate);
-		layout.putConstraint(SpringLayout.WEST, updateRandomPanel, 10,
-				SpringLayout.WEST, insidePanel);
-
-		// helpBtn
-		layout.putConstraint(SpringLayout.NORTH, helpBtn, 10,
-				SpringLayout.SOUTH, updateRandomPanel);
-		layout.putConstraint(SpringLayout.WEST, insidePanel, 10,
-				SpringLayout.WEST, helpBtn);
-
-		// sensorSettings
-		layout.putConstraint(SpringLayout.SOUTH, insidePanel, 10,
-				SpringLayout.SOUTH, sensorSettings);
-		layout.putConstraint(SpringLayout.EAST, sensorSettings, -10,
-				SpringLayout.EAST, insidePanel);
-
-		Dimension size1 = sensorSettings.getPreferredSize();
-		Dimension size2 = sensorUpdate.getPreferredSize();
-		setMinimumSize(new Dimension(40 + size1.width + size2.width, 100));
-
-		Dimension size3 = helpBtn.getPreferredSize();
-		Dimension size4 = updateRandomPanel.getPreferredSize();
-		sensorSettings
-				.setPreferredSize(new Dimension(size1.width, Math.max(
-						size1.height, 20 + size2.height + size3.height
-								+ size4.height)));
+		// help button
+		helpBtn = new JButton(Global.ICON_HELP);
+		helpBtn.setOpaque(false);
+		helpBtn.setContentAreaFilled(false);
+		helpBtn.setBorderPainted(false);
+		generalSettingsPanel.add(helpBtn);
+		return generalSettingsPanel;
 	}
 
 	public boolean isSensorEnabled() {
@@ -144,18 +135,6 @@ public abstract class SensorView extends JScrollPane {
 	public void setEnabled(boolean enable) {
 		mEnabled.setSelected(enable);
 		mRefreshEmulatorLabel.setText("-");
-	}
-
-	public double[] getUpdateRates() {
-		return getSafeDoubleList(mUpdateRatesText);
-	}
-
-	public double getDefaultUpdateRate() {
-		return getSafeDouble(mDefaultUpdateRateText);
-	}
-
-	public double getCurrentUpdateRate() {
-		return getSafeDouble(mCurrentUpdateRateText, 0);
 	}
 
 	public boolean updateAverage() {
@@ -239,8 +218,6 @@ public abstract class SensorView extends JScrollPane {
 		return valuelist;
 	}
 
-	// public abstract String toString(DecimalFormat mf);
-
 	protected double getRandomFromText() {
 		return getSafeDouble(mRandomText);
 	}
@@ -251,41 +228,24 @@ public abstract class SensorView extends JScrollPane {
 
 	public JPanel fillSensorUpdatePanel() {
 		JPanel resultPanel = new JPanel(new GridBagLayout());
-		if (!model.isUpdating())
-			return resultPanel;
 		GridBagConstraints layout = new GridBagConstraints();
-		resultPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Update rate"),
-				BorderFactory.createEmptyBorder(0, 0, 0, 0)));
-		JLabel nameLabel = new JLabel("Update rates: ", JLabel.LEFT);
+
+		resultPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createTitledBorder(
+						BorderFactory.createEmptyBorder(0, 0, 0, 0),
+						"Update rate"), BorderFactory.createMatteBorder(2, 0,
+				0, 0, Color.GRAY)));
+		JLabel nameLabel = new JLabel("Default: ", JLabel.LEFT);
 		layout.gridwidth = 1;
 		layout.gridx = 0;
 		layout.gridy = 0;
 		resultPanel.add(nameLabel, layout);
 
-		mUpdateRatesText = new JTextField(10);
-		layout.gridx = 1;
-		resultPanel.add(mUpdateRatesText, layout);
-
-		nameLabel = new JLabel("1/s", JLabel.LEFT);
-		layout.gridx = 2;
-		resultPanel.add(nameLabel, layout);
-
-		nameLabel = new JLabel("Default rate: ", JLabel.LEFT);
-		layout.gridwidth = 1;
-		layout.gridx = 0;
-		layout.gridy++;
-		resultPanel.add(nameLabel, layout);
-
-		mDefaultUpdateRateText = new JTextField(5);
+		mDefaultUpdateRateText = new JLabel();
 		layout.gridx = 1;
 		resultPanel.add(mDefaultUpdateRateText, layout);
 
-		nameLabel = new JLabel("1/s", JLabel.LEFT);
-		layout.gridx = 2;
-		resultPanel.add(nameLabel, layout);
-
-		nameLabel = new JLabel("Current rate: ", JLabel.LEFT);
+		nameLabel = new JLabel("Current: ", JLabel.LEFT);
 		layout.gridwidth = 1;
 		layout.gridx = 0;
 		layout.gridy++;
@@ -293,10 +253,6 @@ public abstract class SensorView extends JScrollPane {
 
 		layout.gridx = 1;
 		resultPanel.add(mCurrentUpdateRateText, layout);
-
-		nameLabel = new JLabel("1/s", JLabel.LEFT);
-		layout.gridx = 2;
-		resultPanel.add(nameLabel, layout);
 
 		layout.gridwidth = 3;
 		layout.gridx = 0;
@@ -307,26 +263,18 @@ public abstract class SensorView extends JScrollPane {
 		layout.gridy++;
 		resultPanel.add(new JSeparator(SwingConstants.HORIZONTAL), layout);
 
-		StringBuffer ratesStr = new StringBuffer();
-		for (double rate : model.getUpdateRates()) {
-			ratesStr.append(rate + ", ");
-		}
-		if (ratesStr.length() > 0)
-			mUpdateRatesText.setText(ratesStr.substring(0,
-					ratesStr.length() - 2).toString());
-		mDefaultUpdateRateText.setText("" + model.getDefaultUpdateRate());
-		mCurrentUpdateRateText.setText("" + model.getCurrentUpdateRate());
+		mDefaultUpdateRateText.setText(SensorModel.SENSOR_DELAY_NORMAL);
+		mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_NORMAL);
 		return resultPanel;
 	}
 
 	public JPanel updateSimulationField() {
 		JPanel resultPanel = new JPanel();
-
-		// if (!model.isUpdating())
-		// return resultPanel;
-		resultPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Simulation update"),
-				BorderFactory.createEmptyBorder(0, 0, 0, 0)));
+		resultPanel
+				.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+						.createTitledBorder(BorderFactory.createEmptyBorder(),
+								"Simulation update"), BorderFactory
+						.createMatteBorder(2, 0, 0, 0, Color.GRAY)));
 		GridBagConstraints layout = new GridBagConstraints();
 		mRefreshEmulatorLabel = new JLabel(EMPTY_LABEL);
 		layout.gridx = 0;
@@ -334,13 +282,14 @@ public abstract class SensorView extends JScrollPane {
 		return resultPanel;
 	}
 
-	public abstract JPanel fillSensorSettingsPanel();
+	public abstract JPanel fillSensorSpecificSettingsPanel();
 
 	public JPanel fillSensorRandomPanel() {
 		JPanel resultPanel = new JPanel(new GridBagLayout());
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Random"),
-				BorderFactory.createEmptyBorder(0, 0, 0, 0)));
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(), "Random"),
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY)));
 		GridBagConstraints layout = new GridBagConstraints();
 		mRandomText = new JTextField(5);
 		mRandomText.setText("" + model.getRandom());
@@ -358,22 +307,9 @@ public abstract class SensorView extends JScrollPane {
 		setEnabled(enable);
 	}
 
-	public void getSensorUpdateRates(PrintWriter out) {
-		double[] updatesList = getUpdateRates();
-		if (updatesList == null || updatesList.length < 1) {
-			out.println("0");
-		} else {
-			int len = updatesList.length;
-			out.println("" + len);
-			for (int i = 0; i < len; i++) {
-				out.println("" + updatesList[i]);
-			}
-		}
-	}
-
 	public void getSensorUpdateRate(PrintWriter out) {
 		if (isSensorEnabled()) {
-			double updatesPerSecond = getCurrentUpdateRate();
+			double updatesPerSecond = model.getCurrentUpdateRate();
 			out.println("" + updatesPerSecond);
 		} else {
 			// This sensor is currently disabled
@@ -417,7 +353,37 @@ public abstract class SensorView extends JScrollPane {
 
 	public JPanel getHelpPanel() {
 		JPanel panel = new JPanel();
-		JButton button = new JButton("Get me online info");
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		JPanel sensorSpecificHelp = getSensorSpecificHelp() ; 
+		if (sensorSpecificHelp != null) {
+			sensorSpecificHelp.setAlignmentX(Component.LEFT_ALIGNMENT);
+			panel.add(sensorSpecificHelp);
+		}
+
+		JButton buttonSensor = getBrowsingButton("Android SensorEvent",
+				Global.HELP_ONE_SENSOR_URL);
+		panel.add(buttonSensor);
+
+		JButton buttonSensorSimulator = getBrowsingButton(
+				"Sensor Simulator ",
+				Global.HELP_SENSOR_SIMULATOR_DESCRIPTION_URL);
+		panel.add(buttonSensorSimulator);
+
+		JButton buttonOpenIntentsForum = getBrowsingButton("OpenIntents Forum",
+				Global.HELP_OPENINTENTS_FORUM_URL);
+		panel.add(buttonOpenIntentsForum);
+
+		JButton buttonOpenIntentsContact = getBrowsingButton(
+				"OpenIntents Contact", Global.HELP_OPENINTENTS_CONTACT_URL);
+		panel.add(buttonOpenIntentsContact);
+
+		return panel;
+	}
+
+	protected abstract JPanel getSensorSpecificHelp();
+
+	private JButton getBrowsingButton(String btnText, final String link) {
+		JButton button = new JButton(btnText);
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -426,8 +392,7 @@ public abstract class SensorView extends JScrollPane {
 					if (desktop.isSupported(Desktop.Action.BROWSE)) {
 						URI uri;
 						try {
-							uri = new URI(Global.HELP_ONE_SENSOR_URL
-									+ model.getTypeConstant());
+							uri = new URI(link);
 							desktop.browse(uri);
 						} catch (URISyntaxException e) {
 							e.printStackTrace();
@@ -438,8 +403,6 @@ public abstract class SensorView extends JScrollPane {
 				}
 			}
 		});
-
-		panel.add(BorderLayout.CENTER, button);
-		return panel;
+		return button;
 	}
 }

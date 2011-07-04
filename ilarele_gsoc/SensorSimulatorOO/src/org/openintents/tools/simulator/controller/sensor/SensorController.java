@@ -43,7 +43,7 @@ public abstract class SensorController {
 
 	public void updateUserSettings() {
 		model.setAvgUpdate(view.getUpdateAvg().isSelected());
-		double rate = view.getCurrentUpdateRate();
+		double rate = model.getCurrentUpdateRate();
 		if (rate != 0) {
 			model.setUpdateDuration((long) (1000. / rate));
 		} else {

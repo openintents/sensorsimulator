@@ -1,7 +1,9 @@
 package org.openintents.tools.simulator.view.sensor.sensors;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -21,7 +23,7 @@ public class PressureView extends SensorView {
 	private JTextField mPressureText;
 
 	@Override
-	public JPanel fillSensorSettingsPanel() {
+	public JPanel fillSensorSpecificSettingsPanel() {
 		JPanel resultPanel = new JPanel(new GridBagLayout());
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Settings"),
@@ -66,6 +68,32 @@ public class PressureView extends SensorView {
 
 	public double getPressure() {
 		return getSafeDouble(mPressureText);
+	}
+
+	@Override
+	protected JPanel getSensorSpecificHelp() {
+		JPanel panel = new JPanel(new GridLayout(0, 1));
+		JPanel panel1 = new JPanel(new GridLayout(0, 1));
+		panel1.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(3, 0, 15, 0),
+						"Description")));
+		panel1.add(new JLabel("- measures the air pressure"));
+		panel1.add(new JLabel("- used to predict the weather"));
+		
+		
+		JPanel panel2 = new JPanel(new GridLayout(0, 1));
+		panel2.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(3, 0, 15, 0),
+						"Pressure values:")));
+		panel2.add(new JLabel("Normal Atmospheric Pressure = 1013.25 hPa"));
+		
+		panel.add(panel1);
+		panel.add(panel2);
+		return panel;
 	}
 
 

@@ -270,22 +270,28 @@ public class SensorSimulatorSettingsActivity extends Activity {
 		super.onResume();
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				SensorManager.SENSOR_DELAY_FASTEST);
+				SensorManager.SENSOR_DELAY_NORMAL);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-				SensorManager.SENSOR_DELAY_FASTEST);
+				SensorManager.SENSOR_DELAY_NORMAL);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
-				SensorManager.SENSOR_DELAY_FASTEST);
+				SensorManager.SENSOR_DELAY_NORMAL);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_TEMPERATURE),
-				SensorManager.SENSOR_DELAY_FASTEST);
+				SensorManager.SENSOR_DELAY_NORMAL);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
-				SensorManager.SENSOR_DELAY_FASTEST);
+				SensorManager.SENSOR_DELAY_NORMAL);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
-				SensorManager.SENSOR_DELAY_FASTEST);
+				SensorManager.SENSOR_DELAY_NORMAL);
+		mSensorManager.registerListener(listener,
+				mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
+				SensorManager.SENSOR_DELAY_NORMAL);
+		mSensorManager.registerListener(listener,
+				mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
+				SensorManager.SENSOR_DELAY_NORMAL);
 	}
 
 	/**
@@ -455,8 +461,6 @@ public class SensorSimulatorSettingsActivity extends Activity {
 	public void readAllSensors() {
 
 		ArrayList<Integer> sensors = mSensorManager.getSensors();
-		Log.d(TAG, "Sensors: " + sensors);
-		Log.d(TAG, "Connected: " + mSensorManager.isConnectedSimulator());
 
 		if (sensors != null) {
 			mSupportedSensors = SensorNames.getSensorNames(sensors);
@@ -536,7 +540,6 @@ public class SensorSimulatorSettingsActivity extends Activity {
 
 			mSingleSensorView = new SingleSensorView[max];
 
-			// Log.i(TAG, "fillSensorList: " + max);
 			for (int i = 0; i < max; i++) {
 				String[] sensorsNames = new String[mSupportedSensors.size()];
 				ArrayList<Integer> sensorbit = SensorNames
@@ -594,7 +597,6 @@ public class SensorSimulatorSettingsActivity extends Activity {
 		public SingleSensorView(Context context, String sensor, int sensorbit,
 				int sensorId) {
 			super(context);
-			Log.i(TAG, "SingleSensorView - constructor");
 
 			mContext = context;
 			mSensorId = sensorId;

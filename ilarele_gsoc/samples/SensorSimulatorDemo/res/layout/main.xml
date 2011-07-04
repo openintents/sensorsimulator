@@ -5,33 +5,49 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 	<TextView
-		android:id="@+id/text1"
+		android:id="@+id/text_accelerometer"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="Accelerometer: disabled" />
 	<TextView
-		android:id="@+id/text2"
+		android:id="@+id/text_linear_acceleration"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="LinearAcceleration: disabled" />
+	<TextView
+		android:id="@+id/text_gravity"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="Gravity: disabled" />
+	<TextView
+		android:id="@+id/text_light"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="Compass: disabled" />
 	<TextView
-		android:id="@+id/text3"
+		android:id="@+id/text_temperature"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="Orientation: disabled" />
 	<TextView
-		android:id="@+id/text4"
+		android:id="@+id/text_orientation"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="Temperature: disabled" />
 	<TextView
-		android:id="@+id/text5"
+		android:id="@+id/text_magnetic_field"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="Light: disabled" />
 	<TextView
-		android:id="@+id/text6"
+		android:id="@+id/text_pressure"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="Pressure: disabled" />
+	<TextView
+		android:id="@+id/text_barcode"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="Barcode: disabled" />
+
 </LinearLayout>

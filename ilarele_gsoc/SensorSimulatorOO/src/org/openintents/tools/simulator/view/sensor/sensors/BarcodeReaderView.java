@@ -24,7 +24,7 @@ public class BarcodeReaderView extends SensorView {
 	private JTextField mBarcodeReaderText;
 
 	@Override
-	public JPanel fillSensorSettingsPanel() {
+	public JPanel fillSensorSpecificSettingsPanel() {
 		// Barcode (13 numbers)
 		// Panel for our barcode reader
 		JPanel resultPanel = new JPanel(new GridBagLayout());
@@ -56,5 +56,11 @@ public class BarcodeReaderView extends SensorView {
 
 	public String getBarcode() {
 		return mBarcodeReaderText.getText();
+	}
+
+	@Override
+	protected JPanel getSensorSpecificHelp() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

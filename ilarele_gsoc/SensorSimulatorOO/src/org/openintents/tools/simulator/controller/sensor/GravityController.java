@@ -5,6 +5,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.GravityModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.view.sensor.sensors.GravityView;
 
 public class GravityController extends SensorController {
@@ -21,8 +22,12 @@ public class GravityController extends SensorController {
 
 		// Gravity
 		if (gravityModel.isEnabled()) {
-			gravityModel.setGravity(gravityView.getGravityX(),
-					gravityView.getGravityY(), gravityView.getGravityZ());
+
+			Vector gravityVec = new Vector(gravityView.getGravityX(),
+					-gravityView.getGravityY(), -gravityView.getGravityZ());
+			gravityVec.reverserollpitchyaw(orientation.getRoll(),
+					orientation.getPitch(), orientation.getYaw());
+			gravityModel.setGravity(gravityVec);
 
 			// Add random component:
 			double random = gravityView.getRandom();

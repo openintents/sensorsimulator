@@ -1,7 +1,9 @@
 package org.openintents.tools.simulator.view.sensor.sensors;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -21,7 +23,7 @@ public class LinearAccelerationView extends SensorView {
 	}
 
 	@Override
-	public JPanel fillSensorSettingsPanel() {
+	public JPanel fillSensorSpecificSettingsPanel() {
 		JPanel resultPanel = new JPanel();
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Settings"),
@@ -93,5 +95,24 @@ public class LinearAccelerationView extends SensorView {
 	}
 	public double getAccZ() {
 		return getSafeDouble(mLinearAccTextZ);
+	}
+
+	@Override
+	protected JPanel getSensorSpecificHelp() {
+		JPanel panel = new JPanel(new GridLayout(0, 1));
+		JPanel panel1 = new JPanel(new GridLayout(0, 1));
+		panel1.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(3, 0, 15, 0),
+						"Description")));
+		panel1.add(new JLabel("- measures the acceleration without gravity"));
+		panel1.add(new JLabel("- has values for all 3 axis"));
+		panel1.add(new JLabel("- != 0 when the device is moving"));
+		panel1.add(new JLabel("- accelerometer = gravity + linear acceleration"));
+		
+	
+		panel.add(panel1);
+		return panel;
 	}
 }

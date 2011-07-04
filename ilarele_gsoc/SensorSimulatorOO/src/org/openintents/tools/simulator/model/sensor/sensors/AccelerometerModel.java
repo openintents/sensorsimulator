@@ -92,11 +92,6 @@ public class AccelerometerModel extends SensorModel {
 	private double mAccelerometerLimit;
 	private boolean mShowAcceleration;
 
-	// Gravity
-	private double gX;
-	private double gY;
-	private double gZ;
-
 	private WiiAccelerometerModel wiiAccelerometerModel;
 
 	public AccelerometerModel() {
@@ -298,18 +293,6 @@ public class AccelerometerModel extends SensorModel {
 		return gamma;
 	}
 
-	public double getGravityX() {
-		return gX;
-	}
-
-	public double getGravityY() {
-		return gY;
-	}
-
-	public double getGravityZ() {
-		return gZ;
-	}
-
 	public boolean isShown() {
 		return mShowAcceleration;
 	}
@@ -327,6 +310,7 @@ public class AccelerometerModel extends SensorModel {
 	}
 
 	public int getMoveX() {
+		
 		return movex;
 	}
 
@@ -350,7 +334,6 @@ public class AccelerometerModel extends SensorModel {
 
 	@Override
 	public void setUpdateRates() {
-		mUpdateRates = new double[] { 1, 10, 50 };
 		mDefaultUpdateRate = 50;
 		mCurrentUpdateRate = 50;
 	}
@@ -373,6 +356,7 @@ public class AccelerometerModel extends SensorModel {
 	}
 
 	public double getVX() {
+		
 		return vx;
 	}
 

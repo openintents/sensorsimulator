@@ -137,7 +137,6 @@ public class OrientationModel extends SensorModel {
 
 	@Override
 	public void setUpdateRates() {
-		mUpdateRates = new double[] { 1, 10, 50 };
 		mDefaultUpdateRate = 50;
 		mCurrentUpdateRate = 50;
 	}

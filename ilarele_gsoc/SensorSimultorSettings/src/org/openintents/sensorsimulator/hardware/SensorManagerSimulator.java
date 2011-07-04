@@ -104,9 +104,7 @@ public class SensorManagerSimulator {
 							context,
 							"Android SensorManager disabled, 1.5 SDK emulator crashes when using it... Make sure to connect SensorSimulator",
 							Toast.LENGTH_LONG).show();
-
 				}
-
 			}
 		}
 		return instance;
@@ -135,7 +133,6 @@ public class SensorManagerSimulator {
 			return mClient.getSensors();
 		} else {
 			if (mSensorManager != null) {
-				// return mSensorManager.getSensors();
 				return null;
 			}
 			return null;
@@ -182,7 +179,6 @@ public class SensorManagerSimulator {
 				return false;
 			}
 			return false;
-			// return mSensorManager.registerListener(listener, sensor, rate);
 		}
 	}
 
@@ -198,10 +194,6 @@ public class SensorManagerSimulator {
 	public void unregisterListener(SensorEventListener listener, Sensor sensor) {
 		if (mClient.connected) {
 			mClient.unregisterListener(listener, sensor);
-		} else {
-			if (mSensorManager == null) {
-				// mSensorManager.unregisterListener(listener, sensor);
-			}
 		}
 	}
 
@@ -215,11 +207,7 @@ public class SensorManagerSimulator {
 	public void unregisterListener(SensorEventListener listener) {
 		if (mClient.connected) {
 			mClient.unregisterListener(listener);
-		} else {
-			if (mSensorManager != null) {
-				// mSensorManager.unregisterListener(listener);
-			}
-		}
+		} 
 	}
 
 	// Member function extensions:

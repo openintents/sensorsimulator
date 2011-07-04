@@ -125,7 +125,6 @@ public class MagneticFieldModel extends SensorModel {
 
 	@Override
 	public void setUpdateRates() {
-		mUpdateRates = new double[] { 1, 10 };
 		mDefaultUpdateRate = 10;
 		mCurrentUpdateRate = 10;
 	}

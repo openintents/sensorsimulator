@@ -1,7 +1,9 @@
 package org.openintents.tools.simulator.view.sensor.sensors;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -21,7 +23,7 @@ public class LightView extends SensorView {
 	private JTextField mLightText;
 
 	@Override
-	public JPanel fillSensorSettingsPanel() {
+	public JPanel fillSensorSpecificSettingsPanel() {
 		JPanel resultPanel = new JPanel(new GridBagLayout());
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Settings"),
@@ -66,6 +68,40 @@ public class LightView extends SensorView {
 
 	public double getLight() {
 		return getSafeDouble(mLightText);
+	}
+
+	@Override
+	protected JPanel getSensorSpecificHelp() {
+		JPanel panel = new JPanel(new GridLayout(0, 1));
+		JPanel panel1 = new JPanel(new GridLayout(0, 1));
+		panel1.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(3, 0, 15, 0),
+						"Description")));
+		panel1.add(new JLabel("- The intensity of light"));
+		
+		panel.add(panel1);
+		
+		JPanel panel2 = new JPanel(new GridLayout(0, 1));
+		panel2.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(3, 0, 15, 0),
+						"Luminance values in universe")));
+		panel2.add(new JLabel("Maximim Sunlight = 120000 lux"));
+		panel2.add(new JLabel("Normal Sunlight = 110000 lux"));
+		panel2.add(new JLabel("Sunrise = 400 lux"));
+		
+		panel2.add(new JLabel("Shade = 20000 lux"));
+		panel2.add(new JLabel("Overcast = 10000 lux"));
+		panel2.add(new JLabel("Cloudy Day = 100 lux"));
+		panel2.add(new JLabel("Night with Fullmoon = 0.25 lux"));
+		panel2.add(new JLabel("Night without Moon = 0.001 lux"));
+		
+		panel.add(panel2);
+		
+		return panel;
 	}
 
 }

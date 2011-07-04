@@ -176,8 +176,6 @@ public class SensorServerThread implements Runnable {
 	private void executeCommand(SensorModel sensor, PrintWriter out, BufferedReader inArgs, String cmd) throws IOException {
 		if (cmd.compareTo("getNumSensorValues()") == 0)
 			sensor.getNumSensorValues(out);
-		else if (cmd.compareTo("getSensorUpdateRates()") == 0)
-			sensor.getSensorUpdateRates(out);
 		else if (cmd.compareTo("setSensorUpdateRate()") == 0) {
 			sensor.setSensorUpdateRate(out);
 			String args = inArgs.readLine();
@@ -208,6 +206,10 @@ public class SensorServerThread implements Runnable {
 			return ctrl.getProximity();
 		else if (inputLine.compareTo(SensorModel.PRESSURE) == 0)
 			return ctrl.getPressure();
+		else if (inputLine.compareTo(SensorModel.LINEAR_ACCELERATION) == 0)
+			return ctrl.getLinearAcceleration();
+		else if (inputLine.compareTo(SensorModel.GRAVITY) == 0)
+			return ctrl.getGravity();
 		return null;
 	}
 
@@ -229,6 +231,10 @@ public class SensorServerThread implements Runnable {
 			return model.getProximity();
 		else if (inputLine.compareTo(SensorModel.PRESSURE) == 0)
 			return model.getPressure();
+		else if (inputLine.compareTo(SensorModel.LINEAR_ACCELERATION) == 0)
+			return model.getLinearAcceleration();
+		else if (inputLine.compareTo(SensorModel.GRAVITY) == 0)
+			return model.getGravity();
 		return null;
 	}
 

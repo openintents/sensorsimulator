@@ -1,8 +1,7 @@
 package org.openintents.tools.simulator.view.sensor.sensors;
 
 import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -31,25 +30,12 @@ public class WiiAccelerometerView extends JPanel {
 		mRealDevicePath.setText(model.getDevicePath());
 
 		mRealDeviceOutputLabel = new JLabel("-", JLabel.LEFT);
-	}
-
-	public void fillPane(JPanel realSensorBridgeFieldPane) {
-		realSensorBridgeFieldPane.setLayout(new GridBagLayout());
-		GridBagConstraints layout = new GridBagConstraints();
-		layout.fill = GridBagConstraints.HORIZONTAL;
-		layout.anchor = GridBagConstraints.NORTHWEST;
-		layout.gridwidth = 1;
-		layout.gridy = 0;
-		layout.gridx = 0;
-		realSensorBridgeFieldPane.add(mRealDeviceWiimote, layout);
-
-		layout.gridx = 0;
-		layout.gridy++;
-		realSensorBridgeFieldPane.add(mRealDevicePath, layout);
-
-		layout.gridx = 0;
-		layout.gridy++;
-		realSensorBridgeFieldPane.add(mRealDeviceOutputLabel, layout);
+		
+		setLayout(new GridLayout(0,1));
+		
+		add(mRealDeviceWiimote);
+		add(mRealDevicePath);
+		add(mRealDeviceOutputLabel);
 	}
 
 	public boolean isSelected() {

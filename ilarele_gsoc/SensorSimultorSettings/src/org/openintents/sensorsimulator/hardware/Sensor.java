@@ -48,6 +48,8 @@ public class Sensor {
 	public static final int TYPE_PROXIMITY = 8;
 	public static final int TYPE_TEMPERATURE = 7;
 	public static final int TYPE_BARCODE_READER = 9;
+	public static final int TYPE_LINEAR_ACCELERATION = 10;
+	public static final int TYPE_GRAVITY = 11;
 
 	public int sensorToRegister = 0;
 	public int sensorToRemove = 0;

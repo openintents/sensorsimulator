@@ -46,13 +46,15 @@ public class SensorNames {
 	public static final String TYPE_PROXIMITY = "proximity";
 	public static final String TYPE_PRESSURE = "pressure";
 	public static final String TYPE_BARCODE_READER = "barcode reader";
+	public static final String TYPE_LINEAR_ACCELERATION = "linear acceleration";
+	public static final String TYPE_GRAVITY = "gravity";
 
 	/**
 	 * Number of current sensors in our program. In android's specification
 	 * there are 8 sensors, but we have added barcode reader, so the number is
 	 * 9.
 	 */
-	public static final int SENSOR_MAX_BIT = 9;
+	public static final int SENSOR_MAX_BIT = 11;
 
 	/**
 	 * Convert a sensor integer number into a sensor name.
@@ -81,6 +83,10 @@ public class SensorNames {
 			return SensorNames.TYPE_PROXIMITY;
 		case Sensor.TYPE_BARCODE_READER:
 			return SensorNames.TYPE_BARCODE_READER;
+		case Sensor.TYPE_LINEAR_ACCELERATION:
+			return SensorNames.TYPE_LINEAR_ACCELERATION;
+		case Sensor.TYPE_GRAVITY:
+			return SensorNames.TYPE_GRAVITY;
 		default:
 			return null;
 		}
@@ -112,6 +118,10 @@ public class SensorNames {
 			return Sensor.TYPE_TEMPERATURE;
 		} else if (sensorName.equalsIgnoreCase(TYPE_BARCODE_READER)) {
 			return Sensor.TYPE_BARCODE_READER;
+		} else if (sensorName.equalsIgnoreCase(TYPE_LINEAR_ACCELERATION)) {
+			return Sensor.TYPE_LINEAR_ACCELERATION;
+		} else if (sensorName.equalsIgnoreCase(TYPE_GRAVITY)) {
+			return Sensor.TYPE_GRAVITY;
 		} else {
 			return 0;
 		}
@@ -149,14 +159,12 @@ public class SensorNames {
 
 	public static ArrayList<Integer> getSensorsFromNames(String[] sensornames) {
 		ArrayList<Integer> sensors = new ArrayList<Integer>();
-
 		for (int i = 0; i < sensornames.length; i++) {
 			for (int type = 1; type <= SENSOR_MAX_BIT; type++) {
 				if (sensornames[i].equals(getSensorName(type))) {
 					sensors.add(type);
 				}
 			}
-
 		}
 		return sensors;
 	}
@@ -169,10 +177,11 @@ public class SensorNames {
 	 * @return Number, integer number of values returned.
 	 */
 	public static int getNumSensorValues(int sensor) {
-		System.out.println("name " + getSensorName(sensor));
 		switch (sensor) {
 		case Sensor.TYPE_ORIENTATION:
 		case Sensor.TYPE_ACCELEROMETER:
+		case Sensor.TYPE_LINEAR_ACCELERATION:
+		case Sensor.TYPE_GRAVITY:
 		case Sensor.TYPE_MAGNETIC_FIELD:
 		case Sensor.TYPE_GYROSCOPE:
 			return 3;

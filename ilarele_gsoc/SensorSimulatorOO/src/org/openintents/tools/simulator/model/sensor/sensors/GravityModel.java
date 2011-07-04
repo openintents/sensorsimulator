@@ -2,6 +2,8 @@ package org.openintents.tools.simulator.model.sensor.sensors;
 
 import java.io.PrintWriter;
 
+import org.openintents.tools.simulator.model.telnet.Vector;
+
 public class GravityModel extends SensorModel {
 	// gravity
 	private double gravity_x_value;
@@ -90,7 +92,7 @@ public class GravityModel extends SensorModel {
 	public void printSensorData(PrintWriter out) {
 		// number of data following + data
 		out.println("3\n" + read_gravity_x + "\n" + read_gravity_y + "\n"
-				+ read_gravity_y);
+				+ read_gravity_z);
 
 	}
 
@@ -108,7 +110,6 @@ public class GravityModel extends SensorModel {
 
 	@Override
 	public void setUpdateRates() {
-		mUpdateRates = new double[] { 1, 10, 50 };
 		mDefaultUpdateRate = 50;
 		mCurrentUpdateRate = 50;
 	}
@@ -145,5 +146,11 @@ public class GravityModel extends SensorModel {
 
 	public double getReadGravityZ() {
 		return read_gravity_z;
+	}
+
+	public void setGravity(Vector vec) {
+		gravity_x_value = vec.x;
+		gravity_y_value = vec.y;
+		gravity_z_value = vec.z;
 	}
 }
