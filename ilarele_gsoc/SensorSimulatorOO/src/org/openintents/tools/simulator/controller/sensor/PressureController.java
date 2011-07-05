@@ -1,6 +1,5 @@
 package org.openintents.tools.simulator.controller.sensor;
 
-
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
@@ -9,7 +8,6 @@ import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerMode
 import org.openintents.tools.simulator.view.sensor.sensors.PressureView;
 
 public class PressureController extends SensorController {
-
 
 	public PressureController(PressureModel model, PressureView view) {
 		super(model, view);
@@ -37,7 +35,8 @@ public class PressureController extends SensorController {
 	@Override
 	public String getString() {
 		PressureModel pressureModel = (PressureModel) model;
-		return Global.TWO_DECIMAL_FORMAT.format(pressureModel.getReadPressure());
+		return Global.TWO_DECIMAL_FORMAT
+				.format(pressureModel.getReadPressure());
 	}
 
 }

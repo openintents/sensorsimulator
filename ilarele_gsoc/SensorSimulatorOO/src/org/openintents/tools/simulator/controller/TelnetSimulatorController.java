@@ -20,7 +20,8 @@ public class TelnetSimulatorController {
 			final TelnetSimulatorView view) {
 		batteryAddonCtrl = new BatteryAddonController(model.getBatteryAddon(),
 				view.getBatteryAddon());
-		gpsAddonCtrl = new GPSAddonController(model.getGpsAddon(), view.getGpsAddon());
+		gpsAddonCtrl = new GPSAddonController(model.getGpsAddon(),
+				view.getGpsAddon());
 
 		JButton telnetPortButton = view.getTelnetPortButton();
 		telnetPortButton.addActionListener(new ActionListener() {

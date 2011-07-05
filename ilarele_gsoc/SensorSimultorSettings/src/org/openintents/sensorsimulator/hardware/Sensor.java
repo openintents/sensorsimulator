@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * This class simulates SENSOR object used in android's sensor methods. In
@@ -50,7 +51,7 @@ public class Sensor {
 	public static final int TYPE_BARCODE_READER = 9;
 	public static final int TYPE_LINEAR_ACCELERATION = 10;
 	public static final int TYPE_GRAVITY = 11;
-
+	public static final int TYPE_ROTATION_VECTOR= 12;
 	public int sensorToRegister = 0;
 	public int sensorToRemove = 0;
 

@@ -73,12 +73,6 @@ public class TemperatureModel extends SensorModel {
 	}
 
 	@Override
-	public void setUpdateRates() {
-		mDefaultUpdateRate = 1;
-		mCurrentUpdateRate = 1;
-	}
-
-	@Override
 	public String getSI() {
 		return SensorModel.DEGREES + "C";
 	}
@@ -100,6 +94,7 @@ public class TemperatureModel extends SensorModel {
 		// number of data following + data
 		out.println("1\n" + read_temperature);
 	}
+
 	@Override
 	public String getTypeConstant() {
 		return TYPE_TEMPERATURE;

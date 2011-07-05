@@ -21,7 +21,7 @@ public class PressureModel extends SensorModel {
 
 	public PressureModel() {
 		super();
-		pressureValue = 0;
+		pressureValue = 0.5;
 	}
 
 	@Override
@@ -75,12 +75,6 @@ public class PressureModel extends SensorModel {
 
 	public double getPressure() {
 		return pressureValue;
-	}
-
-	@Override
-	public void setUpdateRates() {
-		mDefaultUpdateRate = 1;
-		mCurrentUpdateRate = 1;
 	}
 
 	@Override

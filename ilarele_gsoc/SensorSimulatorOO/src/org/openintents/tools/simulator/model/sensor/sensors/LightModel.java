@@ -73,15 +73,6 @@ public class LightModel extends SensorModel {
 		out.println("1\n" + read_light);
 	}
 
-	public double getLight() {
-		return read_light;
-	}
-
-	@Override
-	public void setUpdateRates() {
-		mDefaultUpdateRate = 1;
-		mCurrentUpdateRate = 1;
-	}
 
 	@Override
 	public String getSI() {

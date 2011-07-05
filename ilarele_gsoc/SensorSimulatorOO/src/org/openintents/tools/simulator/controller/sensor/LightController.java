@@ -1,6 +1,5 @@
 package org.openintents.tools.simulator.controller.sensor;
 
-
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;

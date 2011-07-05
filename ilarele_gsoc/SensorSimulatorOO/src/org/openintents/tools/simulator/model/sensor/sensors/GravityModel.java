@@ -27,18 +27,16 @@ public class GravityModel extends SensorModel {
 	/** Number of summands in partial sum for gravity. */
 	private int partial_gravity_n;
 
-	
 	// Gravity
 	private double g;
 	private double mGravityLimit;
-	
-	
+
 	public GravityModel() {
 		super();
 		read_gravity_x = gravity_x_value = 0;
 		read_gravity_y = gravity_y_value = 0;
 		read_gravity_z = gravity_z_value = -9.8;
-		
+
 		g = 9.80665; // meter per second^2
 		mGravityLimit = 10;
 	}
@@ -113,12 +111,6 @@ public class GravityModel extends SensorModel {
 	}
 
 	@Override
-	public void setUpdateRates() {
-		mDefaultUpdateRate = 50;
-		mCurrentUpdateRate = 50;
-	}
-
-	@Override
 	public String getSI() {
 		return "m/s" + SensorModel.SQUARED;
 	}
@@ -161,7 +153,6 @@ public class GravityModel extends SensorModel {
 	public double getGravityConstant() {
 		return g;
 	}
-	
 
 	public double getAccelLimit() {
 		return mGravityLimit;

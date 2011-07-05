@@ -117,14 +117,13 @@ public class SensorSimulatorModel {
 		sensors.add(new LinearAccelerationModel());
 		sensors.add(new GravityModel());
 		sensors.add(new RotationVectorModel());
-		
+
 		mSensorServer = new SensorServer(sensorSimulator);
 
 		userSettingsDuration = 500; // Update every half second. This should
 		// be enough.
 		userSettingsNextUpdate = System.currentTimeMillis(); // First update
 		// is now.
-		
 
 		// Variables for timing:
 		updateSensorCount = 0;
@@ -240,14 +239,15 @@ public class SensorSimulatorModel {
 	}
 
 	public LinearAccelerationModel getLinearAcceleration() {
-		return (LinearAccelerationModel) sensors.get(SensorModel.POZ_LINEAR_ACCELERATION);
+		return (LinearAccelerationModel) sensors
+				.get(SensorModel.POZ_LINEAR_ACCELERATION);
 	}
+
 	public GravityModel getGravity() {
 		return (GravityModel) sensors.get(SensorModel.POZ_GRAVITY);
 	}
-	
+
 	public RotationVectorModel getRotationVector() {
 		return (RotationVectorModel) sensors.get(SensorModel.POZ_ROTATION);
 	}
 }
-

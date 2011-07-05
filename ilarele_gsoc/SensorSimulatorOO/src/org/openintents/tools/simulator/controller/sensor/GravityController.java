@@ -19,7 +19,7 @@ public class GravityController extends SensorController {
 			WiiAccelerometerModel realDeviceBridgeAddon, int delay) {
 		GravityModel gravityModel = (GravityModel) model;
 		GravityView gravityView = (GravityView) view;
-		
+
 		// Gravity
 		if (gravityModel.isEnabled()) {
 			double g = gravityView.getGravityConstant();

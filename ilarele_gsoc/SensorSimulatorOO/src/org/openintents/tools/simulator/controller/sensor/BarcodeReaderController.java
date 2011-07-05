@@ -7,7 +7,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.BarcodeReaderView;
 
 public class BarcodeReaderController extends SensorController {
 
-	public BarcodeReaderController(BarcodeReaderModel model, BarcodeReaderView view) {
+	public BarcodeReaderController(BarcodeReaderModel model,
+			BarcodeReaderView view) {
 		super(model, view);
 	}
 

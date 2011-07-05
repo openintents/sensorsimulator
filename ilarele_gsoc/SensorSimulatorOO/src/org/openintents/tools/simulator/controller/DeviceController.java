@@ -109,7 +109,7 @@ public class DeviceController {
 					int newmovex = mousedownmovex + (e.getX() - mousedownx);
 					accelerModel.setMoveX(newmovex);
 					linearAccModel.setMoveX(newmovex);
-					
+
 					// Control pitch
 					int newmovez = mousedownmovez - (e.getY() - mousedowny);
 					accelerModel.setMoveZ(newmovez);

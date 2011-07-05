@@ -270,28 +270,31 @@ public class SensorSimulatorSettingsActivity extends Activity {
 		super.onResume();
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_GAME);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_GAME);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_GAME);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_TEMPERATURE),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_GAME);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_GAME);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
-				SensorManager.SENSOR_DELAY_NORMAL);
-		mSensorManager.registerListener(listener,
-				mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_GAME);
+		mSensorManager.registerListener(listener, mSensorManager
+				.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
+				SensorManager.SENSOR_DELAY_GAME);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_GAME);
+		mSensorManager.registerListener(listener,
+				mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
+				SensorManager.SENSOR_DELAY_GAME);
 	}
 
 	/**
@@ -435,7 +438,6 @@ public class SensorSimulatorSettingsActivity extends Activity {
 		} else {
 			mTextSensorType.setText(R.string.real_device_data);
 		}
-		
 
 		mSensorsList.removeAllViews();
 	}
@@ -611,15 +613,18 @@ public class SensorSimulatorSettingsActivity extends Activity {
 			// We set a tag, so that Handler can find this view
 			rowView.setTag(mSensor);
 
-			mSensorNameTextView = (TextView) rowView.findViewById(R.id.sensor_name);
+			mSensorNameTextView = (TextView) rowView
+					.findViewById(R.id.sensor_name);
 			mSensorNameTextView.setText(sensor);
-			mSensorDataTextView = (TextView) rowView.findViewById(R.id.sensor_data);
+			mSensorDataTextView = (TextView) rowView
+					.findViewById(R.id.sensor_data);
 
 			addView(rowView, new LinearLayout.LayoutParams(
 					LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
 			mSensorManager.registerListener(listener,
-					mSensorManager.getDefaultSensor(mSensorBit), 0); // TODO
+					mSensorManager.getDefaultSensor(mSensorBit),
+					SensorManager.SENSOR_DELAY_GAME); // TODO
 		}
 	}
 }

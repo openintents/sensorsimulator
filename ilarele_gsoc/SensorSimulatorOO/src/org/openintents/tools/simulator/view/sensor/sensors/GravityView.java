@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -13,12 +14,11 @@ import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 
 public class GravityView extends SensorView {
 	private static final long serialVersionUID = -6006181483029485632L;
-	
+
 	// Gravity
 	private JTextField mGravityConstantText;
 	private JTextField mAccelerometerLimitText;
-	
-	
+
 	public GravityView(GravityModel model) {
 		super(model);
 	}
@@ -30,7 +30,7 @@ public class GravityView extends SensorView {
 				BorderFactory.createTitledBorder("Settings"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GravityModel gravityModel = (GravityModel) model;
-		
+
 		JPanel gravityFieldPane = new JPanel(new GridLayout(0, 3));
 		gravityFieldPane.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
@@ -56,19 +56,20 @@ public class GravityView extends SensorView {
 
 		label = new JLabel(" g", JLabel.LEFT);
 		gravityFieldPane.add(label);
-		return gravityFieldPane;
+		resultPanel.add(gravityFieldPane);
+		return resultPanel;
 	}
-
 
 	@Override
 	protected JPanel getSensorSpecificHelp() {
-		JPanel panel = new JPanel(new GridLayout(0, 1));
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JPanel panel1 = new JPanel(new GridLayout(0, 1));
 		panel1.setBorder(BorderFactory.createCompoundBorder(BorderFactory
 				.createMatteBorder(2, 0, 0, 0, Color.GRAY), BorderFactory
 				.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
-						"Description")));
+						model.getName())));
 		panel1.add(new JLabel(
 				"- the force of attraction beteen physical bodies"));
 		panel1.add(new JLabel("- has values for all 3 axis"));

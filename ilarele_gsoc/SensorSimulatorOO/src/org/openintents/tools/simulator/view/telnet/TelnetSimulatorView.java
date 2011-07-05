@@ -150,7 +150,7 @@ public class TelnetSimulatorView extends JPanel {
 
 	private JPanel fillLeftPanel(TelnetSimulatorModel model) {
 		// telnet JLabel, text field and button
-		
+
 		JPanel connectPanel = new JPanel();
 		Font fontNotify = new Font("SansSerif", Font.BOLD, 12);
 
@@ -162,7 +162,7 @@ public class TelnetSimulatorView extends JPanel {
 		telnetSocketText = new JTextField(5);
 		telnetSocketText.setText("" + model.getPort());
 		connectPanel.add(telnetSocketText);
-		
+
 		telnetSocketButton = new JButton("Connect");
 		telnetSocketButton.setFont(fontNotify);
 		telnetSocketButton.setForeground(Global.NOTIFY_COLOR);

@@ -2,7 +2,6 @@ package org.openintents.tools.simulator.view.sensor.sensors;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -27,6 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.Global;
+import org.openintents.tools.simulator.JTextAreaWrap;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.view.help.HelpWindow;
 
@@ -94,13 +94,6 @@ public abstract class SensorView extends JScrollPane {
 		JPanel sensorSettings = fillSensorSpecificSettingsPanel();
 		l.gridx = 1;
 		insidePanel.add(sensorSettings, l);
-
-		Dimension size1 = sensorSettings.getPreferredSize();
-		Dimension size2 = generalSettingsPanel.getPreferredSize();
-
-		insidePanel.setPreferredSize(new Dimension(
-				(int) (Global.WIDTH * Global.SENSOR_SPLIT_RIGHT), Math.max(
-						size1.height, size2.height) - 200));
 	}
 
 	private JPanel fillGeneralSettingsPanel() {
@@ -233,7 +226,7 @@ public abstract class SensorView extends JScrollPane {
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
 				.createTitledBorder(
 						BorderFactory.createEmptyBorder(0, 0, 0, 0),
-						"Update rate"), BorderFactory.createMatteBorder(2, 0,
+						"Update delay"), BorderFactory.createMatteBorder(2, 0,
 				0, 0, Color.GRAY)));
 		JLabel nameLabel = new JLabel("Default: ", JLabel.LEFT);
 		layout.gridwidth = 1;
@@ -273,7 +266,7 @@ public abstract class SensorView extends JScrollPane {
 		resultPanel
 				.setBorder(BorderFactory.createCompoundBorder(BorderFactory
 						.createTitledBorder(BorderFactory.createEmptyBorder(),
-								"Simulation update"), BorderFactory
+								"Emulator update"), BorderFactory
 						.createMatteBorder(2, 0, 0, 0, Color.GRAY)));
 		GridBagConstraints layout = new GridBagConstraints();
 		mRefreshEmulatorLabel = new JLabel(EMPTY_LABEL);
@@ -354,28 +347,94 @@ public abstract class SensorView extends JScrollPane {
 	public JPanel getHelpPanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		JPanel sensorSpecificHelp = getSensorSpecificHelp() ; 
+		JPanel sensorSpecificHelp = getSensorSpecificHelp();
 		if (sensorSpecificHelp != null) {
-			sensorSpecificHelp.setAlignmentX(Component.LEFT_ALIGNMENT);
+			// sensorSpecificHelp.setAlignmentX(Component.LEFT_ALIGNMENT);
 			panel.add(sensorSpecificHelp);
 		}
 
+		JTextAreaWrap helpTextArea;
+
+		// help for "Update delay"
+		JPanel updateDelayHelp = new JPanel();
+		updateDelayHelp.setLayout(new BoxLayout(updateDelayHelp,
+				BoxLayout.Y_AXIS));
+		updateDelayHelp.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(0, 0, 0, 0),
+						"Update delay"), BorderFactory.createMatteBorder(2, 0,
+						0, 0, Color.GRAY)));
+
+		helpTextArea = new JTextAreaWrap(
+				"<b>Default:</b> is the delay to which a sensor is updating "
+						+ "until register or after unregister a listener for it.<br\\>"
+						+ "<b>Current:</b> is the delay to which the listener for the sensor is registered.<br\\>"
+						+ "<b>Possible values for delay:</b> FASTEST(0ms), GAME(20ms), UI(60ms), NORMAL(200ms)");
+		updateDelayHelp.add(helpTextArea);
+		panel.add(updateDelayHelp);
+
+		// help for "Average checkbox"
+		JPanel averageHelp = new JPanel();
+		averageHelp.setLayout(new BoxLayout(averageHelp, BoxLayout.Y_AXIS));
+		averageHelp.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createTitledBorder(
+						BorderFactory.createEmptyBorder(0, 0, 0, 0),
+						"Average checkbox"), BorderFactory.createMatteBorder(2,
+				0, 0, 0, Color.GRAY)));
+		helpTextArea = new JTextAreaWrap(
+				"<b>Average:</b> that average sensor data should be returned instead of " +
+				"instantaneous values.");
+		averageHelp.add(helpTextArea);
+		panel.add(averageHelp);
+
+		// help for "Random"
+		JPanel randomHelp = new JPanel();
+		randomHelp.setLayout(new BoxLayout(randomHelp, BoxLayout.Y_AXIS));
+		randomHelp.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createTitledBorder(
+						BorderFactory.createEmptyBorder(0, 0, 0, 0),
+						"Sensor update"), BorderFactory.createMatteBorder(2,
+				0, 0, 0, Color.GRAY)));
+		helpTextArea = new JTextAreaWrap(
+				"<b>Random:</b> the interval lenght for sensor error simulation.");
+		randomHelp.add(helpTextArea);
+		panel.add(randomHelp);
+		
+		// help for "Simulation update"
+		JPanel sensorUpdateHelp = new JPanel();
+		sensorUpdateHelp.setLayout(new BoxLayout(sensorUpdateHelp, BoxLayout.Y_AXIS));
+		sensorUpdateHelp.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createTitledBorder(
+						BorderFactory.createEmptyBorder(0, 0, 0, 0),
+						"Simulation update"), BorderFactory.createMatteBorder(2,
+				0, 0, 0, Color.GRAY)));
+		helpTextArea = new JTextAreaWrap(
+				"<b>Emulator update:</b> shows the actual internal emulator update rate.<br\\>" +
+				"<b>Update sensors:</b> sets the duration between internal updates.<br\\>" +
+				"<b>Refresh after:</b> determines after how many queries by the emulator the update rates " +
+					"given below are calculated and averaged over.<br\\>" +
+				"<b>Sensor update:</b> shows the actual internal simulator application update rate.<br\\>");
+		sensorUpdateHelp.add(helpTextArea);
+		panel.add(sensorUpdateHelp);
+
+		JPanel buttonsPanel = new JPanel();
+		buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
 		JButton buttonSensor = getBrowsingButton("Android SensorEvent",
 				Global.HELP_ONE_SENSOR_URL);
-		panel.add(buttonSensor);
+		buttonsPanel.add(buttonSensor);
 
-		JButton buttonSensorSimulator = getBrowsingButton(
-				"Sensor Simulator ",
+		JButton buttonSensorSimulator = getBrowsingButton("Sensor Simulator ",
 				Global.HELP_SENSOR_SIMULATOR_DESCRIPTION_URL);
-		panel.add(buttonSensorSimulator);
+		buttonsPanel.add(buttonSensorSimulator);
 
 		JButton buttonOpenIntentsForum = getBrowsingButton("OpenIntents Forum",
 				Global.HELP_OPENINTENTS_FORUM_URL);
-		panel.add(buttonOpenIntentsForum);
+		buttonsPanel.add(buttonOpenIntentsForum);
 
 		JButton buttonOpenIntentsContact = getBrowsingButton(
 				"OpenIntents Contact", Global.HELP_OPENINTENTS_CONTACT_URL);
-		panel.add(buttonOpenIntentsContact);
+		buttonsPanel.add(buttonOpenIntentsContact);
+		panel.add(buttonsPanel);
 
 		return panel;
 	}
@@ -405,7 +464,7 @@ public abstract class SensorView extends JScrollPane {
 		});
 		return button;
 	}
-	
+
 	public void setCurrentUpdateRate(int updatesPerSecond) {
 		switch (updatesPerSecond) {
 		case SensorModel.DELAY_MS_FASTEST:
@@ -425,5 +484,4 @@ public abstract class SensorView extends JScrollPane {
 			break;
 		}
 	}
-	
 }

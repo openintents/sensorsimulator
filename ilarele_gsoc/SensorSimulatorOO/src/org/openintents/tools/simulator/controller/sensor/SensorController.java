@@ -43,9 +43,9 @@ public abstract class SensorController {
 
 	public void updateUserSettings() {
 		model.setAvgUpdate(view.getUpdateAvg().isSelected());
-		double rate = model.getCurrentUpdateRate();
+		int rate = model.getCurrentUpdateRate();
 		if (rate != 0) {
-			model.setUpdateDuration((long) (1000. / rate));
+			model.setUpdateDuration(rate);
 		} else {
 			model.setUpdateDuration(0);
 		}
@@ -98,15 +98,15 @@ public abstract class SensorController {
 	public boolean isFixed() {
 		return isFixed;
 	}
-	
-	public void setCurrentUpdateRate(int updatesPerSecond) {
-		switch (updatesPerSecond) {
+
+	public void setCurrentUpdateRate(int delay) {
+		switch (delay) {
 		case SensorModel.DELAY_MS_FASTEST:
 		case SensorModel.DELAY_MS_GAME:
 		case SensorModel.DELAY_MS_NORMAL:
 		case SensorModel.DELAY_MS_UI:
-			model.setCurrentUpdateRate(updatesPerSecond);
-			view.setCurrentUpdateRate(updatesPerSecond);
+			model.setCurrentUpdateDelay(delay);
+			view.setCurrentUpdateRate(delay);
 			break;
 		default:
 			break;

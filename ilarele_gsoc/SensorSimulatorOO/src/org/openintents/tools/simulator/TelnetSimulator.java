@@ -10,7 +10,8 @@ import org.openintents.tools.simulator.view.telnet.addons.GPSAddonView;
 public class TelnetSimulator {
 	public TelnetSimulatorModel model = new TelnetSimulatorModel();
 	public TelnetSimulatorView view = new TelnetSimulatorView(model);
-	public TelnetSimulatorController ctrl = new TelnetSimulatorController(model, view);
+	public TelnetSimulatorController ctrl = new TelnetSimulatorController(
+			model, view);
 
 	public int getTelnetPort() {
 		return model.getPort();

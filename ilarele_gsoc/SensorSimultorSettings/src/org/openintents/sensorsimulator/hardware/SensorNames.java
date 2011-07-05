@@ -20,6 +20,7 @@
  */
 
 package org.openintents.sensorsimulator.hardware;
+
 import java.util.ArrayList;
 
 /**
@@ -48,13 +49,14 @@ public class SensorNames {
 	public static final String TYPE_BARCODE_READER = "barcode reader";
 	public static final String TYPE_LINEAR_ACCELERATION = "linear acceleration";
 	public static final String TYPE_GRAVITY = "gravity";
+	public static final String TYPE_ROTATION_VECTOR = "rotation vector";
 
 	/**
 	 * Number of current sensors in our program. In android's specification
-	 * there are 8 sensors, but we have added barcode reader, so the number is
-	 * 9.
+	 * there are 11 sensors, but we have added barcode reader, so the number is
+	 * 12.
 	 */
-	public static final int SENSOR_MAX_BIT = 11;
+	public static final int SENSOR_MAX_BIT = 12;
 
 	/**
 	 * Convert a sensor integer number into a sensor name.
@@ -87,6 +89,8 @@ public class SensorNames {
 			return SensorNames.TYPE_LINEAR_ACCELERATION;
 		case Sensor.TYPE_GRAVITY:
 			return SensorNames.TYPE_GRAVITY;
+		case Sensor.TYPE_ROTATION_VECTOR:
+			return SensorNames.TYPE_ROTATION_VECTOR;
 		default:
 			return null;
 		}
@@ -122,6 +126,8 @@ public class SensorNames {
 			return Sensor.TYPE_LINEAR_ACCELERATION;
 		} else if (sensorName.equalsIgnoreCase(TYPE_GRAVITY)) {
 			return Sensor.TYPE_GRAVITY;
+		} else if (sensorName.equalsIgnoreCase(TYPE_ROTATION_VECTOR)) {
+			return Sensor.TYPE_ROTATION_VECTOR;
 		} else {
 			return 0;
 		}
@@ -184,6 +190,7 @@ public class SensorNames {
 		case Sensor.TYPE_GRAVITY:
 		case Sensor.TYPE_MAGNETIC_FIELD:
 		case Sensor.TYPE_GYROSCOPE:
+		case Sensor.TYPE_ROTATION_VECTOR:
 			return 3;
 		case Sensor.TYPE_PRESSURE:
 		case Sensor.TYPE_TEMPERATURE:

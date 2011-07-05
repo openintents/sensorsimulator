@@ -55,9 +55,6 @@ public class BarcodeReaderModel extends SensorModel {
 		return barcodeValue;
 	}
 
-	public void setUpdateRates() {
-	}
-
 	@Override
 	public String getSI() {
 		return "";
@@ -66,7 +63,7 @@ public class BarcodeReaderModel extends SensorModel {
 	public void setBarcode(String value) {
 		barcodeValue = value;
 	}
-	
+
 	@Override
 	public String getTypeConstant() {
 		return "BARCODE";

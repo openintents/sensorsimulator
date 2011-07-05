@@ -10,7 +10,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.RotationVectorView;
 
 public class RotationVectorController extends SensorController {
 
-	public RotationVectorController(final RotationVectorModel model, RotationVectorView view) {
+	public RotationVectorController(final RotationVectorModel model,
+			RotationVectorView view) {
 		super(model, view);
 	}
 
@@ -23,7 +24,8 @@ public class RotationVectorController extends SensorController {
 		// RotationVector
 		if (rotationModel.isEnabled()) {
 
-			Vector rotationVec = new Vector(orientation.getPitch(), orientation.getYaw(), orientation.getRoll());
+			Vector rotationVec = new Vector(orientation.getPitch(),
+					orientation.getYaw(), orientation.getRoll());
 			rotationModel.setRotationVector(rotationVec);
 			rotationView.setRotationVector(rotationVec);
 			// Add random component:
@@ -41,7 +43,8 @@ public class RotationVectorController extends SensorController {
 	@Override
 	public String getString() {
 		RotationVectorModel rotationModel = (RotationVectorModel) model;
-		return Global.TWO_DECIMAL_FORMAT.format(rotationModel.getReadRotationVectorX())
+		return Global.TWO_DECIMAL_FORMAT.format(rotationModel
+				.getReadRotationVectorX())
 				+ ", "
 				+ Global.TWO_DECIMAL_FORMAT.format(rotationModel
 						.getReadRotationVectorY())

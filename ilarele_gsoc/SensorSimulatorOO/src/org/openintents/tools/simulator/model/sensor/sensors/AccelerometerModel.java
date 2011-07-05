@@ -119,7 +119,6 @@ public class AccelerometerModel extends SensorModel {
 		accelz = vec.z;
 	}
 
-
 	public void addRandom(double random) {
 		double val;
 		val = rand.nextDouble();
@@ -245,7 +244,7 @@ public class AccelerometerModel extends SensorModel {
 	public double getSpringConstant() {
 		return k;
 	}
-	
+
 	public double getDampingConstant() {
 		return gamma;
 	}
@@ -286,12 +285,6 @@ public class AccelerometerModel extends SensorModel {
 		if (g != 0)
 			return 1 / g;
 		return 1 / 9.80665;
-	}
-
-	@Override
-	public void setUpdateRates() {
-		mDefaultUpdateRate = 50;
-		mCurrentUpdateRate = 50;
 	}
 
 	@Override
@@ -350,15 +343,14 @@ public class AccelerometerModel extends SensorModel {
 		// F = - k * x
 		double Fx = kView * (movex - accx);
 		double Fz = gammaView * (movez - accz);
-		
+
 		// a = F / m
 		ax = Fx / m;
 		az = Fz / m;
 
 		vx += ax * dt;
 		vz += az * dt;
-		
-		
+
 		// Now this is the force that tries to adjust
 		// the accelerometer back
 		// integrate dx/dt = v;

@@ -57,6 +57,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerMode
 import org.openintents.tools.simulator.view.sensor.DeviceView;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
+import org.openintents.tools.simulator.view.sensor.sensors.OrientationView;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 
 /**
@@ -101,14 +102,17 @@ public class SensorSimulatorController implements WindowListener {
 		sensors.add(new LightController(model.getLight(), view.getLight()));
 		sensors.add(new ProximityController(model.getProximity(), view
 				.getProximity()));
-		sensors.add(new PressureController(model.getPressure(), view.getPressure()));
-		sensors.add(new LinearAccelerationController(model.getLinearAcceleration(), view.getLinearAceleration()));
+		sensors.add(new PressureController(model.getPressure(), view
+				.getPressure()));
+		sensors.add(new LinearAccelerationController(model
+				.getLinearAcceleration(), view.getLinearAceleration()));
 		sensors.add(new GravityController(model.getGravity(), view.getGravity()));
-		sensors.add(new RotationVectorController(model.getRotationVector(), view.getRotationVector()));
+		sensors.add(new RotationVectorController(model.getRotationVector(),
+				view.getRotationVector()));
 
-		// add-ons
-
-		deviceCtrl = new DeviceController(model, view.getDevice());
+		DeviceView deviceView = ((OrientationView) ((OrientationController) sensors.get(
+				SensorModel.POZ_ORIENTATION)).getView()).getDeviceView();
+		deviceCtrl = new DeviceController(model, deviceView);
 
 		JButton sensorPortButton = view.getSensorPortButton();
 		sensorPortButton.addActionListener(new ActionListener() {
@@ -324,7 +328,13 @@ public class SensorSimulatorController implements WindowListener {
 	public GravityController getGravity() {
 		return (GravityController) sensors.get(SensorModel.POZ_GRAVITY);
 	}
+
 	public LinearAccelerationController getLinearAcceleration() {
-		return (LinearAccelerationController) sensors.get(SensorModel.POZ_LINEAR_ACCELERATION);
+		return (LinearAccelerationController) sensors
+				.get(SensorModel.POZ_LINEAR_ACCELERATION);
+	}
+
+	public RotationVectorController getRotationVector() {
+		return (RotationVectorController) sensors.get(SensorModel.POZ_ROTATION);
 	}
 }

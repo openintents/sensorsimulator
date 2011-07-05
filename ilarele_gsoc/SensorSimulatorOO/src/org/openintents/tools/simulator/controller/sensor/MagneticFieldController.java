@@ -1,6 +1,5 @@
 package org.openintents.tools.simulator.controller.sensor;
 
-
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
@@ -11,7 +10,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.MagneticFieldView;
 
 public class MagneticFieldController extends SensorController {
 
-	public MagneticFieldController(MagneticFieldModel model, MagneticFieldView view) {
+	public MagneticFieldController(MagneticFieldModel model,
+			MagneticFieldView view) {
 		super(model, view);
 	}
 

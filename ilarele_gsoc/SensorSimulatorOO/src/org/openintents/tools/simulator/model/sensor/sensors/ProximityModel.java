@@ -104,12 +104,6 @@ public class ProximityModel extends SensorModel {
 	}
 
 	@Override
-	public void setUpdateRates() {
-		mDefaultUpdateRate = 1;
-		mCurrentUpdateRate = 1;
-	}
-
-	@Override
 	public String getSI() {
 		return "cm";
 	}
@@ -121,7 +115,7 @@ public class ProximityModel extends SensorModel {
 	public void addProximity(double value) {
 		proximityValue += value;
 	}
-	
+
 	@Override
 	public String getTypeConstant() {
 		return TYPE_PROXIMITY;

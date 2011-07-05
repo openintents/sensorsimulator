@@ -99,11 +99,6 @@ public class SensorSimulatorView extends JPanel {
 	private JTextField mRefreshCountText;
 	private JLabel mRefreshSensorsLabel;
 
-	// Displays the mobile phone
-	private DeviceView mobile;
-
-	// Server for sending out sensor data
-
 	private SensorSimulatorModel model;
 	private ArrayList<SensorView> sensors;
 
@@ -123,7 +118,7 @@ public class SensorSimulatorView extends JPanel {
 		sensors = new ArrayList<SensorView>();
 		sensors.add(new AccelerometerView(model.getAccelerometer()));
 		sensors.add(new MagneticFieldView(model.getMagneticField()));
-		sensors.add(new OrientationView(model.getOrientation()));
+		sensors.add(new OrientationView(model.getOrientation(), model));
 		sensors.add(new TemperatureView(model.getTemperature()));
 		sensors.add(new BarcodeReaderView(model.getBarcodeReader()));
 		sensors.add(new LightView(model.getLight()));
@@ -165,8 +160,8 @@ public class SensorSimulatorView extends JPanel {
 		JPanel updateSimulationPanel = fillUpdateSimulationPanel();
 		downPanel.add(updateSimulationPanel);
 		Dimension minSize = updateSimulationPanel.getPreferredSize();
-		downPanel.setMinimumSize(new Dimension(minSize.width,
-				minSize.height + 20));
+		downPanel.setPreferredSize(new Dimension(minSize.width,
+				minSize.height + 95));
 		// info output
 		JScrollPane areaScrollPane = fillInfoOutput();
 		downPanel.add(areaScrollPane);
@@ -337,16 +332,12 @@ public class SensorSimulatorView extends JPanel {
 
 		// Enabled Sensors
 		enabledSensorsPane = new JPanel();
-		enabledSensorsPane.setLayout(new GridLayout(0, 2));
+		enabledSensorsPane.setLayout(new GridLayout(0, 1));
 		enabledSensorsPane.setBorder(enabledBorder);
 		for (SensorView sensor : sensors) {
 			sensor.addEnable(enabledSensorsPane);
 		}
 		leftPanel.add(enabledSensorsPane);
-
-		// Add the device
-		mobile = new DeviceView(model);
-		leftPanel.add(mobile);
 
 		// ip
 		layout.putConstraint(SpringLayout.NORTH, socketLabel, 10,
@@ -355,7 +346,9 @@ public class SensorSimulatorView extends JPanel {
 				SpringLayout.NORTH, leftPanel);
 		layout.putConstraint(SpringLayout.NORTH, sensorPortButton, 5,
 				SpringLayout.NORTH, leftPanel);
-
+		layout.putConstraint(SpringLayout.SOUTH, leftPanel, 10,
+				SpringLayout.SOUTH, enabledSensorsPane);
+		
 		layout.putConstraint(SpringLayout.WEST, socketLabel, 16,
 				SpringLayout.WEST, leftPanel);
 		layout.putConstraint(SpringLayout.WEST, sensorPortText, 5,
@@ -373,15 +366,6 @@ public class SensorSimulatorView extends JPanel {
 		layout.putConstraint(SpringLayout.EAST, leftPanel, 10,
 				SpringLayout.EAST, enabledSensorsPane);
 
-		// device
-		layout.putConstraint(SpringLayout.WEST, mobile, 0, SpringLayout.WEST,
-				leftPanel);
-		layout.putConstraint(SpringLayout.NORTH, mobile, 10,
-				SpringLayout.SOUTH, enabledSensorsPane);
-		layout.putConstraint(SpringLayout.EAST, leftPanel, 10,
-				SpringLayout.EAST, mobile);
-		layout.putConstraint(SpringLayout.SOUTH, leftPanel, 5,
-				SpringLayout.SOUTH, mobile);
 
 		return leftScrollPane;
 	}
@@ -534,33 +518,6 @@ public class SensorSimulatorView extends JPanel {
 		return valuelist;
 	}
 
-	//
-	// /**
-	// * is called from within doTimer() to record/playback values
-	// * recording/playback is triggered from actionListener
-	// */
-	// private void updateFromFile() {
-	// OrientationModel orientation = (OrientationModel) sensors
-	// .get(SensorModel.POZ_ORIENTATION);
-	//
-	// replayAddon.recordData(orientation.getReadYaw(),
-	// orientation.getReadRoll(), orientation.getReadPitch());
-	//
-	// if (replayAddon.playData()) {
-	// // Update sliders
-	// orientation.setYawSlider(replayAddon.getYaw());
-	// orientation.setRollSlider(replayAddon.getRoll());
-	// orientation.setPitchSlider(replayAddon.getPitch());
-	// mobile.doRepaint();
-	// } else {
-	// replayAddonView.setPlaybackText("Playback");
-	// }
-	// }
-
-	// ///////////////////////////////
-	// implements SensorSimulatorModel
-	// ///////////////////////////////
-
 	public double getUpdateSensors() {
 		return getSafeDouble(mUpdateText);
 	}
@@ -599,10 +556,6 @@ public class SensorSimulatorView extends JPanel {
 
 	public JButton getSensorPortButton() {
 		return sensorPortButton;
-	}
-
-	public DeviceView getDevice() {
-		return mobile;
 	}
 
 	public long getRefreshCount() {

@@ -20,6 +20,7 @@
  */
 
 package org.openintents.sensorsimulator.hardware;
+
 import java.util.ArrayList;
 
 import android.content.Context;
@@ -207,7 +208,7 @@ public class SensorManagerSimulator {
 	public void unregisterListener(SensorEventListener listener) {
 		if (mClient.connected) {
 			mClient.unregisterListener(listener);
-		} 
+		}
 	}
 
 	// Member function extensions:
@@ -258,7 +259,5 @@ public class SensorManagerSimulator {
 			sensors.removeSensor(type);
 			return sensors;
 		}
-
 	}
-
 }

@@ -30,9 +30,9 @@ public class WiiAccelerometerView extends JPanel {
 		mRealDevicePath.setText(model.getDevicePath());
 
 		mRealDeviceOutputLabel = new JLabel("-", JLabel.LEFT);
-		
-		setLayout(new GridLayout(0,1));
-		
+
+		setLayout(new GridLayout(0, 1));
+
 		add(mRealDeviceWiimote);
 		add(mRealDevicePath);
 		add(mRealDeviceOutputLabel);

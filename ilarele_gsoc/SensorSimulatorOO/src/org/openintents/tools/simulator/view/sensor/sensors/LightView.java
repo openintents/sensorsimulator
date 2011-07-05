@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -48,7 +49,7 @@ public class LightView extends SensorView {
 		lightFieldPane.add(label, c3);
 
 		mLightText = new JTextField(5);
-		mLightText.setText("" + lightModel.getLight());
+		mLightText.setText("" + lightModel.getReadLight());
 		c3.gridx = 1;
 		lightFieldPane.add(mLightText, c3);
 
@@ -72,35 +73,31 @@ public class LightView extends SensorView {
 
 	@Override
 	protected JPanel getSensorSpecificHelp() {
-		JPanel panel = new JPanel(new GridLayout(0, 1));
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JPanel panel1 = new JPanel(new GridLayout(0, 1));
-		panel1.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
-				BorderFactory.createTitledBorder(
+		panel1.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createMatteBorder(2, 0, 0, 0, Color.GRAY), BorderFactory
+				.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
-						"Description")));
+						model.getName())));
 		panel1.add(new JLabel("- The intensity of light"));
-		
+
 		panel.add(panel1);
-		
+
 		JPanel panel2 = new JPanel(new GridLayout(0, 1));
-		panel2.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
-				BorderFactory.createTitledBorder(
+		panel2.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createMatteBorder(2, 0, 0, 0, Color.GRAY), BorderFactory
+				.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
 						"Luminance values in universe")));
-		panel2.add(new JLabel("Maximim Sunlight = 120000 lux"));
-		panel2.add(new JLabel("Normal Sunlight = 110000 lux"));
 		panel2.add(new JLabel("Sunrise = 400 lux"));
-		
-		panel2.add(new JLabel("Shade = 20000 lux"));
-		panel2.add(new JLabel("Overcast = 10000 lux"));
 		panel2.add(new JLabel("Cloudy Day = 100 lux"));
 		panel2.add(new JLabel("Night with Fullmoon = 0.25 lux"));
 		panel2.add(new JLabel("Night without Moon = 0.001 lux"));
-		
+
 		panel.add(panel2);
-		
+
 		return panel;
 	}
 

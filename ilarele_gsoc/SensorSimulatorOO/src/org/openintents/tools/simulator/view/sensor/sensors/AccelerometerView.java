@@ -209,7 +209,7 @@ public class AccelerometerView extends SensorView {
 				.createMatteBorder(2, 0, 0, 0, Color.GRAY), BorderFactory
 				.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
-						"Description")));
+						model.getName())));
 		panel1.add(new JLabel(
 				"- measures the acceleration applied to the device"));
 		panel1.add(new JLabel("- has values for all 3 axis"));

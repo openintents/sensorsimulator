@@ -217,9 +217,7 @@ final class SensorSimulatorClient {
 	 */
 	protected boolean registerListener(SensorEventListener listener,
 			Sensor sensor, int rate) {
-
 		int delay = -1;
-
 		// here we check the sensor rate that is going to be applied to listener
 		switch (rate) {
 		case SensorManager.SENSOR_DELAY_FASTEST:
@@ -242,7 +240,6 @@ final class SensorSimulatorClient {
 			return false;
 		}
 		boolean result;
-
 		// and here we check our listeners Array, for every sensor we create new
 		// listener
 		// and add it to our array
@@ -450,11 +447,7 @@ final class SensorSimulatorClient {
 					.getSensorName(sensorAdd.sensorToRegister);
 
 		try {
-			float updatesPerSecond = 1000;
-			if (delay > 0) {
-				updatesPerSecond = 1000 / delay;
-			}
-			setSensorUpdateRate(sensorString, updatesPerSecond);
+			setSensorUpdateDelay(sensorString, delay);
 			result = true;
 		} catch (IllegalArgumentException e) {
 			Log.d(TAG, "Sensor " + sensorString + " not supported");
@@ -470,7 +463,7 @@ final class SensorSimulatorClient {
 	private static final int MSG_UPDATE_SENSORS = 1;
 
 	// Increase needed if new sensor is added
-	private static int MAX_SENSOR = 11;
+	private static int MAX_SENSOR = 12;
 	private float[][] mValues = new float[MAX_SENSOR][];
 	private boolean[] mValuesCached = new boolean[MAX_SENSOR];
 
@@ -699,10 +692,15 @@ final class SensorSimulatorClient {
 		}
 	}
 
-
-	protected void setSensorUpdateRate(String sensor, float updatesPerSecond) {
+	protected void setSensorUpdateDelay(String sensor, int updateDelay) {
+		if (updateDelay == -1) {
+			unsetSensorUpdateRate(sensor);
+			return;
+		}
+			
 		mOut.println(sensor);
-		mOut.println("setSensorUpdateRate()");
+		mOut.println("setSensorUpdateDelay()");
+		mOut.println("" + updateDelay);
 
 		try {
 			String numstr = mIn.readLine();
@@ -710,7 +708,6 @@ final class SensorSimulatorClient {
 				throw new IllegalArgumentException("Sensor '" + sensor
 						+ "' is not supported.");
 			}
-			mOut.println("" + updatesPerSecond);
 		} catch (IOException e) {
 			System.err
 					.println("Couldn't get I/O for the connection to: x.x.x.x.");

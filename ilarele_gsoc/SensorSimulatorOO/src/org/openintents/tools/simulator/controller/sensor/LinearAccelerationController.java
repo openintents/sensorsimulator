@@ -26,7 +26,7 @@ public class LinearAccelerationController extends SensorController {
 			double k = linearAccelerationView.getSpringConstant();
 			double gamma = linearAccelerationView.getDampingConstant();
 			double meterperpixel = linearAccelerationView.getPixelsPerMeter();
-			
+
 			// compute normal
 			if (meterperpixel != 0)
 				meterperpixel = 1. / meterperpixel;
@@ -35,12 +35,13 @@ public class LinearAccelerationController extends SensorController {
 
 			linearAccelerationModel.refreshAcceleration(k, gamma, dt);
 
-			Vector linearVec = new Vector(-linearAccelerationModel.getAx() * meterperpixel, 0,
-					-linearAccelerationModel.getAz() * meterperpixel);
+			Vector linearVec = new Vector(-linearAccelerationModel.getAx()
+					* meterperpixel, 0, -linearAccelerationModel.getAz()
+					* meterperpixel);
 			linearVec.reverserollpitchyaw(orientation.getRoll(),
 					orientation.getPitch(), orientation.getYaw());
-			linearAccelerationModel.setXYZ(linearVec);			
-			
+			linearAccelerationModel.setXYZ(linearVec);
+
 			// Add random component:
 			double random = linearAccelerationView.getRandom();
 			if (random > 0) {

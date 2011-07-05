@@ -12,7 +12,7 @@ public class LinearAccelerationModel extends SensorModel {
 	private double accelx;
 	private double accely;
 	private double accelz;
-	
+
 	/** Current read-out value of linear_acceleration. */
 	private double read_linear_acc_x;
 	private double read_linear_acc_y;
@@ -42,7 +42,6 @@ public class LinearAccelerationModel extends SensorModel {
 	private double vx;
 	private double vz;
 	private double meterperpixel;
-
 
 	public LinearAccelerationModel() {
 		super();
@@ -121,27 +120,23 @@ public class LinearAccelerationModel extends SensorModel {
 	}
 
 	@Override
-	public void setUpdateRates() {
-		mDefaultUpdateRate = 50;
-		mCurrentUpdateRate = 50;
-	}
-
-	@Override
 	public String getSI() {
 		return "m/s" + SensorModel.SQUARED;
 	}
-//
-//	public void setLinearAcceleration(double x, double y, double z) {
-//		linear_acc_x_value = x;
-//		linear_acc_y_value = y;
-//		linear_acc_z_value = z;
-//	}
-//
-//	public void addLinearAcceleration(double addX, double addY, double addZ) {
-//		linear_acc_x_value += addX;
-//		linear_acc_y_value += addY;
-//		linear_acc_z_value += addZ;
-//	}
+
+	//
+	// public void setLinearAcceleration(double x, double y, double z) {
+	// linear_acc_x_value = x;
+	// linear_acc_y_value = y;
+	// linear_acc_z_value = z;
+	// }
+	//
+	// public void addLinearAcceleration(double addX, double addY, double addZ)
+	// {
+	// linear_acc_x_value += addX;
+	// linear_acc_y_value += addY;
+	// linear_acc_z_value += addZ;
+	// }
 
 	@Override
 	public String getTypeConstant() {

@@ -57,7 +57,7 @@ import org.openintents.tools.simulator.model.telnet.Vector;
  * @author Peli
  * @author Josip Balic
  */
-public class DeviceView extends JPanel  {
+public class DeviceView extends JPanel {
 
 	private static final long serialVersionUID = -112203026209081563L;
 	public static final int MOUSE_MODE_YAW_PITCH = 1;
@@ -179,14 +179,20 @@ public class DeviceView extends JPanel  {
 		add(moveButton);
 
 		// slider
-		layout.putConstraint(SpringLayout.NORTH, sliderPanel, 10, SpringLayout.NORTH, this);
+		layout.putConstraint(SpringLayout.NORTH, sliderPanel, 10,
+				SpringLayout.NORTH, this);
 		// radio buttons
-		layout.putConstraint(SpringLayout.NORTH, yawPitchButton, 10, SpringLayout.SOUTH, sliderPanel);
-		layout.putConstraint(SpringLayout.NORTH, rollPitchButton, 10, SpringLayout.SOUTH, sliderPanel);
-		layout.putConstraint(SpringLayout.NORTH, moveButton, 10, SpringLayout.SOUTH, sliderPanel);
-		
-		layout.putConstraint(SpringLayout.WEST, rollPitchButton, 10, SpringLayout.EAST, yawPitchButton);
-		layout.putConstraint(SpringLayout.WEST, moveButton, 10, SpringLayout.EAST, rollPitchButton);
+		layout.putConstraint(SpringLayout.NORTH, yawPitchButton, 10,
+				SpringLayout.SOUTH, sliderPanel);
+		layout.putConstraint(SpringLayout.NORTH, rollPitchButton, 10,
+				SpringLayout.SOUTH, sliderPanel);
+		layout.putConstraint(SpringLayout.NORTH, moveButton, 10,
+				SpringLayout.SOUTH, sliderPanel);
+
+		layout.putConstraint(SpringLayout.WEST, rollPitchButton, 10,
+				SpringLayout.EAST, yawPitchButton);
+		layout.putConstraint(SpringLayout.WEST, moveButton, 10,
+				SpringLayout.EAST, rollPitchButton);
 		setDoubleBuffered(true);
 
 		registerSliders();

@@ -45,6 +45,11 @@
 		android:layout_height="wrap_content"
 		android:text="Pressure: disabled" />
 	<TextView
+		android:id="@+id/text_rotation_vector"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="Rotation Vector: disabled" />
+	<TextView
 		android:id="@+id/text_barcode"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"

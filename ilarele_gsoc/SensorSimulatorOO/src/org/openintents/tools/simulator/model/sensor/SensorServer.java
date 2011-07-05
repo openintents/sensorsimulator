@@ -16,7 +16,6 @@
 
 package org.openintents.tools.simulator.model.sensor;
 
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

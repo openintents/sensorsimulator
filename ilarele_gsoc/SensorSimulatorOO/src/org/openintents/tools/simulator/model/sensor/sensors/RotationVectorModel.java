@@ -106,12 +106,6 @@ public class RotationVectorModel extends SensorModel {
 	}
 
 	@Override
-	public void setUpdateRates() {
-		mDefaultUpdateRate = 50;
-		mCurrentUpdateRate = 50;
-	}
-
-	@Override
 	public String getSI() {
 		return SensorModel.DEGREES;
 	}

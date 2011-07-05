@@ -1,6 +1,5 @@
 package org.openintents.tools.simulator.controller.sensor;
 
-
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.ProximityModel;
@@ -36,6 +35,7 @@ public class ProximityController extends SensorController {
 	@Override
 	public String getString() {
 		ProximityModel proximityModel = (ProximityModel) model;
-		return Global.TWO_DECIMAL_FORMAT.format(proximityModel.getReadProximity());
+		return Global.TWO_DECIMAL_FORMAT.format(proximityModel
+				.getReadProximity());
 	}
 }

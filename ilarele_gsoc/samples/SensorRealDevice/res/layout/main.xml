@@ -5,48 +5,48 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 	<TextView
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text="@string/hello" />
-	<TextView
-		android:id="@+id/textAccelerometer"
+		android:id="@+id/text_accelerometer"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="Accelerometer: disabled" />
 	<TextView
-		android:id="@+id/textGravity"
+		android:id="@+id/text_linear_acceleration"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="LinearAcceleration: disabled" />
+	<TextView
+		android:id="@+id/text_gravity"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="Gravity: disabled" />
 	<TextView
-		android:id="@+id/textLinearAcceleration"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text="Linear Acceleration: disabled" />
-
-	<TextView
-		android:id="@+id/textMagneticField"
+		android:id="@+id/text_light"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="Compass: disabled" />
 	<TextView
-		android:id="@+id/textOrientation"
+		android:id="@+id/text_temperature"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="Orientation: disabled" />
 	<TextView
-		android:id="@+id/textTemperature"
+		android:id="@+id/text_orientation"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="Temperature: disabled" />
 	<TextView
-		android:id="@+id/textLight"
+		android:id="@+id/text_magnetic_field"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="Light: disabled" />
 	<TextView
-		android:id="@+id/textPressure"
+		android:id="@+id/text_pressure"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:text="Pressure: disabled" />
+	<TextView
+		android:id="@+id/text_rotation_vector"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="Rotation Vector: disabled" />
 </LinearLayout>

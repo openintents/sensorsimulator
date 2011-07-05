@@ -54,10 +54,10 @@ public abstract class SensorModel {
 
 	public static final String DISABLED = "DISABLED";
 
-	public static final String SENSOR_DELAY_FASTEST = "SENSOR_DELAY_FASTEST (0)";
-	public static final String SENSOR_DELAY_GAME = "SENSOR_DELAY_GAME(20/s)";
-	public static final String SENSOR_DELAY_UI = "SENSOR_DELAY_UI(60/s)";
-	public static final String SENSOR_DELAY_NORMAL = "SENSOR_DELAY_NORMAL(200/s)";
+	public static final String SENSOR_DELAY_FASTEST = "FASTEST (0 ms)";
+	public static final String SENSOR_DELAY_GAME = "GAME(20 ms)";
+	public static final String SENSOR_DELAY_UI = "UI(60 ms)";
+	public static final String SENSOR_DELAY_NORMAL = "NORMAL(200 ms)";
 
 	/** Delay in milliseconds */
 	public static final int DELAY_MS_FASTEST = 0;
@@ -75,8 +75,8 @@ public abstract class SensorModel {
 	protected boolean mEnabled;
 
 	// Simulation update
-	protected float mDefaultUpdateRate;
-	protected double mCurrentUpdateRate;
+	protected int mDefaultUpdateDelay;
+	protected int mCurrentUpdateDelay;
 	/** Whether to form an average at each update */
 	protected boolean mUpdateAverage;
 
@@ -116,12 +116,12 @@ public abstract class SensorModel {
 		mEnabled = enable;
 	}
 
-	public double getDefaultUpdateRate() {
-		return mDefaultUpdateRate;
+	public int getDefaultUpdateRate() {
+		return mDefaultUpdateDelay;
 	}
 
-	public double getCurrentUpdateRate() {
-		return mCurrentUpdateRate;
+	public int getCurrentUpdateRate() {
+		return mCurrentUpdateDelay;
 	}
 
 	public boolean updateAverage() {
@@ -237,14 +237,12 @@ public abstract class SensorModel {
 	public void unsetSensorUpdateRate(PrintWriter out) {
 		if (isEnabled()) {
 			out.println("OK");
-			mCurrentUpdateRate = getDefaultUpdateRate();
+			mCurrentUpdateDelay = getDefaultUpdateRate();
 		} else {
 			// This sensor is currently disabled
 			out.println("throw IllegalStateException");
 		}
 	}
-
-	public abstract void setUpdateRates();
 
 	public abstract void printSensorData(PrintWriter out);
 
@@ -285,7 +283,12 @@ public abstract class SensorModel {
 
 	public abstract String getTypeConstant();
 
-	public void setCurrentUpdateRate(float updatesPerSecond) {
-		mCurrentUpdateRate = updatesPerSecond;
+	public void setCurrentUpdateDelay(int updateDelay) {
+		mCurrentUpdateDelay = updateDelay;
+	}
+
+	public void setUpdateRates() {
+		mDefaultUpdateDelay = 200;
+		mCurrentUpdateDelay = 200;
 	}
 }

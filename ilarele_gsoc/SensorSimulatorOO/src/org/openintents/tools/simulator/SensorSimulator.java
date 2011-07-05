@@ -7,7 +7,8 @@ import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 public class SensorSimulator {
 	public SensorSimulatorModel model = new SensorSimulatorModel(this);
 	public SensorSimulatorView view = new SensorSimulatorView(model);
-	public SensorSimulatorController ctrl = new SensorSimulatorController(model, view);
+	public SensorSimulatorController ctrl = new SensorSimulatorController(
+			model, view);
 
 	public void addMessage(String string) {
 		view.addMessage(string);

@@ -23,6 +23,7 @@ public class SensorSimulatorDemoActivity extends Activity {
 	private TextView mTextViewOrientation;
 	private TextView mTextViewMagneticField;
 	private TextView mTextViewPressure;
+	private TextView mTextViewRotationVector;
 	private TextView mTextViewBarcode;
 
 	private SensorEventListener mEventListenerAccelerometer;
@@ -33,6 +34,7 @@ public class SensorSimulatorDemoActivity extends Activity {
 	private SensorEventListener mEventListenerOrientation;
 	private SensorEventListener mEventListenerMagneticField;
 	private SensorEventListener mEventListenerPressure;
+	private SensorEventListener mEventListenerRotationVector;
 	private SensorEventListener mEventListenerBarcode;
 
 	/** Called when the activity is first created. */
@@ -49,6 +51,7 @@ public class SensorSimulatorDemoActivity extends Activity {
 		mTextViewOrientation = (TextView) findViewById(R.id.text_orientation);
 		mTextViewMagneticField = (TextView) findViewById(R.id.text_magnetic_field);
 		mTextViewPressure = (TextView) findViewById(R.id.text_pressure);
+		mTextViewRotationVector = (TextView) findViewById(R.id.text_rotation_vector);
 		mTextViewBarcode = (TextView) findViewById(R.id.text_barcode);
 
 		// //////////////////////////////////////////////////////////////
@@ -161,8 +164,7 @@ public class SensorSimulatorDemoActivity extends Activity {
 			@Override
 			public void onSensorChanged(SensorEvent event) {
 				float[] values = event.values;
-				mTextViewTemperature.setText("Temperature: " + values[0] + ", "
-						+ values[1] + ", " + values[2]);
+				mTextViewTemperature.setText("Temperature: " + values[0]);
 			}
 
 			@Override
@@ -193,12 +195,13 @@ public class SensorSimulatorDemoActivity extends Activity {
 			public void onAccuracyChanged(Sensor sensor, int accuracy) {
 			}
 		};
-		mEventListenerBarcode = new SensorEventListener() {
+		mEventListenerRotationVector = new SensorEventListener() {
 
 			@Override
 			public void onSensorChanged(SensorEvent event) {
-				String barcode = event.barcode;
-				mTextViewBarcode.setText("Barcode: " + barcode);
+				float[] values = event.values;
+				mTextViewRotationVector.setText("RotationVector: " + values[0]
+						+ ", " + values[1] + ", " + values[2]);
 			}
 
 			@Override
@@ -206,6 +209,17 @@ public class SensorSimulatorDemoActivity extends Activity {
 			}
 		};
 
+		mEventListenerBarcode = new SensorEventListener() {
+
+			@Override
+			public void onSensorChanged(SensorEvent event) {
+				mTextViewBarcode.setText("Barcode: " + event.barcode);
+			}
+
+			@Override
+			public void onAccuracyChanged(Sensor sensor, int accuracy) {
+			}
+		};
 	}
 
 	@Override
@@ -213,11 +227,11 @@ public class SensorSimulatorDemoActivity extends Activity {
 		super.onResume();
 		mSensorManager.registerListener(mEventListenerAccelerometer,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_UI);
 		mSensorManager.registerListener(mEventListenerLinearAcceleration,
 				mSensorManager
 						.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_GAME);
 		mSensorManager.registerListener(mEventListenerGravity,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
 				SensorManager.SENSOR_DELAY_NORMAL);
@@ -239,6 +253,9 @@ public class SensorSimulatorDemoActivity extends Activity {
 		mSensorManager.registerListener(mEventListenerBarcode,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_BARCODE_READER),
 				SensorManager.SENSOR_DELAY_NORMAL);
+		mSensorManager.registerListener(mEventListenerRotationVector,
+				mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
+				SensorManager.SENSOR_DELAY_NORMAL);
 	}
 
 	@Override
@@ -251,6 +268,7 @@ public class SensorSimulatorDemoActivity extends Activity {
 		mSensorManager.unregisterListener(mEventListenerTemperature);
 		mSensorManager.unregisterListener(mEventListenerLight);
 		mSensorManager.unregisterListener(mEventListenerPressure);
+		mSensorManager.unregisterListener(mEventListenerRotationVector);
 		mSensorManager.unregisterListener(mEventListenerBarcode);
 		super.onStop();
 	}

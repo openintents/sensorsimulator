@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.util.Random;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -166,16 +167,19 @@ public class ProximityView extends SensorView {
 
 	@Override
 	protected JPanel getSensorSpecificHelp() {
-		JPanel panel = new JPanel(new GridLayout(0, 1));
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JPanel panel1 = new JPanel(new GridLayout(0, 1));
-		panel1.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
-				BorderFactory.createTitledBorder(
+		panel1.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createMatteBorder(2, 0, 0, 0, Color.GRAY), BorderFactory
+				.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
-						"Description")));
-		panel1.add(new JLabel("- measures the distance from the sensor, in centimeters"));
-		panel1.add(new JLabel("- depending on device, may have only far or near values"));
-		
+						model.getName())));
+		panel1.add(new JLabel(
+				"- measures the distance from the sensor, in centimeters"));
+		panel1.add(new JLabel(
+				"- depending on device, may have only far or near values"));
+
 		panel.add(panel1);
 		return panel;
 	}

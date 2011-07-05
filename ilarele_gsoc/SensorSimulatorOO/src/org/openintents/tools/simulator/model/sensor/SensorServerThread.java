@@ -21,7 +21,6 @@
 
 package org.openintents.tools.simulator.model.sensor;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -78,7 +77,7 @@ public class SensorServerThread implements Runnable {
 		talking = true;
 
 		mSensorSimulator.fixEnabledSensors();
-		
+
 		// start ourselves:
 		mThread = new Thread(this);
 		mThread.start();
@@ -123,7 +122,8 @@ public class SensorServerThread implements Runnable {
 					SensorController sensorCtrl = getSensorCtrlFromName(inputLine);
 					if (sensorCtrl != null) {
 						sensorCtrl.readSensor(out);
-						sensorCtrl.updateEmulatorRefresh(mSensorSimulator.view.getRefreshCount());
+						sensorCtrl.updateEmulatorRefresh(mSensorSimulator.view
+								.getRefreshCount());
 					} else
 						out.println("throw IllegalArgumentException");
 				} else {
@@ -173,18 +173,20 @@ public class SensorServerThread implements Runnable {
 		// mSensorSimulator.addMessage("Incoming connection closed.");
 	}
 
-	private void executeCommand(SensorModel sensor, PrintWriter out, BufferedReader inArgs, String cmd) throws IOException {
+	private void executeCommand(SensorModel sensor, PrintWriter out,
+			BufferedReader inArgs, String cmd) throws IOException {
+		SensorController sensorCtrl = getSensorCtrlFromName(sensor.getName());
 		if (cmd.compareTo("getNumSensorValues()") == 0)
 			sensor.getNumSensorValues(out);
-		else if (cmd.compareTo("setSensorUpdateRate()") == 0) {
-			sensor.setSensorUpdateRate(out);
+		else if (cmd.compareTo("setSensorUpdateDelay()") == 0) {
 			String args = inArgs.readLine();
-			float updatesPerSecond = Float.parseFloat(args);
-			mSensorSimulator.model.getAccelerometer().setCurrentUpdateRate(updatesPerSecond);
-		}
-		else if (cmd.compareTo("unsetSensorUpdateRate()") == 0)
+			int updateDelay = Integer.parseInt(args);
+			sensorCtrl.setCurrentUpdateRate(updateDelay);
+			sensor.setSensorUpdateRate(out);
+		} else if (cmd.compareTo("unsetSensorUpdateRate()") == 0) {
 			sensor.unsetSensorUpdateRate(out);
-		else
+			sensorCtrl.setCurrentUpdateRate(sensor.getDefaultUpdateRate());
+		} else
 			out.println("throw IllegalArgumentException");
 	}
 
@@ -210,6 +212,8 @@ public class SensorServerThread implements Runnable {
 			return ctrl.getLinearAcceleration();
 		else if (inputLine.compareTo(SensorModel.GRAVITY) == 0)
 			return ctrl.getGravity();
+		else if (inputLine.compareTo(SensorModel.ROTATION_VECTOR) == 0)
+			return ctrl.getRotationVector();
 		return null;
 	}
 
@@ -235,6 +239,8 @@ public class SensorServerThread implements Runnable {
 			return model.getLinearAcceleration();
 		else if (inputLine.compareTo(SensorModel.GRAVITY) == 0)
 			return model.getGravity();
+		else if (inputLine.compareTo(SensorModel.ROTATION_VECTOR) == 0)
+			return model.getRotationVector();
 		return null;
 	}
 

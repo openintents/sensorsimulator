@@ -119,12 +119,6 @@ public class MagneticFieldModel extends SensorModel {
 	}
 
 	@Override
-	public void setUpdateRates() {
-		mDefaultUpdateRate = 10;
-		mCurrentUpdateRate = 10;
-	}
-
-	@Override
 	public String getSI() {
 		return "nT";
 	}
