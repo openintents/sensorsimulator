@@ -107,11 +107,6 @@ public class MagneticFieldModel extends SensorModel {
 	}
 
 	@Override
-	public String getAverageName() {
-		return AVERAGE_MAGNETIC_FIELD;
-	}
-
-	@Override
 	public void printNumValues(PrintWriter out) {
 		out.println("3");
 	}

@@ -11,12 +11,16 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationModel;
+import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 
 public class LinearAccelerationView extends SensorView {
 	private static final long serialVersionUID = 937382958598356357L;
-	private JTextField mLinearAccTextX;
-	private JTextField mLinearAccTextY;
-	private JTextField mLinearAccTextZ;
+
+	// Linear Acceleration
+	private JTextField mPixelPerMeterText;
+	private JTextField mSpringConstantText;
+	private JTextField mDampingConstantText;
+	
 	
 	public LinearAccelerationView(LinearAccelerationModel model) {
 		super(model);
@@ -31,70 +35,47 @@ public class LinearAccelerationView extends SensorView {
 		GridBagConstraints c3 = new GridBagConstraints();
 		LinearAccelerationModel linearAccModel = (LinearAccelerationModel) model;
 		
-		// ////////////////////////////
-		// linearAcc
-		JPanel linearAccFieldPane = new JPanel(new GridBagLayout());
-		c3 = new GridBagConstraints();
-		c3.fill = GridBagConstraints.HORIZONTAL;
-		c3.anchor = GridBagConstraints.NORTHWEST;
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy = 0;
+		JPanel linearAccFieldPane = new JPanel(new GridLayout(0, 3));
 
-		JLabel label = new JLabel("Linear Acceleration Value: ", JLabel.LEFT);
-		linearAccFieldPane.add(label, c3);
+		linearAccFieldPane
+				.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+						.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+						BorderFactory.createTitledBorder(
+								BorderFactory.createEmptyBorder(3, 0, 15, 0),
+								"For Computing Linear Acc")));
 
-		// x
-		mLinearAccTextX = new JTextField(5);
-		mLinearAccTextX.setText("" + linearAccModel.getLinearAccelerationX());
-		c3.gridx = 1;
-		linearAccFieldPane.add(mLinearAccTextX, c3);
+		JLabel label = new JLabel("Pixels per meter: ", JLabel.LEFT);
+		linearAccFieldPane.add(label);
 
-		label = new JLabel(linearAccModel.getSI(), JLabel.LEFT);
-		c3.gridx = 2;
-		linearAccFieldPane.add(label, c3);
-		
-		
-		// y
-		c3.gridx = 0;
-		c3.gridy = 1;
-		mLinearAccTextY = new JTextField(5);
-		mLinearAccTextY.setText("" + linearAccModel.getLinearAccelerationY());
-		
-		c3.gridx = 1;
-		linearAccFieldPane.add(mLinearAccTextY, c3);
+		mPixelPerMeterText = new JTextField(5);
+		mPixelPerMeterText.setText("" + linearAccModel.getPixelsPerMeter());
+		linearAccFieldPane.add(mPixelPerMeterText);
 
-		label = new JLabel(linearAccModel.getSI(), JLabel.LEFT);
-		c3.gridx = 2;
-		linearAccFieldPane.add(label, c3);
-		
-		
-		// z
-		c3.gridx = 0;
-		c3.gridy = 2;
-		mLinearAccTextZ = new JTextField(5);
-		mLinearAccTextZ.setText("" + linearAccModel.getLinearAccelerationX());
-		
-		c3.gridx = 1;
-		linearAccFieldPane.add(mLinearAccTextZ, c3);
+		label = new JLabel(" p/m", JLabel.LEFT);
+		linearAccFieldPane.add(label);
 
-		label = new JLabel(linearAccModel.getSI(), JLabel.LEFT);
-		c3.gridx = 2;
-		linearAccFieldPane.add(label, c3);
+		label = new JLabel("Spring constant:", JLabel.LEFT);
+		linearAccFieldPane.add(label);
 
-		// Add linear acc panel to settings
+		mSpringConstantText = new JTextField(5);
+		mSpringConstantText.setText("" + linearAccModel.getSpringConstant());
+		linearAccFieldPane.add(mSpringConstantText);
+
+		label = new JLabel(" p/s" + SensorModel.SQUARED, JLabel.LEFT);
+		linearAccFieldPane.add(label);
+
+		label = new JLabel("Damping constant: ", JLabel.LEFT);
+		linearAccFieldPane.add(label);
+
+		mDampingConstantText = new JTextField(5);
+		mDampingConstantText.setText("" + linearAccModel.getDampingConstant());
+		linearAccFieldPane.add(mDampingConstantText);
+
+		label = new JLabel(" p/s", JLabel.LEFT);
+		linearAccFieldPane.add(label);
+		
 		resultPanel.add(linearAccFieldPane);
 		return resultPanel;
-	}
-
-	public double getAccX() {
-		return getSafeDouble(mLinearAccTextX);
-	}
-	public double getAccY() {
-		return getSafeDouble(mLinearAccTextY);
-	}
-	public double getAccZ() {
-		return getSafeDouble(mLinearAccTextZ);
 	}
 
 	@Override
@@ -115,4 +96,18 @@ public class LinearAccelerationView extends SensorView {
 		panel.add(panel1);
 		return panel;
 	}
+	
+	public double getPixelsPerMeter() {
+		return getSafeDouble(mPixelPerMeterText, 3000);
+	}
+
+	public double getSpringConstant() {
+		return getSafeDouble(mSpringConstantText, 500);
+	}
+
+	public double getDampingConstant() {
+		return getSafeDouble(mDampingConstantText, 50);
+	}
+
+	
 }

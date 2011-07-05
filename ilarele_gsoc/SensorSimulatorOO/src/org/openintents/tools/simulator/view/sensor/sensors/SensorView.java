@@ -100,7 +100,7 @@ public abstract class SensorView extends JScrollPane {
 
 		insidePanel.setPreferredSize(new Dimension(
 				(int) (Global.WIDTH * Global.SENSOR_SPLIT_RIGHT), Math.max(
-						size1.height, size2.height) - 130));
+						size1.height, size2.height) - 200));
 	}
 
 	private JPanel fillGeneralSettingsPanel() {
@@ -405,4 +405,25 @@ public abstract class SensorView extends JScrollPane {
 		});
 		return button;
 	}
+	
+	public void setCurrentUpdateRate(int updatesPerSecond) {
+		switch (updatesPerSecond) {
+		case SensorModel.DELAY_MS_FASTEST:
+			mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_FASTEST);
+			break;
+		case SensorModel.DELAY_MS_GAME:
+			mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_GAME);
+			break;
+		case SensorModel.DELAY_MS_NORMAL:
+			mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_NORMAL);
+			break;
+		case SensorModel.DELAY_MS_UI:
+			mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_UI);
+			break;
+		default:
+			mCurrentUpdateRateText.setText("Wrong update rate!");
+			break;
+		}
+	}
+	
 }

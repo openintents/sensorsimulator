@@ -64,6 +64,7 @@ import org.openintents.tools.simulator.view.sensor.sensors.MagneticFieldView;
 import org.openintents.tools.simulator.view.sensor.sensors.OrientationView;
 import org.openintents.tools.simulator.view.sensor.sensors.PressureView;
 import org.openintents.tools.simulator.view.sensor.sensors.ProximityView;
+import org.openintents.tools.simulator.view.sensor.sensors.RotationVectorView;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 import org.openintents.tools.simulator.view.sensor.sensors.TemperatureView;
 
@@ -120,12 +121,7 @@ public class SensorSimulatorView extends JPanel {
 		setLayout(layout);
 		// sensors
 		sensors = new ArrayList<SensorView>();
-		AccelerometerView accelerometer = new AccelerometerView(
-				model.getAccelerometer());
-		LinearAccelerationView linearAcceleration = new LinearAccelerationView(
-				model.getLinearAcceleration());
-		GravityView gravity = new GravityView(model.getGravity());
-		sensors.add(accelerometer);
+		sensors.add(new AccelerometerView(model.getAccelerometer()));
 		sensors.add(new MagneticFieldView(model.getMagneticField()));
 		sensors.add(new OrientationView(model.getOrientation()));
 		sensors.add(new TemperatureView(model.getTemperature()));
@@ -133,10 +129,9 @@ public class SensorSimulatorView extends JPanel {
 		sensors.add(new LightView(model.getLight()));
 		sensors.add(new ProximityView(model.getProximity()));
 		sensors.add(new PressureView(model.getPressure()));
-		sensors.add(linearAcceleration);
-		sensors.add(gravity);
-
-		accelerometer.setRelatedSensors(gravity, linearAcceleration);
+		sensors.add(new LinearAccelerationView(model.getLinearAcceleration()));
+		sensors.add(new GravityView(model.getGravity()));
+		sensors.add(new RotationVectorView(model.getRotationVector()));
 
 		enabledBorder = BorderFactory.createTitledBorder("Enabled sensors");
 		disabledBorder = BorderFactory
@@ -649,6 +644,10 @@ public class SensorSimulatorView extends JPanel {
 
 	public GravityView getGravity() {
 		return (GravityView) sensors.get(SensorModel.POZ_GRAVITY);
+	}
+
+	public RotationVectorView getRotationVector() {
+		return (RotationVectorView) sensors.get(SensorModel.POZ_ROTATION);
 	}
 
 }

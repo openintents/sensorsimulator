@@ -1,8 +1,6 @@
 package org.openintents.tools.simulator.view.sensor.sensors;
 
 import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
@@ -11,13 +9,16 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.openintents.tools.simulator.model.sensor.sensors.GravityModel;
+import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 
 public class GravityView extends SensorView {
 	private static final long serialVersionUID = -6006181483029485632L;
-	private JTextField mGravityTextX;
-	private JTextField mGravityTextY;
-	private JTextField mGravityTextZ;
-
+	
+	// Gravity
+	private JTextField mGravityConstantText;
+	private JTextField mAccelerometerLimitText;
+	
+	
 	public GravityView(GravityModel model) {
 		super(model);
 	}
@@ -28,74 +29,36 @@ public class GravityView extends SensorView {
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Settings"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		GridBagConstraints c3 = new GridBagConstraints();
 		GravityModel gravityModel = (GravityModel) model;
+		
+		JPanel gravityFieldPane = new JPanel(new GridLayout(0, 3));
+		gravityFieldPane.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(3, 0, 15, 0),
+						"For Computing Gravity")));
+		JLabel label = new JLabel("Constant g: ", JLabel.LEFT);
+		gravityFieldPane.add(label);
 
-		// ////////////////////////////
-		// gravity
-		JPanel gravityFieldPane = new JPanel(new GridBagLayout());
-		c3 = new GridBagConstraints();
-		c3.fill = GridBagConstraints.HORIZONTAL;
-		c3.anchor = GridBagConstraints.NORTHWEST;
-		c3.gridwidth = 1;
-		c3.gridx = 0;
-		c3.gridy = 0;
+		mGravityConstantText = new JTextField(5);
+		mGravityConstantText.setText("" + gravityModel.getGravityConstant());
+		gravityFieldPane.add(mGravityConstantText);
 
-		JLabel label = new JLabel("Gravity Value: ", JLabel.LEFT);
-		gravityFieldPane.add(label, c3);
+		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
+		gravityFieldPane.add(label);
 
-		// x
-		mGravityTextX = new JTextField(5);
-		mGravityTextX.setText("" + gravityModel.getGravityX());
-		c3.gridx = 1;
-		gravityFieldPane.add(mGravityTextX, c3);
+		label = new JLabel("Acceleration limit: ", JLabel.LEFT);
+		gravityFieldPane.add(label);
 
-		label = new JLabel(gravityModel.getSI(), JLabel.LEFT);
-		c3.gridx = 2;
-		gravityFieldPane.add(label, c3);
+		mAccelerometerLimitText = new JTextField(5);
+		mAccelerometerLimitText.setText("" + gravityModel.getAccelLimit());
+		gravityFieldPane.add(mAccelerometerLimitText);
 
-		// y
-		c3.gridx = 0;
-		c3.gridy = 1;
-		mGravityTextY = new JTextField(5);
-		mGravityTextY.setText("" + gravityModel.getGravityY());
-
-		c3.gridx = 1;
-		gravityFieldPane.add(mGravityTextY, c3);
-
-		label = new JLabel(gravityModel.getSI(), JLabel.LEFT);
-		c3.gridx = 2;
-		gravityFieldPane.add(label, c3);
-
-		// z
-		c3.gridx = 0;
-		c3.gridy = 2;
-		mGravityTextZ = new JTextField(5);
-		mGravityTextZ.setText("" + gravityModel.getGravityZ());
-
-		c3.gridx = 1;
-		gravityFieldPane.add(mGravityTextZ, c3);
-
-		label = new JLabel(gravityModel.getSI(), JLabel.LEFT);
-		c3.gridx = 2;
-		gravityFieldPane.add(label, c3);
-
-		// Add gravity panel to settings
-		resultPanel.add(gravityFieldPane);
-		return resultPanel;
+		label = new JLabel(" g", JLabel.LEFT);
+		gravityFieldPane.add(label);
+		return gravityFieldPane;
 	}
 
-	public double getGravityX() {
-		return getSafeDouble(mGravityTextX);
-	}
-
-	public double getGravityY() {
-		return getSafeDouble(mGravityTextY);
-	}
-
-	public double getGravityZ() {
-		return getSafeDouble(mGravityTextZ);
-	}
 
 	@Override
 	protected JPanel getSensorSpecificHelp() {
@@ -127,9 +90,7 @@ public class GravityView extends SensorView {
 		return panel;
 	}
 
-	public void setGravity(double x, double y, double z) {
-		mGravityTextX.setText("" + x);
-		mGravityTextY.setText("" + y);
-		mGravityTextZ.setText("" + z);
+	public double getGravityConstant() {
+		return getSafeDouble(mGravityConstantText, 9.80665);
 	}
 }

@@ -27,11 +27,20 @@ public class GravityModel extends SensorModel {
 	/** Number of summands in partial sum for gravity. */
 	private int partial_gravity_n;
 
+	
+	// Gravity
+	private double g;
+	private double mGravityLimit;
+	
+	
 	public GravityModel() {
 		super();
 		read_gravity_x = gravity_x_value = 0;
 		read_gravity_y = gravity_y_value = 0;
 		read_gravity_z = gravity_z_value = -9.8;
+		
+		g = 9.80665; // meter per second^2
+		mGravityLimit = 10;
 	}
 
 	@Override
@@ -76,11 +85,6 @@ public class GravityModel extends SensorModel {
 				read_gravity_z = gravity_z_value;
 			}
 		}
-	}
-
-	@Override
-	public String getAverageName() {
-		return AVERAGE_GRAVITY;
 	}
 
 	@Override
@@ -152,5 +156,14 @@ public class GravityModel extends SensorModel {
 		gravity_x_value = vec.x;
 		gravity_y_value = vec.y;
 		gravity_z_value = vec.z;
+	}
+
+	public double getGravityConstant() {
+		return g;
+	}
+	
+
+	public double getAccelLimit() {
+		return mGravityLimit;
 	}
 }

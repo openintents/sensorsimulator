@@ -19,12 +19,11 @@ public class GravityController extends SensorController {
 			WiiAccelerometerModel realDeviceBridgeAddon, int delay) {
 		GravityModel gravityModel = (GravityModel) model;
 		GravityView gravityView = (GravityView) view;
-
+		
 		// Gravity
 		if (gravityModel.isEnabled()) {
-
-			Vector gravityVec = new Vector(gravityView.getGravityX(),
-					-gravityView.getGravityY(), -gravityView.getGravityZ());
+			double g = gravityView.getGravityConstant();
+			Vector gravityVec = new Vector(0, 0, g);
 			gravityVec.reverserollpitchyaw(orientation.getRoll(),
 					orientation.getPitch(), orientation.getYaw());
 			gravityModel.setGravity(gravityVec);

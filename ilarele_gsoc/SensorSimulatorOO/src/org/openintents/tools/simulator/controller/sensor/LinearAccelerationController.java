@@ -3,7 +3,6 @@ package org.openintents.tools.simulator.controller.sensor;
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.view.sensor.sensors.LinearAccelerationView;
@@ -23,23 +22,32 @@ public class LinearAccelerationController extends SensorController {
 
 		// LinearAcceleration
 		if (linearAccelerationModel.isEnabled()) {
-			Vector linearVec = new Vector(linearAccelerationView.getAccX(),
-					linearAccelerationView.getAccY(),
-					linearAccelerationView.getAccZ());
+			double dt = 0.001 * delay; // from ms to s
+			double k = linearAccelerationView.getSpringConstant();
+			double gamma = linearAccelerationView.getDampingConstant();
+			double meterperpixel = linearAccelerationView.getPixelsPerMeter();
+			
+			// compute normal
+			if (meterperpixel != 0)
+				meterperpixel = 1. / meterperpixel;
+			else
+				meterperpixel = 1. / 3000;
+
+			linearAccelerationModel.refreshAcceleration(k, gamma, dt);
+
+			Vector linearVec = new Vector(-linearAccelerationModel.getAx() * meterperpixel, 0,
+					-linearAccelerationModel.getAz() * meterperpixel);
 			linearVec.reverserollpitchyaw(orientation.getRoll(),
 					orientation.getPitch(), orientation.getYaw());
-			linearAccelerationModel.setLinearAcceleration(linearVec);
-
+			linearAccelerationModel.setXYZ(linearVec);			
+			
 			// Add random component:
 			double random = linearAccelerationView.getRandom();
 			if (random > 0) {
-				linearAccelerationModel.addLinearAcceleration(
-						SensorModel.getRandom(random),
-						SensorModel.getRandom(random),
-						SensorModel.getRandom(random));
+				linearAccelerationModel.addRandom(random);
 			}
 		} else {
-			linearAccelerationModel.setLinearAcceleration(0, 0, 0);
+			linearAccelerationModel.reset();
 		}
 	}
 

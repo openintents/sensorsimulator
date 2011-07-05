@@ -46,6 +46,7 @@ import org.openintents.tools.simulator.controller.sensor.MagneticFieldController
 import org.openintents.tools.simulator.controller.sensor.OrientationController;
 import org.openintents.tools.simulator.controller.sensor.PressureController;
 import org.openintents.tools.simulator.controller.sensor.ProximityController;
+import org.openintents.tools.simulator.controller.sensor.RotationVectorController;
 import org.openintents.tools.simulator.controller.sensor.SensorController;
 import org.openintents.tools.simulator.controller.sensor.TemperatureController;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
@@ -103,6 +104,7 @@ public class SensorSimulatorController implements WindowListener {
 		sensors.add(new PressureController(model.getPressure(), view.getPressure()));
 		sensors.add(new LinearAccelerationController(model.getLinearAcceleration(), view.getLinearAceleration()));
 		sensors.add(new GravityController(model.getGravity(), view.getGravity()));
+		sensors.add(new RotationVectorController(model.getRotationVector(), view.getRotationVector()));
 
 		// add-ons
 
@@ -171,7 +173,7 @@ public class SensorSimulatorController implements WindowListener {
 		// Update sensors:
 		for (SensorController sensorCtrl : sensors) {
 			sensorCtrl.updateSensorPhysics(orientation, wiiAccelerometerModel,
-					1000);
+					newDelay);
 		}
 		for (SensorController sensorCtrl : sensors) {
 			sensorCtrl.getModel().updateSensorReadoutValues();

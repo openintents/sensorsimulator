@@ -34,8 +34,9 @@ public class OrientationView extends SensorView {
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
 						"Description")));
 		panel1.add(new JLabel("- measures the device 'direction'"));
-		panel1.add(new JLabel("- has 3 values: azimuth, pitch, roll"));
-		
+		panel1.add(new JLabel("- has 3 values: yaw(rotation around y-axis)"));
+		panel1.add(new JLabel("                pitch(rotation around x-axis)"));
+		panel1.add(new JLabel("                roll(rotation around z-axis)"));
 	
 		panel.add(panel1);
 		return panel;

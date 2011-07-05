@@ -6,8 +6,6 @@ import java.util.Random;
 import org.openintents.tools.simulator.model.telnet.Vector;
 
 public class AccelerometerModel extends SensorModel {
-	private GravityModel gravity;
-	private LinearAccelerationModel linearAcceleration;
 
 	private static Random rand = new Random();
 	/**
@@ -115,48 +113,12 @@ public class AccelerometerModel extends SensorModel {
 		mEnabled = true;
 	}
 
-	public void setRelatedSensors(GravityModel gravity,
-			LinearAccelerationModel linearAcceleration) {
-		this.gravity = gravity;
-		this.linearAcceleration = linearAcceleration;
-	}
-
 	public void setXYZ(Vector vec) {
 		accelx = vec.x;
 		accely = vec.y;
 		accelz = vec.z;
 	}
 
-	public double getXPos() {
-		return accx;
-	}
-
-	public double getZPos() {
-		return accz;
-	}
-
-	public void setA(double newAccX, double newAccZ) {
-		ax = newAccX;
-		az = newAccZ;
-	}
-
-	public double getAx() {
-		return ax;
-	}
-
-	public double getAz() {
-		return az;
-	}
-
-	public void adjustPos(double addPosX, double addPosZ) {
-		accx += addPosX;
-		accz += addPosZ;
-	}
-
-	public void fixRespect(double gamma, int movex, int movez, double dt) {
-		accx += gamma * (movex - accx) * dt;
-		accz += gamma * (movez - accz) * dt;
-	}
 
 	public void addRandom(double random) {
 		double val;
@@ -268,11 +230,6 @@ public class AccelerometerModel extends SensorModel {
 		return SensorModel.ACCELEROMETER;
 	}
 
-	@Override
-	public String getAverageName() {
-		return AVERAGE_ACCELEROMETER;
-	}
-
 	public double getGravityConstant() {
 		return g;
 	}
@@ -288,7 +245,7 @@ public class AccelerometerModel extends SensorModel {
 	public double getSpringConstant() {
 		return k;
 	}
-
+	
 	public double getDampingConstant() {
 		return gamma;
 	}
@@ -310,7 +267,6 @@ public class AccelerometerModel extends SensorModel {
 	}
 
 	public int getMoveX() {
-		
 		return movex;
 	}
 
@@ -347,23 +303,6 @@ public class AccelerometerModel extends SensorModel {
 		return m;
 	}
 
-	public void addVX(double value) {
-		vx += value;
-	}
-
-	public void addVZ(double value) {
-		vz += value;
-	}
-
-	public double getVX() {
-		
-		return vx;
-	}
-
-	public double getVZ() {
-		return vz;
-	}
-
 	public void setShown(boolean b) {
 		mShowAcceleration = b;
 	}
@@ -396,28 +335,48 @@ public class AccelerometerModel extends SensorModel {
 		return mAccelerometerLimit;
 	}
 
-	public double getAccZ() {
-		return accz;
-	}
-
-	public double getAccX() {
-		return accx;
-	}
-
-	public void setCurrentUpdateRate(float updatesPerSecond) {
-		mCurrentUpdateRate = updatesPerSecond;
-	}
-
 	@Override
 	public String getTypeConstant() {
 		return TYPE_ACCELEROMETER;
 	}
 
-	public GravityModel getGravity() {
-		return gravity;
+	public void refreshAcceleration(double kView, double gammaView, double dt) {
+		k = kView;
+		gamma = gammaView;
+
+		// First calculate the force acting on the
+		// sensor test particle, assuming that
+		// the accelerometer is mounted by a string:
+		// F = - k * x
+		double Fx = kView * (movex - accx);
+		double Fz = gammaView * (movez - accz);
+		
+		// a = F / m
+		ax = Fx / m;
+		az = Fz / m;
+
+		vx += ax * dt;
+		vz += az * dt;
+		
+		
+		// Now this is the force that tries to adjust
+		// the accelerometer back
+		// integrate dx/dt = v;
+		accx += vx * dt;
+		accz += vz * dt;
+
+		// We put damping here: We don't want to damp for
+		// zero motion with respect to the background,
+		// but with respect to the mobile phone:
+		accx += gammaView * (movex - accx) * dt;
+		accz += gammaView * (movez - accz) * dt;
 	}
-	
-	public LinearAccelerationModel getLinearAcceleration() {
-		return linearAcceleration;
+
+	public double getAx() {
+		return ax;
+	}
+
+	public double getAz() {
+		return az;
 	}
 }

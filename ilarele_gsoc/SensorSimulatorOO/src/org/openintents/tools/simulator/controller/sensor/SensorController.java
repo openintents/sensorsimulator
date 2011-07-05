@@ -98,5 +98,20 @@ public abstract class SensorController {
 	public boolean isFixed() {
 		return isFixed;
 	}
+	
+	public void setCurrentUpdateRate(int updatesPerSecond) {
+		switch (updatesPerSecond) {
+		case SensorModel.DELAY_MS_FASTEST:
+		case SensorModel.DELAY_MS_GAME:
+		case SensorModel.DELAY_MS_NORMAL:
+		case SensorModel.DELAY_MS_UI:
+			model.setCurrentUpdateRate(updatesPerSecond);
+			view.setCurrentUpdateRate(updatesPerSecond);
+			break;
+		default:
+			break;
+		}
+
+	}
 
 }

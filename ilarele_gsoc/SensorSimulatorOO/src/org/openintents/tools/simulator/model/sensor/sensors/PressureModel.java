@@ -63,11 +63,6 @@ public class PressureModel extends SensorModel {
 	}
 
 	@Override
-	public String getAverageName() {
-		return AVERAGE_PRESSURE;
-	}
-
-	@Override
 	public void printNumValues(PrintWriter out) {
 		out.println("1");
 	}

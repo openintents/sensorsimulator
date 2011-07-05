@@ -17,6 +17,7 @@ public abstract class SensorModel {
 	public static final int POZ_PRESSURE = 7;
 	public static final int POZ_LINEAR_ACCELERATION = 8;
 	public static final int POZ_GRAVITY = 9;
+	public static final int POZ_ROTATION = 10;
 
 	// Action Commands:
 	public static String ACTION_YAW_PITCH = "yaw & pitch";
@@ -33,6 +34,7 @@ public abstract class SensorModel {
 	public static final String TYPE_LIGHT = "TYPE_LIGHT";
 	public static final String TYPE_PROXIMITY = "TYPE_PROXIMITY";
 	public static final String TYPE_PRESSURE = "TYPE_PRESSURE";
+	public static final String TYPE_ROTATION_VECTOR = "TYPE_ROTATION_VECTOR";
 
 	// Supported sensors
 	public static final String ORIENTATION = "orientation";
@@ -45,19 +47,10 @@ public abstract class SensorModel {
 	public static final String PROXIMITY = "proximity";
 	public static final String BARCODE_READER = "barcode reader";
 	public static final String PRESSURE = "pressure";
+	public static final String ROTATION_VECTOR = "rotation vector";
 
 	public static final String SHOW_ACCELERATION = "show acceleration";
 	public static final String BINARY_PROXIMITY = "binary proximity";
-
-	public static final String AVERAGE_ORIENTATION = "average orientation";
-	public static final String AVERAGE_ACCELEROMETER = "average accelerometer";
-	public static final String AVERAGE_GRAVITY = "average gravity";
-	public static final String AVERAGE_LINEAR_ACCELERATION = "average linear acceleration";
-	public static final String AVERAGE_TEMPERATURE = "average temperature";
-	public static final String AVERAGE_MAGNETIC_FIELD = "average magnetic field";
-	public static final String AVERAGE_LIGHT = "average light";
-	public static final String AVERAGE_PROXIMITY = "average proximity";
-	public static final String AVERAGE_PRESSURE = "average pressure";
 
 	public static final String DISABLED = "DISABLED";
 
@@ -141,7 +134,9 @@ public abstract class SensorModel {
 
 	public abstract String getName();
 
-	public abstract String getAverageName();
+	public String getAverageName() {
+		return "average " + getName();
+	}
 
 	/**
 	 * get a random number in the range -random to +random
@@ -290,4 +285,7 @@ public abstract class SensorModel {
 
 	public abstract String getTypeConstant();
 
+	public void setCurrentUpdateRate(float updatesPerSecond) {
+		mCurrentUpdateRate = updatesPerSecond;
+	}
 }

@@ -26,6 +26,9 @@ public class OrientationModel extends SensorModel {
 	private int partial_orientation_n;
 
 	// orientation (in degree)
+	// Yaw = Rotation about the Y-Axis
+	// Pitch = Rotation about the X-Axis
+	// Roll = Rotation about the Z-Axis
 	private int yaw;
 	private int pitch;
 	private int roll;
@@ -107,11 +110,6 @@ public class OrientationModel extends SensorModel {
 		}
 	}
 
-	@Override
-	public String getAverageName() {
-		return AVERAGE_ORIENTATION;
-	}
-
 	public double getReadPitch() {
 		return read_pitch;
 	}
@@ -186,7 +184,7 @@ public class OrientationModel extends SensorModel {
 	public String toString() {
 		return "[y=" + yaw + ", r=" + roll + ", p=" + pitch + "]";
 	}
-	
+
 	@Override
 	public String getTypeConstant() {
 		return TYPE_ORIENTATION;

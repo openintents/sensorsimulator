@@ -38,6 +38,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
 import org.openintents.tools.simulator.model.sensor.sensors.ProximityModel;
+import org.openintents.tools.simulator.model.sensor.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
 
@@ -105,10 +106,7 @@ public class SensorSimulatorModel {
 
 		// sensors
 		sensors = new ArrayList<SensorModel>();
-		AccelerometerModel accelerometer = new AccelerometerModel();
-		LinearAccelerationModel linearAcceleration = new LinearAccelerationModel();
-		GravityModel gravity = new GravityModel();
-		sensors.add(accelerometer);
+		sensors.add(new AccelerometerModel());
 		sensors.add(new MagneticFieldModel());
 		sensors.add(new OrientationModel());
 		sensors.add(new TemperatureModel());
@@ -116,9 +114,9 @@ public class SensorSimulatorModel {
 		sensors.add(new LightModel());
 		sensors.add(new ProximityModel());
 		sensors.add(new PressureModel());
-		sensors.add(linearAcceleration);
-		sensors.add(gravity);
-		accelerometer.setRelatedSensors(gravity, linearAcceleration);
+		sensors.add(new LinearAccelerationModel());
+		sensors.add(new GravityModel());
+		sensors.add(new RotationVectorModel());
 		
 		mSensorServer = new SensorServer(sensorSimulator);
 
@@ -246,6 +244,10 @@ public class SensorSimulatorModel {
 	}
 	public GravityModel getGravity() {
 		return (GravityModel) sensors.get(SensorModel.POZ_GRAVITY);
+	}
+	
+	public RotationVectorModel getRotationVector() {
+		return (RotationVectorModel) sensors.get(SensorModel.POZ_ROTATION);
 	}
 }
 

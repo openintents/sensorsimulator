@@ -57,16 +57,16 @@ import org.openintents.tools.simulator.model.telnet.Vector;
  * @author Peli
  * @author Josip Balic
  */
-public class DeviceView extends JPanel implements IDeviceView {
+public class DeviceView extends JPanel  {
 
 	private static final long serialVersionUID = -112203026209081563L;
 	public static final int MOUSE_MODE_YAW_PITCH = 1;
 	public static final int MOUSE_MODE_ROLL_PITCH = 2;
 	public static final int MOUSE_MODE_MOVE = 3;
 
-	public static int mouseYawPitch = 1;
-	public static int mouseRollPitch = 2;
-	public static int mouseMove = 3;
+	public static final int mouseYawPitch = 1;
+	public static final int mouseRollPitch = 2;
+	public static final int mouseMove = 3;
 
 	private int mouseMode;
 
@@ -197,11 +197,11 @@ public class DeviceView extends JPanel implements IDeviceView {
 		GridBagConstraints c = new GridBagConstraints();
 
 		// labels
-		JLabel yawLabel = new JLabel("Yaw  ", JLabel.CENTER);
+		JLabel yawLabel = new JLabel("Yaw(y)  ", JLabel.CENTER);
 		yawLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		JLabel pitchLabel = new JLabel("Pitch", JLabel.CENTER);
+		JLabel pitchLabel = new JLabel("Pitch(x) ", JLabel.CENTER);
 		pitchLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		JLabel rollLabel = new JLabel("Roll ", JLabel.CENTER);
+		JLabel rollLabel = new JLabel("Roll(z) ", JLabel.CENTER);
 		rollLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		// sliders
@@ -332,7 +332,6 @@ public class DeviceView extends JPanel implements IDeviceView {
 		repaint();
 	}
 
-	@Override
 	public int getMouseMode() {
 		return mouseMode;
 	}
