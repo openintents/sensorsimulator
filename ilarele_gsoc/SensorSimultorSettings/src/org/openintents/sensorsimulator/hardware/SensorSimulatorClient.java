@@ -698,8 +698,8 @@ final class SensorSimulatorClient {
 			return;
 		}
 			
-		mOut.println(sensor);
 		mOut.println("setSensorUpdateDelay()");
+		mOut.println(sensor);
 		mOut.println("" + updateDelay);
 
 		try {
@@ -716,8 +716,8 @@ final class SensorSimulatorClient {
 	}
 
 	protected void unsetSensorUpdateRate(String sensor) {
-		mOut.println(sensor);
 		mOut.println("unsetSensorUpdateRate()");
+		mOut.println(sensor);
 
 		try {
 			String numstr = mIn.readLine();

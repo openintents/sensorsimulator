@@ -104,7 +104,7 @@ public class SensorServerThread implements Runnable {
 					true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					mClientSocket.getInputStream()));
-			String cmd, outputLine;
+			String inputLine, outputLine;
 
 			outputLine = "SensorSimulator";
 			out.println(outputLine);
@@ -113,15 +113,15 @@ public class SensorServerThread implements Runnable {
 
 			// here we treat different getSupportedSensors command from others
 			// (others have the name of the sensor in the input stream)
-			while ((cmd = in.readLine()) != null) {
-				if (cmd.compareTo("getSupportedSensors()") == 0) {
+			while ((inputLine = in.readLine()) != null) {
+				if (inputLine.compareTo("getSupportedSensors()") == 0) {
 					String[] supportedSensors = getSupportedSensors();
 					out.println(supportedSensors.length);
 					for (int i = 0; i < supportedSensors.length; i++) {
 						out.println(supportedSensors[i]);
 					}
 				} else {
-					executeCommand(out, in, cmd);
+					executeCommand(out, in, inputLine);
 				}
 			}
 			mSensorSimulator.unBlockSensorsEnabling();
@@ -175,9 +175,14 @@ public class SensorServerThread implements Runnable {
 			sensorModel.getNumSensorValues(out);
 		else if (cmd.compareTo("setSensorUpdateDelay()") == 0) {
 			String args = in.readLine();
-			int updateDelay = Integer.parseInt(args);
-			sensorCtrl.setCurrentUpdateRate(updateDelay);
-			sensorModel.setSensorUpdateRate(out);
+			if (sensorModel.isEnabled()) {
+				int updateDelay = Integer.parseInt(args);
+				sensorCtrl.setCurrentUpdateRate(updateDelay);
+				sensorModel.setSensorUpdateRate(out);
+			} else {
+				System.out.println(sensorName + " throw IllegalArgumentException");
+				out.println("throw IllegalArgumentException");
+			}
 		} else if (cmd.compareTo("unsetSensorUpdateRate()") == 0) {
 			sensorModel.unsetSensorUpdateRate(out);
 			sensorCtrl.setCurrentUpdateRate(sensorModel.getDefaultUpdateRate());
@@ -193,9 +198,8 @@ public class SensorServerThread implements Runnable {
 						.addMessage("WARNING: Client sent unexpected command: "
 								+ cmd);
 			}
-		}
-
-		out.println("throw IllegalArgumentException");
+		} else
+			out.println("throw IllegalArgumentException");
 	}
 
 	/**

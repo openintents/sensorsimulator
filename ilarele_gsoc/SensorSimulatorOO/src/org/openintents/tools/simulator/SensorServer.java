@@ -86,7 +86,6 @@ public class SensorServer implements Runnable {
 
 		Socket clientSocket = null;
 		try {
-			mSensorSimulator.addMessage("Listening on port " + mPort + "...");
 			while (mListening) {
 				clientSocket = mServerSocket.accept();
 
