@@ -4,7 +4,7 @@
  * diploma thesis of Josip Balic at the University of Zagreb, Faculty of
  * Electrical Engineering and Computing.
  *
- * Copyright (C) 2008-2010 OpenIntents.org
+ * Copyright (C) 2008-2011 OpenIntents.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,58 +61,64 @@ import org.openintents.tools.simulator.view.sensor.sensors.OrientationView;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 
 /**
- * Class of SensorSimulator.
+ * SensorSimulatorController keeps the behaviour of the SensorSimulator
+ * (listeners, timers, etc.)
  * 
- * The SensorSimulator is a Java stand-alone application.
+ * SensorSimulator simulates various sensors. An Android application can connect
+ * through TCP/IP with the settings shown to the SensorSimulator to simulate
+ * accelerometer, compass, orientation sensor, thermometer, light, proximity,
+ * pressure, gravity, linear acceleration and rotation vector.
  * 
- * It simulates various sensors. An Android application can connect through
- * TCP/IP with the settings shown to the SensorSimulator to simulate
- * accelerometer, compass, orientation sensor, and thermometer.
  * 
  * @author Peli
  * @author Josip Balic
+ * @author ilarele
  */
+
 public class SensorSimulatorController implements WindowListener {
-	private ArrayList<SensorController> sensors;
+	// a list with all sensors' controllers
+	private ArrayList<SensorController> mSensors;
 
-	private DeviceController deviceCtrl;
+	// mobile device (orientation sensor - visual representation) controller
+	private DeviceController mDeviceController;
 
-	private SensorSimulatorModel model;
-	private SensorSimulatorView view;
+	private SensorSimulatorModel mSensorSimulatorModel;
+	private SensorSimulatorView mSensorSimulatorView;
 
-	private Timer timer;
+	// the time for a new sensors update cycle in the java application
+	private Timer mUpdateTimer;
 
 	public SensorSimulatorController(final SensorSimulatorModel model,
 			final SensorSimulatorView view) {
-		this.model = model;
-		this.view = view;
+		this.mSensorSimulatorModel = model;
+		this.mSensorSimulatorView = view;
 
 		// sensors
-		sensors = new ArrayList<SensorController>();
-		sensors.add(new AccelerometerController(model.getAccelerometer(), view
+		mSensors = new ArrayList<SensorController>();
+		mSensors.add(new AccelerometerController(model.getAccelerometer(), view
 				.getAccelerometer()));
-		sensors.add(new MagneticFieldController(model.getMagneticField(), view
+		mSensors.add(new MagneticFieldController(model.getMagneticField(), view
 				.getMagneticField()));
-		sensors.add(new OrientationController(model.getOrientation(), view
+		mSensors.add(new OrientationController(model.getOrientation(), view
 				.getOrientation()));
-		sensors.add(new TemperatureController(model.getTemperature(), view
+		mSensors.add(new TemperatureController(model.getTemperature(), view
 				.getTemperature()));
-		sensors.add(new BarcodeReaderController(model.getBarcodeReader(), view
+		mSensors.add(new BarcodeReaderController(model.getBarcodeReader(), view
 				.getBarcodeReader()));
-		sensors.add(new LightController(model.getLight(), view.getLight()));
-		sensors.add(new ProximityController(model.getProximity(), view
+		mSensors.add(new LightController(model.getLight(), view.getLight()));
+		mSensors.add(new ProximityController(model.getProximity(), view
 				.getProximity()));
-		sensors.add(new PressureController(model.getPressure(), view
+		mSensors.add(new PressureController(model.getPressure(), view
 				.getPressure()));
-		sensors.add(new LinearAccelerationController(model
+		mSensors.add(new LinearAccelerationController(model
 				.getLinearAcceleration(), view.getLinearAceleration()));
-		sensors.add(new GravityController(model.getGravity(), view.getGravity()));
-		sensors.add(new RotationVectorController(model.getRotationVector(),
+		mSensors.add(new GravityController(model.getGravity(), view.getGravity()));
+		mSensors.add(new RotationVectorController(model.getRotationVector(),
 				view.getRotationVector()));
 
-		DeviceView deviceView = ((OrientationView) ((OrientationController) sensors.get(
-				SensorModel.POZ_ORIENTATION)).getView()).getDeviceView();
-		deviceCtrl = new DeviceController(model, deviceView);
+		DeviceView deviceView = ((OrientationView) ((OrientationController) mSensors
+				.get(SensorModel.POZ_ORIENTATION)).getView()).getDeviceView();
+		mDeviceController = new DeviceController(model, deviceView);
 
 		JButton sensorPortButton = view.getSensorPortButton();
 		sensorPortButton.addActionListener(new ActionListener() {
@@ -122,7 +128,8 @@ public class SensorSimulatorController implements WindowListener {
 			}
 		});
 
-		for (final SensorController sensorCtrl : sensors) {
+		// block/unblock buttons for enable/disable sensors
+		for (final SensorController sensorCtrl : mSensors) {
 			final SensorView sensorView = sensorCtrl.getView();
 			final SensorModel sensorModel = sensorCtrl.getModel();
 
@@ -134,11 +141,11 @@ public class SensorSimulatorController implements WindowListener {
 					if (!sensorCtrl.isFixed()) {
 						if (sensorModel.isEnabled()) {
 							sensorModel.setEnabled(false);
-							enableBtn.setBackground(Global.DISABLE);
+							enableBtn.setBackground(Global.COLOR_DISABLE);
 							tabbedPanel.remove(sensorView);
 						} else {
 							sensorModel.setEnabled(true);
-							enableBtn.setBackground(Global.ENABLE);
+							enableBtn.setBackground(Global.COLOR_ENABLE);
 							tabbedPanel.add(sensorModel.getName(), sensorView);
 						}
 					}
@@ -146,21 +153,21 @@ public class SensorSimulatorController implements WindowListener {
 			});
 		}
 
-		timer = new Timer(model.getDelay(), new ActionListener() {
+		mUpdateTimer = new Timer(model.getDelay(), new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 				doTimer();
 			}
 		});
-		timer.setCoalesce(true);
+		mUpdateTimer.setCoalesce(true);
 
-		timer.start();
+		mUpdateTimer.start();
 	}
 
 	private void doTimer() {
-		OrientationModel orientation = (OrientationModel) sensors.get(
+		OrientationModel orientation = (OrientationModel) mSensors.get(
 				SensorModel.POZ_ORIENTATION).getModel();
-		AccelerometerModel acc = (AccelerometerModel) sensors.get(
+		AccelerometerModel acc = (AccelerometerModel) mSensors.get(
 				SensorModel.POZ_ACCELEROMETER).getModel();
 		WiiAccelerometerModel wiiAccelerometerModel = acc
 				.getRealDeviceBridgeAddon();
@@ -169,30 +176,30 @@ public class SensorSimulatorController implements WindowListener {
 			updateFromWiimote();
 		}
 
-		int newDelay = (int) view.getUpdateSensors();
+		int newDelay = (int) mSensorSimulatorView.getUpdateSensors();
 		if (newDelay > 0) {
 			setDelay(newDelay);
 		}
 
 		// Update sensors:
-		for (SensorController sensorCtrl : sensors) {
+		for (SensorController sensorCtrl : mSensors) {
 			sensorCtrl.updateSensorPhysics(orientation, wiiAccelerometerModel,
 					newDelay);
 		}
-		for (SensorController sensorCtrl : sensors) {
+		for (SensorController sensorCtrl : mSensors) {
 			sensorCtrl.getModel().updateSensorReadoutValues();
 		}
 
 		long currentTime = System.currentTimeMillis();
 		// From time to time we get the user settings:
-		if (currentTime >= model.getNextUpdate()) {
+		if (currentTime >= mSensorSimulatorModel.getNextUpdate()) {
 			// Do update
-			model.addNextUpdate(model.getDuration());
-			if (model.getNextUpdate() < currentTime) {
+			mSensorSimulatorModel.addNextUpdate(mSensorSimulatorModel.getDuration());
+			if (mSensorSimulatorModel.getNextUpdate() < currentTime) {
 				// Skip time if we are already behind:
-				model.setNextUpdate(System.currentTimeMillis());
+				mSensorSimulatorModel.setNextUpdate(System.currentTimeMillis());
 			}
-			for (SensorController sensorCtrl : sensors) {
+			for (SensorController sensorCtrl : mSensors) {
 				sensorCtrl.updateUserSettings();
 			}
 		}
@@ -202,22 +209,22 @@ public class SensorSimulatorController implements WindowListener {
 
 		// Now show updated data
 		StringBuffer newData = new StringBuffer();
-		for (SensorController sensorCtrl : sensors) {
+		for (SensorController sensorCtrl : mSensors) {
 			newData.append(sensorCtrl.showSensorData());
 		}
-		view.setOutput(newData.toString());
+		mSensorSimulatorView.setOutput(newData.toString());
 	}
 
 	private void setDelay(int newdelay) {
-		timer.setDelay(newdelay);
-		model.setDelay(newdelay);
+		mUpdateTimer.setDelay(newdelay);
+		mSensorSimulatorModel.setDelay(newdelay);
 	}
 
 	private void updateFromWiimote() {
-		DeviceView deviceView = deviceCtrl.getView();
-		AccelerometerModel accModel = (AccelerometerModel) sensors.get(
+		DeviceView deviceView = mDeviceController.getView();
+		AccelerometerModel accModel = (AccelerometerModel) mSensors.get(
 				SensorModel.POZ_ACCELEROMETER).getModel();
-		AccelerometerView accView = (AccelerometerView) sensors.get(
+		AccelerometerView accView = (AccelerometerView) mSensors.get(
 				SensorModel.POZ_ACCELEROMETER).getView();
 
 		// Read raw data
@@ -234,30 +241,30 @@ public class SensorSimulatorController implements WindowListener {
 	}
 
 	/**
-	 * Updates the information about sensor updates.
+	 * Updates the information about sensors refresh time.
 	 */
 	public void updateSensorRefresh() {
-		int updateSensorCount = model.incUpdateSensorCount();
-		long maxcount = view.getRefreshCount();
+		int updateSensorCount = mSensorSimulatorModel.incUpdateSensorCount();
+		long maxcount = mSensorSimulatorView.getRefreshCount();
 		if (maxcount >= 0 && updateSensorCount >= maxcount) {
 			long newtime = System.currentTimeMillis();
-			double ms = (double) (newtime - model.getUpdateSensorTime())
+			double ms = (double) (newtime - mSensorSimulatorModel.getUpdateSensorTime())
 					/ ((double) maxcount);
-			model.setRefreshSensors(ms);
-			view.setRefreshSensorsLabel(ms);
+			mSensorSimulatorModel.setRefreshSensors(ms);
+			mSensorSimulatorView.setRefreshSensorsLabel(ms);
 
-			model.setUpdateSensorCount(0);
-			model.setUpdateSensorTime(newtime);
+			mSensorSimulatorModel.setUpdateSensorCount(0);
+			mSensorSimulatorModel.setUpdateSensorTime(newtime);
 		}
 	}
 
 	@Override
 	public void windowIconified(WindowEvent e) {
-		timer.stop();
+		mUpdateTimer.stop();
 	}
 
 	public void windowDeiconified(WindowEvent e) {
-		timer.start();
+		mUpdateTimer.start();
 	}
 
 	@Override
@@ -285,56 +292,56 @@ public class SensorSimulatorController implements WindowListener {
 	}
 
 	public MagneticFieldController getMagneticField() {
-		return (MagneticFieldController) sensors
+		return (MagneticFieldController) mSensors
 				.get(SensorModel.POZ_MAGNETIC_FIELD);
 	}
 
 	public TemperatureController getTemperature() {
-		return (TemperatureController) sensors.get(SensorModel.POZ_TEMPERATURE);
+		return (TemperatureController) mSensors.get(SensorModel.POZ_TEMPERATURE);
 	}
 
 	public BarcodeReaderController getBarcodeReader() {
-		return (BarcodeReaderController) sensors
+		return (BarcodeReaderController) mSensors
 				.get(SensorModel.POZ_BARCODE_READER);
 	}
 
 	public LightController getLight() {
-		return (LightController) sensors.get(SensorModel.POZ_LIGHT);
+		return (LightController) mSensors.get(SensorModel.POZ_LIGHT);
 	}
 
 	public ProximityController getProximity() {
-		return (ProximityController) sensors.get(SensorModel.POZ_PROXIMITY);
+		return (ProximityController) mSensors.get(SensorModel.POZ_PROXIMITY);
 	}
 
 	public AccelerometerController getAccelerometer() {
-		return (AccelerometerController) sensors
+		return (AccelerometerController) mSensors
 				.get(SensorModel.POZ_ACCELEROMETER);
 	}
 
 	public OrientationController getOrientation() {
-		return (OrientationController) sensors.get(SensorModel.POZ_ORIENTATION);
+		return (OrientationController) mSensors.get(SensorModel.POZ_ORIENTATION);
 	}
 
 	public void setFix(boolean value) {
-		for (SensorController sensor : sensors) {
+		for (SensorController sensor : mSensors) {
 			sensor.setFix(value);
 		}
 	}
 
 	public PressureController getPressure() {
-		return (PressureController) sensors.get(SensorModel.POZ_PRESSURE);
+		return (PressureController) mSensors.get(SensorModel.POZ_PRESSURE);
 	}
 
 	public GravityController getGravity() {
-		return (GravityController) sensors.get(SensorModel.POZ_GRAVITY);
+		return (GravityController) mSensors.get(SensorModel.POZ_GRAVITY);
 	}
 
 	public LinearAccelerationController getLinearAcceleration() {
-		return (LinearAccelerationController) sensors
+		return (LinearAccelerationController) mSensors
 				.get(SensorModel.POZ_LINEAR_ACCELERATION);
 	}
 
 	public RotationVectorController getRotationVector() {
-		return (RotationVectorController) sensors.get(SensorModel.POZ_ROTATION);
+		return (RotationVectorController) mSensors.get(SensorModel.POZ_ROTATION);
 	}
 }

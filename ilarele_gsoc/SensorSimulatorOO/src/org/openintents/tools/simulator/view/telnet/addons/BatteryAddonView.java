@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.view.telnet.addons;
 
 import java.awt.BorderLayout;
@@ -12,96 +28,103 @@ import javax.swing.JSlider;
 
 import org.openintents.tools.simulator.model.telnet.addons.BatteryAddonModel;
 
+/**
+ * BatteryAddonView keeps the GUI for Battery Addon
+ * 
+ * Battery add-on sets emulator battery state (via telnet communication).
+ * 
+ * @author Peli
+ */
 public class BatteryAddonView extends JPanel {
 	private static final long serialVersionUID = -5834092002279084857L;
 
 	// TelnetSimulations variables
-	private JSlider batterySlider;
+	private JSlider mBatterySlider;
 
 	// Battery variables
-	private JCheckBox batteryPresence;
-	private JCheckBox batteryAC;
-	private JComboBox batteryStatusList;
-	private JComboBox batteryHealthList;
+	private JCheckBox mBatteryPresence;
+	private JCheckBox mBatteryAC;
+	private JComboBox mBatteryStatusList;
+	private JComboBox mBatteryHealthList;
 
-	private final String[] batteryStatus = { "unknown", "charging",
+	private final String[] mBatteryStatus = { "unknown", "charging",
 			"discharging", "not-charging", "full" };
-	private final String[] batteryHealth = { "unknown", "good", "overheat",
+	private final String[] mBatteryHealth = { "unknown", "good", "overheat",
 			"dead", "overvoltage", "failure" };
 
 	// Batter file variables
-	private JButton batteryEmulation;
-	private JButton batteryNext;
-	private JFileChooser fileChooser;
-	private JButton openButton;
+	private JButton mBatteryEmulation;
+	private JButton mBatteryNext;
+	private JFileChooser mFileChooser;
+	private JButton mOpenButton;
 
 	public BatteryAddonView(BatteryAddonModel model) {
-		batterySlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
-		batterySlider.setMajorTickSpacing(10);
-		batterySlider.setMinorTickSpacing(5);
-		batterySlider.setPaintTicks(true);
-		batterySlider.setPaintLabels(true);
-		batterySlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+		mBatterySlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
+		mBatterySlider.setMajorTickSpacing(10);
+		mBatterySlider.setMinorTickSpacing(5);
+		mBatterySlider.setPaintTicks(true);
+		mBatterySlider.setPaintLabels(true);
+		mBatterySlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
-		batteryPresence = new JCheckBox("Is Present");
-		batteryPresence.setSelected(model.isPresent());
+		mBatteryPresence = new JCheckBox("Is Present");
+		mBatteryPresence.setSelected(model.isPresent());
 
-		batteryAC = new JCheckBox("AC plugged");
-		batteryAC.setSelected(model.isBatteryAC());
+		mBatteryAC = new JCheckBox("AC plugged");
+		mBatteryAC.setSelected(model.isBatteryAC());
 
-		batteryStatusList = new JComboBox(batteryStatus);
-		batteryStatusList.setSelectedItem(model.getStatus());
+		mBatteryStatusList = new JComboBox(mBatteryStatus);
+		mBatteryStatusList.setSelectedItem(model.getStatus());
 
-		batteryHealthList = new JComboBox(batteryHealth);
-		batteryHealthList.setSelectedItem(model.getHealth());
+		mBatteryHealthList = new JComboBox(mBatteryHealth);
+		mBatteryHealthList.setSelectedItem(model.getHealth());
 
-		batteryNext = new JButton("Next time event");
+		mBatteryNext = new JButton("Next time event");
 
-		fileChooser = new JFileChooser();
-		openButton = new JButton("Open a File");
+		mFileChooser = new JFileChooser();
+		mOpenButton = new JButton("Open a File");
 
-		batteryEmulation = new JButton("Emulate Battery");
+		mBatteryEmulation = new JButton("Emulate Battery");
 	}
 
 	public JSlider getBatterySlider() {
-		return batterySlider;
+		return mBatterySlider;
 	}
 
 	public JCheckBox getBatteryPresence() {
-		return batteryPresence;
+		return mBatteryPresence;
 	}
 
 	public JCheckBox getBatteryAC() {
-		return batteryAC;
+		return mBatteryAC;
 	}
 
 	public JComboBox getBatteryStatusList() {
-		return batteryStatusList;
+		return mBatteryStatusList;
 	}
 
 	public JComboBox getBatteryHealthList() {
-		return batteryHealthList;
+		return mBatteryHealthList;
 	}
 
 	public void fillFileEmulationPane(JPanel batteryFilePanel) {
-		batteryFilePanel.add(openButton, BorderLayout.PAGE_START);
-		batteryFilePanel.add(batteryEmulation, BorderLayout.WEST);
-		batteryFilePanel.add(batteryNext, BorderLayout.EAST);
+		batteryFilePanel.add(mOpenButton, BorderLayout.PAGE_START);
+		batteryFilePanel.add(mBatteryEmulation, BorderLayout.WEST);
+		batteryFilePanel.add(mBatteryNext, BorderLayout.EAST);
 	}
 
 	public JButton getBatteryEmulation() {
-		return batteryEmulation;
+		return mBatteryEmulation;
 	}
 
 	public JButton getBatteryNext() {
-		return batteryNext;
+		return mBatteryNext;
 	}
 
 	public JFileChooser getFileChooser() {
-		return fileChooser;
+		return mFileChooser;
 	}
 
 	public JButton getOpenFileButton() {
-		return openButton;
+		return mOpenButton;
 	}
 }

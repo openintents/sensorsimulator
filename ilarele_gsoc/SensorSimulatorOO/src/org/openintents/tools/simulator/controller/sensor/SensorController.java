@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.controller.sensor;
 
 import java.awt.event.ActionEvent;
@@ -12,17 +28,27 @@ import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 
+/**
+ * SensorController is the class that defines the common fields and methods for
+ * sensors. It also contains abstract methods for sensor specific actions that
+ * need to be implemented for each sensor, regarding their behaviour (listeners,
+ * etc.)
+ * 
+ * @author ilarele
+ * 
+ */
 public abstract class SensorController {
 
-	protected SensorModel model;
-	protected SensorView view;
+	protected SensorModel mSensorModel;
+	protected SensorView mSensorView;
+
 	// if the connection with the emulator has started
-	private boolean isFixed;
+	private boolean mIsFixed;
 
 	public SensorController(final SensorModel model, final SensorView view) {
-		this.model = model;
-		this.view = view;
-		isFixed = false;
+		this.mSensorModel = model;
+		this.mSensorView = view;
+		mIsFixed = false;
 		JButton helpBtn = view.getHelpButton();
 		helpBtn.addActionListener(new ActionListener() {
 			@Override
@@ -32,42 +58,47 @@ public abstract class SensorController {
 		});
 	}
 
-	public SensorModel getModel() {
-		return model;
-	}
-
+	/**
+	 * Updates model using view data (computes sensor internal variables). It is
+	 * call on each iteration for sensor updates.
+	 * 
+	 * @param orientation
+	 * @param realDeviceBridgeAddon
+	 * @param delay
+	 */
 	public abstract void updateSensorPhysics(OrientationModel orientation,
 			WiiAccelerometerModel realDeviceBridgeAddon, int delay);
 
-	public abstract String getString();
+	/**
+	 * Sensor output data (used in showSensorData() method).
+	 * 
+	 * @return
+	 */
+	protected abstract String getString();
 
 	public void updateUserSettings() {
-		model.setAvgUpdate(view.getUpdateAvg().isSelected());
-		int rate = model.getCurrentUpdateRate();
+		mSensorModel.setAvgUpdate(mSensorView.getUpdateAvg().isSelected());
+		int rate = mSensorModel.getCurrentUpdateRate();
 		if (rate != 0) {
-			model.setUpdateDuration(rate);
+			mSensorModel.setUpdateDuration(rate);
 		} else {
-			model.setUpdateDuration(0);
+			mSensorModel.setUpdateDuration(0);
 		}
 	}
 
-	public SensorView getView() {
-		return view;
-	}
-
 	public String showSensorData() {
-		if (!model.isEnabled())
+		if (!mSensorModel.isEnabled())
 			return "";
 		StringBuffer data = new StringBuffer();
-		data.append(model.getName() + ": ");
+		data.append(mSensorModel.getName() + ": ");
 		data.append(getString());
 		data.append("\n");
 		return data.toString();
 	}
 
 	public void readSensor(PrintWriter out) {
-		if (model.isEnabled()) {
-			model.printSensorData(out);
+		if (mSensorModel.isEnabled()) {
+			mSensorModel.printSensorData(out);
 		} else {
 			// This sensor is currently disabled
 			out.println("throw IllegalStateException");
@@ -75,28 +106,20 @@ public abstract class SensorController {
 	}
 
 	public void updateEmulatorRefresh(long maxCount) {
-		long updateEmulatorCount = model.incUpdateEmulatorCount();
-		long updateEmulatorTime = model.getEmulatorTime();
+		long updateEmulatorCount = mSensorModel.incUpdateEmulatorCount();
+		long updateEmulatorTime = mSensorModel.getEmulatorTime();
 
 		if (maxCount >= 0 && updateEmulatorCount >= maxCount) {
 			long newtime = System.currentTimeMillis();
 			double ms = (double) (newtime - updateEmulatorTime)
 					/ ((double) maxCount);
 
-			view.setRefreshEmulatorTime(Global.TWO_DECIMAL_FORMAT.format(ms)
-					+ " ms");
+			mSensorView.setRefreshEmulatorTime(Global.TWO_DECIMAL_FORMAT
+					.format(ms) + " ms");
 
-			model.setUpdateEmulatorCount(0);
-			model.setUpdateEmulatorTime(newtime);
+			mSensorModel.setUpdateEmulatorCount(0);
+			mSensorModel.setUpdateEmulatorTime(newtime);
 		}
-	}
-
-	public void setFix(boolean value) {
-		isFixed = value;
-	}
-
-	public boolean isFixed() {
-		return isFixed;
 	}
 
 	public void setCurrentUpdateRate(int delay) {
@@ -105,13 +128,28 @@ public abstract class SensorController {
 		case SensorModel.DELAY_MS_GAME:
 		case SensorModel.DELAY_MS_NORMAL:
 		case SensorModel.DELAY_MS_UI:
-			model.setCurrentUpdateDelay(delay);
-			view.setCurrentUpdateRate(delay);
+			mSensorModel.setCurrentUpdateDelay(delay);
+			mSensorView.setCurrentUpdateRate(delay);
 			break;
 		default:
 			break;
 		}
+	}
 
+	public void setFix(boolean value) {
+		mIsFixed = value;
+	}
+
+	public boolean isFixed() {
+		return mIsFixed;
+	}
+
+	public SensorModel getModel() {
+		return mSensorModel;
+	}
+
+	public SensorView getView() {
+		return mSensorView;
 	}
 
 }

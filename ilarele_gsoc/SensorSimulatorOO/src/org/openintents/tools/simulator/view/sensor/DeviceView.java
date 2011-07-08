@@ -4,7 +4,7 @@
  * diploma thesis of Josip Balic at the University of Zagreb, Faculty of
  * Electrical Engineering and Computing.
  *
- * Copyright (C) 2008-2010 OpenIntents.org
+ * Copyright (C) 2008-2011 OpenIntents.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,20 +60,17 @@ import org.openintents.tools.simulator.model.telnet.Vector;
 public class DeviceView extends JPanel {
 
 	private static final long serialVersionUID = -112203026209081563L;
+	
 	public static final int MOUSE_MODE_YAW_PITCH = 1;
 	public static final int MOUSE_MODE_ROLL_PITCH = 2;
 	public static final int MOUSE_MODE_MOVE = 3;
 
-	public static final int mouseYawPitch = 1;
-	public static final int mouseRollPitch = 2;
-	public static final int mouseMove = 3;
-
-	private int mouseMode;
+	private int mMouseMode;
 
 	/**
 	 * Reference to SensorSimulator for accessing widgets.
 	 */
-	private SensorSimulatorModel model;
+	private SensorSimulatorModel mSensorSimulatorModel;
 
 	/*
 	 * http://code.google.com/android/reference/android/hardware/Sensors.html
@@ -118,14 +115,14 @@ public class DeviceView extends JPanel {
 			{ dx, dy1, sz }, { -dx, dy1, sz }, { -dx, dy1, sz },
 			{ -dx, dy2, sz }, { -dx, dy2, sz }, { dx, dy2, sz },
 			{ dx, dy2, sz }, { dx, dy1, sz }, };
-	private JRadioButton rollPitchButton;
-	private JRadioButton moveButton;
-	private JRadioButton yawPitchButton;
+	private JRadioButton mRollPitchButton;
+	private JRadioButton mMoveButton;
+	private JRadioButton mYawPitchButton;
 
 	// Sliders:
-	private JSlider yawSlider;
-	private JSlider pitchSlider;
-	private JSlider rollSlider;
+	private JSlider mYawSlider;
+	private JSlider mPitchSlider;
+	private JSlider mRollSlider;
 
 	// File usage
 
@@ -136,63 +133,63 @@ public class DeviceView extends JPanel {
 	 *            , SensorSimulator that needs MobilePanel in it's frame.
 	 */
 	public DeviceView(SensorSimulatorModel model) {
-		this.model = model;
+		this.mSensorSimulatorModel = model;
 		SpringLayout layout = new SpringLayout();
 		setLayout(layout);
-		mouseMode = MOUSE_MODE_YAW_PITCH;
+		mMouseMode = MOUSE_MODE_YAW_PITCH;
 
 		// Add mouse action selection
 		// through radio buttons.
-		yawPitchButton = new JRadioButton(SensorModel.ACTION_YAW_PITCH);
-		yawPitchButton.setSelected(true);
-		rollPitchButton = new JRadioButton(SensorModel.ACTION_ROLL_PITCH);
-		moveButton = new JRadioButton(SensorModel.ACTION_MOVE);
+		mYawPitchButton = new JRadioButton(SensorModel.ACTION_YAW_PITCH);
+		mYawPitchButton.setSelected(true);
+		mRollPitchButton = new JRadioButton(SensorModel.ACTION_ROLL_PITCH);
+		mMoveButton = new JRadioButton(SensorModel.ACTION_MOVE);
 
 		// Group the radio buttons.
 		ButtonGroup group = new ButtonGroup();
-		group.add(yawPitchButton);
-		group.add(rollPitchButton);
-		group.add(moveButton);
+		group.add(mYawPitchButton);
+		group.add(mRollPitchButton);
+		group.add(mMoveButton);
 
 		// Create the slider.
-		yawSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, -20);
-		pitchSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, -60);
-		rollSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, 0);
+		mYawSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, -20);
+		mPitchSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, -60);
+		mRollSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, 0);
 
 		// Turn on labels at major tick marks.
-		yawSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-		pitchSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+		mYawSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+		mPitchSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
-		rollSlider.setMajorTickSpacing(90);
-		rollSlider.setMinorTickSpacing(10);
-		rollSlider.setPaintTicks(true);
-		rollSlider.setPaintLabels(true);
-		rollSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+		mRollSlider.setMajorTickSpacing(90);
+		mRollSlider.setMinorTickSpacing(10);
+		mRollSlider.setPaintTicks(true);
+		mRollSlider.setPaintLabels(true);
+		mRollSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
 		// sliders
 		JPanel sliderPanel = getSlidersPanel();
 		add(sliderPanel);
 
 		// radio buttons
-		add(yawPitchButton);
-		add(rollPitchButton);
-		add(moveButton);
+		add(mYawPitchButton);
+		add(mRollPitchButton);
+		add(mMoveButton);
 
 		// slider
 		layout.putConstraint(SpringLayout.NORTH, sliderPanel, 10,
 				SpringLayout.NORTH, this);
 		// radio buttons
-		layout.putConstraint(SpringLayout.NORTH, yawPitchButton, 10,
+		layout.putConstraint(SpringLayout.NORTH, mYawPitchButton, 10,
 				SpringLayout.SOUTH, sliderPanel);
-		layout.putConstraint(SpringLayout.NORTH, rollPitchButton, 10,
+		layout.putConstraint(SpringLayout.NORTH, mRollPitchButton, 10,
 				SpringLayout.SOUTH, sliderPanel);
-		layout.putConstraint(SpringLayout.NORTH, moveButton, 10,
+		layout.putConstraint(SpringLayout.NORTH, mMoveButton, 10,
 				SpringLayout.SOUTH, sliderPanel);
 
-		layout.putConstraint(SpringLayout.WEST, rollPitchButton, 10,
-				SpringLayout.EAST, yawPitchButton);
-		layout.putConstraint(SpringLayout.WEST, moveButton, 10,
-				SpringLayout.EAST, rollPitchButton);
+		layout.putConstraint(SpringLayout.WEST, mRollPitchButton, 10,
+				SpringLayout.EAST, mYawPitchButton);
+		layout.putConstraint(SpringLayout.WEST, mMoveButton, 10,
+				SpringLayout.EAST, mRollPitchButton);
 		setDoubleBuffered(true);
 
 		registerSliders();
@@ -218,17 +215,17 @@ public class DeviceView extends JPanel {
 		c.gridy = 0;
 		centerPanel.add(yawLabel, c);
 		c.gridx = 1;
-		centerPanel.add(yawSlider, c);
+		centerPanel.add(mYawSlider, c);
 		c.gridx = 0;
 		c.gridy++;
 		centerPanel.add(pitchLabel, c);
 		c.gridx = 1;
-		centerPanel.add(pitchSlider, c);
+		centerPanel.add(mPitchSlider, c);
 		c.gridx = 0;
 		c.gridy++;
 		centerPanel.add(rollLabel, c);
 		c.gridx = 1;
-		centerPanel.add(rollSlider, c);
+		centerPanel.add(mRollSlider, c);
 		centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		return centerPanel;
 	}
@@ -237,26 +234,26 @@ public class DeviceView extends JPanel {
 		ChangeListener changeListener = new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				OrientationModel orientModel = model.getOrientation();
+				OrientationModel orientModel = mSensorSimulatorModel.getOrientation();
 				JSlider source = (JSlider) e.getSource();
-				if (source == yawSlider) {
+				if (source == mYawSlider) {
 					orientModel.setYaw(source.getValue());
-				} else if (source == pitchSlider) {
+				} else if (source == mPitchSlider) {
 					orientModel.setPitch(source.getValue());
-				} else if (source == rollSlider) {
+				} else if (source == mRollSlider) {
 					orientModel.setRoll(source.getValue());
 				}
 				doRepaint();
 			}
 		};
-		yawSlider.addChangeListener(changeListener);
-		pitchSlider.addChangeListener(changeListener);
-		rollSlider.addChangeListener(changeListener);
+		mYawSlider.addChangeListener(changeListener);
+		mPitchSlider.addChangeListener(changeListener);
+		mRollSlider.addChangeListener(changeListener);
 
-		OrientationModel orient = model.getOrientation();
-		orient.setYaw(yawSlider.getValue());
-		orient.setPitch(pitchSlider.getValue());
-		orient.setRoll(rollSlider.getValue());
+		OrientationModel orient = mSensorSimulatorModel.getOrientation();
+		orient.setYaw(mYawSlider.getValue());
+		orient.setPitch(mPitchSlider.getValue());
+		orient.setRoll(mRollSlider.getValue());
 	}
 
 	/**
@@ -275,8 +272,8 @@ public class DeviceView extends JPanel {
 	@Override
 	protected void paintComponent(Graphics graphics) {
 		super.paintComponent(graphics);
-		OrientationModel orientation = model.getOrientation();
-		AccelerometerModel accelerometer = model.getAccelerometer();
+		OrientationModel orientation = mSensorSimulatorModel.getOrientation();
+		AccelerometerModel accelerometer = mSensorSimulatorModel.getAccelerometer();
 		Graphics2D g2 = (Graphics2D) graphics;
 		// draw Line2D.Double
 		double centerx = 125;
@@ -339,59 +336,59 @@ public class DeviceView extends JPanel {
 	}
 
 	public int getMouseMode() {
-		return mouseMode;
+		return mMouseMode;
 	}
 
 	public JRadioButton getYawPitchButton() {
-		return yawPitchButton;
+		return mYawPitchButton;
 	}
 
 	public JRadioButton getRollPitchButton() {
-		return rollPitchButton;
+		return mRollPitchButton;
 	}
 
 	public JRadioButton getMoveButton() {
-		return moveButton;
+		return mMoveButton;
 	}
 
 	public void changeMouseMode(int mode) {
-		mouseMode = mode;
+		mMouseMode = mode;
 	}
 
 	public JSlider getYawSlider() {
-		return yawSlider;
+		return mYawSlider;
 	}
 
 	public JSlider getPitchSlider() {
-		return pitchSlider;
+		return mPitchSlider;
 	}
 
 	public JSlider getRollSlider() {
-		return rollSlider;
+		return mRollSlider;
 	}
 
 	public void setYawSlider(int newYaw) {
-		yawSlider.setValue(newYaw);
+		mYawSlider.setValue(newYaw);
 	}
 
 	public void setRollSlider(int newRoll) {
-		rollSlider.setValue(newRoll);
+		mRollSlider.setValue(newRoll);
 	}
 
 	public void setPitchSlider(int newPitch) {
-		pitchSlider.setValue(newPitch);
+		mPitchSlider.setValue(newPitch);
 	}
 
 	public int getRollSliderValue() {
-		return rollSlider.getValue();
+		return mRollSlider.getValue();
 	}
 
 	public int getYawSliderValue() {
-		return yawSlider.getValue();
+		return mYawSlider.getValue();
 	}
 
 	public int getPitchSliderValue() {
-		return pitchSlider.getValue();
+		return mPitchSlider.getValue();
 	}
 
 }

@@ -1,24 +1,42 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.model.sensor.sensors;
 
 import java.io.PrintWriter;
 
+/**
+ * TemperatureModel keeps the internal data model behind Temperature Sensor.
+ * 
+ * @author Peli
+ * @author Josip Balic
+ * 
+ */
 public class TemperatureModel extends SensorModel {
 
 	// thermometer
 	public double temperatureValue;
 
-	/**
-	 * Time of next update required. The time is compared to
-	 * System.currentTimeMillis().
-	 */
-	private long temperature_next_update;
 	/** Current read-out value of temperature. */
-	private double read_temperature;
+	private double mReadTemperature;
 
 	/** Partial read-out value of temperature. */
-	private double partial_temperature;
+	private double mPartialTemperature;
 	/** Number of summands in partial sum for temperature. */
-	private int partial_temperature_n;
+	private int mPartialTemperatureN;
 
 	public TemperatureModel() {
 		super();
@@ -34,37 +52,37 @@ public class TemperatureModel extends SensorModel {
 	public void updateSensorReadoutValues() {
 		long currentTime = System.currentTimeMillis();
 		// Form the average
-		if (average) {
-			partial_temperature += temperatureValue;
-			partial_temperature_n++;
+		if (mAverage) {
+			mPartialTemperature += temperatureValue;
+			mPartialTemperatureN++;
 		}
 
 		// Update
-		if (currentTime >= temperature_next_update) {
-			temperature_next_update += updateDuration;
-			if (temperature_next_update < currentTime) {
+		if (currentTime >= mNextUpdate) {
+			mNextUpdate += mUpdateDuration;
+			if (mNextUpdate < currentTime) {
 				// Don't lag too much behind.
 				// If we are too slow, then we are too slow.
-				temperature_next_update = currentTime;
+				mNextUpdate = currentTime;
 			}
 
-			if (average) {
+			if (mAverage) {
 				// form average
-				read_temperature = partial_temperature / partial_temperature_n;
+				mReadTemperature = mPartialTemperature / mPartialTemperatureN;
 
 				// reset average
-				partial_temperature = 0;
-				partial_temperature_n = 0;
+				mPartialTemperature = 0;
+				mPartialTemperatureN = 0;
 
 			} else {
 				// Only take current value
-				read_temperature = temperatureValue;
+				mReadTemperature = temperatureValue;
 			}
 		}
 	}
 
 	@Override
-	public void printNumValues(PrintWriter out) {
+	public void getNumSensorValues(PrintWriter out) {
 		out.println("1");
 	}
 
@@ -86,13 +104,13 @@ public class TemperatureModel extends SensorModel {
 	}
 
 	public double getReadTemp() {
-		return read_temperature;
+		return mReadTemperature;
 	}
 
 	@Override
 	public void printSensorData(PrintWriter out) {
 		// number of data following + data
-		out.println("1\n" + read_temperature);
+		out.println("1\n" + mReadTemperature);
 	}
 
 	@Override

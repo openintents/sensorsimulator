@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.model.sensor.sensors;
 
 import java.awt.Color;
@@ -6,6 +22,14 @@ import java.util.Random;
 
 import javax.swing.JTextField;
 
+/**
+ * SensorModel keeps the internal data model behind a Sensor, common to all
+ * sensors. It also contains abstract methods for sensor specific actions (that
+ * must be implemented for each sensor).
+ * 
+ * @author ilarele
+ * 
+ */
 public abstract class SensorModel {
 	public static final int POZ_ACCELEROMETER = 0;
 	public static final int POZ_MAGNETIC_FIELD = 1;
@@ -71,7 +95,9 @@ public abstract class SensorModel {
 	final static public String PLUSMINUS = "\u00b1";
 	final static public String SQUARED = "\u00b2"; // superscript two
 
-	private static Random rand = new Random();
+	private static Random mRandomGenerator = new Random();
+
+	/** Whether the sensor is enable or not. */
 	protected boolean mEnabled;
 
 	// Simulation update
@@ -83,30 +109,61 @@ public abstract class SensorModel {
 	// Random contribution
 	protected float mRandom;
 
-	protected boolean mIsUpdating = true;
-
-	// for measuring updates:
-	protected int updateEmulatorCount;
-	protected long updateEmulatorTime;
+	/** for measuring updates: */
+	protected int mUpdateEmulatorCount;
+	protected long mUpdateEmulatorTime;
 
 	/**
 	 * Duration (in milliseconds) between two updates. This is the inverse of
 	 * the update rate.
 	 */
-	protected long updateDuration;
+	protected long mUpdateDuration;
 	/**
 	 * Whether to form the average over the last duration when reading out
 	 * sensors. Alternative is to just take the current value.
 	 */
-	protected boolean average;
+	protected boolean mAverage;
+
+	/**
+	 * Time of next update required. The time is compared to
+	 * System.currentTimeMillis().
+	 */
+	protected long mNextUpdate;
 
 	public SensorModel() {
 		mEnabled = false;
 
-		updateEmulatorCount = 0;
-		updateEmulatorTime = System.currentTimeMillis();
+		mUpdateEmulatorCount = 0;
+		mUpdateEmulatorTime = System.currentTimeMillis();
 		setUpdateRates();
 	}
+
+	/**
+	 * Prints into the output stream the number of output values for the sensor.
+	 * 
+	 * @param out
+	 */
+	public abstract void getNumSensorValues(PrintWriter out);
+
+	/**
+	 * It is used in communication with the emulator, when sending sensor
+	 * values.
+	 * 
+	 * @param out
+	 */
+	public abstract void printSensorData(PrintWriter out);
+
+	/**
+	 * 
+	 * @return The Standard Unit of measurement for sensors values.
+	 */
+	public abstract String getSI();
+
+	/**
+	 * Sets the next values for the sensor (if the time for next update was
+	 * reached), by making the average or keeping the current value.
+	 */
+	public abstract void updateSensorReadoutValues();
 
 	public boolean isEnabled() {
 		return mEnabled;
@@ -147,7 +204,7 @@ public abstract class SensorModel {
 	 */
 	public static double getRandom(double random) {
 		double val;
-		val = rand.nextDouble();
+		val = mRandomGenerator.nextDouble();
 		return (2 * val - 1) * random;
 	}
 
@@ -211,18 +268,10 @@ public abstract class SensorModel {
 		return valuelist;
 	}
 
-	public abstract void updateSensorReadoutValues();
-
 	public void enableSensor(PrintWriter out, boolean enable) {
 		out.println("" + isEnabled());
 		setEnabled(enable);
 	}
-
-	public void getNumSensorValues(PrintWriter out) {
-		printNumValues(out);
-	}
-
-	protected abstract void printNumValues(PrintWriter out);
 
 	public void setSensorUpdateRate(PrintWriter out) {
 		if (isEnabled()) {
@@ -244,41 +293,33 @@ public abstract class SensorModel {
 		}
 	}
 
-	public abstract void printSensorData(PrintWriter out);
-
-	public abstract String getSI();
-
-	public boolean isUpdating() {
-		return mIsUpdating;
-	}
-
 	public void setAvgUpdate(boolean b) {
 		mUpdateAverage = b;
 	}
 
 	public void setUpdateDuration(long value) {
-		updateDuration = value;
+		mUpdateDuration = value;
 	}
 
 	public long incUpdateEmulatorCount() {
-		return ++updateEmulatorCount;
+		return ++mUpdateEmulatorCount;
 
 	}
 
 	public long getEmulatorTime() {
-		return updateEmulatorTime;
+		return mUpdateEmulatorTime;
 	}
 
 	public void setUpdateEmulatorTime(long newtime) {
-		updateEmulatorTime = newtime;
+		mUpdateEmulatorTime = newtime;
 	}
 
 	public void setUpdateEmulatorCount(int value) {
-		updateEmulatorCount = value;
+		mUpdateEmulatorCount = value;
 	}
 
 	public long getUpdateDuration() {
-		return updateDuration;
+		return mUpdateDuration;
 	}
 
 	public abstract String getTypeConstant();

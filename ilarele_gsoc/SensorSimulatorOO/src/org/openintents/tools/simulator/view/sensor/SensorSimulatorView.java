@@ -4,7 +4,7 @@
  * diploma thesis of Josip Balic at the University of Zagreb, Faculty of
  * Electrical Engineering and Computing.
  *
- * Copyright (C) 2008-2010 OpenIntents.org
+ * Copyright (C) 2008-2011 OpenIntents.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.SpringLayout;
 import javax.swing.border.Border;
 
@@ -69,67 +70,67 @@ import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 import org.openintents.tools.simulator.view.sensor.sensors.TemperatureView;
 
 /**
- * Class of SensorSimulator.
  * 
- * The SensorSimulator is a Java stand-alone application.
+ * SensorSimulatorView keeps the GUI of the SensorSimulator.
  * 
- * It simulates various sensors. An Android application can connect through
- * TCP/IP with the settings shown to the SensorSimulator to simulate
+ * SensorSimulator simulates various sensors. An Android application can connect
+ * through TCP/IP with the settings shown to the SensorSimulator to simulate
  * accelerometer, compass, orientation sensor, and thermometer.
  * 
  * @author Peli
  * @author Josip Balic
+ * @author ilarele
  */
 public class SensorSimulatorView extends JPanel {
 	private static final long serialVersionUID = -587503580193069930L;
 
 	// port for sensor simulation
-	private JTextField sensorPortText;
-	private JButton sensorPortButton;
+	private JTextField mSensorPortText;
+	private JButton mSensorPortButton;
 
 	// Field for socket related output:
 	// private JScrollPane areaScrollPane;
-	private JTextArea messageTextArea;
+	private JTextPane mMessageTextArea;
 
 	// Field for sensor simulator data output:
-	private JTextArea textAreaSensorData;
+	private JTextArea mTextAreaSensorData;
 
 	// Settings
 	private JTextField mUpdateText;
 	private JTextField mRefreshCountText;
 	private JLabel mRefreshSensorsLabel;
 
-	private SensorSimulatorModel model;
-	private ArrayList<SensorView> sensors;
+	private SensorSimulatorModel mModel;
+	private ArrayList<SensorView> mSensors;
 
-	private JPanel enabledSensorsPane;
+	private JPanel mEnabledSensorsPane;
 
-	private Border enabledBorder;
+	private Border mEnabledBorder;
 
-	private Border disabledBorder;
+	private Border mDisabledBorder;
 
 	private JTabbedPane mSensorsTabbedPane;
 
 	public SensorSimulatorView(SensorSimulatorModel model) {
-		this.model = model;
+		this.mModel = model;
 		SpringLayout layout = new SpringLayout();
 		setLayout(layout);
 		// sensors
-		sensors = new ArrayList<SensorView>();
-		sensors.add(new AccelerometerView(model.getAccelerometer()));
-		sensors.add(new MagneticFieldView(model.getMagneticField()));
-		sensors.add(new OrientationView(model.getOrientation(), model));
-		sensors.add(new TemperatureView(model.getTemperature()));
-		sensors.add(new BarcodeReaderView(model.getBarcodeReader()));
-		sensors.add(new LightView(model.getLight()));
-		sensors.add(new ProximityView(model.getProximity()));
-		sensors.add(new PressureView(model.getPressure()));
-		sensors.add(new LinearAccelerationView(model.getLinearAcceleration()));
-		sensors.add(new GravityView(model.getGravity()));
-		sensors.add(new RotationVectorView(model.getRotationVector()));
+		mSensors = new ArrayList<SensorView>();
+		mSensors.add(new AccelerometerView(model.getAccelerometer()));
+		mSensors.add(new MagneticFieldView(model.getMagneticField()));
+		mSensors.add(new OrientationView(model.getOrientation(), model));
+		mSensors.add(new TemperatureView(model.getTemperature()));
+		mSensors.add(new BarcodeReaderView(model.getBarcodeReader()));
+		mSensors.add(new LightView(model.getLight()));
+		mSensors.add(new ProximityView(model.getProximity()));
+		mSensors.add(new PressureView(model.getPressure()));
+		mSensors.add(new LinearAccelerationView(model.getLinearAcceleration()));
+		mSensors.add(new GravityView(model.getGravity()));
+		mSensors.add(new RotationVectorView(model.getRotationVector()));
 
-		enabledBorder = BorderFactory.createTitledBorder("Enabled sensors");
-		disabledBorder = BorderFactory
+		mEnabledBorder = BorderFactory.createTitledBorder("Enabled sensors");
+		mDisabledBorder = BorderFactory
 				.createTitledBorder("Enabled sensors - readonly");
 
 		// up/down & split
@@ -152,6 +153,10 @@ public class SensorSimulatorView extends JPanel {
 				SpringLayout.SOUTH, this);
 	}
 
+	/**
+	 * Fills the panel from the bottom split.
+	 * @return
+	 */
 	private JPanel fillDownPanel() {
 		SpringLayout layout = new SpringLayout();
 		JPanel downPanel = new JPanel(layout);
@@ -198,19 +203,27 @@ public class SensorSimulatorView extends JPanel {
 	}
 
 	private JScrollPane fillTextArea() {
-		textAreaSensorData = new JTextArea(3, 10);
-		JScrollPane scrollPaneSensorData = new JScrollPane(textAreaSensorData);
+		mTextAreaSensorData = new JTextArea(3, 10);
+		JScrollPane scrollPaneSensorData = new JScrollPane(mTextAreaSensorData);
 		scrollPaneSensorData
 				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPaneSensorData.setPreferredSize(new Dimension(350, 10));
 		return scrollPaneSensorData;
 	}
 
+	/**
+	 * Fills info panel with possible IPs.
+	 * @return
+	 */
 	private JScrollPane fillInfoOutput() {
-		messageTextArea = new JTextArea(3, 10);
-		messageTextArea.append("Write emulator command port and\n"
-				+ "click on set to create connection.\n");
-		messageTextArea.append("Possible IP addresses:\n");
+		mMessageTextArea = new JTextPane();
+		mMessageTextArea.setContentType("text/html");
+		mMessageTextArea.setEditable(false);
+
+		StringBuffer infoText = new StringBuffer();
+		infoText.append("Write emulator command port and<br\\>"
+				+ "click on set to create connection.<br\\>");
+		infoText.append("Possible IP addresses:<br\\>");
 		try {
 			Enumeration<NetworkInterface> nets = NetworkInterface
 					.getNetworkInterfaces();
@@ -218,17 +231,21 @@ public class SensorSimulatorView extends JPanel {
 				Enumeration<InetAddress> inetAddresses = netint
 						.getInetAddresses();
 				for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-					if (("" + inetAddress).compareTo("/127.0.0.1") != 0) {
-						messageTextArea.append("" + inetAddress + "\n");
+					String address = inetAddress.toString();
+					if (address.compareTo("/127.0.0.1") != 0
+							&& !address.contains(":")) {
+						infoText.append("<font color='red'>"
+								+ address.substring(1) + "</font><br\\>");
 					}
 				}
 			}
 		} catch (SocketException e) {
-			messageTextArea
-					.append("Socket exception. Could not obtain IP addresses.");
+			infoText.append("Socket exception. Could not obtain IP addresses.");
 		}
 
-		JScrollPane areaScrollPane = new JScrollPane(messageTextArea);
+		mMessageTextArea.setText(infoText.toString());
+
+		JScrollPane areaScrollPane = new JScrollPane(mMessageTextArea);
 		areaScrollPane
 				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		areaScrollPane.setPreferredSize(new Dimension(350, 10));
@@ -251,7 +268,7 @@ public class SensorSimulatorView extends JPanel {
 		updateSimulationPanel.add(label, layout);
 
 		mUpdateText = new JTextField(5);
-		mUpdateText.setText("" + model.getUpdateSensors());
+		mUpdateText.setText("" + mModel.getUpdateSensors());
 		layout.gridx++;
 		updateSimulationPanel.add(mUpdateText, layout);
 
@@ -303,7 +320,7 @@ public class SensorSimulatorView extends JPanel {
 
 	private JTabbedPane fillRightPanel() {
 		JTabbedPane rightPanel = new JTabbedPane();
-		for (SensorView sensor : sensors) {
+		for (SensorView sensor : mSensors) {
 			SensorModel sensorModel = sensor.getModel();
 			if (sensorModel.isEnabled())
 				rightPanel.addTab(sensorModel.getName(), sensor);
@@ -318,54 +335,53 @@ public class SensorSimulatorView extends JPanel {
 
 		// Add IP address properties:
 		Font fontNotify = new Font("SansSerif", Font.BOLD, 12);
-		sensorPortText = new JTextField(5);
-		sensorPortText.setText("" + model.getSimulationPort());
+		mSensorPortText = new JTextField(5);
+		mSensorPortText.setText("" + mModel.getSimulationPort());
 		JLabel socketLabel = new JLabel("Socket ", JLabel.LEFT);
 		socketLabel.setFont(fontNotify);
-		socketLabel.setForeground(Global.NOTIFY_COLOR);
+		socketLabel.setForeground(Global.COLOR_NOTIFY);
 		leftPanel.add(socketLabel);
-		leftPanel.add(sensorPortText);
-		sensorPortButton = new JButton("Set");
-		sensorPortButton.setFont(fontNotify);
-		sensorPortButton.setForeground(Global.NOTIFY_COLOR);
-		leftPanel.add(sensorPortButton);
+		leftPanel.add(mSensorPortText);
+		mSensorPortButton = new JButton("Set");
+		mSensorPortButton.setFont(fontNotify);
+		mSensorPortButton.setForeground(Global.COLOR_NOTIFY);
+		leftPanel.add(mSensorPortButton);
 
 		// Enabled Sensors
-		enabledSensorsPane = new JPanel();
-		enabledSensorsPane.setLayout(new GridLayout(0, 1));
-		enabledSensorsPane.setBorder(enabledBorder);
-		for (SensorView sensor : sensors) {
-			sensor.addEnable(enabledSensorsPane);
+		mEnabledSensorsPane = new JPanel();
+		mEnabledSensorsPane.setLayout(new GridLayout(0, 1));
+		mEnabledSensorsPane.setBorder(mEnabledBorder);
+		for (SensorView sensor : mSensors) {
+			sensor.addEnable(mEnabledSensorsPane);
 		}
-		leftPanel.add(enabledSensorsPane);
+		leftPanel.add(mEnabledSensorsPane);
 
 		// ip
 		layout.putConstraint(SpringLayout.NORTH, socketLabel, 10,
 				SpringLayout.NORTH, leftPanel);
-		layout.putConstraint(SpringLayout.NORTH, sensorPortText, 5,
+		layout.putConstraint(SpringLayout.NORTH, mSensorPortText, 5,
 				SpringLayout.NORTH, leftPanel);
-		layout.putConstraint(SpringLayout.NORTH, sensorPortButton, 5,
+		layout.putConstraint(SpringLayout.NORTH, mSensorPortButton, 5,
 				SpringLayout.NORTH, leftPanel);
 		layout.putConstraint(SpringLayout.SOUTH, leftPanel, 10,
-				SpringLayout.SOUTH, enabledSensorsPane);
-		
+				SpringLayout.SOUTH, mEnabledSensorsPane);
+
 		layout.putConstraint(SpringLayout.WEST, socketLabel, 16,
 				SpringLayout.WEST, leftPanel);
-		layout.putConstraint(SpringLayout.WEST, sensorPortText, 5,
+		layout.putConstraint(SpringLayout.WEST, mSensorPortText, 5,
 				SpringLayout.EAST, socketLabel);
-		layout.putConstraint(SpringLayout.WEST, sensorPortButton, 10,
-				SpringLayout.EAST, sensorPortText);
+		layout.putConstraint(SpringLayout.WEST, mSensorPortButton, 10,
+				SpringLayout.EAST, mSensorPortText);
 		layout.putConstraint(SpringLayout.EAST, leftPanel, 10,
-				SpringLayout.EAST, sensorPortButton);
+				SpringLayout.EAST, mSensorPortButton);
 
 		// enable sensors
-		layout.putConstraint(SpringLayout.WEST, enabledSensorsPane, 0,
+		layout.putConstraint(SpringLayout.WEST, mEnabledSensorsPane, 0,
 				SpringLayout.WEST, leftPanel);
-		layout.putConstraint(SpringLayout.NORTH, enabledSensorsPane, 10,
+		layout.putConstraint(SpringLayout.NORTH, mEnabledSensorsPane, 10,
 				SpringLayout.SOUTH, socketLabel);
 		layout.putConstraint(SpringLayout.EAST, leftPanel, 10,
-				SpringLayout.EAST, enabledSensorsPane);
-
+				SpringLayout.EAST, mEnabledSensorsPane);
 
 		return leftScrollPane;
 	}
@@ -374,8 +390,8 @@ public class SensorSimulatorView extends JPanel {
 	 * Sets the socket port for listening
 	 */
 	public void setPort() {
-		addMessage("Closing port " + model.getSimulationPort());
-		model.restartSensorServer();
+		addMessage("Closing port " + mModel.getSimulationPort());
+		mModel.restartSensorServer();
 	}
 
 	/**
@@ -386,24 +402,8 @@ public class SensorSimulatorView extends JPanel {
 	 *            Message.
 	 */
 	public void addMessage(String msg) {
-
-		// // Determine whether the scrollbar is currently at the very bottom
-		// // position.
-		// JScrollBar vbar = areaScrollPane.getVerticalScrollBar();
-		// final int tolerance = 10; // some tolerance value
-		// boolean autoScroll = ((vbar.getValue() + vbar.getVisibleAmount() +
-		// tolerance) >= vbar
-		// .getMaximum());
-		//
-		// // append to the JTextArea (that's wrapped in a JScrollPane named
-		// // 'scrollPane'
-		messageTextArea.append(msg + "\n");
-
-		// now scroll if we were already at the bottom.
-		// if (autoScroll)
-		// ipselectionText.setCaretPosition(ipselectionText.getDocument()
-		// .getLength());
-
+		String oldText = mMessageTextArea.getText();
+		mMessageTextArea.setText(oldText + msg + "\n");
 	}
 
 	/**
@@ -412,7 +412,7 @@ public class SensorSimulatorView extends JPanel {
 	 * @return String containing port number.
 	 */
 	public int getPort() {
-		String s = sensorPortText.getText();
+		String s = mSensorPortText.getText();
 		int port = 0;
 		try {
 			port = Integer.parseInt(s);
@@ -527,35 +527,35 @@ public class SensorSimulatorView extends JPanel {
 	}
 
 	public BarcodeReaderView getBarcodeReader() {
-		return (BarcodeReaderView) sensors.get(SensorModel.POZ_BARCODE_READER);
+		return (BarcodeReaderView) mSensors.get(SensorModel.POZ_BARCODE_READER);
 	}
 
 	public AccelerometerView getAccelerometer() {
-		return (AccelerometerView) sensors.get(SensorModel.POZ_ACCELEROMETER);
+		return (AccelerometerView) mSensors.get(SensorModel.POZ_ACCELEROMETER);
 	}
 
 	public LightView getLight() {
-		return (LightView) sensors.get(SensorModel.POZ_LIGHT);
+		return (LightView) mSensors.get(SensorModel.POZ_LIGHT);
 	}
 
 	public OrientationView getOrientation() {
-		return (OrientationView) sensors.get(SensorModel.POZ_ORIENTATION);
+		return (OrientationView) mSensors.get(SensorModel.POZ_ORIENTATION);
 	}
 
 	public ProximityView getProximity() {
-		return (ProximityView) sensors.get(SensorModel.POZ_PROXIMITY);
+		return (ProximityView) mSensors.get(SensorModel.POZ_PROXIMITY);
 	}
 
 	public TemperatureView getTemperature() {
-		return (TemperatureView) sensors.get(SensorModel.POZ_TEMPERATURE);
+		return (TemperatureView) mSensors.get(SensorModel.POZ_TEMPERATURE);
 	}
 
 	public MagneticFieldView getMagneticField() {
-		return (MagneticFieldView) sensors.get(SensorModel.POZ_MAGNETIC_FIELD);
+		return (MagneticFieldView) mSensors.get(SensorModel.POZ_MAGNETIC_FIELD);
 	}
 
 	public JButton getSensorPortButton() {
-		return sensorPortButton;
+		return mSensorPortButton;
 	}
 
 	public long getRefreshCount() {
@@ -568,18 +568,19 @@ public class SensorSimulatorView extends JPanel {
 	}
 
 	public void setOutput(String data) {
-		textAreaSensorData.setText(data);
+		if (!data.equals(mTextAreaSensorData.getText()))
+			mTextAreaSensorData.setText(data);
 	}
 
-	public JTextArea getMessagePanel() {
-		return messageTextArea;
+	public JTextPane getMessagePanel() {
+		return mMessageTextArea;
 	}
 
 	public void setFix(boolean value) {
 		if (value)
-			enabledSensorsPane.setBorder(disabledBorder);
+			mEnabledSensorsPane.setBorder(mDisabledBorder);
 		else
-			enabledSensorsPane.setBorder(enabledBorder);
+			mEnabledSensorsPane.setBorder(mEnabledBorder);
 	}
 
 	public JTabbedPane getSensorsTabbedPanel() {
@@ -587,20 +588,20 @@ public class SensorSimulatorView extends JPanel {
 	}
 
 	public PressureView getPressure() {
-		return (PressureView) sensors.get(SensorModel.POZ_PRESSURE);
+		return (PressureView) mSensors.get(SensorModel.POZ_PRESSURE);
 	}
 
 	public LinearAccelerationView getLinearAceleration() {
-		return (LinearAccelerationView) sensors
+		return (LinearAccelerationView) mSensors
 				.get(SensorModel.POZ_LINEAR_ACCELERATION);
 	}
 
 	public GravityView getGravity() {
-		return (GravityView) sensors.get(SensorModel.POZ_GRAVITY);
+		return (GravityView) mSensors.get(SensorModel.POZ_GRAVITY);
 	}
 
 	public RotationVectorView getRotationVector() {
-		return (RotationVectorView) sensors.get(SensorModel.POZ_ROTATION);
+		return (RotationVectorView) mSensors.get(SensorModel.POZ_ROTATION);
 	}
 
 }

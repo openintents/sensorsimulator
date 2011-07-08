@@ -1,39 +1,57 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.model.sensor.sensors;
 
 import java.io.PrintWriter;
 
 import org.openintents.tools.simulator.model.telnet.Vector;
 
+/**
+ * MagneticFieldModel keeps the internal data model behind MagneticField Sensor.
+ * 
+ * @author Peli
+ * @author Josip Balic
+ * 
+ */
 public class MagneticFieldModel extends SensorModel {
 
 	/** Current read-out value of compass x-component. */
-	private double read_compassx;
+	private double mReadCompassX;
 	/** Current read-out value of compass y-component. */
-	private double read_compassy;
+	private double mReadCompassY;
 	/** Current read-out value of compass z-component. */
-	private double read_compassz;
+	private double mReadCompassZ;
 
-	/**
-	 * Time of next update required. The time is compared to
-	 * System.currentTimeMillis().
-	 */
-	private long compass_next_update;
 
 	/** Partial read-out value of compass x-component. */
-	private double partial_compassx;
+	private double mPartialCompassX;
 	/** Partial read-out value of compass y-component. */
-	private double partial_compassy;
+	private double mPartialCompassY;
 	/** Partial read-out value of compass z-component. */
-	private double partial_compassz;
+	private double mPartialCompassZ;
 	/** Number of summands in partial sum for compass. */
-	private int partial_compass_n;
+	private int mPartialCompassN;
 
 	/** Internal state value of compass x-component. */
-	private double compassx;
+	private double mCompassX;
 	/** Internal state value of compass y-component. */
-	private double compassy;
+	private double mCompassY;
 	/** Internal state value of compass z-component. */
-	private double compassz;
+	private double mCompassZ;
 
 	// Magnetic field
 	private double mNorth;
@@ -57,39 +75,39 @@ public class MagneticFieldModel extends SensorModel {
 	public void updateSensorReadoutValues() {
 		long currentTime = System.currentTimeMillis();
 		// Form the average
-		if (average) {
-			partial_compassx += compassx;
-			partial_compassy += compassy;
-			partial_compassz += compassz;
-			partial_compass_n++;
+		if (mAverage) {
+			mPartialCompassX += mCompassX;
+			mPartialCompassY += mCompassY;
+			mPartialCompassZ += mCompassZ;
+			mPartialCompassN++;
 		}
 
 		// Update
-		if (currentTime >= compass_next_update) {
-			compass_next_update += updateDuration;
-			if (compass_next_update < currentTime) {
+		if (currentTime >= mNextUpdate) {
+			mNextUpdate += mUpdateDuration;
+			if (mNextUpdate < currentTime) {
 				// Don't lag too much behind.
 				// If we are too slow, then we are too slow.
-				compass_next_update = currentTime;
+				mNextUpdate = currentTime;
 			}
 
-			if (average) {
+			if (mAverage) {
 				// form average
-				read_compassx = partial_compassx / partial_compass_n;
-				read_compassy = partial_compassy / partial_compass_n;
-				read_compassz = partial_compassz / partial_compass_n;
+				mReadCompassX = mPartialCompassX / mPartialCompassN;
+				mReadCompassY = mPartialCompassY / mPartialCompassN;
+				mReadCompassZ = mPartialCompassZ / mPartialCompassN;
 
 				// reset average
-				partial_compassx = 0;
-				partial_compassy = 0;
-				partial_compassz = 0;
-				partial_compass_n = 0;
+				mPartialCompassX = 0;
+				mPartialCompassY = 0;
+				mPartialCompassZ = 0;
+				mPartialCompassN = 0;
 
 			} else {
 				// Only take current value
-				read_compassx = compassx;
-				read_compassy = compassy;
-				read_compassz = compassz;
+				mReadCompassX = mCompassX;
+				mReadCompassY = mCompassY;
+				mReadCompassZ = mCompassZ;
 			}
 		}
 	}
@@ -107,15 +125,15 @@ public class MagneticFieldModel extends SensorModel {
 	}
 
 	@Override
-	public void printNumValues(PrintWriter out) {
+	public void getNumSensorValues(PrintWriter out) {
 		out.println("3");
 	}
 
 	@Override
 	public void printSensorData(PrintWriter out) {
 		// number of data following + data
-		out.println("3\n" + read_compassx + "\n" + read_compassy + "\n"
-				+ read_compassz);
+		out.println("3\n" + mReadCompassX + "\n" + mReadCompassY + "\n"
+				+ mReadCompassZ);
 	}
 
 	@Override
@@ -136,27 +154,27 @@ public class MagneticFieldModel extends SensorModel {
 	}
 
 	public void setCompass(Vector vec) {
-		compassx = vec.x;
-		compassy = vec.y;
-		compassz = vec.z;
+		mCompassX = vec.x;
+		mCompassY = vec.y;
+		mCompassZ = vec.z;
 	}
 
 	public void resetCompas() {
-		compassx = 0;
-		compassy = 0;
-		compassz = 0;
+		mCompassX = 0;
+		mCompassY = 0;
+		mCompassZ = 0;
 	}
 
 	public double getReadCompassX() {
-		return read_compassx;
+		return mReadCompassX;
 	}
 
 	public double getReadCompassY() {
-		return read_compassy;
+		return mReadCompassY;
 	}
 
 	public double getReadCompassZ() {
-		return read_compassz;
+		return mReadCompassZ;
 	}
 
 	@Override

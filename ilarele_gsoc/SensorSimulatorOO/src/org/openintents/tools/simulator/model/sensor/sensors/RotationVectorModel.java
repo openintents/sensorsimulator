@@ -1,38 +1,56 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
 package org.openintents.tools.simulator.model.sensor.sensors;
 
 import java.io.PrintWriter;
 
 import org.openintents.tools.simulator.model.telnet.Vector;
 
+/**
+ * RotationVectorModel keeps the internal data model behind RotationVector Sensor.
+ * 
+ * @author ilarele
+ * 
+ */
 public class RotationVectorModel extends SensorModel {
-	// rotation angle in degree
-	private double rotation_x_value;
-	private double rotation_y_value;
-	private double rotation_z_value;
+	/** rotation angle in degree */
+	private double mRotationXValue;
+	private double mRotationYValue;
+	private double mRotationZValue;
 
 	/** Current read-out value of rotation. */
-	private double read_rotation_x;
-	private double read_rotation_y;
-	private double read_rotation_z;
+	private double mReadRotationX;
+	private double mReadRotationY;
+	private double mReadRotationZ;
 
-	/**
-	 * Time of next update required. The time is compared to
-	 * System.currentTimeMillis().
-	 */
-	private long rotation_next_update;
 	/** Partial read-out value of rotation. */
-	private float partial_rotation_x;
-	private float partial_rotation_y;
-	private float partial_rotation_z;
+	private float mPartialRotationX;
+	private float mPartialRotationY;
+	private float mPartialRotationZ;
 
 	/** Number of summands in partial sum for rotation. */
-	private int partial_rotation_n;
+	private int mPartialRotationN;
 
 	public RotationVectorModel() {
 		super();
-		read_rotation_x = rotation_x_value = 0;
-		read_rotation_y = rotation_y_value = 0;
-		read_rotation_z = rotation_z_value = 0;
+		mReadRotationX = mRotationXValue = 0;
+		mReadRotationY = mRotationYValue = 0;
+		mReadRotationZ = mRotationZValue = 0;
 	}
 
 	@Override
@@ -44,65 +62,65 @@ public class RotationVectorModel extends SensorModel {
 	public void updateSensorReadoutValues() {
 		long currentTime = System.currentTimeMillis();
 		// Form the average
-		if (average) {
-			partial_rotation_x += rotation_x_value;
-			partial_rotation_y += rotation_y_value;
-			partial_rotation_z += rotation_z_value;
-			partial_rotation_n++;
+		if (mAverage) {
+			mPartialRotationX += mRotationXValue;
+			mPartialRotationY += mRotationYValue;
+			mPartialRotationZ += mRotationZValue;
+			mPartialRotationN++;
 		}
 
 		// Update
-		if (currentTime >= rotation_next_update) {
-			rotation_next_update += updateDuration;
-			if (rotation_next_update < currentTime) {
+		if (currentTime >= mNextUpdate) {
+			mNextUpdate += mUpdateDuration;
+			if (mNextUpdate < currentTime) {
 				// Don't lag too much behind.
 				// If we are too slow, then we are too slow.
-				rotation_next_update = currentTime;
+				mNextUpdate = currentTime;
 			}
 
-			if (average) {
+			if (mAverage) {
 				// form average
-				read_rotation_x = partial_rotation_x / partial_rotation_n;
-				read_rotation_y = partial_rotation_y / partial_rotation_n;
-				read_rotation_z = partial_rotation_z / partial_rotation_n;
+				mReadRotationX = mPartialRotationX / mPartialRotationN;
+				mReadRotationY = mPartialRotationY / mPartialRotationN;
+				mReadRotationZ = mPartialRotationZ / mPartialRotationN;
 				// reset average
-				partial_rotation_x = 0;
-				partial_rotation_y = 0;
-				partial_rotation_z = 0;
-				partial_rotation_n = 0;
+				mPartialRotationX = 0;
+				mPartialRotationY = 0;
+				mPartialRotationZ = 0;
+				mPartialRotationN = 0;
 			} else {
 				// Only take current value
-				read_rotation_x = rotation_x_value;
-				read_rotation_y = rotation_y_value;
-				read_rotation_z = rotation_z_value;
+				mReadRotationX = mRotationXValue;
+				mReadRotationY = mRotationYValue;
+				mReadRotationZ = mRotationZValue;
 			}
 		}
 	}
 
 	@Override
-	public void printNumValues(PrintWriter out) {
+	public void getNumSensorValues(PrintWriter out) {
 		out.println("3");
 	}
 
 	@Override
 	public void printSensorData(PrintWriter out) {
 		// number of data following + data
-		out.println("3\n" + Math.sin(Math.toRadians(read_rotation_x / 2))
-				+ "\n" + Math.sin(Math.toRadians(read_rotation_y / 2)) + "\n"
-				+ Math.sin(Math.toRadians(read_rotation_z / 2)));
+		out.println("3\n" + Math.sin(Math.toRadians(mReadRotationX / 2))
+				+ "\n" + Math.sin(Math.toRadians(mReadRotationY / 2)) + "\n"
+				+ Math.sin(Math.toRadians(mReadRotationZ / 2)));
 
 	}
 
 	public double getRotationVectorX() {
-		return Math.sin(Math.toRadians(read_rotation_x / 2));
+		return Math.sin(Math.toRadians(mReadRotationX / 2));
 	}
 
 	public double getRotationVectorY() {
-		return Math.sin(Math.toRadians(read_rotation_y / 2));
+		return Math.sin(Math.toRadians(mReadRotationY / 2));
 	}
 
 	public double getRotationVectorZ() {
-		return Math.sin(Math.toRadians(read_rotation_z / 2));
+		return Math.sin(Math.toRadians(mReadRotationZ / 2));
 	}
 
 	@Override
@@ -111,15 +129,15 @@ public class RotationVectorModel extends SensorModel {
 	}
 
 	public void setRotationVector(double x, double y, double z) {
-		rotation_x_value = x;
-		rotation_y_value = y;
-		rotation_z_value = z;
+		mRotationXValue = x;
+		mRotationYValue = y;
+		mRotationZValue = z;
 	}
 
 	public void addRotationVector(double addX, double addY, double addZ) {
-		rotation_x_value += addX;
-		rotation_y_value += addY;
-		rotation_z_value += addZ;
+		mRotationXValue += addX;
+		mRotationYValue += addY;
+		mRotationZValue += addZ;
 	}
 
 	@Override
@@ -128,20 +146,20 @@ public class RotationVectorModel extends SensorModel {
 	}
 
 	public double getReadRotationVectorX() {
-		return Math.sin(Math.toRadians(read_rotation_x / 2));
+		return Math.sin(Math.toRadians(mReadRotationX / 2));
 	}
 
 	public double getReadRotationVectorY() {
-		return Math.sin(Math.toRadians(read_rotation_y / 2));
+		return Math.sin(Math.toRadians(mReadRotationY / 2));
 	}
 
 	public double getReadRotationVectorZ() {
-		return Math.sin(Math.toRadians(read_rotation_z / 2));
+		return Math.sin(Math.toRadians(mReadRotationZ / 2));
 	}
 
 	public void setRotationVector(Vector vec) {
-		rotation_x_value = vec.x;
-		rotation_y_value = vec.y;
-		rotation_z_value = vec.z;
+		mRotationXValue = vec.x;
+		mRotationYValue = vec.y;
+		mRotationZValue = vec.z;
 	}
 }

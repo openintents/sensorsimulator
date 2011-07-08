@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.controller.sensor;
 
 import org.openintents.tools.simulator.Global;
@@ -8,6 +24,14 @@ import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerMode
 import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.view.sensor.sensors.MagneticFieldView;
 
+/**
+ * MagneticFieldController keeps the behaviour of the MagneticField sensor
+ * (listeners, etc.)
+ * 
+ * @author Peli
+ * @author Josip Balic
+ * 
+ */
 public class MagneticFieldController extends SensorController {
 
 	public MagneticFieldController(MagneticFieldModel model,
@@ -21,8 +45,8 @@ public class MagneticFieldController extends SensorController {
 		double magneticnorth;
 		double magneticeast;
 		double magneticvertical;
-		MagneticFieldModel magModel = (MagneticFieldModel) model;
-		MagneticFieldView magView = (MagneticFieldView) view;
+		MagneticFieldModel magModel = (MagneticFieldModel) mSensorModel;
+		MagneticFieldView magView = (MagneticFieldView) mSensorView;
 
 		if (magModel.isEnabled()) {
 			magneticnorth = magView.getNorth();
@@ -62,7 +86,7 @@ public class MagneticFieldController extends SensorController {
 
 	@Override
 	public String getString() {
-		MagneticFieldModel magModel = (MagneticFieldModel) model;
+		MagneticFieldModel magModel = (MagneticFieldModel) mSensorModel;
 		return Global.TWO_DECIMAL_FORMAT.format(magModel.getReadCompassX())
 				+ ", "
 				+ Global.TWO_DECIMAL_FORMAT.format(magModel.getReadCompassY())

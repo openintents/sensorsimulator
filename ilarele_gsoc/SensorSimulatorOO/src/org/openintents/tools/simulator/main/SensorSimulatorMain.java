@@ -4,7 +4,7 @@
  * diploma thesis of Josip Balic at the University of Zagreb, Faculty of
  * Electrical Engineering and Computing.
  * 
- * Copyright (C) 2008-2010 OpenIntents.org
+ * Copyright (C) 2008-2011 OpenIntents.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,14 +34,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -61,14 +57,11 @@ import org.openintents.tools.simulator.TelnetSimulator;
  * 
  * @author Josip Balic
  */
-public class SensorSimulatorMain extends JPanel implements ActionListener,
-		WindowListener, ChangeListener, ItemListener {
+public class SensorSimulatorMain extends JPanel implements WindowListener,
+		ChangeListener, ItemListener {
 
 	private static final long serialVersionUID = -5990997086225010821L;
 	// command strings
-	static String new_Tab = "New Tab";
-	static String close_Tab = "Close Tab";
-	static String exit = "Exit";
 
 	// variable that holds running instances of Sensor Simulators
 	public static SimulatorInstances simulatorInstances = new SimulatorInstances();
@@ -82,45 +75,25 @@ public class SensorSimulatorMain extends JPanel implements ActionListener,
 		JFrame frame = new JFrame("SensorSimulator");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		// Create the menu bar.
+		// Create the menu bar: File Help
 		JMenuBar myMenuBar = new JMenuBar();
 		myMenuBar.setPreferredSize(new Dimension(200, 30));
-
-		// Add menu items
 		JMenu menuFile = new JMenu("File");
 		myMenuBar.add(menuFile);
 		JMenu menuHelp = new JMenu("Help");
 		myMenuBar.add(menuHelp);
 
-		// Create a group of JMenuItems
-		JMenuItem menuItem1;
-		JMenuItem menuItem2;
-		JMenuItem menuItem4;
+		// Exit menu
+		JMenuItem menuItemExit = new JMenuItem("Exit");
+		menuItemExit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		menuFile.add(menuItemExit);
 
-		// Create TabbedPane
-		JTabbedPane tabbedPane = new JTabbedPane();
-
-		// Create MenuListener
-		MenuListener menuListener = new MenuListener(tabbedPane,
-				simulatorInstances);
-
-		// Create MenuItems
-		menuItem1 = new JMenuItem("New Tab");
-		menuItem2 = new JMenuItem("Close Tab");
-		menuItem4 = new JMenuItem("Exit");
-		// SetActionCommands for MenuItems
-		menuItem1.setActionCommand(new_Tab);
-		menuItem2.setActionCommand(close_Tab);
-		menuItem4.setActionCommand(exit);
-		// Set ActionListeners for MenuItems
-		menuItem1.addActionListener(menuListener);
-		menuItem2.addActionListener(menuListener);
-		menuItem4.addActionListener(menuListener);
-		// Add MenuItems to Menu
-		menuFile.add(menuItem1);
-		menuFile.add(menuItem2);
-		menuFile.add(menuItem4);
-
+		// Help Online menu
 		JMenuItem menuItemHelpOnline = new JMenuItem("Online Help");
 		menuItemHelpOnline.addActionListener(new ActionListener() {
 			@Override
@@ -130,7 +103,8 @@ public class SensorSimulatorMain extends JPanel implements ActionListener,
 					if (desktop.isSupported(Desktop.Action.BROWSE)) {
 						URI uri;
 						try {
-							uri = new URI(Global.ONLINE_HELP_URI);
+							uri = new URI(
+									Global.HELP_SENSOR_SIMULATOR_DESCRIPTION_URL);
 							desktop.browse(uri);
 						} catch (URISyntaxException e) {
 							e.printStackTrace();
@@ -143,8 +117,9 @@ public class SensorSimulatorMain extends JPanel implements ActionListener,
 		});
 		menuHelp.add(menuItemHelpOnline);
 
+		// Create TabbedPane
+		JTabbedPane tabbedPane = new JTabbedPane();
 		tabbedPane.setPreferredSize(new Dimension(Global.WIDTH, Global.HEIGHT));
-		// Create tab pane and add first simulator tab to it
 		SensorSimulator simulator = new SensorSimulator();
 		TelnetSimulator telnet = new TelnetSimulator();
 
@@ -156,26 +131,21 @@ public class SensorSimulatorMain extends JPanel implements ActionListener,
 		JScrollPane telnetScroll = new JScrollPane(telnet.view);
 		telnetScroll
 				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+		// add Simulator and Telnet tabs
 		tabbedPane.addTab("Sensor Simulator", simulatorScroll);
 
 		tabbedPane.addTab("Telnet Simulator", telnetScroll);
 
-		frame.pack();
+		// add tabs
 		frame.add(tabbedPane);
 
-		// Create a yellow label to put in the content pane.
-		JLabel yellowLabel = new JLabel();
-		yellowLabel.setPreferredSize(new Dimension(400, 180));
-
-		// Start creating and adding components.
-		JCheckBox changeButton = new JCheckBox("Glass pane \"visible\"");
-		changeButton.setSelected(false);
-
-		// Set the menu bar and add the label to the content pane.
+		// add menu
 		frame.setJMenuBar(myMenuBar);
 
-		frame.pack();
+		// show frame
 		frame.setVisible(true);
+		frame.pack();
 	}
 
 	/**
@@ -244,84 +214,15 @@ public class SensorSimulatorMain extends JPanel implements ActionListener,
 	 * @param e
 	 *            , ActionEvent that generated action.
 	 */
-	public void actionPerformed(ActionEvent event) {
-		String action = event.getActionCommand();
-
-		if (action.equals(exit)) {
-			System.exit(0);
-		}
-
-	}
-
 	public void windowDeiconified(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void windowIconified(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void stateChanged(ChangeEvent arg0) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void itemStateChanged(ItemEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-}
-
-/**
- * MenuListener is inner class that implements ActionListener and allows us to
- * set what should happen on string commands.
- * 
- * @author Josip Balic
- */
-class MenuListener implements ActionListener {
-	private JTabbedPane tabbedPanel;
-	private SimulatorInstances sensorSimulatorInstance;
-
-	/**
-	 * Constructor.
-	 * 
-	 * @param tabbedPane
-	 *            , JTabbedPane we pass to MenuListener
-	 * @param simulatorInstance
-	 *            , SensorSimulatorInstances object that holds all of our sensor
-	 *            simulators instances
-	 */
-	public MenuListener(JTabbedPane tabbedPane,
-			SimulatorInstances simulatorInstance) {
-		tabbedPanel = tabbedPane;
-		sensorSimulatorInstance = simulatorInstance;
-	}
-
-	/**
-	 * In this method we implement what should happen for specific command
-	 * string.
-	 * 
-	 * @param e
-	 *            , ActionEvent
-	 */
-	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand() == "Exit") {
-			System.exit(0);
-		} else if (e.getActionCommand() == "New Tab") {
-			String st = JOptionPane.showInputDialog(null, "Enter Tab Name.");
-			if (!st.equals("")) {
-				SensorSimulator simulator = new SensorSimulator();
-				JComponent panel = simulator.view;
-				sensorSimulatorInstance.addSimulator(simulator);
-				tabbedPanel.addTab(st, panel);
-			} else {
-				JOptionPane.showMessageDialog(null, "Please name your Tab");
-			}
-		} else if (e.getActionCommand() == "Close Tab") {
-			tabbedPanel.remove(tabbedPanel.getSelectedComponent());
-		}
-
 	}
 }

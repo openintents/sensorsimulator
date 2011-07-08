@@ -4,7 +4,7 @@
  * diploma thesis of Josip Balic at the University of Zagreb, Faculty of
  * Electrical Engineering and Computing.
  *
- * Copyright (C) 2008-2010 OpenIntents.org
+ * Copyright (C) 2008-2011 OpenIntents.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ package org.openintents.tools.simulator.model.sensor;
 
 import java.util.ArrayList;
 
+import org.openintents.tools.simulator.SensorServer;
 import org.openintents.tools.simulator.SensorSimulator;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
@@ -43,11 +44,9 @@ import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
 
 /**
- * Class of SensorSimulator.
+ * SensorSimulatorModel keeps the internal data model behind SensorSimulator.
  * 
- * The SensorSimulator is a Java stand-alone application.
- * 
- * It simulates various sensors. An Android application can connect through
+ * SensorSimulator simulates various sensors. An Android application can connect through
  * TCP/IP with the settings shown to the SensorSimulator to simulate
  * accelerometer, compass, orientation sensor, and thermometer.
  * 
@@ -55,13 +54,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
  * @author Josip Balic
  */
 public class SensorSimulatorModel {
-	static String sendGPS = "send gps";
-	static String recordReplay = "replay Record";
-	static String playbackReplay = "replay Playback";
-	static String emulateBattery = "emulate battery";
-	static String nextTimeEvent = "next Time Event";
-
-	private int sensorsPort;
+	private int mSensorsPort;
 
 	private float mUpdate;
 	private long mRefreshCount;
@@ -70,64 +63,64 @@ public class SensorSimulatorModel {
 	private double mRefreshSensors;
 
 	// for measuring updates:
-	private int updateSensorCount;
-	private long updateSensorTime;
+	private int mUpdateSensorCount;
+	private long mUpdateSensorTime;
 
 	/**
 	 * Duration in milliseconds until user setting changes are read out.
 	 */
-	private long userSettingsDuration;
+	private long mUserSettingsDuration;
 
 	/**
 	 * Time of next update for reading user settings from widgets. The time is
 	 * compared to System.currentTimeMillis().
 	 */
-	private long userSettingsNextUpdate;
+	private long mUserSettingsNextUpdate;
 
 	// sensors
-	private ArrayList<SensorModel> sensors;
+	private ArrayList<SensorModel> mSensors;
 
 	// Server for sending out sensor data
 	private SensorServer mSensorServer;
 	private int mIncomingConnections;
 
 	// Simulation delay:
-	private int delay;
+	private int mDelay;
 	private SensorSimulator mSensorSimulator;
 
 	public SensorSimulatorModel(SensorSimulator sensorSimulator) {
 		mSensorSimulator = sensorSimulator;
 		// Initialize variables
-		sensorsPort = 8010;
-		delay = 500;
+		mSensorsPort = 8010;
+		mDelay = 500;
 
 		mIncomingConnections = 0;
 		mUpdate = 10;
 
 		// sensors
-		sensors = new ArrayList<SensorModel>();
-		sensors.add(new AccelerometerModel());
-		sensors.add(new MagneticFieldModel());
-		sensors.add(new OrientationModel());
-		sensors.add(new TemperatureModel());
-		sensors.add(new BarcodeReaderModel());
-		sensors.add(new LightModel());
-		sensors.add(new ProximityModel());
-		sensors.add(new PressureModel());
-		sensors.add(new LinearAccelerationModel());
-		sensors.add(new GravityModel());
-		sensors.add(new RotationVectorModel());
+		mSensors = new ArrayList<SensorModel>();
+		mSensors.add(new AccelerometerModel());
+		mSensors.add(new MagneticFieldModel());
+		mSensors.add(new OrientationModel());
+		mSensors.add(new TemperatureModel());
+		mSensors.add(new BarcodeReaderModel());
+		mSensors.add(new LightModel());
+		mSensors.add(new ProximityModel());
+		mSensors.add(new PressureModel());
+		mSensors.add(new LinearAccelerationModel());
+		mSensors.add(new GravityModel());
+		mSensors.add(new RotationVectorModel());
 
 		mSensorServer = new SensorServer(sensorSimulator);
 
-		userSettingsDuration = 500; // Update every half second. This should
+		mUserSettingsDuration = 500; // Update every half second. This should
 		// be enough.
-		userSettingsNextUpdate = System.currentTimeMillis(); // First update
+		mUserSettingsNextUpdate = System.currentTimeMillis(); // First update
 		// is now.
 
 		// Variables for timing:
-		updateSensorCount = 0;
-		updateSensorTime = System.currentTimeMillis();
+		mUpdateSensorCount = 0;
+		mUpdateSensorTime = System.currentTimeMillis();
 	}
 
 	/**
@@ -138,39 +131,39 @@ public class SensorSimulatorModel {
 	}
 
 	public MagneticFieldModel getMagneticField() {
-		return (MagneticFieldModel) sensors.get(SensorModel.POZ_MAGNETIC_FIELD);
+		return (MagneticFieldModel) mSensors.get(SensorModel.POZ_MAGNETIC_FIELD);
 	}
 
 	public TemperatureModel getTemperature() {
-		return (TemperatureModel) sensors.get(SensorModel.POZ_TEMPERATURE);
+		return (TemperatureModel) mSensors.get(SensorModel.POZ_TEMPERATURE);
 	}
 
 	public BarcodeReaderModel getBarcodeReader() {
-		return (BarcodeReaderModel) sensors.get(SensorModel.POZ_BARCODE_READER);
+		return (BarcodeReaderModel) mSensors.get(SensorModel.POZ_BARCODE_READER);
 	}
 
 	public LightModel getLight() {
-		return (LightModel) sensors.get(SensorModel.POZ_LIGHT);
+		return (LightModel) mSensors.get(SensorModel.POZ_LIGHT);
 	}
 
 	public ProximityModel getProximity() {
-		return (ProximityModel) sensors.get(SensorModel.POZ_PROXIMITY);
+		return (ProximityModel) mSensors.get(SensorModel.POZ_PROXIMITY);
 	}
 
 	public AccelerometerModel getAccelerometer() {
-		return (AccelerometerModel) sensors.get(SensorModel.POZ_ACCELEROMETER);
+		return (AccelerometerModel) mSensors.get(SensorModel.POZ_ACCELEROMETER);
 	}
 
 	public OrientationModel getOrientation() {
-		return (OrientationModel) sensors.get(SensorModel.POZ_ORIENTATION);
+		return (OrientationModel) mSensors.get(SensorModel.POZ_ORIENTATION);
 	}
 
 	public ArrayList<SensorModel> getSensors() {
-		return sensors;
+		return mSensors;
 	}
 
 	public int getSimulationPort() {
-		return sensorsPort;
+		return mSensorsPort;
 	}
 
 	public void stopSensorServer() {
@@ -187,11 +180,11 @@ public class SensorSimulatorModel {
 	}
 
 	public int getDelay() {
-		return delay;
+		return mDelay;
 	}
 
 	public int incUpdateSensorCount() {
-		return ++updateSensorCount;
+		return ++mUpdateSensorCount;
 	}
 
 	public long getRefreshCount() {
@@ -199,15 +192,15 @@ public class SensorSimulatorModel {
 	}
 
 	public long getUpdateSensorTime() {
-		return updateSensorTime;
+		return mUpdateSensorTime;
 	}
 
 	public void setUpdateSensorTime(long newVal) {
-		updateSensorTime = newVal;
+		mUpdateSensorTime = newVal;
 	}
 
 	public void setUpdateSensorCount(int newVal) {
-		updateSensorCount = newVal;
+		mUpdateSensorCount = newVal;
 	}
 
 	public void setRefreshSensors(double ms) {
@@ -215,39 +208,39 @@ public class SensorSimulatorModel {
 	}
 
 	public long getNextUpdate() {
-		return userSettingsNextUpdate;
+		return mUserSettingsNextUpdate;
 	}
 
 	public double getDuration() {
-		return userSettingsDuration;
+		return mUserSettingsDuration;
 	}
 
 	public void addNextUpdate(double duration) {
-		userSettingsNextUpdate += duration;
+		mUserSettingsNextUpdate += duration;
 	}
 
 	public void setNextUpdate(long ms) {
-		userSettingsNextUpdate = ms;
+		mUserSettingsNextUpdate = ms;
 	}
 
 	public void setDelay(int newdelay) {
-		delay = newdelay;
+		mDelay = newdelay;
 	}
 
 	public PressureModel getPressure() {
-		return (PressureModel) sensors.get(SensorModel.POZ_PRESSURE);
+		return (PressureModel) mSensors.get(SensorModel.POZ_PRESSURE);
 	}
 
 	public LinearAccelerationModel getLinearAcceleration() {
-		return (LinearAccelerationModel) sensors
+		return (LinearAccelerationModel) mSensors
 				.get(SensorModel.POZ_LINEAR_ACCELERATION);
 	}
 
 	public GravityModel getGravity() {
-		return (GravityModel) sensors.get(SensorModel.POZ_GRAVITY);
+		return (GravityModel) mSensors.get(SensorModel.POZ_GRAVITY);
 	}
 
 	public RotationVectorModel getRotationVector() {
-		return (RotationVectorModel) sensors.get(SensorModel.POZ_ROTATION);
+		return (RotationVectorModel) mSensors.get(SensorModel.POZ_ROTATION);
 	}
 }

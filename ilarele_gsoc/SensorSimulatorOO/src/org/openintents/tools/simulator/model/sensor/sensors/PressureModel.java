@@ -1,27 +1,44 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.model.sensor.sensors;
 
 import java.io.PrintWriter;
 
+/**
+ * PressureModel keeps the internal data model behind Pressure Sensor.
+ * 
+ * @author ilarele
+ *
+ */
 public class PressureModel extends SensorModel {
 
 	// pressure
-	private double pressureValue;
+	private double mPressureValue;
 	/** Current read-out value of pressure. */
-	private double read_pressure;
-
-	/**
-	 * Time of next update required. The time is compared to
-	 * System.currentTimeMillis().
-	 */
-	private long pressure_next_update;
+	private double mReadPressure;
+	
 	/** Partial read-out value of pressure. */
-	private float partial_pressure;
+	private float mPartialPressure;
 	/** Number of summands in partial sum for pressure. */
-	private int partial_pressure_n;
+	private int mPartialPressureN;
 
 	public PressureModel() {
 		super();
-		pressureValue = 0.5;
+		mPressureValue = 0.5;
 	}
 
 	@Override
@@ -33,48 +50,48 @@ public class PressureModel extends SensorModel {
 	public void updateSensorReadoutValues() {
 		long currentTime = System.currentTimeMillis();
 		// Form the average
-		if (average) {
-			partial_pressure += pressureValue;
-			partial_pressure_n++;
+		if (mAverage) {
+			mPartialPressure += mPressureValue;
+			mPartialPressureN++;
 		}
 
 		// Update
-		if (currentTime >= pressure_next_update) {
-			pressure_next_update += updateDuration;
-			if (pressure_next_update < currentTime) {
+		if (currentTime >= mNextUpdate) {
+			mNextUpdate += mUpdateDuration;
+			if (mNextUpdate < currentTime) {
 				// Don't lag too much behind.
 				// If we are too slow, then we are too slow.
-				pressure_next_update = currentTime;
+				mNextUpdate = currentTime;
 			}
 
-			if (average) {
+			if (mAverage) {
 				// form average
-				read_pressure = partial_pressure / partial_pressure_n;
+				mReadPressure = mPartialPressure / mPartialPressureN;
 
 				// reset average
-				partial_pressure = 0;
-				partial_pressure_n = 0;
+				mPartialPressure = 0;
+				mPartialPressureN = 0;
 
 			} else {
 				// Only take current value
-				read_pressure = pressureValue;
+				mReadPressure = mPressureValue;
 			}
 		}
 	}
 
 	@Override
-	public void printNumValues(PrintWriter out) {
+	public void getNumSensorValues(PrintWriter out) {
 		out.println("1");
 	}
 
 	@Override
 	public void printSensorData(PrintWriter out) {
 		// number of data following + data
-		out.println("1\n" + read_pressure);
+		out.println("1\n" + mReadPressure);
 	}
 
 	public double getPressure() {
-		return pressureValue;
+		return mPressureValue;
 	}
 
 	@Override
@@ -83,20 +100,20 @@ public class PressureModel extends SensorModel {
 	}
 
 	public double getReadPressure() {
-		return read_pressure;
+		return mReadPressure;
 	}
 
 	public void setPressure(double value) {
 		if (value > 1)
-			pressureValue = 1;
+			mPressureValue = 1;
 		else if (value < 0)
-			pressureValue = 0;
+			mPressureValue = 0;
 		else
-			pressureValue = value;
+			mPressureValue = value;
 	}
 
 	public void addPressure(double value) {
-		setPressure(pressureValue + value);
+		setPressure(mPressureValue + value);
 	}
 
 	@Override

@@ -1,43 +1,60 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.model.sensor.sensors;
 
 import java.io.PrintWriter;
 
 import org.openintents.tools.simulator.model.telnet.Vector;
 
+/**
+ * GravityModel keeps the internal data model behind Gravity Sensor.
+ * 
+ * @author ilarele
+ */
 public class GravityModel extends SensorModel {
 	// gravity
-	private double gravity_x_value;
-	private double gravity_y_value;
-	private double gravity_z_value;
+	private double mGravityX;
+	private double mGravityY;
+	private double mGravityZ;
 	/** Current read-out value of gravity. */
-	private double read_gravity_x;
-	private double read_gravity_y;
-	private double read_gravity_z;
+	private double mReadGravityX;
+	private double mReadGravityY;
+	private double mReadGravityZ;
 
-	/**
-	 * Time of next update required. The time is compared to
-	 * System.currentTimeMillis().
-	 */
-	private long gravity_next_update;
+	
 	/** Partial read-out value of gravity. */
-	private float partial_gravity_x;
-	private float partial_gravity_y;
-	private float partial_gravity_z;
+	private float mPartialGravityX;
+	private float mPartialGravityY;
+	private float mPartialGravityZ;
 
 	/** Number of summands in partial sum for gravity. */
-	private int partial_gravity_n;
+	private int mPartialGravityN;
 
 	// Gravity
-	private double g;
+	private double mGConstant;
 	private double mGravityLimit;
 
 	public GravityModel() {
 		super();
-		read_gravity_x = gravity_x_value = 0;
-		read_gravity_y = gravity_y_value = 0;
-		read_gravity_z = gravity_z_value = -9.8;
+		mReadGravityX = mGravityX = 0;
+		mReadGravityY = mGravityY = 0;
+		mReadGravityZ = mGravityZ = -9.8;
 
-		g = 9.80665; // meter per second^2
+		mGConstant = 9.80665; // meter per second^2
 		mGravityLimit = 10;
 	}
 
@@ -50,64 +67,64 @@ public class GravityModel extends SensorModel {
 	public void updateSensorReadoutValues() {
 		long currentTime = System.currentTimeMillis();
 		// Form the average
-		if (average) {
-			partial_gravity_x += gravity_x_value;
-			partial_gravity_y += gravity_y_value;
-			partial_gravity_z += gravity_z_value;
-			partial_gravity_n++;
+		if (mAverage) {
+			mPartialGravityX += mGravityX;
+			mPartialGravityY += mGravityY;
+			mPartialGravityZ += mGravityZ;
+			mPartialGravityN++;
 		}
 
 		// Update
-		if (currentTime >= gravity_next_update) {
-			gravity_next_update += updateDuration;
-			if (gravity_next_update < currentTime) {
+		if (currentTime >= mNextUpdate) {
+			mNextUpdate += mUpdateDuration;
+			if (mNextUpdate < currentTime) {
 				// Don't lag too much behind.
 				// If we are too slow, then we are too slow.
-				gravity_next_update = currentTime;
+				mNextUpdate = currentTime;
 			}
 
-			if (average) {
+			if (mAverage) {
 				// form average
-				read_gravity_x = partial_gravity_x / partial_gravity_n;
-				read_gravity_y = partial_gravity_y / partial_gravity_n;
-				read_gravity_z = partial_gravity_z / partial_gravity_n;
+				mReadGravityX = mPartialGravityX / mPartialGravityN;
+				mReadGravityY = mPartialGravityY / mPartialGravityN;
+				mReadGravityZ = mPartialGravityZ / mPartialGravityN;
 				// reset average
-				partial_gravity_x = 0;
-				partial_gravity_y = 0;
-				partial_gravity_z = 0;
-				partial_gravity_n = 0;
+				mPartialGravityX = 0;
+				mPartialGravityY = 0;
+				mPartialGravityZ = 0;
+				mPartialGravityN = 0;
 			} else {
 				// Only take current value
-				read_gravity_x = gravity_x_value;
-				read_gravity_y = gravity_y_value;
-				read_gravity_z = gravity_z_value;
+				mReadGravityX = mGravityX;
+				mReadGravityY = mGravityY;
+				mReadGravityZ = mGravityZ;
 			}
 		}
 	}
 
 	@Override
-	public void printNumValues(PrintWriter out) {
+	public void getNumSensorValues(PrintWriter out) {
 		out.println("3");
 	}
 
 	@Override
 	public void printSensorData(PrintWriter out) {
 		// number of data following + data
-		out.println("3\n" + read_gravity_x + "\n" + read_gravity_y + "\n"
-				+ read_gravity_z);
+		out.println("3\n" + mReadGravityX + "\n" + mReadGravityY + "\n"
+				+ mReadGravityZ);
 
 	}
 
 	public double getGravityX() {
-		return read_gravity_x;
+		return mReadGravityX;
 	}
 
 	public double getGravityY() {
-		return read_gravity_y;
+		return mReadGravityY;
 	}
 
 	public double getGravityZ() {
-		return read_gravity_z;
+		return mReadGravityZ;
 	}
 
 	@Override
@@ -116,15 +133,15 @@ public class GravityModel extends SensorModel {
 	}
 
 	public void setGravity(double x, double y, double z) {
-		gravity_x_value = x;
-		gravity_y_value = y;
-		gravity_z_value = z;
+		mGravityX = x;
+		mGravityY = y;
+		mGravityZ = z;
 	}
 
 	public void addGravity(double addX, double addY, double addZ) {
-		gravity_x_value += addX;
-		gravity_y_value += addY;
-		gravity_z_value += addZ;
+		mGravityX += addX;
+		mGravityY += addY;
+		mGravityZ += addZ;
 	}
 
 	@Override
@@ -133,25 +150,25 @@ public class GravityModel extends SensorModel {
 	}
 
 	public double getReadGravityX() {
-		return read_gravity_x;
+		return mReadGravityX;
 	}
 
 	public double getReadGravityY() {
-		return read_gravity_y;
+		return mReadGravityY;
 	}
 
 	public double getReadGravityZ() {
-		return read_gravity_z;
+		return mReadGravityZ;
 	}
 
 	public void setGravity(Vector vec) {
-		gravity_x_value = vec.x;
-		gravity_y_value = vec.y;
-		gravity_z_value = vec.z;
+		mGravityX = vec.x;
+		mGravityY = vec.y;
+		mGravityZ = vec.z;
 	}
 
 	public double getGravityConstant() {
-		return g;
+		return mGConstant;
 	}
 
 	public double getAccelLimit() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 OpenIntents.org
+ * Copyright (C) 2008 - 2011 OpenIntents.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package org.openintents.tools.simulator.model.sensor;
+package org.openintents.tools.simulator;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import org.openintents.tools.simulator.SensorSimulator;
 
 /**
  * Listens for incoming connections from an Android phone or emulator.
@@ -31,20 +29,19 @@ import org.openintents.tools.simulator.SensorSimulator;
  * 
  */
 public class SensorServer implements Runnable {
-
-	public SensorSimulator mSensorSimulator;
+	private SensorSimulator mSensorSimulator;
 
 	/**
 	 * linked list of all successors, so that we can destroy them when needed.
 	 */
-	public Thread mThread;
-	public SensorServerThread firstThread;
-	public SensorServerThread lastThread;
+	private Thread mThread;
+	private SensorServerThread mFirstThread;
+	private SensorServerThread mLastThread;
 
-	private ServerSocket serverSocket;
+	private ServerSocket mServerSocket;
 
-	public int port;
-	public boolean listening;
+	private int mPort;
+	private boolean mListening;
 
 	/**
 	 * Constructor to start as server that listens for connections.
@@ -54,9 +51,9 @@ public class SensorServer implements Runnable {
 	 */
 	public SensorServer(SensorSimulator newSensorSimulator) {
 		mSensorSimulator = newSensorSimulator;
-		firstThread = null;
-		lastThread = null;
-		listening = true;
+		mFirstThread = null;
+		mLastThread = null;
+		mListening = true;
 
 		// start ourselves:
 		mThread = new Thread(this);
@@ -75,25 +72,23 @@ public class SensorServer implements Runnable {
 	 */
 	public void listenServer() {
 		// obtain port number:
-		port = mSensorSimulator.model.getSimulationPort();
-		if (port == 0)
+		mPort = mSensorSimulator.model.getSimulationPort();
+		if (mPort == 0)
 			return;
 
-		serverSocket = null;
+		mServerSocket = null;
 		try {
-			serverSocket = new ServerSocket(port);
+			mServerSocket = new ServerSocket(mPort);
 		} catch (IOException e) {
-			// mSensorSimulatorModel.addMessage("Could not listen on port: " +
-			// port);
+			mSensorSimulator.addMessage("Could not listen on port: " + mPort);
 			return;
 		}
 
 		Socket clientSocket = null;
 		try {
-			// mSensorSimulatorModel.addMessage("Listening on port " + port +
-			// "...");
-			while (listening) {
-				clientSocket = serverSocket.accept();
+			mSensorSimulator.addMessage("Listening on port " + mPort + "...");
+			while (mListening) {
+				clientSocket = mServerSocket.accept();
 
 				// First we notify this:
 				mSensorSimulator.newClient();
@@ -103,20 +98,20 @@ public class SensorServer implements Runnable {
 						mSensorSimulator, clientSocket);
 
 				// set the linking:
-				if (firstThread == null) {
+				if (mFirstThread == null) {
 					// this is the first thread:
-					firstThread = newThread;
-					lastThread = newThread;
+					mFirstThread = newThread;
+					mLastThread = newThread;
 				} else {
 					// link into chain:
-					lastThread.nextThread = newThread;
-					newThread.previousThread = lastThread;
-					lastThread = newThread;
+					mLastThread.setNextThread(newThread);
+					newThread.setPreviousThread(mLastThread);
+					mLastThread = newThread;
 				}
 			}
 
 		} catch (IOException e) {
-			if (listening) {
+			if (mListening) {
 				System.err.println("Accept failed.");
 			} else {
 				// everything ok, socket closed by user.
@@ -124,7 +119,7 @@ public class SensorServer implements Runnable {
 		}
 
 		try {
-			serverSocket.close();
+			mServerSocket.close();
 		} catch (IOException e) {
 			System.err.println("Close failed.");
 			System.exit(1);
@@ -139,19 +134,19 @@ public class SensorServer implements Runnable {
 		// go through the list and kill in turn
 		SensorServerThread sst;
 		SensorServerThread ssthelp;
-		for (sst = firstThread; sst != null; sst = ssthelp) {
+		for (sst = mFirstThread; sst != null; sst = ssthelp) {
 			// first remember next pointer before it is gone:
-			ssthelp = sst.nextThread;
+			ssthelp = sst.getNextThread();
 			// sst.mThread.interrupt();
 			sst.stop();
 		}
 		// finally kill ourselves:
-		listening = false;
+		mListening = false;
 
 		try {
-			if (serverSocket != null) {
-				// mSensorSimulatorModel.addMessage("Closing listening server...");
-				serverSocket.close();
+			if (mServerSocket != null) {
+				mSensorSimulator.addMessage("Closing listening server...");
+				mServerSocket.close();
 			}
 		} catch (IOException e) {
 			System.err.println("Close failed.");

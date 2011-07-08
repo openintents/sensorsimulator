@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.controller.sensor;
 
 import java.awt.event.ItemEvent;
@@ -13,6 +29,14 @@ import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.view.sensor.DeviceView;
 import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
 
+/**
+ * AccelerometerController keeps the behaviour of the Accelerometer sensor
+ * (listeners, etc.)
+ * 
+ * @author Peli
+ * @author Josip Balic
+ * 
+ */
 public class AccelerometerController extends SensorController {
 	@SuppressWarnings("unused")
 	private WiiAccelerometerController wiiAccelerometerCtrl;
@@ -25,8 +49,13 @@ public class AccelerometerController extends SensorController {
 				view.getRealDeviceBridgeAddon());
 	}
 
+	/**
+	 * It is used to control "show Acceleration" in the device representation.
+	 * 
+	 * @param mobile
+	 */
 	public void setMobile(final DeviceView mobile) {
-		AccelerometerView accView = (AccelerometerView) view;
+		AccelerometerView accView = (AccelerometerView) mSensorView;
 		accView.getShowAcceleration().addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -40,8 +69,8 @@ public class AccelerometerController extends SensorController {
 	@Override
 	public void updateSensorPhysics(OrientationModel orientation,
 			WiiAccelerometerModel realDeviceBridgeAddon, int delay) {
-		AccelerometerModel accModel = (AccelerometerModel) model;
-		AccelerometerView accView = (AccelerometerView) view;
+		AccelerometerModel accModel = (AccelerometerModel) mSensorModel;
+		AccelerometerView accView = (AccelerometerView) mSensorView;
 
 		double g = accView.getGravityConstant();
 
@@ -120,7 +149,7 @@ public class AccelerometerController extends SensorController {
 
 	@Override
 	public String getString() {
-		AccelerometerModel accModel = (AccelerometerModel) model;
+		AccelerometerModel accModel = (AccelerometerModel) mSensorModel;
 		return Global.TWO_DECIMAL_FORMAT.format(accModel
 				.getReadAccelerometerX())
 				+ ", "
@@ -130,5 +159,4 @@ public class AccelerometerController extends SensorController {
 				+ Global.TWO_DECIMAL_FORMAT.format(accModel
 						.getReadAccelerometerZ());
 	}
-
 }

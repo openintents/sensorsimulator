@@ -4,7 +4,7 @@
  * diploma thesis of Josip Balic at the University of Zagreb, Faculty of
  * Electrical Engineering and Computing.
  * 
- * Copyright (C) 2008-2010 OpenIntents.org
+ * Copyright (C) 2008-2011 OpenIntents.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,15 +32,14 @@ import java.util.ArrayList;
  */
 public class FileRunnable implements Runnable {
 
-	public ArrayList<String> dateAndTime = new ArrayList<String>();
-	public ArrayList<String> simulationType = new ArrayList<String>();
-	public ArrayList<String> time = new ArrayList<String>();
-	public ArrayList<String> values = new ArrayList<String>();
-	public ArrayList<Integer> breakingPlaces = new ArrayList<Integer>();
-	public int i = 0;
-	public long[] time3;
-	public FileThread thread;
-	public TelnetServer myTelnetServer;
+	private ArrayList<String> dateAndTime = new ArrayList<String>();
+	private ArrayList<String> simulationType = new ArrayList<String>();
+	private ArrayList<String> time = new ArrayList<String>();
+	private ArrayList<String> values = new ArrayList<String>();
+	private ArrayList<Integer> breakingPlaces = new ArrayList<Integer>();
+	private long[] time3;
+	private FileThread thread;
+	private TelnetServer myTelnetServer;
 
 	/**
 	 * Constructor for FileRunnable class. Here we initialize all the variables.
@@ -74,7 +73,6 @@ public class FileRunnable implements Runnable {
 		values = values2;
 		breakingPlaces = places;
 		time3 = time4;
-		i = time.size();
 		myTelnetServer = telnetServer;
 	}
 
@@ -87,6 +85,10 @@ public class FileRunnable implements Runnable {
 				time3, myTelnetServer, breakingPlaces);
 		thread.start();
 
+	}
+
+	public void interrupt() {
+		thread.interrupt();		
 	}
 
 }

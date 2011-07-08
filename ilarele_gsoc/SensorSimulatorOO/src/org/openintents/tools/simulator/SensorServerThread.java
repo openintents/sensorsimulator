@@ -4,7 +4,7 @@
  * diploma thesis of Josip Balic at the University of Zagreb, Faculty of
  * Electrical Engineering and Computing.
  *
- * Copyright (C) 2008-2010 OpenIntents.org
+ * Copyright (C) 2008-2011 OpenIntents.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package org.openintents.tools.simulator.model.sensor;
+package org.openintents.tools.simulator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,9 +28,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import org.openintents.tools.simulator.SensorSimulator;
 import org.openintents.tools.simulator.controller.SensorSimulatorController;
 import org.openintents.tools.simulator.controller.sensor.SensorController;
+import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 
 /**
@@ -41,24 +41,25 @@ import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
  * 
  * @author Peli
  * @author Josip Balic
+ * @author ilarele
  */
 public class SensorServerThread implements Runnable {
 
-	public SensorSimulator mSensorSimulator;
+	private SensorSimulator mSensorSimulator;
 
 	/**
 	 * linked list of all successors, so that we can destroy them when needed.
 	 */
-	public Thread mThread;
-	public SensorServerThread nextThread;
-	public SensorServerThread previousThread;
+	private Thread mThread;
+	private SensorServerThread mNextThread;
+	private SensorServerThread mPreviousThread;
 
-	public Socket mClientSocket;
+	private Socket mClientSocket;
 
 	/**
 	 * Whether thread is supposed to be continuing work.
 	 */
-	boolean talking;
+	private boolean mTalking;
 
 	/**
 	 * Constructor to start as thread.
@@ -71,12 +72,12 @@ public class SensorServerThread implements Runnable {
 	public SensorServerThread(SensorSimulator newSensorSimulator,
 			Socket newClientSocket) {
 		mSensorSimulator = newSensorSimulator;
-		nextThread = null;
-		previousThread = null;
+		mNextThread = null;
+		mPreviousThread = null;
 		mClientSocket = newClientSocket;
-		talking = true;
+		mTalking = true;
 
-		mSensorSimulator.fixEnabledSensors();
+		mSensorSimulator.blockSensorsEnabling();
 
 		// start ourselves:
 		mThread = new Thread(this);
@@ -103,53 +104,33 @@ public class SensorServerThread implements Runnable {
 					true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					mClientSocket.getInputStream()));
-			String inputLine, outputLine;
+			String cmd, outputLine;
 
 			outputLine = "SensorSimulator";
 			out.println(outputLine);
 
-			// mSensorSimulator.addMessage("Incoming connection opened.");
+			mSensorSimulator.addMessage("Incoming connection opened.");
 
-			while ((inputLine = in.readLine()) != null) {
-				if (inputLine.compareTo("getSupportedSensors()") == 0) {
+			// here we treat different getSupportedSensors command from others
+			// (others have the name of the sensor in the input stream)
+			while ((cmd = in.readLine()) != null) {
+				if (cmd.compareTo("getSupportedSensors()") == 0) {
 					String[] supportedSensors = getSupportedSensors();
 					out.println(supportedSensors.length);
 					for (int i = 0; i < supportedSensors.length; i++) {
 						out.println(supportedSensors[i]);
 					}
-				} else if (inputLine.compareTo("readSensor()") == 0) {
-					inputLine = in.readLine();
-					SensorController sensorCtrl = getSensorCtrlFromName(inputLine);
-					if (sensorCtrl != null) {
-						sensorCtrl.readSensor(out);
-						sensorCtrl.updateEmulatorRefresh(mSensorSimulator.view
-								.getRefreshCount());
-					} else
-						out.println("throw IllegalArgumentException");
 				} else {
-					SensorModel sensor = getSensorModelFromName(inputLine);
-					if (sensor != null) {
-						inputLine = in.readLine();
-						executeCommand(sensor, out, in, inputLine);
-					} else {
-						out.println("throw IllegalArgumentException");
-						System.out
-								.println("WARNING: Client sent unexpected command: "
-										+ inputLine);
-						// ??? The client is violating the protocol.
-						// mSensorSimulator
-						// .addMessage("WARNING: Client sent unexpected command: "
-						// + inputLine);
-					}
+					executeCommand(out, in, cmd);
 				}
 			}
-			mSensorSimulator.unfixEnabledSensors();
+			mSensorSimulator.unBlockSensorsEnabling();
 			out.close();
 			in.close();
 			mClientSocket.close();
 
 		} catch (IOException e) {
-			if (talking) {
+			if (mTalking) {
 				System.err.println("IOException in SensorServerThread.");
 				try {
 					if (mClientSocket != null)
@@ -164,82 +145,124 @@ public class SensorServerThread implements Runnable {
 
 		// Here we finish program execution and we take ourselves out of the
 		// chained list:
-		if (previousThread != null) {
-			previousThread.nextThread = nextThread;
+		if (mPreviousThread != null) {
+			mPreviousThread.mNextThread = mNextThread;
 		}
-		if (nextThread != null) {
-			nextThread.previousThread = previousThread;
+		if (mNextThread != null) {
+			mNextThread.mPreviousThread = mPreviousThread;
 		}
-		// mSensorSimulator.addMessage("Incoming connection closed.");
+		mSensorSimulator.addMessage("Incoming connection closed.");
 	}
 
-	private void executeCommand(SensorModel sensor, PrintWriter out,
-			BufferedReader inArgs, String cmd) throws IOException {
-		SensorController sensorCtrl = getSensorCtrlFromName(sensor.getName());
+	/**
+	 * Here each command is executed following the protocol between server and
+	 * client application.
+	 * 
+	 * @param out
+	 *            OutputStream (to write in)
+	 * @param in
+	 *            InputStream (to read from)
+	 * @param cmd
+	 *            command to be executed
+	 * @throws IOException
+	 */
+	private void executeCommand(PrintWriter out, BufferedReader in, String cmd)
+			throws IOException {
+		String sensorName = in.readLine();
+		SensorController sensorCtrl = getSensorCtrlFromName(sensorName);
+		SensorModel sensorModel = getSensorModelFromName(sensorName);
 		if (cmd.compareTo("getNumSensorValues()") == 0)
-			sensor.getNumSensorValues(out);
+			sensorModel.getNumSensorValues(out);
 		else if (cmd.compareTo("setSensorUpdateDelay()") == 0) {
-			String args = inArgs.readLine();
+			String args = in.readLine();
 			int updateDelay = Integer.parseInt(args);
 			sensorCtrl.setCurrentUpdateRate(updateDelay);
-			sensor.setSensorUpdateRate(out);
+			sensorModel.setSensorUpdateRate(out);
 		} else if (cmd.compareTo("unsetSensorUpdateRate()") == 0) {
-			sensor.unsetSensorUpdateRate(out);
-			sensorCtrl.setCurrentUpdateRate(sensor.getDefaultUpdateRate());
-		} else
-			out.println("throw IllegalArgumentException");
+			sensorModel.unsetSensorUpdateRate(out);
+			sensorCtrl.setCurrentUpdateRate(sensorModel.getDefaultUpdateRate());
+		} else if (cmd.compareTo("readSensor()") == 0) {
+			if (sensorCtrl != null) {
+				sensorCtrl.readSensor(out);
+				sensorCtrl.updateEmulatorRefresh(mSensorSimulator.view
+						.getRefreshCount());
+			} else {
+				out.println("throw IllegalArgumentException");
+				// ??? The client is violating the protocol.
+				mSensorSimulator
+						.addMessage("WARNING: Client sent unexpected command: "
+								+ cmd);
+			}
+		}
+
+		out.println("throw IllegalArgumentException");
 	}
 
-	private SensorController getSensorCtrlFromName(String inputLine) {
-		SensorSimulatorController ctrl = mSensorSimulator.ctrl;
-		if (inputLine.compareTo(SensorModel.ACCELEROMETER) == 0)
+	/**
+	 * Returns the controller component of a sensor by name. (by accessing
+	 * mSensorSimulator.controller list with all controllers)
+	 * 
+	 * @param sensorName
+	 * @return
+	 */
+
+	private SensorController getSensorCtrlFromName(String sensorName) {
+		SensorSimulatorController ctrl = mSensorSimulator.controller;
+		if (sensorName.compareTo(SensorModel.ACCELEROMETER) == 0)
 			return ctrl.getAccelerometer();
-		else if (inputLine.compareTo(SensorModel.MAGNETIC_FIELD) == 0)
+		else if (sensorName.compareTo(SensorModel.MAGNETIC_FIELD) == 0)
 			return ctrl.getMagneticField();
-		else if (inputLine.compareTo(SensorModel.ORIENTATION) == 0)
+		else if (sensorName.compareTo(SensorModel.ORIENTATION) == 0)
 			return ctrl.getOrientation();
-		else if (inputLine.compareTo(SensorModel.TEMPERATURE) == 0)
+		else if (sensorName.compareTo(SensorModel.TEMPERATURE) == 0)
 			return ctrl.getTemperature();
-		else if (inputLine.compareTo(SensorModel.BARCODE_READER) == 0)
+		else if (sensorName.compareTo(SensorModel.BARCODE_READER) == 0)
 			return ctrl.getBarcodeReader();
-		else if (inputLine.compareTo(SensorModel.LIGHT) == 0)
+		else if (sensorName.compareTo(SensorModel.LIGHT) == 0)
 			return ctrl.getLight();
-		else if (inputLine.compareTo(SensorModel.PROXIMITY) == 0)
+		else if (sensorName.compareTo(SensorModel.PROXIMITY) == 0)
 			return ctrl.getProximity();
-		else if (inputLine.compareTo(SensorModel.PRESSURE) == 0)
+		else if (sensorName.compareTo(SensorModel.PRESSURE) == 0)
 			return ctrl.getPressure();
-		else if (inputLine.compareTo(SensorModel.LINEAR_ACCELERATION) == 0)
+		else if (sensorName.compareTo(SensorModel.LINEAR_ACCELERATION) == 0)
 			return ctrl.getLinearAcceleration();
-		else if (inputLine.compareTo(SensorModel.GRAVITY) == 0)
+		else if (sensorName.compareTo(SensorModel.GRAVITY) == 0)
 			return ctrl.getGravity();
-		else if (inputLine.compareTo(SensorModel.ROTATION_VECTOR) == 0)
+		else if (sensorName.compareTo(SensorModel.ROTATION_VECTOR) == 0)
 			return ctrl.getRotationVector();
 		return null;
 	}
 
-	private SensorModel getSensorModelFromName(String inputLine) {
+	/**
+	 * Returns the model component of a sensor by name. (by accessing
+	 * mSensorSimulator.modellist with all models)
+	 * 
+	 * @param sensorName
+	 * @return
+	 */
+	private SensorModel getSensorModelFromName(String sensorName) {
 		SensorSimulatorModel model = mSensorSimulator.model;
-		if (inputLine.compareTo(SensorModel.ACCELEROMETER) == 0)
+		if (sensorName.compareTo(SensorModel.ACCELEROMETER) == 0)
 			return model.getAccelerometer();
-		else if (inputLine.compareTo(SensorModel.MAGNETIC_FIELD) == 0)
+		else if (sensorName.compareTo(SensorModel.MAGNETIC_FIELD) == 0)
 			return model.getMagneticField();
-		else if (inputLine.compareTo(SensorModel.ORIENTATION) == 0)
+		else if (sensorName.compareTo(SensorModel.ORIENTATION) == 0)
 			return model.getOrientation();
-		else if (inputLine.compareTo(SensorModel.TEMPERATURE) == 0)
+		else if (sensorName.compareTo(SensorModel.TEMPERATURE) == 0)
 			return model.getTemperature();
-		else if (inputLine.compareTo(SensorModel.BARCODE_READER) == 0)
+		else if (sensorName.compareTo(SensorModel.BARCODE_READER) == 0)
 			return model.getBarcodeReader();
-		else if (inputLine.compareTo(SensorModel.LIGHT) == 0)
+		else if (sensorName.compareTo(SensorModel.LIGHT) == 0)
 			return model.getLight();
-		else if (inputLine.compareTo(SensorModel.PROXIMITY) == 0)
+		else if (sensorName.compareTo(SensorModel.PROXIMITY) == 0)
 			return model.getProximity();
-		else if (inputLine.compareTo(SensorModel.PRESSURE) == 0)
+		else if (sensorName.compareTo(SensorModel.PRESSURE) == 0)
 			return model.getPressure();
-		else if (inputLine.compareTo(SensorModel.LINEAR_ACCELERATION) == 0)
+		else if (sensorName.compareTo(SensorModel.LINEAR_ACCELERATION) == 0)
 			return model.getLinearAcceleration();
-		else if (inputLine.compareTo(SensorModel.GRAVITY) == 0)
+		else if (sensorName.compareTo(SensorModel.GRAVITY) == 0)
 			return model.getGravity();
-		else if (inputLine.compareTo(SensorModel.ROTATION_VECTOR) == 0)
+		else if (sensorName.compareTo(SensorModel.ROTATION_VECTOR) == 0)
 			return model.getRotationVector();
 		return null;
 	}
@@ -269,12 +292,24 @@ public class SensorServerThread implements Runnable {
 	 */
 	public void stop() {
 		try {
-			talking = false;
+			mTalking = false;
 			mClientSocket.close();
-			mSensorSimulator.unfixEnabledSensors();
+			mSensorSimulator.unBlockSensorsEnabling();
 		} catch (IOException e) {
 			System.err.println("Close failed.");
 			System.exit(1);
 		}
+	}
+
+	public void setNextThread(SensorServerThread newThread) {
+		mNextThread = newThread;
+	}
+
+	public void setPreviousThread(SensorServerThread mLastThread) {
+		mPreviousThread = mLastThread;
+	}
+
+	public SensorServerThread getNextThread() {
+		return mNextThread;
 	}
 }

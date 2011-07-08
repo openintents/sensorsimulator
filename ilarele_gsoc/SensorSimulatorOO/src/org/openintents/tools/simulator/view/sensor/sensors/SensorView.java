@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.view.sensor.sensors;
 
 import java.awt.BorderLayout;
@@ -26,10 +42,17 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.Global;
-import org.openintents.tools.simulator.JTextAreaWrap;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.util.HtmlTextPane;
 import org.openintents.tools.simulator.view.help.HelpWindow;
 
+/**
+ * SensorView keeps the GUI for a sensor. It contains fields and methods common
+ * to all sensors and methods that must be implemented for each one.
+ * 
+ * @author ilarele
+ * 
+ */
 public abstract class SensorView extends JScrollPane {
 	private static final long serialVersionUID = 6732292499469735861L;
 	private static final String EMPTY_LABEL = "                 -                ";
@@ -62,9 +85,9 @@ public abstract class SensorView extends JScrollPane {
 				(int) (Global.HEIGHT * Global.SENSOR_SPLIT_UP)));
 		mEnabled = new JButton(model.getName());
 		if (model.isEnabled())
-			mEnabled.setBackground(Global.ENABLE);
+			mEnabled.setBackground(Global.COLOR_ENABLE);
 		else
-			mEnabled.setBackground(Global.DISABLE);
+			mEnabled.setBackground(Global.COLOR_DISABLE);
 
 		mCurrentUpdateRateText = new JLabel();
 
@@ -76,6 +99,18 @@ public abstract class SensorView extends JScrollPane {
 		fillSensorPanel();
 	}
 
+	/**
+	 * 
+	 * @return a Panel with all sensor specific GUI.
+	 */
+	public abstract JPanel fillSensorSpecificSettingsPanel();
+
+	/**
+	 * 
+	 * @return a panel with specific help for each sensor.
+	 */
+	protected abstract JPanel getSensorSpecificHelp();
+	
 	private void fillSensorPanel() {
 		insidePanel = new JPanel(new GridBagLayout());
 
@@ -263,11 +298,10 @@ public abstract class SensorView extends JScrollPane {
 
 	public JPanel updateSimulationField() {
 		JPanel resultPanel = new JPanel();
-		resultPanel
-				.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-						.createTitledBorder(BorderFactory.createEmptyBorder(),
-								"Emulator update"), BorderFactory
-						.createMatteBorder(2, 0, 0, 0, Color.GRAY)));
+		resultPanel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder(
+						BorderFactory.createEmptyBorder(), "Emulator update"),
+				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY)));
 		GridBagConstraints layout = new GridBagConstraints();
 		mRefreshEmulatorLabel = new JLabel(EMPTY_LABEL);
 		layout.gridx = 0;
@@ -275,7 +309,7 @@ public abstract class SensorView extends JScrollPane {
 		return resultPanel;
 	}
 
-	public abstract JPanel fillSensorSpecificSettingsPanel();
+	
 
 	public JPanel fillSensorRandomPanel() {
 		JPanel resultPanel = new JPanel(new GridBagLayout());
@@ -353,7 +387,7 @@ public abstract class SensorView extends JScrollPane {
 			panel.add(sensorSpecificHelp);
 		}
 
-		JTextAreaWrap helpTextArea;
+		HtmlTextPane helpTextArea;
 
 		// help for "Update delay"
 		JPanel updateDelayHelp = new JPanel();
@@ -365,7 +399,7 @@ public abstract class SensorView extends JScrollPane {
 						"Update delay"), BorderFactory.createMatteBorder(2, 0,
 						0, 0, Color.GRAY)));
 
-		helpTextArea = new JTextAreaWrap(
+		helpTextArea = new HtmlTextPane(
 				"<b>Default:</b> is the delay to which a sensor is updating "
 						+ "until register or after unregister a listener for it.<br\\>"
 						+ "<b>Current:</b> is the delay to which the listener for the sensor is registered.<br\\>"
@@ -381,9 +415,9 @@ public abstract class SensorView extends JScrollPane {
 						BorderFactory.createEmptyBorder(0, 0, 0, 0),
 						"Average checkbox"), BorderFactory.createMatteBorder(2,
 				0, 0, 0, Color.GRAY)));
-		helpTextArea = new JTextAreaWrap(
-				"<b>Average:</b> that average sensor data should be returned instead of " +
-				"instantaneous values.");
+		helpTextArea = new HtmlTextPane(
+				"<b>Average:</b> that average sensor data should be returned instead of "
+						+ "instantaneous values.");
 		averageHelp.add(helpTextArea);
 		panel.add(averageHelp);
 
@@ -393,27 +427,28 @@ public abstract class SensorView extends JScrollPane {
 		randomHelp.setBorder(BorderFactory.createCompoundBorder(BorderFactory
 				.createTitledBorder(
 						BorderFactory.createEmptyBorder(0, 0, 0, 0),
-						"Sensor update"), BorderFactory.createMatteBorder(2,
-				0, 0, 0, Color.GRAY)));
-		helpTextArea = new JTextAreaWrap(
+						"Sensor update"), BorderFactory.createMatteBorder(2, 0,
+				0, 0, Color.GRAY)));
+		helpTextArea = new HtmlTextPane(
 				"<b>Random:</b> the interval lenght for sensor error simulation.");
 		randomHelp.add(helpTextArea);
 		panel.add(randomHelp);
-		
+
 		// help for "Simulation update"
 		JPanel sensorUpdateHelp = new JPanel();
-		sensorUpdateHelp.setLayout(new BoxLayout(sensorUpdateHelp, BoxLayout.Y_AXIS));
-		sensorUpdateHelp.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-				.createTitledBorder(
+		sensorUpdateHelp.setLayout(new BoxLayout(sensorUpdateHelp,
+				BoxLayout.Y_AXIS));
+		sensorUpdateHelp.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder(
 						BorderFactory.createEmptyBorder(0, 0, 0, 0),
-						"Simulation update"), BorderFactory.createMatteBorder(2,
-				0, 0, 0, Color.GRAY)));
-		helpTextArea = new JTextAreaWrap(
-				"<b>Emulator update:</b> shows the actual internal emulator update rate.<br\\>" +
-				"<b>Update sensors:</b> sets the duration between internal updates.<br\\>" +
-				"<b>Refresh after:</b> determines after how many queries by the emulator the update rates " +
-					"given below are calculated and averaged over.<br\\>" +
-				"<b>Sensor update:</b> shows the actual internal simulator application update rate.<br\\>");
+						"Simulation update"), BorderFactory.createMatteBorder(
+						2, 0, 0, 0, Color.GRAY)));
+		helpTextArea = new HtmlTextPane(
+				"<b>Emulator update:</b> shows the actual internal emulator update rate.<br\\>"
+						+ "<b>Update sensors:</b> sets the duration between internal updates.<br\\>"
+						+ "<b>Refresh after:</b> determines after how many queries by the emulator the update rates "
+						+ "given below are calculated and averaged over.<br\\>"
+						+ "<b>Sensor update:</b> shows the actual internal simulator application update rate.<br\\>");
 		sensorUpdateHelp.add(helpTextArea);
 		panel.add(sensorUpdateHelp);
 
@@ -439,7 +474,7 @@ public abstract class SensorView extends JScrollPane {
 		return panel;
 	}
 
-	protected abstract JPanel getSensorSpecificHelp();
+	
 
 	private JButton getBrowsingButton(String btnText, final String link) {
 		JButton button = new JButton(btnText);

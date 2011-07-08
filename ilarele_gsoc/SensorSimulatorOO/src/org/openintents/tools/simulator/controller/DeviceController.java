@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.controller;
 
 import java.awt.event.ActionEvent;
@@ -14,110 +30,117 @@ import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationMo
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.view.sensor.DeviceView;
 
+/**
+ * This class controls the mobile device (visual representation for the
+ * orientation sensor).
+ * 
+ * @author Peli
+ * 
+ */
 public class DeviceController {
 
-	protected int mousedownx;
-	protected int mousedowny;
-	protected int mousedownyaw;
-	protected int mousedownpitch;
-	protected int mousedownroll;
-	protected int mousedownmovex;
-	protected int mousedownmovez;
+	private int mMouseDownX;
+	private int mMouseDownY;
+	private int mMouseDownYaw;
+	private int mMouseDownPitch;
+	private int mMouseDownRoll;
+	private int mMouseDownMoveX;
+	private int mMouseDownMoveZ;
 
-	private DeviceView view;
-	private SensorSimulatorModel model;
+	private DeviceView mView;
+	private SensorSimulatorModel mModel;
 
 	public DeviceController(final SensorSimulatorModel model,
 			final DeviceView view) {
-		this.model = model;
-		this.view = view;
+		this.mModel = model;
+		this.mView = view;
 
 		registerMouseModeButtons();
 		registerMouseListeners();
 	}
 
 	private void registerMouseListeners() {
-		view.addMouseListener(new MouseAdapter() {
+		mView.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				OrientationModel orientation = model.getOrientation();
-				AccelerometerModel accelerometer = model.getAccelerometer();
-				LinearAccelerationModel linearAccelerometer = model
+				OrientationModel orientation = mModel.getOrientation();
+				AccelerometerModel accelerometer = mModel.getAccelerometer();
+				LinearAccelerationModel linearAccelerometer = mModel
 						.getLinearAcceleration();
-				mousedownx = e.getX();
-				mousedowny = e.getY();
-				mousedownyaw = orientation.getYaw();
-				mousedownpitch = orientation.getPitch();
-				mousedownroll = orientation.getRoll();
+				mMouseDownX = e.getX();
+				mMouseDownY = e.getY();
+				mMouseDownYaw = orientation.getYaw();
+				mMouseDownPitch = orientation.getPitch();
+				mMouseDownRoll = orientation.getRoll();
 				if (linearAccelerometer.isEnabled()) {
-					mousedownmovex = linearAccelerometer.getMoveX();
-					mousedownmovez = linearAccelerometer.getMoveZ();
+					mMouseDownMoveX = linearAccelerometer.getMoveX();
+					mMouseDownMoveZ = linearAccelerometer.getMoveZ();
 				} else {
-					mousedownmovex = accelerometer.getMoveX();
-					mousedownmovez = accelerometer.getMoveZ();
+					mMouseDownMoveX = accelerometer.getMoveX();
+					mMouseDownMoveZ = accelerometer.getMoveZ();
 				}
 			}
 		});
 
-		view.addMouseMotionListener(new MouseMotionListener() {
+		mView.addMouseMotionListener(new MouseMotionListener() {
 			public void mouseDragged(MouseEvent e) {
-				OrientationModel orientModel = model.getOrientation();
-				AccelerometerModel accelerModel = model.getAccelerometer();
-				LinearAccelerationModel linearAccModel = model
+				OrientationModel orientModel = mModel.getOrientation();
+				AccelerometerModel accelerModel = mModel.getAccelerometer();
+				LinearAccelerationModel linearAccModel = mModel
 						.getLinearAcceleration();
 				int newpitch;
-				switch (view.getMouseMode()) {
-				case DeviceView.mouseYawPitch:
+				switch (mView.getMouseMode()) {
+				case DeviceView.MOUSE_MODE_YAW_PITCH:
 					// Control yawDegree
-					int newyaw = mousedownyaw - (e.getX() - mousedownx);
+					int newyaw = mMouseDownYaw - (e.getX() - mMouseDownX);
 					while (newyaw > 180)
 						newyaw -= 360;
 					while (newyaw < -180)
 						newyaw += 360;
 
 					orientModel.setYaw(newyaw);
-					view.setYawSlider(newyaw);
+					mView.setYawSlider(newyaw);
 					// Control pitch
-					newpitch = mousedownpitch - (e.getY() - mousedowny);
+					newpitch = mMouseDownPitch - (e.getY() - mMouseDownY);
 					while (newpitch > 180)
 						newpitch -= 360;
 					while (newpitch < -180)
 						newpitch += 360;
 					orientModel.setPitch(newpitch);
-					view.setPitchSlider(newpitch);
+					mView.setPitchSlider(newpitch);
 					break;
 
-				case DeviceView.mouseRollPitch:
+				case DeviceView.MOUSE_MODE_ROLL_PITCH:
 					// Control roll
-					int newroll = mousedownroll + (e.getX() - mousedownx);
+					int newroll = mMouseDownRoll + (e.getX() - mMouseDownX);
 					while (newroll > 180)
 						newroll -= 360;
 					while (newroll < -180)
 						newroll += 360;
 					orientModel.setRoll(newroll);
-					view.setRollSlider(newroll);
+					mView.setRollSlider(newroll);
 					// Control pitch
-					newpitch = mousedownpitch - (e.getY() - mousedowny);
+					newpitch = mMouseDownPitch - (e.getY() - mMouseDownY);
 					while (newpitch > 180)
 						newpitch -= 360;
 					while (newpitch < -180)
 						newpitch += 360;
 					orientModel.setPitch(newpitch);
-					view.setPitchSlider(newpitch);
+					mView.setPitchSlider(newpitch);
 					break;
-				case DeviceView.mouseMove:
+				case DeviceView.MOUSE_MODE_MOVE:
 					// Control roll
-					int newmovex = mousedownmovex + (e.getX() - mousedownx);
+					int newmovex = mMouseDownMoveX + (e.getX() - mMouseDownX);
 					accelerModel.setMoveX(newmovex);
 					linearAccModel.setMoveX(newmovex);
 
 					// Control pitch
-					int newmovez = mousedownmovez - (e.getY() - mousedowny);
+					int newmovez = mMouseDownMoveZ - (e.getY() - mMouseDownY);
 					accelerModel.setMoveZ(newmovez);
 					linearAccModel.setMoveZ(newmovez);
 					break;
 				}
 
-				view.doRepaint();
+				mView.doRepaint();
 			}
 
 			public void mouseMoved(MouseEvent evt) {
@@ -128,37 +151,37 @@ public class DeviceController {
 
 	// mouse mode buttons
 	private void registerMouseModeButtons() {
-		JRadioButton yawPitchButton = view.getYawPitchButton();
-		JRadioButton rollPitchButton = view.getRollPitchButton();
-		JRadioButton moveButton = view.getMoveButton();
+		JRadioButton yawPitchButton = mView.getYawPitchButton();
+		JRadioButton rollPitchButton = mView.getRollPitchButton();
+		JRadioButton moveButton = mView.getMoveButton();
 
 		yawPitchButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				view.changeMouseMode(DeviceView.MOUSE_MODE_YAW_PITCH);
+				mView.changeMouseMode(DeviceView.MOUSE_MODE_YAW_PITCH);
 			}
 		});
 
 		rollPitchButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				view.changeMouseMode(DeviceView.MOUSE_MODE_ROLL_PITCH);
+				mView.changeMouseMode(DeviceView.MOUSE_MODE_ROLL_PITCH);
 			}
 		});
 
 		moveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				view.changeMouseMode(DeviceView.MOUSE_MODE_MOVE);
+				mView.changeMouseMode(DeviceView.MOUSE_MODE_MOVE);
 			}
 		});
 	}
 
 	public SensorSimulatorModel getModel() {
-		return model;
+		return mModel;
 	}
 
 	public DeviceView getView() {
-		return view;
+		return mView;
 	}
 }

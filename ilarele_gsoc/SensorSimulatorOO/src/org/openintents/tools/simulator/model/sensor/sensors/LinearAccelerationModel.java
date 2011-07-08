@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.model.sensor.sensors;
 
 import java.io.PrintWriter;
@@ -5,56 +21,61 @@ import java.util.Random;
 
 import org.openintents.tools.simulator.model.telnet.Vector;
 
+/**
+ * AccelerometerModel keeps the internal data model behind Accelerometer Sensor.
+ * 
+ * @author ilarele
+ * 
+ */
 public class LinearAccelerationModel extends SensorModel {
-	private static Random rand = new Random();
+	private static Random mRandomGenerator = new Random();
 
 	// linear_acceleration
-	private double accelx;
-	private double accely;
-	private double accelz;
+	private double mAccelX;
+	private double mAccelY;
+	private double mAccelZ;
 
 	/** Current read-out value of linear_acceleration. */
-	private double read_linear_acc_x;
-	private double read_linear_acc_y;
-	private double read_linear_acc_z;
+	private double mReadLinearAccX;
+	private double mReadLinearAccY;
+	private double mReadLinearAccZ;
 
-	/**
-	 * Time of next update required. The time is compared to
-	 * System.currentTimeMillis().
-	 */
-	private long linear_acceleration_next_update;
 	/** Partial read-out value of linear_acceleration. */
-	private float partial_linear_acc_x;
-	private float partial_linear_acc_y;
-	private float partial_linear_acc_z;
+	private float mPartialLinearAccX;
+	private float mPartialLinearAccY;
+	private float mPartialLinearAccZ;
 
 	/** Number of summands in partial sum for linear_acceleration. */
-	private int partial_linear_acceleration_n;
-	private double k;
-	private double gamma;
-	private int movex;
-	private double accx;
-	private int movez;
-	private double accz;
-	private double ax;
-	private double az;
-	private double m;
-	private double vx;
-	private double vz;
-	private double meterperpixel;
+	private int mPartialLinearAccN;
+
+	private double mSpringK;
+	private double mGamma;
+
+	private int mMoveX;
+	private int mMoveZ;
+
+	private double mAccX; // position x on screen
+	private double mAccZ; // (DONT confuse with acceleration a!)
+
+	private double mAX;
+	private double mAZ;
+	private double mMass;
+	private double mVX;
+	private double mVZ;
+	private double mMeterPerPixel;
 
 	public LinearAccelerationModel() {
 		super();
-		accx = 0;
-		accz = 0;
+		mAccX = 0;
+		mAccZ = 0;
 
-		movex = 0;
-		movez = 0;
+		mMoveX = 0;
+		mMoveZ = 0;
 
-		k = 500; // spring constant
-		m = 1; // mass
-		gamma = 50; // damping
-		meterperpixel = 1 / 3000.; // meter per pixel
+		mSpringK = 500; // spring constant
+		mMass = 1; // mass
+		mGamma = 50; // damping
+		mMeterPerPixel = 1 / 3000.; // meter per pixel
 	}
 
 	@Override
@@ -66,56 +87,53 @@ public class LinearAccelerationModel extends SensorModel {
 	public void updateSensorReadoutValues() {
 		long currentTime = System.currentTimeMillis();
 		// Form the average
-		if (average) {
-			partial_linear_acc_x += accelx;
-			partial_linear_acc_y += accely;
-			partial_linear_acc_z += accelz;
-			partial_linear_acceleration_n++;
+		if (mAverage) {
+			mPartialLinearAccX += mAccelX;
+			mPartialLinearAccY += mAccelY;
+			mPartialLinearAccZ += mAccelZ;
+			mPartialLinearAccN++;
 		}
 
 		// Update
-		if (currentTime >= linear_acceleration_next_update) {
-			linear_acceleration_next_update += updateDuration;
-			if (linear_acceleration_next_update < currentTime) {
+		if (currentTime >= mNextUpdate) {
+			mNextUpdate += mUpdateDuration;
+			if (mNextUpdate < currentTime) {
 				// Don't lag too much behind.
 				// If we are too slow, then we are too slow.
-				linear_acceleration_next_update = currentTime;
+				mNextUpdate = currentTime;
 			}
 
-			if (average) {
+			if (mAverage) {
 				// form average
-				read_linear_acc_x = partial_linear_acc_x
-						/ partial_linear_acceleration_n;
-				read_linear_acc_y = partial_linear_acc_y
-						/ partial_linear_acceleration_n;
-				read_linear_acc_z = partial_linear_acc_z
-						/ partial_linear_acceleration_n;
+				mReadLinearAccX = mPartialLinearAccX / mPartialLinearAccN;
+				mReadLinearAccY = mPartialLinearAccY / mPartialLinearAccN;
+				mReadLinearAccZ = mPartialLinearAccZ / mPartialLinearAccN;
 				// reset average
-				partial_linear_acc_x = 0;
-				partial_linear_acc_y = 0;
-				partial_linear_acc_z = 0;
-				partial_linear_acceleration_n = 0;
+				mPartialLinearAccX = 0;
+				mPartialLinearAccY = 0;
+				mPartialLinearAccZ = 0;
+				mPartialLinearAccN = 0;
 
 			} else {
 				// Only take current value
-				read_linear_acc_x = accelx;
-				read_linear_acc_y = accely;
-				read_linear_acc_z = accelz;
+				mReadLinearAccX = mAccelX;
+				mReadLinearAccY = mAccelY;
+				mReadLinearAccZ = mAccelZ;
 
 			}
 		}
 	}
 
 	@Override
-	public void printNumValues(PrintWriter out) {
+	public void getNumSensorValues(PrintWriter out) {
 		out.println("3");
 	}
 
 	@Override
 	public void printSensorData(PrintWriter out) {
 		// number of data following + data
-		out.println("3\n" + read_linear_acc_x + "\n" + read_linear_acc_y + "\n"
-				+ read_linear_acc_z);
+		out.println("3\n" + mReadLinearAccX + "\n" + mReadLinearAccY + "\n"
+				+ mReadLinearAccZ);
 
 	}
 
@@ -124,140 +142,126 @@ public class LinearAccelerationModel extends SensorModel {
 		return "m/s" + SensorModel.SQUARED;
 	}
 
-	//
-	// public void setLinearAcceleration(double x, double y, double z) {
-	// linear_acc_x_value = x;
-	// linear_acc_y_value = y;
-	// linear_acc_z_value = z;
-	// }
-	//
-	// public void addLinearAcceleration(double addX, double addY, double addZ)
-	// {
-	// linear_acc_x_value += addX;
-	// linear_acc_y_value += addY;
-	// linear_acc_z_value += addZ;
-	// }
-
 	@Override
 	public String getTypeConstant() {
 		return TYPE_LINEAR_ACCELERATION;
 	}
 
 	public double getReadLinearAccelerationX() {
-		return read_linear_acc_x;
+		return mReadLinearAccX;
 	}
 
 	public double getReadLinearAccelerationY() {
-		return read_linear_acc_y;
+		return mReadLinearAccY;
 	}
 
 	public double getReadLinearAccelerationZ() {
-		return read_linear_acc_z;
+		return mReadLinearAccZ;
 	}
 
 	public double getPixelsPerMeter() {
-		return 1.0 / meterperpixel;
+		return 1.0 / mMeterPerPixel;
 	}
 
 	public double getSpringConstant() {
-		return k;
+		return mSpringK;
 	}
 
 	public double getDampingConstant() {
-		return gamma;
+		return mGamma;
 	}
 
 	public void reset() {
-		accelx = 0;
-		accely = 0;
-		accelz = 0;
+		mAccelX = 0;
+		mAccelY = 0;
+		mAccelZ = 0;
 	}
 
 	public void setXYZ(Vector vec) {
-		accelx = vec.x;
-		accely = vec.y;
-		accelz = vec.z;
+		mAccelX = vec.x;
+		mAccelY = vec.y;
+		mAccelZ = vec.z;
 	}
 
 	public double getAz() {
-		return az;
+		return mAZ;
 	}
 
 	public double getAx() {
-		return ax;
+		return mAX;
 	}
 
 	public void refreshAcceleration(double kView, double gammaView, double dt) {
-		k = kView;
-		gamma = gammaView;
+		mSpringK = kView;
+		mGamma = gammaView;
 
 		// First calculate the force acting on the
 		// sensor test particle, assuming that
 		// the accelerometer is mounted by a string:
 		// F = - k * x
-		double Fx = kView * (movex - accx);
-		double Fz = gammaView * (movez - accz);
+		double Fx = kView * (mMoveX - mAccX);
+		double Fz = gammaView * (mMoveZ - mAccZ);
 
 		// a = F / m
-		ax = Fx / m;
-		az = Fz / m;
+		mAX = Fx / mMass;
+		mAZ = Fz / mMass;
 
-		vx += ax * dt;
-		vz += az * dt;
+		mVX += mAX * dt;
+		mVZ += mAZ * dt;
 
 		// Now this is the force that tries to adjust
 		// the accelerometer back
 		// integrate dx/dt = v;
-		accx += vx * dt;
-		accz += vz * dt;
+		mAccX += mVX * dt;
+		mAccZ += mVZ * dt;
 
 		// We put damping here: We don't want to damp for
 		// zero motion with respect to the background,
 		// but with respect to the mobile phone:
-		accx += gammaView * (movex - accx) * dt;
-		accz += gammaView * (movez - accz) * dt;
+		mAccX += gammaView * (mMoveX - mAccX) * dt;
+		mAccZ += gammaView * (mMoveZ - mAccZ) * dt;
 	}
 
 	public void addRandom(double random) {
 		double val;
-		val = rand.nextDouble();
-		accelx += (2 * val - 1) * random;
+		val = mRandomGenerator.nextDouble();
+		mAccelX += (2 * val - 1) * random;
 
-		val = rand.nextDouble();
-		accely += (2 * val - 1) * random;
+		val = mRandomGenerator.nextDouble();
+		mAccelY += (2 * val - 1) * random;
 
-		val = rand.nextDouble();
-		accelz += (2 * val - 1) * random;
+		val = mRandomGenerator.nextDouble();
+		mAccelZ += (2 * val - 1) * random;
 	}
 
 	public void limitate(double limit) {
-		if (accelx > limit)
-			accelx = limit;
-		if (accelx < -limit)
-			accelx = -limit;
-		if (accely > limit)
-			accely = limit;
-		if (accely < -limit)
-			accely = -limit;
-		if (accelz > limit)
-			accelz = limit;
-		if (accelz < -limit)
-			accelz = -limit;
+		if (mAccelX > limit)
+			mAccelX = limit;
+		if (mAccelX < -limit)
+			mAccelX = -limit;
+		if (mAccelY > limit)
+			mAccelY = limit;
+		if (mAccelY < -limit)
+			mAccelY = -limit;
+		if (mAccelZ > limit)
+			mAccelZ = limit;
+		if (mAccelZ < -limit)
+			mAccelZ = -limit;
 	}
 
 	public int getMoveZ() {
-		return movez;
+		return mMoveZ;
 	}
 
 	public int getMoveX() {
-		return movex;
+		return mMoveX;
 	}
 
 	public void setMoveZ(int newmovez) {
-		movez = newmovez;
+		mMoveZ = newmovez;
 	}
 
 	public void setMoveX(int newmovex) {
-		movex = newmovex;
+		mMoveX = newmovex;
 	}
 }

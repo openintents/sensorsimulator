@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.model.sensor.sensors;
 
 import java.io.PrintWriter;
@@ -5,174 +21,176 @@ import java.util.Random;
 
 import org.openintents.tools.simulator.model.telnet.Vector;
 
+/**
+ * AccelerometerModel keeps the internal data model behind Accelerometer Sensor.
+ * 
+ * @author Peli
+ * @author Josip Balic
+ * 
+ */
 public class AccelerometerModel extends SensorModel {
 
-	private static Random rand = new Random();
+	private static Random mRandomGenerator = new Random();
 	/**
 	 * Current read-out value of accelerometer x-component.
 	 * 
 	 * This value is updated only at the desired updateSensorRate().
 	 */
-	private double read_accelx;
+	private double mReadAccelx;
 	/** Current read-out value of accelerometer y-component. */
-	private double read_accely;
+	private double mReadAccely;
 	/** Current read-out value of accelerometer z-component. */
-	private double read_accelz;
+	private double mReadAccelz;
 
 	/**
 	 * Internal state value of accelerometer x-component.
 	 * 
 	 * This value is updated regularly by updateSensorPhysics().
 	 */
-	private double accelx;
+	private double mAccelX;
 	/** Internal state value of accelerometer x-component. */
-	private double accely;
+	private double mAaccelY;
 	/** Internal state value of accelerometer x-component. */
-	private double accelz;
+	private double mAccelZ;
 
-	private double ax; // acceleration
-	private double az;
+	private double aX; // acceleration
+	private double aZ;
 
-	private double accx; // accelerometer position x on screen
-	private double accz; // (DONT confuse with acceleration a!)
+	private double mAccX; // accelerometer position x on screen
+	private double mAccZ; // (DONT confuse with acceleration a!)
 
 	/**
 	 * Partial read-out value of accelerometer x-component.
 	 * 
 	 * This partial value is used to calculate the sensor average.
 	 */
-	private double partial_accelx;
+	private double mPartialAccelX;
 	/** Partial read-out value of accelerometer y-component. */
-	private double partial_accely;
+	private double mPartialAccelY;
 	/** Partial read-out value of accelerometer z-component. */
-	private double partial_accelz;
+	private double mPartialAccelZ;
 
 	/** Number of summands in partial sum for accelerometer. */
-	private int partial_accel_n;
+	private int mPartialAccelN;
 
-	/**
-	 * Time of next update required. The time is compared to
-	 * System.currentTimeMillis().
-	 */
-	private long accel_next_update;
 
 	/** Current position on screen. */
-	private int movex;
+	private int mMoveX;
 	/** Current position on screen. */
-	private int movez;
+	private int mMoveZ;
 
-	private double vx; // velocity
-	private double vz;
+	private double mVX; // velocity
+	private double mVZ;
 
 	/** Spring constant. */
-	private double k; // spring constant
+	private double mSpringK;
 
 	/**
 	 * Mass of accelerometer test particle.
 	 * 
 	 * This is set to 1, as only the ratio k/m enters the simulation.
 	 */
-	private double m; // mass of accelerometer test particle
+	private double mMass; 
 
-	private double gamma; // damping of spring
+	private double mGamma; // damping of spring
 
 	/** Inverse of screen pixel per meter */
-	private double meterperpixel;
+	private double mMeterPerPixel;
 
 	/**
 	 * Gravity constant.
 	 * 
 	 * This takes the value 9.8 m/s^2.
 	 * */
-	private double g;
+	private double mGConstant;
 
 	// Accelerometer
 	private double mAccelerometerLimit;
 	private boolean mShowAcceleration;
 
-	private WiiAccelerometerModel wiiAccelerometerModel;
+	private WiiAccelerometerModel mWiiAccelerometerModel;
 
 	public AccelerometerModel() {
 		super();
-		accx = 0;
-		accz = 0;
+		mAccX = 0;
+		mAccZ = 0;
 
 		mShowAcceleration = true;
 
-		movex = 0;
-		movez = 0;
+		mMoveX = 0;
+		mMoveZ = 0;
 
-		k = 500; // spring constant
-		m = 1; // mass
-		gamma = 50; // damping
-		meterperpixel = 1 / 3000.; // meter per pixel
+		mSpringK = 500; // spring constant
+		mMass = 1; // mass
+		mGamma = 50; // damping
+		mMeterPerPixel = 1 / 3000.; // meter per pixel
 
-		g = 9.80665; // meter per second^2
+		mGConstant = 9.80665; // meter per second^2
 		mAccelerometerLimit = 10;
-		wiiAccelerometerModel = new WiiAccelerometerModel();
+		mWiiAccelerometerModel = new WiiAccelerometerModel();
 		mEnabled = true;
 	}
 
 	public void setXYZ(Vector vec) {
-		accelx = vec.x;
-		accely = vec.y;
-		accelz = vec.z;
+		mAccelX = vec.x;
+		mAaccelY = vec.y;
+		mAccelZ = vec.z;
 	}
 
 	public void addRandom(double random) {
 		double val;
-		val = rand.nextDouble();
-		accelx += (2 * val - 1) * random;
+		val = mRandomGenerator.nextDouble();
+		mAccelX += (2 * val - 1) * random;
 
-		val = rand.nextDouble();
-		accely += (2 * val - 1) * random;
+		val = mRandomGenerator.nextDouble();
+		mAaccelY += (2 * val - 1) * random;
 
-		val = rand.nextDouble();
-		accelz += (2 * val - 1) * random;
+		val = mRandomGenerator.nextDouble();
+		mAccelZ += (2 * val - 1) * random;
 	}
 
 	public void limitate(double limit) {
-		if (accelx > limit)
-			accelx = limit;
-		if (accelx < -limit)
-			accelx = -limit;
-		if (accely > limit)
-			accely = limit;
-		if (accely < -limit)
-			accely = -limit;
-		if (accelz > limit)
-			accelz = limit;
-		if (accelz < -limit)
-			accelz = -limit;
+		if (mAccelX > limit)
+			mAccelX = limit;
+		if (mAccelX < -limit)
+			mAccelX = -limit;
+		if (mAaccelY > limit)
+			mAaccelY = limit;
+		if (mAaccelY < -limit)
+			mAaccelY = -limit;
+		if (mAccelZ > limit)
+			mAccelZ = limit;
+		if (mAccelZ < -limit)
+			mAccelZ = -limit;
 	}
 
 	public void reset() {
-		accelx = 0;
-		accely = 0;
-		accelz = 0;
+		mAccelX = 0;
+		mAaccelY = 0;
+		mAccelZ = 0;
 	}
 
 	@Override
 	public void updateSensorReadoutValues() {
 		long currentTime = System.currentTimeMillis();
 		// Form the average
-		if (average) {
-			partial_accelx += accelx;
-			partial_accely += accely;
-			partial_accelz += accelz;
-			partial_accel_n++;
+		if (mAverage) {
+			mPartialAccelX += mAccelX;
+			mPartialAccelY += mAaccelY;
+			mPartialAccelZ += mAccelZ;
+			mPartialAccelN++;
 		}
 
 		// Update
-		if (currentTime >= accel_next_update) {
-			accel_next_update += updateDuration;
-			if (accel_next_update < currentTime) {
+		if (currentTime >= mNextUpdate) {
+			mNextUpdate += mUpdateDuration;
+			if (mNextUpdate < currentTime) {
 				// Don't lag too much behind.
 				// If we are too slow, then we are too slow.
-				accel_next_update = currentTime;
+				mNextUpdate = currentTime;
 			}
 
-			if (average) {
+			if (mAverage) {
 				// form average
 				computeAvg();
 
@@ -180,48 +198,48 @@ public class AccelerometerModel extends SensorModel {
 				resetAvg();
 			} else {
 				// Only take current value
-				read_accelx = accelx;
-				read_accely = accely;
-				read_accelz = accelz;
+				mReadAccelx = mAccelX;
+				mReadAccely = mAaccelY;
+				mReadAccelz = mAccelZ;
 			}
 		}
 	}
 
 	public void resetAvg() {
-		partial_accelx = 0;
-		partial_accely = 0;
-		partial_accelz = 0;
-		partial_accel_n = 0;
+		mPartialAccelX = 0;
+		mPartialAccelY = 0;
+		mPartialAccelZ = 0;
+		mPartialAccelN = 0;
 	}
 
 	public void computeAvg() {
-		read_accelx = partial_accelx / partial_accel_n;
-		read_accely = partial_accely / partial_accel_n;
-		read_accelz = partial_accelz / partial_accel_n;
+		mReadAccelx = mPartialAccelX / mPartialAccelN;
+		mReadAccely = mPartialAccelY / mPartialAccelN;
+		mReadAccelz = mPartialAccelZ / mPartialAccelN;
 	}
 
 	public double getAccelx() {
-		return accelx;
+		return mAccelX;
 	}
 
 	public double getAccely() {
-		return accely;
+		return mAaccelY;
 	}
 
 	public double getAccelz() {
-		return accelz;
+		return mAccelZ;
 	}
 
 	public double getReadAccelerometerX() {
-		return read_accelx;
+		return mReadAccelx;
 	}
 
 	public double getReadAccelerometerY() {
-		return read_accely;
+		return mReadAccely;
 	}
 
 	public double getReadAccelerometerZ() {
-		return read_accelz;
+		return mReadAccelz;
 	}
 
 	@Override
@@ -230,7 +248,7 @@ public class AccelerometerModel extends SensorModel {
 	}
 
 	public double getGravityConstant() {
-		return g;
+		return mGConstant;
 	}
 
 	public double getAccelerometerLimit() {
@@ -238,15 +256,15 @@ public class AccelerometerModel extends SensorModel {
 	}
 
 	public double getPixelsPerMeter() {
-		return 1.0 / meterperpixel;
+		return 1.0 / mMeterPerPixel;
 	}
 
 	public double getSpringConstant() {
-		return k;
+		return mSpringK;
 	}
 
 	public double getDampingConstant() {
-		return gamma;
+		return mGamma;
 	}
 
 	public boolean isShown() {
@@ -254,36 +272,36 @@ public class AccelerometerModel extends SensorModel {
 	}
 
 	@Override
-	public void printNumValues(PrintWriter out) {
+	public void getNumSensorValues(PrintWriter out) {
 		out.println("3");
 	}
 
 	@Override
 	public void printSensorData(PrintWriter out) {
 		// number of data following + data
-		out.println("3\n" + read_accelx + "\n" + read_accely + "\n"
-				+ read_accelz);
+		out.println("3\n" + mReadAccelx + "\n" + mReadAccely + "\n"
+				+ mReadAccelz);
 	}
 
 	public int getMoveX() {
-		return movex;
+		return mMoveX;
 	}
 
 	public int getMoveZ() {
-		return movez;
+		return mMoveZ;
 	}
 
 	public void setMoveX(int newmovex) {
-		movex = newmovex;
+		mMoveX = newmovex;
 	}
 
 	public void setMoveZ(int newmovez) {
-		movez = newmovez;
+		mMoveZ = newmovez;
 	}
 
 	public double getGInverse() {
-		if (g != 0)
-			return 1 / g;
+		if (mGConstant != 0)
+			return 1 / mGConstant;
 		return 1 / 9.80665;
 	}
 
@@ -293,7 +311,7 @@ public class AccelerometerModel extends SensorModel {
 	}
 
 	public double getMass() {
-		return m;
+		return mMass;
 	}
 
 	public void setShown(boolean b) {
@@ -301,27 +319,27 @@ public class AccelerometerModel extends SensorModel {
 	}
 
 	public WiiAccelerometerModel getRealDeviceBridgeAddon() {
-		return wiiAccelerometerModel;
+		return mWiiAccelerometerModel;
 	}
 
 	public void setWiiPath(String path) {
-		wiiAccelerometerModel.setWiiPath(path);
+		mWiiAccelerometerModel.setWiiPath(path);
 	}
 
 	public boolean updateFromWii() {
-		return wiiAccelerometerModel.updateData();
+		return mWiiAccelerometerModel.updateData();
 	}
 
 	public String getWiiStatus() {
-		return wiiAccelerometerModel.getStatus();
+		return mWiiAccelerometerModel.getStatus();
 	}
 
 	public int getWiiRoll() {
-		return wiiAccelerometerModel.getRoll();
+		return mWiiAccelerometerModel.getRoll();
 	}
 
 	public int getWiiPitch() {
-		return wiiAccelerometerModel.getPitch();
+		return mWiiAccelerometerModel.getPitch();
 	}
 
 	public double getAccelLimit() {
@@ -334,41 +352,41 @@ public class AccelerometerModel extends SensorModel {
 	}
 
 	public void refreshAcceleration(double kView, double gammaView, double dt) {
-		k = kView;
-		gamma = gammaView;
+		mSpringK = kView;
+		mGamma = gammaView;
 
 		// First calculate the force acting on the
 		// sensor test particle, assuming that
 		// the accelerometer is mounted by a string:
 		// F = - k * x
-		double Fx = kView * (movex - accx);
-		double Fz = gammaView * (movez - accz);
+		double Fx = kView * (mMoveX - mAccX);
+		double Fz = gammaView * (mMoveZ - mAccZ);
 
 		// a = F / m
-		ax = Fx / m;
-		az = Fz / m;
+		aX = Fx / mMass;
+		aZ = Fz / mMass;
 
-		vx += ax * dt;
-		vz += az * dt;
+		mVX += aX * dt;
+		mVZ += aZ * dt;
 
 		// Now this is the force that tries to adjust
 		// the accelerometer back
 		// integrate dx/dt = v;
-		accx += vx * dt;
-		accz += vz * dt;
+		mAccX += mVX * dt;
+		mAccZ += mVZ * dt;
 
 		// We put damping here: We don't want to damp for
 		// zero motion with respect to the background,
 		// but with respect to the mobile phone:
-		accx += gammaView * (movex - accx) * dt;
-		accz += gammaView * (movez - accz) * dt;
+		mAccX += gammaView * (mMoveX - mAccX) * dt;
+		mAccZ += gammaView * (mMoveZ - mAccZ) * dt;
 	}
 
 	public double getAx() {
-		return ax;
+		return aX;
 	}
 
 	public double getAz() {
-		return az;
+		return aZ;
 	}
 }

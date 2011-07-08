@@ -1,27 +1,44 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.model.sensor.sensors;
 
 import java.io.PrintWriter;
 
+/**
+ * LightModel keeps the internal data model behind Light Sensor.
+ * 
+ * @author ilarele
+ *
+ */
 public class LightModel extends SensorModel {
 
 	// light
-	private double lightValue;
+	private double mLightValue;
 	/** Current read-out value of light. */
-	private double read_light;
+	private double mReadLight;
 
-	/**
-	 * Time of next update required. The time is compared to
-	 * System.currentTimeMillis().
-	 */
-	private long light_next_update;
 	/** Partial read-out value of light. */
-	private float partial_light;
+	private float mPartialLight;
 	/** Number of summands in partial sum for light. */
-	private int partial_light_n;
+	private int mPartialLightN;
 
 	public LightModel() {
 		super();
-		read_light = lightValue = 400;
+		mReadLight = mLightValue = 400;
 	}
 
 	@Override
@@ -33,46 +50,45 @@ public class LightModel extends SensorModel {
 	public void updateSensorReadoutValues() {
 		long currentTime = System.currentTimeMillis();
 		// Form the average
-		if (average) {
-			partial_light += lightValue;
-			partial_light_n++;
+		if (mAverage) {
+			mPartialLight += mLightValue;
+			mPartialLightN++;
 		}
 
 		// Update
-		if (currentTime >= light_next_update) {
-			light_next_update += updateDuration;
-			if (light_next_update < currentTime) {
+		if (currentTime >= mNextUpdate) {
+			mNextUpdate += mUpdateDuration;
+			if (mNextUpdate < currentTime) {
 				// Don't lag too much behind.
 				// If we are too slow, then we are too slow.
-				light_next_update = currentTime;
+				mNextUpdate = currentTime;
 			}
 
-			if (average) {
+			if (mAverage) {
 				// form average
-				read_light = partial_light / partial_light_n;
+				mReadLight = mPartialLight / mPartialLightN;
 
 				// reset average
-				partial_light = 0;
-				partial_light_n = 0;
+				mPartialLight = 0;
+				mPartialLightN = 0;
 
 			} else {
 				// Only take current value
-				read_light = lightValue;
+				mReadLight = mLightValue;
 			}
 		}
 	}
 
 	@Override
-	public void printNumValues(PrintWriter out) {
+	public void getNumSensorValues(PrintWriter out) {
 		out.println("1");
 	}
 
 	@Override
 	public void printSensorData(PrintWriter out) {
 		// number of data following + data
-		out.println("1\n" + read_light);
+		out.println("1\n" + mReadLight);
 	}
-
 
 	@Override
 	public String getSI() {
@@ -80,11 +96,11 @@ public class LightModel extends SensorModel {
 	}
 
 	public void setLight(double value) {
-		lightValue = value;
+		mLightValue = value;
 	}
 
 	public void addLight(double value) {
-		lightValue += value;
+		mLightValue += value;
 	}
 
 	@Override
@@ -93,6 +109,6 @@ public class LightModel extends SensorModel {
 	}
 
 	public double getReadLight() {
-		return read_light;
+		return mReadLight;
 	}
 }
