@@ -1,5 +1,7 @@
 package org.openintents.samples.SensorRealDevice;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -87,7 +89,6 @@ public class SensorRealDeviceActivity extends Activity {
 
 		// The rest of your application can stay unmodified.
 		// //////////////////////////////////////////////////////////////
-
 		initListeners();
 
 	}

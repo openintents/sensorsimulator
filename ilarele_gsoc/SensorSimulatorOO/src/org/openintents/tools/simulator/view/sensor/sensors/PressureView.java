@@ -55,7 +55,7 @@ public class PressureView extends SensorView {
 		GridBagConstraints c2 = new GridBagConstraints();
 		PressureModel pressureModel = (PressureModel) model;
 		// ////////////////////////////
-		// Pressure (in lux)
+		// Pressure 
 		JPanel pressureFieldPane = new JPanel(new GridBagLayout());
 		c3 = new GridBagConstraints();
 		c3.fill = GridBagConstraints.HORIZONTAL;

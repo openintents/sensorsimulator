@@ -42,6 +42,7 @@ public abstract class SensorModel {
 	public static final int POZ_LINEAR_ACCELERATION = 8;
 	public static final int POZ_GRAVITY = 9;
 	public static final int POZ_ROTATION = 10;
+	public static final int POZ_GYROSCOPE = 11;
 
 	// Action Commands:
 	public static String ACTION_YAW_PITCH = "yaw & pitch";
@@ -59,6 +60,7 @@ public abstract class SensorModel {
 	public static final String TYPE_PROXIMITY = "TYPE_PROXIMITY";
 	public static final String TYPE_PRESSURE = "TYPE_PRESSURE";
 	public static final String TYPE_ROTATION_VECTOR = "TYPE_ROTATION_VECTOR";
+	public static final String TYPE_GYROSCOPE = "TYPE_GYROSCOPE";
 
 	// Supported sensors
 	public static final String ORIENTATION = "orientation";
@@ -72,6 +74,7 @@ public abstract class SensorModel {
 	public static final String BARCODE_READER = "barcode reader";
 	public static final String PRESSURE = "pressure";
 	public static final String ROTATION_VECTOR = "rotation vector";
+	public static final String GYROSCOPE = "gyroscope";
 
 	public static final String SHOW_ACCELERATION = "show acceleration";
 	public static final String BINARY_PROXIMITY = "binary proximity";

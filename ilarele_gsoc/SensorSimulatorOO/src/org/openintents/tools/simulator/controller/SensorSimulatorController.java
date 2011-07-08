@@ -40,6 +40,7 @@ import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.controller.sensor.AccelerometerController;
 import org.openintents.tools.simulator.controller.sensor.BarcodeReaderController;
 import org.openintents.tools.simulator.controller.sensor.GravityController;
+import org.openintents.tools.simulator.controller.sensor.GyroscopeController;
 import org.openintents.tools.simulator.controller.sensor.LightController;
 import org.openintents.tools.simulator.controller.sensor.LinearAccelerationController;
 import org.openintents.tools.simulator.controller.sensor.MagneticFieldController;
@@ -112,9 +113,12 @@ public class SensorSimulatorController implements WindowListener {
 				.getPressure()));
 		mSensors.add(new LinearAccelerationController(model
 				.getLinearAcceleration(), view.getLinearAceleration()));
-		mSensors.add(new GravityController(model.getGravity(), view.getGravity()));
+		mSensors.add(new GravityController(model.getGravity(), view
+				.getGravity()));
 		mSensors.add(new RotationVectorController(model.getRotationVector(),
 				view.getRotationVector()));
+		mSensors.add(new GyroscopeController(model.getGyroscope(), view
+				.getGyroscope()));
 
 		DeviceView deviceView = ((OrientationView) ((OrientationController) mSensors
 				.get(SensorModel.POZ_ORIENTATION)).getView()).getDeviceView();
@@ -194,7 +198,8 @@ public class SensorSimulatorController implements WindowListener {
 		// From time to time we get the user settings:
 		if (currentTime >= mSensorSimulatorModel.getNextUpdate()) {
 			// Do update
-			mSensorSimulatorModel.addNextUpdate(mSensorSimulatorModel.getDuration());
+			mSensorSimulatorModel.addNextUpdate(mSensorSimulatorModel
+					.getDuration());
 			if (mSensorSimulatorModel.getNextUpdate() < currentTime) {
 				// Skip time if we are already behind:
 				mSensorSimulatorModel.setNextUpdate(System.currentTimeMillis());
@@ -248,8 +253,8 @@ public class SensorSimulatorController implements WindowListener {
 		long maxcount = mSensorSimulatorView.getRefreshCount();
 		if (maxcount >= 0 && updateSensorCount >= maxcount) {
 			long newtime = System.currentTimeMillis();
-			double ms = (double) (newtime - mSensorSimulatorModel.getUpdateSensorTime())
-					/ ((double) maxcount);
+			double ms = (double) (newtime - mSensorSimulatorModel
+					.getUpdateSensorTime()) / ((double) maxcount);
 			mSensorSimulatorModel.setRefreshSensors(ms);
 			mSensorSimulatorView.setRefreshSensorsLabel(ms);
 
@@ -297,7 +302,8 @@ public class SensorSimulatorController implements WindowListener {
 	}
 
 	public TemperatureController getTemperature() {
-		return (TemperatureController) mSensors.get(SensorModel.POZ_TEMPERATURE);
+		return (TemperatureController) mSensors
+				.get(SensorModel.POZ_TEMPERATURE);
 	}
 
 	public BarcodeReaderController getBarcodeReader() {
@@ -319,7 +325,8 @@ public class SensorSimulatorController implements WindowListener {
 	}
 
 	public OrientationController getOrientation() {
-		return (OrientationController) mSensors.get(SensorModel.POZ_ORIENTATION);
+		return (OrientationController) mSensors
+				.get(SensorModel.POZ_ORIENTATION);
 	}
 
 	public void setFix(boolean value) {
@@ -342,6 +349,7 @@ public class SensorSimulatorController implements WindowListener {
 	}
 
 	public RotationVectorController getRotationVector() {
-		return (RotationVectorController) mSensors.get(SensorModel.POZ_ROTATION);
+		return (RotationVectorController) mSensors
+				.get(SensorModel.POZ_ROTATION);
 	}
 }

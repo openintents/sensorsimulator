@@ -59,6 +59,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
 import org.openintents.tools.simulator.view.sensor.sensors.BarcodeReaderView;
 import org.openintents.tools.simulator.view.sensor.sensors.GravityView;
+import org.openintents.tools.simulator.view.sensor.sensors.GyroscopeView;
 import org.openintents.tools.simulator.view.sensor.sensors.LightView;
 import org.openintents.tools.simulator.view.sensor.sensors.LinearAccelerationView;
 import org.openintents.tools.simulator.view.sensor.sensors.MagneticFieldView;
@@ -128,6 +129,7 @@ public class SensorSimulatorView extends JPanel {
 		mSensors.add(new LinearAccelerationView(model.getLinearAcceleration()));
 		mSensors.add(new GravityView(model.getGravity()));
 		mSensors.add(new RotationVectorView(model.getRotationVector()));
+		mSensors.add(new GyroscopeView(model.getGyroscope()));
 
 		mEnabledBorder = BorderFactory.createTitledBorder("Enabled sensors");
 		mDisabledBorder = BorderFactory
@@ -602,6 +604,10 @@ public class SensorSimulatorView extends JPanel {
 
 	public RotationVectorView getRotationVector() {
 		return (RotationVectorView) mSensors.get(SensorModel.POZ_ROTATION);
+	}
+
+	public GyroscopeView getGyroscope() {
+		return (GyroscopeView) mSensors.get(SensorModel.POZ_GYROSCOPE);
 	}
 
 }

@@ -33,6 +33,7 @@ import org.openintents.tools.simulator.SensorSimulator;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
 import org.openintents.tools.simulator.model.sensor.sensors.GravityModel;
+import org.openintents.tools.simulator.model.sensor.sensors.GyroscopeModel;
 import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
 import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
@@ -110,6 +111,7 @@ public class SensorSimulatorModel {
 		mSensors.add(new LinearAccelerationModel());
 		mSensors.add(new GravityModel());
 		mSensors.add(new RotationVectorModel());
+		mSensors.add(new GyroscopeModel());
 
 		mSensorServer = new SensorServer(sensorSimulator);
 
@@ -242,5 +244,9 @@ public class SensorSimulatorModel {
 
 	public RotationVectorModel getRotationVector() {
 		return (RotationVectorModel) mSensors.get(SensorModel.POZ_ROTATION);
+	}
+
+	public GyroscopeModel getGyroscope() {
+		return (GyroscopeModel) mSensors.get(SensorModel.POZ_GYROSCOPE);
 	}
 }
