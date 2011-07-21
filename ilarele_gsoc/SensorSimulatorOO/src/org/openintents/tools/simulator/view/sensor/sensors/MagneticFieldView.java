@@ -34,7 +34,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
  * 
  * @author Peli
  * @author Josip Balic
- *
+ * 
  */
 public class MagneticFieldView extends SensorView {
 	private static final long serialVersionUID = -4625924984418977091L;
@@ -42,9 +42,15 @@ public class MagneticFieldView extends SensorView {
 	private JTextField mNorthText;
 	private JTextField mEastText;
 	private JTextField mVerticalText;
+	private JPanel mSensorQuickPane;
 
 	public MagneticFieldView(MagneticFieldModel model) {
 		super(model);
+		setSensorQuickSettingsPanel();
+	}
+
+	private void setSensorQuickSettingsPanel() {
+		mSensorQuickPane = new JPanel();
 	}
 
 	public double getVertical() {
@@ -67,7 +73,7 @@ public class MagneticFieldView extends SensorView {
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GridBagConstraints c3 = new GridBagConstraints();
 		GridBagConstraints c2 = new GridBagConstraints();
-		MagneticFieldModel magModel = (MagneticFieldModel) model;
+		MagneticFieldModel magModel = (MagneticFieldModel) mModel;
 		// //////////////////////////////
 		// Magnetic field (in nanoTesla)
 		// Values can be found at
@@ -147,7 +153,7 @@ public class MagneticFieldView extends SensorView {
 				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
 				BorderFactory.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
-						model.getName())));
+						mModel.getName())));
 		panel1.add(new JLabel("- measures the magnetic field"));
 		panel1.add(new JLabel("- has values for all 3 axis"));
 
@@ -163,5 +169,10 @@ public class MagneticFieldView extends SensorView {
 		panel.add(panel1);
 		panel.add(panel2);
 		return panel;
+	}
+
+	@Override
+	public JPanel getQuickSettingsPanel() {
+		return mSensorQuickPane;
 	}
 }

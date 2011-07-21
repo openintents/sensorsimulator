@@ -40,10 +40,12 @@ public class BarcodeReaderView extends SensorView {
 
 	public BarcodeReaderView(SensorModel model) {
 		super(model);
+		setSensorQuickSettingsPanel();
 	}
 
 	// Barcode
 	private JTextField mBarcodeReaderText;
+	private JPanel mSensorQuickPane;
 
 	@Override
 	public JPanel fillSensorSpecificSettingsPanel() {
@@ -68,7 +70,7 @@ public class BarcodeReaderView extends SensorView {
 		mBarcodeReaderText = new JTextField(13);
 		mBarcodeReaderText.setDocument(new JTextFieldLimit(13));
 		mBarcodeReaderText.setText(""
-				+ ((BarcodeReaderModel) model).getBarcode());
+				+ ((BarcodeReaderModel) mModel).getBarcode());
 		layout.gridx = 1;
 		resultPanel.add(mBarcodeReaderText, layout);
 
@@ -84,5 +86,14 @@ public class BarcodeReaderView extends SensorView {
 	protected JPanel getSensorSpecificHelp() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	private void setSensorQuickSettingsPanel() {
+		mSensorQuickPane = new JPanel();
+	}
+
+	@Override
+	public JPanel getQuickSettingsPanel() {
+		return mSensorQuickPane;
 	}
 }

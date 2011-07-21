@@ -21,10 +21,9 @@ import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.sensors.BarcodeReaderView;
 
-
 /**
- * BarcodeReader keeps the behaviour of the BarcodeReader sensor
- * (listeners, etc.)
+ * BarcodeReader keeps the behaviour of the BarcodeReader sensor (listeners,
+ * etc.)
  * 
  * @author Peli
  * 

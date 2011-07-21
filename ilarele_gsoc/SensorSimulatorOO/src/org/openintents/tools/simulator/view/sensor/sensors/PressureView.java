@@ -25,6 +25,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 
 import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
@@ -38,12 +39,36 @@ import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
 public class PressureView extends SensorView {
 	private static final long serialVersionUID = -13895826746028866L;
 
+	private JSlider mPressureSlider;
+
 	public PressureView(PressureModel model) {
 		super(model);
+		setSensorQuickSettingsPanel();
+	}
+
+	private void setSensorQuickSettingsPanel() {
+		mSensorQuickPane = new JPanel(new GridBagLayout());
+		GridBagConstraints layout = new GridBagConstraints();
+		layout.fill = GridBagConstraints.HORIZONTAL;
+		layout.anchor = GridBagConstraints.NORTHWEST;
+		layout.gridwidth = 1;
+		layout.gridx = 0;
+		layout.gridy = 0;
+		mSensorQuickPane.add(new JLabel("Pressure"));
+
+		layout.gridx = 1;
+		mPressureSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
+		mPressureSlider.setPaintTicks(true);
+		mPressureSlider.setPaintLabels(true);
+		mPressureSlider.setMajorTickSpacing(50);
+		mPressureSlider.setMinorTickSpacing(10);
+		mPressureSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+		mSensorQuickPane.add(mPressureSlider);
 	}
 
 	// Pressure
 	private JTextField mPressureText;
+	private JPanel mSensorQuickPane;
 
 	@Override
 	public JPanel fillSensorSpecificSettingsPanel() {
@@ -53,9 +78,9 @@ public class PressureView extends SensorView {
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GridBagConstraints c3 = new GridBagConstraints();
 		GridBagConstraints c2 = new GridBagConstraints();
-		PressureModel pressureModel = (PressureModel) model;
+		PressureModel pressureModel = (PressureModel) mModel;
 		// ////////////////////////////
-		// Pressure 
+		// Pressure
 		JPanel pressureFieldPane = new JPanel(new GridBagLayout());
 		c3 = new GridBagConstraints();
 		c3.fill = GridBagConstraints.HORIZONTAL;
@@ -102,7 +127,7 @@ public class PressureView extends SensorView {
 				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
 				BorderFactory.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
-						model.getName())));
+						mModel.getName())));
 		panel1.add(new JLabel("- measures the air pressure"));
 		panel1.add(new JLabel("- used to predict the weather"));
 
@@ -119,4 +144,17 @@ public class PressureView extends SensorView {
 		return panel;
 	}
 
+	@Override
+	public JPanel getQuickSettingsPanel() {
+		return mSensorQuickPane;
+	}
+
+	public void setPressure(double value) {
+		mPressureText.setText("" + value);
+		mPressureSlider.setValue((int) (value * 100));
+	}
+
+	public JSlider getPressureSlider() {
+		return mPressureSlider;
+	}
 }

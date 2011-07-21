@@ -27,24 +27,17 @@
 package org.openintents.tools.simulator.view.sensor;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.geom.Line2D;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JSlider;
 import javax.swing.SpringLayout;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
+import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
@@ -60,7 +53,7 @@ import org.openintents.tools.simulator.model.telnet.Vector;
 public class DeviceView extends JPanel {
 
 	private static final long serialVersionUID = -112203026209081563L;
-	
+
 	public static final int MOUSE_MODE_YAW_PITCH = 1;
 	public static final int MOUSE_MODE_ROLL_PITCH = 2;
 	public static final int MOUSE_MODE_MOVE = 3;
@@ -119,11 +112,6 @@ public class DeviceView extends JPanel {
 	private JRadioButton mMoveButton;
 	private JRadioButton mYawPitchButton;
 
-	// Sliders:
-	private JSlider mYawSlider;
-	private JSlider mPitchSlider;
-	private JSlider mRollSlider;
-
 	// File usage
 
 	/**
@@ -134,6 +122,7 @@ public class DeviceView extends JPanel {
 	 */
 	public DeviceView(SensorSimulatorModel model) {
 		this.mSensorSimulatorModel = model;
+
 		SpringLayout layout = new SpringLayout();
 		setLayout(layout);
 		mMouseMode = MOUSE_MODE_YAW_PITCH;
@@ -151,109 +140,25 @@ public class DeviceView extends JPanel {
 		group.add(mRollPitchButton);
 		group.add(mMoveButton);
 
-		// Create the slider.
-		mYawSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, -20);
-		mPitchSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, -60);
-		mRollSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, 0);
-
-		// Turn on labels at major tick marks.
-		mYawSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-		mPitchSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-
-		mRollSlider.setMajorTickSpacing(90);
-		mRollSlider.setMinorTickSpacing(10);
-		mRollSlider.setPaintTicks(true);
-		mRollSlider.setPaintLabels(true);
-		mRollSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-
-		// sliders
-		JPanel sliderPanel = getSlidersPanel();
-		add(sliderPanel);
-
 		// radio buttons
 		add(mYawPitchButton);
 		add(mRollPitchButton);
 		add(mMoveButton);
 
-		// slider
-		layout.putConstraint(SpringLayout.NORTH, sliderPanel, 10,
-				SpringLayout.NORTH, this);
 		// radio buttons
 		layout.putConstraint(SpringLayout.NORTH, mYawPitchButton, 10,
-				SpringLayout.SOUTH, sliderPanel);
+				SpringLayout.NORTH, this);
 		layout.putConstraint(SpringLayout.NORTH, mRollPitchButton, 10,
-				SpringLayout.SOUTH, sliderPanel);
+				SpringLayout.NORTH, this);
 		layout.putConstraint(SpringLayout.NORTH, mMoveButton, 10,
-				SpringLayout.SOUTH, sliderPanel);
+				SpringLayout.NORTH, this);
 
 		layout.putConstraint(SpringLayout.WEST, mRollPitchButton, 10,
 				SpringLayout.EAST, mYawPitchButton);
 		layout.putConstraint(SpringLayout.WEST, mMoveButton, 10,
 				SpringLayout.EAST, mRollPitchButton);
+
 		setDoubleBuffered(true);
-
-		registerSliders();
-	}
-
-	private JPanel getSlidersPanel() {
-		JPanel centerPanel = new JPanel(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-
-		// labels
-		JLabel yawLabel = new JLabel("Yaw(y)  ", JLabel.CENTER);
-		yawLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		JLabel pitchLabel = new JLabel("Pitch(x) ", JLabel.CENTER);
-		pitchLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		JLabel rollLabel = new JLabel("Roll(z) ", JLabel.CENTER);
-		rollLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		// sliders
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.anchor = GridBagConstraints.NORTHWEST;
-		c.gridwidth = 1;
-		c.gridx = 0;
-		c.gridy = 0;
-		centerPanel.add(yawLabel, c);
-		c.gridx = 1;
-		centerPanel.add(mYawSlider, c);
-		c.gridx = 0;
-		c.gridy++;
-		centerPanel.add(pitchLabel, c);
-		c.gridx = 1;
-		centerPanel.add(mPitchSlider, c);
-		c.gridx = 0;
-		c.gridy++;
-		centerPanel.add(rollLabel, c);
-		c.gridx = 1;
-		centerPanel.add(mRollSlider, c);
-		centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		return centerPanel;
-	}
-
-	private void registerSliders() {
-		ChangeListener changeListener = new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				OrientationModel orientModel = mSensorSimulatorModel.getOrientation();
-				JSlider source = (JSlider) e.getSource();
-				if (source == mYawSlider) {
-					orientModel.setYaw(source.getValue());
-				} else if (source == mPitchSlider) {
-					orientModel.setPitch(source.getValue());
-				} else if (source == mRollSlider) {
-					orientModel.setRoll(source.getValue());
-				}
-				doRepaint();
-			}
-		};
-		mYawSlider.addChangeListener(changeListener);
-		mPitchSlider.addChangeListener(changeListener);
-		mRollSlider.addChangeListener(changeListener);
-
-		OrientationModel orient = mSensorSimulatorModel.getOrientation();
-		orient.setYaw(mYawSlider.getValue());
-		orient.setPitch(mPitchSlider.getValue());
-		orient.setRoll(mRollSlider.getValue());
 	}
 
 	/**
@@ -261,7 +166,7 @@ public class DeviceView extends JPanel {
 	 */
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension(250, 250);
+		return new Dimension(Global.DEVICE_WIDTH, Global.DEVICE_HEIGHT);
 	}
 
 	/**
@@ -273,12 +178,13 @@ public class DeviceView extends JPanel {
 	protected void paintComponent(Graphics graphics) {
 		super.paintComponent(graphics);
 		OrientationModel orientation = mSensorSimulatorModel.getOrientation();
-		AccelerometerModel accelerometer = mSensorSimulatorModel.getAccelerometer();
+		AccelerometerModel accelerometer = mSensorSimulatorModel
+				.getAccelerometer();
 		Graphics2D g2 = (Graphics2D) graphics;
 		// draw Line2D.Double
-		double centerx = 125;
-		double centery = 205;
-		double centerz = -150;
+		double centerx = Global.DEVICE_CENTER_X;
+		double centery = Global.DEVICE_CENTER_Y;
+		double centerz = Global.DEVICE_CENTER_Z;
 		for (int i = 0; i < phone.length; i += 2) {
 			if (i == 0)
 				g2.setColor(Color.RED);
@@ -354,41 +260,4 @@ public class DeviceView extends JPanel {
 	public void changeMouseMode(int mode) {
 		mMouseMode = mode;
 	}
-
-	public JSlider getYawSlider() {
-		return mYawSlider;
-	}
-
-	public JSlider getPitchSlider() {
-		return mPitchSlider;
-	}
-
-	public JSlider getRollSlider() {
-		return mRollSlider;
-	}
-
-	public void setYawSlider(int newYaw) {
-		mYawSlider.setValue(newYaw);
-	}
-
-	public void setRollSlider(int newRoll) {
-		mRollSlider.setValue(newRoll);
-	}
-
-	public void setPitchSlider(int newPitch) {
-		mPitchSlider.setValue(newPitch);
-	}
-
-	public int getRollSliderValue() {
-		return mRollSlider.getValue();
-	}
-
-	public int getYawSliderValue() {
-		return mYawSlider.getValue();
-	}
-
-	public int getPitchSliderValue() {
-		return mPitchSlider.getValue();
-	}
-
 }

@@ -21,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.io.PrintWriter;
 
 import javax.swing.JButton;
+import javax.swing.JTabbedPane;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
@@ -44,6 +45,8 @@ public abstract class SensorController {
 
 	// if the connection with the emulator has started
 	private boolean mIsFixed;
+	private JTabbedPane mTabPanel;
+	private JButton mEnableBtn;
 
 	public SensorController(final SensorModel model, final SensorView view) {
 		this.mSensorModel = model;
@@ -150,6 +153,31 @@ public abstract class SensorController {
 
 	public SensorView getView() {
 		return mSensorView;
+	}
+
+	public void setEnable(boolean enabled) {
+		mSensorModel.setEnabled(enabled);
+		mSensorView.setEnabled(enabled);
+		if (enabled) {
+			mTabPanel.add(mSensorModel.getName(), mSensorView);
+		} else {
+			mTabPanel.remove(mSensorView);
+		}
+	}
+
+	public void setTab(JTabbedPane tabbedPanel) {
+		this.mTabPanel = tabbedPanel;
+		mEnableBtn = mSensorView.getEnabled();
+		mEnableBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				setEnable(!mSensorModel.isEnabled());
+			}
+		});
+	}
+
+	public String getName() {
+		return mSensorModel.getName();
 	}
 
 }

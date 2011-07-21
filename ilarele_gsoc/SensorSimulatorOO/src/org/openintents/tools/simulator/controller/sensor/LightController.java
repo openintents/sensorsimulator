@@ -16,16 +16,19 @@
 
 package org.openintents.tools.simulator.controller.sensor;
 
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.sensors.LightView;
 
 /**
- * LightController keeps the behaviour of the Light sensor
- * (listeners, etc.)
+ * LightController keeps the behaviour of the Light sensor (listeners, etc.)
  * 
  * @author ilarele
  * 
@@ -34,6 +37,27 @@ public class LightController extends SensorController {
 
 	public LightController(LightModel model, LightView view) {
 		super(model, view);
+		registerLightSlider(view);
+	}
+
+	private void registerLightSlider(final LightView view) {
+		final JSlider lightSlider = view.getLightSlider();
+		lightSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				int value = lightSlider.getValue();
+				setLight(value);
+			}
+		});
+	}
+
+	protected void setLight(double value) {
+		final LightModel model = (LightModel) mSensorModel;
+		final LightView view = (LightView) mSensorView;
+		if (model.getReadLight() != value) {
+			model.setLight(value);
+			view.setLight(value);
+		}
 	}
 
 	@Override
@@ -43,7 +67,7 @@ public class LightController extends SensorController {
 		LightView lightView = (LightView) mSensorView;
 		// Light
 		if (lightModel.isEnabled()) {
-			lightModel.setLight(lightView.getLight());
+			setLight(lightView.getLight());
 
 			// Add random component:
 			double random = lightView.getRandom();
@@ -51,7 +75,7 @@ public class LightController extends SensorController {
 				lightModel.addLight(SensorModel.getRandom(random));
 			}
 		} else {
-			lightModel.setLight(0);
+			setLight(0);
 		}
 	}
 

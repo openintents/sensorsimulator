@@ -32,7 +32,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -41,6 +40,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -51,7 +51,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SpringLayout;
-import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
@@ -104,13 +104,11 @@ public class SensorSimulatorView extends JPanel {
 	private SensorSimulatorModel mModel;
 	private ArrayList<SensorView> mSensors;
 
-	private JPanel mEnabledSensorsPane;
-
-	private Border mEnabledBorder;
-
-	private Border mDisabledBorder;
-
 	private JTabbedPane mSensorsTabbedPane;
+
+	private AllSensorsView mAllSensorsTab;
+
+	private DeviceView mMobile;
 
 	public SensorSimulatorView(SensorSimulatorModel model) {
 		this.mModel = model;
@@ -131,9 +129,7 @@ public class SensorSimulatorView extends JPanel {
 		mSensors.add(new RotationVectorView(model.getRotationVector()));
 		mSensors.add(new GyroscopeView(model.getGyroscope()));
 
-		mEnabledBorder = BorderFactory.createTitledBorder("Enabled sensors");
-		mDisabledBorder = BorderFactory
-				.createTitledBorder("Enabled sensors - readonly");
+		mMobile = new DeviceView(model);
 
 		// up/down & split
 		JPanel upPanel = fillUpPanel();
@@ -157,6 +153,7 @@ public class SensorSimulatorView extends JPanel {
 
 	/**
 	 * Fills the panel from the bottom split.
+	 * 
 	 * @return
 	 */
 	private JPanel fillDownPanel() {
@@ -168,7 +165,7 @@ public class SensorSimulatorView extends JPanel {
 		downPanel.add(updateSimulationPanel);
 		Dimension minSize = updateSimulationPanel.getPreferredSize();
 		downPanel.setPreferredSize(new Dimension(minSize.width,
-				minSize.height + 95));
+				minSize.height + 195));
 		// info output
 		JScrollPane areaScrollPane = fillInfoOutput();
 		downPanel.add(areaScrollPane);
@@ -215,6 +212,7 @@ public class SensorSimulatorView extends JPanel {
 
 	/**
 	 * Fills info panel with possible IPs.
+	 * 
 	 * @return
 	 */
 	private JScrollPane fillInfoOutput() {
@@ -229,6 +227,7 @@ public class SensorSimulatorView extends JPanel {
 		try {
 			Enumeration<NetworkInterface> nets = NetworkInterface
 					.getNetworkInterfaces();
+			infoText.append("<font color='red'>10.0.0.2</font><br\\>");
 			for (NetworkInterface netint : Collections.list(nets)) {
 				Enumeration<InetAddress> inetAddresses = netint
 						.getInetAddresses();
@@ -255,17 +254,45 @@ public class SensorSimulatorView extends JPanel {
 	}
 
 	private JPanel fillUpdateSimulationPanel() {
-		JPanel updateSimulationPanel = new JPanel(new GridBagLayout());
+		JPanel leftDownPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints layout = new GridBagConstraints();
+		layout.fill = GridBagConstraints.HORIZONTAL;
+		layout.anchor = GridBagConstraints.NORTHWEST;
+
+		// Add IP address properties:
+		Font fontNotify = new Font("SansSerif", Font.BOLD, 12);
+		JLabel socketLabel = new JLabel("Socket ", JLabel.LEFT);
+		socketLabel.setFont(fontNotify);
+		socketLabel.setForeground(Global.COLOR_NOTIFY);
+		layout.gridx = 0;
+		layout.gridy = 0;
+		layout.gridwidth = 2;
+		leftDownPanel.add(socketLabel);
+
+		layout.gridx = 1;
+		layout.gridy = 0;
+		layout.gridwidth = 2;
+		mSensorPortText = new JTextField(5);
+		mSensorPortText.setText("" + mModel.getSimulationPort());
+		leftDownPanel.add(mSensorPortText);
+
+		mSensorPortButton = new JButton("Set");
+		mSensorPortButton.setFont(fontNotify);
+		mSensorPortButton.setForeground(Global.COLOR_NOTIFY);
+		layout.gridx = 2;
+		layout.gridy = 0;
+		layout.gridwidth = 1;
+		leftDownPanel.add(mSensorPortButton);
+
+		// Update sensors
+		JPanel updateSimulationPanel = new JPanel(new GridBagLayout());
+
 		updateSimulationPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Simulation update"),
 				BorderFactory.createEmptyBorder(0, 0, 0, 0)));
-
-		// Update sensors
+		layout.gridwidth = 1;
 		layout.gridy = 0;
 		layout.gridx = 0;
-		layout.fill = GridBagConstraints.HORIZONTAL;
-		layout.anchor = GridBagConstraints.NORTHWEST;
 		JLabel label = new JLabel("Update sensors: ", JLabel.LEFT);
 		updateSimulationPanel.add(label, layout);
 
@@ -303,7 +330,11 @@ public class SensorSimulatorView extends JPanel {
 		layout.gridx++;
 		updateSimulationPanel.add(mRefreshSensorsLabel, layout);
 
-		return updateSimulationPanel;
+		layout.gridx = 0;
+		layout.gridy = 1;
+		layout.gridwidth = 3;
+		leftDownPanel.add(updateSimulationPanel, layout);
+		return leftDownPanel;
 	}
 
 	private JPanel fillUpPanel() {
@@ -322,6 +353,8 @@ public class SensorSimulatorView extends JPanel {
 
 	private JTabbedPane fillRightPanel() {
 		JTabbedPane rightPanel = new JTabbedPane();
+		mAllSensorsTab = new AllSensorsView(mSensors);
+		rightPanel.addTab("Sensors", mAllSensorsTab);
 		for (SensorView sensor : mSensors) {
 			SensorModel sensorModel = sensor.getModel();
 			if (sensorModel.isEnabled())
@@ -335,57 +368,44 @@ public class SensorSimulatorView extends JPanel {
 		JPanel leftPanel = new JPanel(layout);
 		JScrollPane leftScrollPane = new JScrollPane(leftPanel);
 
-		// Add IP address properties:
-		Font fontNotify = new Font("SansSerif", Font.BOLD, 12);
-		mSensorPortText = new JTextField(5);
-		mSensorPortText.setText("" + mModel.getSimulationPort());
-		JLabel socketLabel = new JLabel("Socket ", JLabel.LEFT);
-		socketLabel.setFont(fontNotify);
-		socketLabel.setForeground(Global.COLOR_NOTIFY);
-		leftPanel.add(socketLabel);
-		leftPanel.add(mSensorPortText);
-		mSensorPortButton = new JButton("Set");
-		mSensorPortButton.setFont(fontNotify);
-		mSensorPortButton.setForeground(Global.COLOR_NOTIFY);
-		leftPanel.add(mSensorPortButton);
+		leftPanel.add(mMobile);
 
-		// Enabled Sensors
-		mEnabledSensorsPane = new JPanel();
-		mEnabledSensorsPane.setLayout(new GridLayout(0, 1));
-		mEnabledSensorsPane.setBorder(mEnabledBorder);
-		for (SensorView sensor : mSensors) {
-			sensor.addEnable(mEnabledSensorsPane);
-		}
-		leftPanel.add(mEnabledSensorsPane);
+		JPanel quickSettings = fillQuickSettingsPanel();
+		leftPanel.add(quickSettings);
 
-		// ip
-		layout.putConstraint(SpringLayout.NORTH, socketLabel, 10,
-				SpringLayout.NORTH, leftPanel);
-		layout.putConstraint(SpringLayout.NORTH, mSensorPortText, 5,
-				SpringLayout.NORTH, leftPanel);
-		layout.putConstraint(SpringLayout.NORTH, mSensorPortButton, 5,
+		// container
+		layout.putConstraint(SpringLayout.NORTH, mMobile, 10,
 				SpringLayout.NORTH, leftPanel);
 		layout.putConstraint(SpringLayout.SOUTH, leftPanel, 10,
-				SpringLayout.SOUTH, mEnabledSensorsPane);
+				SpringLayout.SOUTH, quickSettings);
 
-		layout.putConstraint(SpringLayout.WEST, socketLabel, 16,
-				SpringLayout.WEST, leftPanel);
-		layout.putConstraint(SpringLayout.WEST, mSensorPortText, 5,
-				SpringLayout.EAST, socketLabel);
-		layout.putConstraint(SpringLayout.WEST, mSensorPortButton, 10,
-				SpringLayout.EAST, mSensorPortText);
+		// device
+		layout.putConstraint(SpringLayout.WEST, mMobile, 0, SpringLayout.WEST,
+				leftPanel);
 		layout.putConstraint(SpringLayout.EAST, leftPanel, 10,
-				SpringLayout.EAST, mSensorPortButton);
+				SpringLayout.EAST, mMobile);
 
-		// enable sensors
-		layout.putConstraint(SpringLayout.WEST, mEnabledSensorsPane, 0,
+		// quick settings
+		layout.putConstraint(SpringLayout.WEST, quickSettings, 0,
 				SpringLayout.WEST, leftPanel);
-		layout.putConstraint(SpringLayout.NORTH, mEnabledSensorsPane, 10,
-				SpringLayout.SOUTH, socketLabel);
+		layout.putConstraint(SpringLayout.NORTH, quickSettings, 10,
+				SpringLayout.SOUTH, mMobile);
 		layout.putConstraint(SpringLayout.EAST, leftPanel, 10,
-				SpringLayout.EAST, mEnabledSensorsPane);
+				SpringLayout.EAST, quickSettings);
 
 		return leftScrollPane;
+	}
+
+	private JPanel fillQuickSettingsPanel() {
+		JPanel result = new JPanel();
+		result.setLayout(new BoxLayout(result, BoxLayout.Y_AXIS));
+		result.setBorder(new TitledBorder("Quick Settings"));
+		for (SensorView sensorView : mSensors) {
+			sensorView.setQuickSettingsPanel(result);
+			if (sensorView.getModel().isEnabled())
+				result.add(sensorView.getQuickSettingsPanel());
+		}
+		return result;
 	}
 
 	/**
@@ -578,13 +598,6 @@ public class SensorSimulatorView extends JPanel {
 		return mMessageTextArea;
 	}
 
-	public void setFix(boolean value) {
-		if (value)
-			mEnabledSensorsPane.setBorder(mDisabledBorder);
-		else
-			mEnabledSensorsPane.setBorder(mEnabledBorder);
-	}
-
 	public JTabbedPane getSensorsTabbedPanel() {
 		return mSensorsTabbedPane;
 	}
@@ -610,4 +623,11 @@ public class SensorSimulatorView extends JPanel {
 		return (GyroscopeView) mSensors.get(SensorModel.POZ_GYROSCOPE);
 	}
 
+	public DeviceView getDeviceView() {
+		return mMobile;
+	}
+
+	public AllSensorsView getAllSensorsView() {
+		return mAllSensorsTab;
+	}
 }

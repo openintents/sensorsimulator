@@ -17,10 +17,12 @@
 package org.openintents.tools.simulator.util;
 
 import javax.swing.JTextPane;
+
 /**
  * This class is a JTextPane with html content.
+ * 
  * @author ilarele
- *
+ * 
  */
 public class HtmlTextPane extends JTextPane {
 	private static final long serialVersionUID = 2272337397818400768L;

@@ -23,8 +23,8 @@ import org.openintents.tools.simulator.model.telnet.addons.GPSAddonModel;
  * TelnetSimulatorModel keeps the data (the model behind the GUI) of the
  * TelnetSimulator (listeners, etc.)
  * 
- * TelnetSimulator simulates, using a telnet communication with the emulator, the
- * battery level and the gps position.
+ * TelnetSimulator simulates, using a telnet communication with the emulator,
+ * the battery level and the gps position.
  * 
  * @author ilarele
  */

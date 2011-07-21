@@ -40,11 +40,11 @@ public class ProximityModel extends SensorModel {
 	private boolean mIsProximityNear; // false => far
 
 	public ProximityModel() {
-		super();
 		mProximityValue = 10;
 		mProximityRange = 10;
 		mBinaryProximity = true;
 		mIsProximityNear = true;
+		mEnabled = true;
 	}
 
 	@Override

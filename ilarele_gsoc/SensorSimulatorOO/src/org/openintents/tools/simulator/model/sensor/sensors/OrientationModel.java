@@ -51,7 +51,6 @@ public class OrientationModel extends SensorModel {
 	private int mRoll;
 
 	public OrientationModel() {
-		super();
 		mEnabled = true;
 	}
 

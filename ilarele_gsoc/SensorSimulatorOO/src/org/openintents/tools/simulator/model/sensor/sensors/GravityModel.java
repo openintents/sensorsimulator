@@ -35,7 +35,6 @@ public class GravityModel extends SensorModel {
 	private double mReadGravityY;
 	private double mReadGravityZ;
 
-	
 	/** Partial read-out value of gravity. */
 	private float mPartialGravityX;
 	private float mPartialGravityY;
@@ -49,7 +48,6 @@ public class GravityModel extends SensorModel {
 	private double mGravityLimit;
 
 	public GravityModel() {
-		super();
 		mReadGravityX = mGravityX = 0;
 		mReadGravityY = mGravityY = 0;
 		mReadGravityZ = mGravityZ = -9.8;

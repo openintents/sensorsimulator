@@ -16,10 +16,15 @@
 
 package org.openintents.tools.simulator.controller.sensor;
 
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.view.sensor.DeviceView;
 import org.openintents.tools.simulator.view.sensor.sensors.OrientationView;
 
 /**
@@ -32,8 +37,40 @@ import org.openintents.tools.simulator.view.sensor.sensors.OrientationView;
  */
 public class OrientationController extends SensorController {
 
-	public OrientationController(OrientationModel model, OrientationView view) {
+	public OrientationController(OrientationModel model, OrientationView view,
+			DeviceView deviceView) {
 		super(model, view);
+		registerSliders(deviceView);
+	}
+
+	private void registerSliders(final DeviceView deviceView) {
+		final OrientationModel orientModel = (OrientationModel) mSensorModel;
+		final OrientationView orientView = (OrientationView) mSensorView;
+		final JSlider yawSlider = orientView.getYawSlider();
+		final JSlider rollSlider = orientView.getRollSlider();
+		final JSlider pitchSlider = orientView.getPitchSlider();
+
+		ChangeListener changeListener = new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JSlider source = (JSlider) e.getSource();
+				if (source == yawSlider) {
+					orientModel.setYaw(source.getValue());
+				} else if (source == pitchSlider) {
+					orientModel.setPitch(source.getValue());
+				} else if (source == rollSlider) {
+					orientModel.setRoll(source.getValue());
+				}
+				deviceView.doRepaint();
+			}
+		};
+		yawSlider.addChangeListener(changeListener);
+		pitchSlider.addChangeListener(changeListener);
+		rollSlider.addChangeListener(changeListener);
+
+		orientModel.setYaw(yawSlider.getValue());
+		orientModel.setPitch(pitchSlider.getValue());
+		orientModel.setRoll(rollSlider.getValue());
 	}
 
 	@Override
@@ -60,5 +97,26 @@ public class OrientationController extends SensorController {
 				+ Global.TWO_DECIMAL_FORMAT.format(orientModel.getReadPitch())
 				+ ", "
 				+ Global.TWO_DECIMAL_FORMAT.format(orientModel.getReadRoll());
+	}
+
+	public void setPitch(int newPitch) {
+		OrientationModel orientModel = (OrientationModel) mSensorModel;
+		OrientationView orientView = (OrientationView) mSensorView;
+		orientModel.setPitch(newPitch);
+		orientView.setPitchSlider(newPitch);
+	}
+
+	public void setYaw(int value) {
+		OrientationModel orientModel = (OrientationModel) mSensorModel;
+		OrientationView orientView = (OrientationView) mSensorView;
+		orientModel.setYaw(value);
+		orientView.setYawSlider(value);
+	}
+
+	public void setRoll(int value) {
+		OrientationModel orientModel = (OrientationModel) mSensorModel;
+		OrientationView orientView = (OrientationView) mSensorView;
+		orientModel.setRoll(value);
+		orientView.setRollSlider(value);
 	}
 }

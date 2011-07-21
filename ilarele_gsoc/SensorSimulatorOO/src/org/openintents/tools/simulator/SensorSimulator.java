@@ -50,20 +50,4 @@ public class SensorSimulator {
 	public void newClient() {
 		model.newClient();
 	}
-
-	/**
-	 * When a client connects, block the buttons for enable/disable sensors
-	 */
-	public void blockSensorsEnabling() {
-		view.setFix(true);
-		controller.setFix(true);
-	}
-
-	/**
-	 * When a client disconnects, unblock the buttons for enable/disable sensors
-	 */
-	public void unBlockSensorsEnabling() {
-		view.setFix(false);
-		controller.setFix(false);
-	}
 }

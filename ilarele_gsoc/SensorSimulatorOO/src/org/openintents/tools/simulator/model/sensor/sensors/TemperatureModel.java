@@ -39,8 +39,8 @@ public class TemperatureModel extends SensorModel {
 	private int mPartialTemperatureN;
 
 	public TemperatureModel() {
-		super();
 		temperatureValue = 17.7;
+		mEnabled = true;
 	}
 
 	@Override

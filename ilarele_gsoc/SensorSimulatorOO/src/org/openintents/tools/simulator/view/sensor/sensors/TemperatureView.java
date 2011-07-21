@@ -25,6 +25,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
@@ -39,13 +40,37 @@ import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
  */
 public class TemperatureView extends SensorView {
 	private static final long serialVersionUID = 1000179101533155817L;
+	// Temperature
+	private JTextField mTemperatureText;
+
+	private JPanel mSensorQuickPane;
+	private JSlider mTemperatureSlider;
 
 	public TemperatureView(TemperatureModel model) {
 		super(model);
+		setSensorQuickSettingsPanel();
 	}
 
-	// Temperature
-	private JTextField mTemperatureText;
+	private void setSensorQuickSettingsPanel() {
+		mSensorQuickPane = new JPanel(new GridBagLayout());
+		GridBagConstraints layout = new GridBagConstraints();
+		layout.fill = GridBagConstraints.HORIZONTAL;
+		layout.anchor = GridBagConstraints.NORTHWEST;
+		layout.gridwidth = 1;
+		layout.gridx = 0;
+		layout.gridy = 0;
+		mSensorQuickPane.add(new JLabel("Temp"));
+
+		layout.gridx = 1;
+		mTemperatureSlider = new JSlider(JSlider.HORIZONTAL, -70, 70, 18);
+		mTemperatureSlider.setPaintTicks(true);
+		mTemperatureSlider.setPaintLabels(true);
+		mTemperatureSlider.setMajorTickSpacing(35);
+		mTemperatureSlider.setMinorTickSpacing(10);
+		mTemperatureSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10,
+				0));
+		mSensorQuickPane.add(mTemperatureSlider);
+	}
 
 	@Override
 	public JPanel fillSensorSpecificSettingsPanel() {
@@ -55,7 +80,7 @@ public class TemperatureView extends SensorView {
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GridBagConstraints c3 = new GridBagConstraints();
 		GridBagConstraints c2 = new GridBagConstraints();
-		TemperatureModel tempModel = (TemperatureModel) model;
+		TemperatureModel tempModel = (TemperatureModel) mModel;
 
 		// //////////////////////////////
 		// Temperature (in �C: Centigrade Celsius)
@@ -82,8 +107,6 @@ public class TemperatureView extends SensorView {
 		c3.gridx = 2;
 		temperatureFieldPane.add(label, c3);
 
-		// Temperature panel ends
-
 		// Add temperature panel to settings
 		c2.gridx = 0;
 		c2.gridwidth = 1;
@@ -105,10 +128,24 @@ public class TemperatureView extends SensorView {
 				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
 				BorderFactory.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
-						model.getName())));
+						mModel.getName())));
 		panel1.add(new JLabel("- measures the atmospheric temperature"));
 
 		panel.add(panel1);
 		return panel;
+	}
+
+	@Override
+	public JPanel getQuickSettingsPanel() {
+		return mSensorQuickPane;
+	}
+
+	public JSlider getTemperatureSlider() {
+		return mTemperatureSlider;
+	}
+
+	public void setTemp(double value) {
+		mTemperatureText.setText("" + value);
+		mTemperatureSlider.setValue((int) value);
 	}
 }

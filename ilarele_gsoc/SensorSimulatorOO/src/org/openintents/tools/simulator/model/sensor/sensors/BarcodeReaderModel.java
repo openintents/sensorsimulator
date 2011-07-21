@@ -29,9 +29,7 @@ public class BarcodeReaderModel extends SensorModel {
 	/** Current read-out value of barcode. */
 	private String barcodeValue;
 
-
 	public BarcodeReaderModel() {
-		super();
 		barcodeValue = "1234567890123";
 	}
 

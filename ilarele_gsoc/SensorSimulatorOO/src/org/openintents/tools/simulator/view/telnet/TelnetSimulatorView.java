@@ -39,8 +39,8 @@ import org.openintents.tools.simulator.view.telnet.addons.GPSAddonView;
 /**
  * TelnetSimulatorView keeps the GUI for TelnetSimulator.
  * 
- * TelnetSimulator simulates, using a telnet communication with the emulator, the
- * battery level and the gps position.
+ * TelnetSimulator simulates, using a telnet communication with the emulator,
+ * the battery level and the gps position.
  * 
  * @author Peli
  */

@@ -80,7 +80,9 @@ public class SensorServer implements Runnable {
 		try {
 			mServerSocket = new ServerSocket(mPort);
 		} catch (IOException e) {
-			mSensorSimulator.addMessage("Could not listen on port: " + mPort);
+			// mSensorSimulator.addMessage("Could not listen on port: " +
+			// mPort);
+			e.printStackTrace();
 			return;
 		}
 

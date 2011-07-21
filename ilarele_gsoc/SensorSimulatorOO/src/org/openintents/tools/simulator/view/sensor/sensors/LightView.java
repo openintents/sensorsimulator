@@ -25,6 +25,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 
 import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
@@ -37,13 +38,36 @@ import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
  */
 public class LightView extends SensorView {
 	private static final long serialVersionUID = 3945184157589120119L;
+	// Light
+	private JTextField mLightText;
+
+	private JPanel mSensorQuickPane;
+	private JSlider mLightSlider;
 
 	public LightView(LightModel model) {
 		super(model);
+		setSensorQuickSettingsPanel();
 	}
 
-	// Light
-	private JTextField mLightText;
+	private void setSensorQuickSettingsPanel() {
+		mSensorQuickPane = new JPanel(new GridBagLayout());
+		GridBagConstraints layout = new GridBagConstraints();
+		layout.fill = GridBagConstraints.HORIZONTAL;
+		layout.anchor = GridBagConstraints.NORTHWEST;
+		layout.gridwidth = 1;
+		layout.gridx = 0;
+		layout.gridy = 0;
+		mSensorQuickPane.add(new JLabel("Light"));
+
+		layout.gridx = 1;
+		mLightSlider = new JSlider(JSlider.HORIZONTAL, 0, 2000, 400);
+		mLightSlider.setPaintTicks(true);
+		mLightSlider.setPaintLabels(true);
+		mLightSlider.setMajorTickSpacing(500);
+		mLightSlider.setMinorTickSpacing(100);
+		mLightSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+		mSensorQuickPane.add(mLightSlider);
+	}
 
 	@Override
 	public JPanel fillSensorSpecificSettingsPanel() {
@@ -53,7 +77,7 @@ public class LightView extends SensorView {
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GridBagConstraints c3 = new GridBagConstraints();
 		GridBagConstraints c2 = new GridBagConstraints();
-		LightModel lightModel = (LightModel) model;
+		LightModel lightModel = (LightModel) mModel;
 		// ////////////////////////////
 		// Light (in lux)
 		JPanel lightFieldPane = new JPanel(new GridBagLayout());
@@ -102,7 +126,7 @@ public class LightView extends SensorView {
 				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
 				BorderFactory.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
-						model.getName())));
+						mModel.getName())));
 		panel1.add(new JLabel("- The intensity of light"));
 
 		panel.add(panel1);
@@ -113,6 +137,8 @@ public class LightView extends SensorView {
 				.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
 						"Luminance values in universe")));
+
+		panel2.add(new JLabel("Overcast = 10000 lux"));
 		panel2.add(new JLabel("Sunrise = 400 lux"));
 		panel2.add(new JLabel("Cloudy Day = 100 lux"));
 		panel2.add(new JLabel("Night with Fullmoon = 0.25 lux"));
@@ -123,4 +149,17 @@ public class LightView extends SensorView {
 		return panel;
 	}
 
+	@Override
+	public JPanel getQuickSettingsPanel() {
+		return mSensorQuickPane;
+	}
+
+	public void setLight(double value) {
+		mLightText.setText("" + value);
+		mLightSlider.setValue((int) value);
+	}
+
+	public JSlider getLightSlider() {
+		return mLightSlider;
+	}
 }

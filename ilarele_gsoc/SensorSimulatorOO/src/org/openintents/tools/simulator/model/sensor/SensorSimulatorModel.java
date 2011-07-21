@@ -47,8 +47,8 @@ import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
 /**
  * SensorSimulatorModel keeps the internal data model behind SensorSimulator.
  * 
- * SensorSimulator simulates various sensors. An Android application can connect through
- * TCP/IP with the settings shown to the SensorSimulator to simulate
+ * SensorSimulator simulates various sensors. An Android application can connect
+ * through TCP/IP with the settings shown to the SensorSimulator to simulate
  * accelerometer, compass, orientation sensor, and thermometer.
  * 
  * @author Peli
@@ -133,7 +133,8 @@ public class SensorSimulatorModel {
 	}
 
 	public MagneticFieldModel getMagneticField() {
-		return (MagneticFieldModel) mSensors.get(SensorModel.POZ_MAGNETIC_FIELD);
+		return (MagneticFieldModel) mSensors
+				.get(SensorModel.POZ_MAGNETIC_FIELD);
 	}
 
 	public TemperatureModel getTemperature() {
@@ -141,7 +142,8 @@ public class SensorSimulatorModel {
 	}
 
 	public BarcodeReaderModel getBarcodeReader() {
-		return (BarcodeReaderModel) mSensors.get(SensorModel.POZ_BARCODE_READER);
+		return (BarcodeReaderModel) mSensors
+				.get(SensorModel.POZ_BARCODE_READER);
 	}
 
 	public LightModel getLight() {

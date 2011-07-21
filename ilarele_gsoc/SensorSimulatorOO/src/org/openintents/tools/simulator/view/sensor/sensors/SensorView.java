@@ -73,13 +73,13 @@ public abstract class SensorView extends JScrollPane {
 
 	protected JLabel mRefreshEmulatorLabel;
 
-	protected SensorModel model;
-	private JPanel insidePanel;
+	protected SensorModel mModel;
+	private JPanel mInsidePanel;
 	private JButton helpBtn;
+	private JPanel mQuickSettingsParent;
 
 	public SensorView(SensorModel model) {
-		super();
-		this.model = model;
+		this.mModel = model;
 		setPreferredSize(new Dimension(
 				(int) (Global.WIDTH * Global.SENSOR_SPLIT_RIGHT),
 				(int) (Global.HEIGHT * Global.SENSOR_SPLIT_UP)));
@@ -107,28 +107,34 @@ public abstract class SensorView extends JScrollPane {
 
 	/**
 	 * 
+	 * @return a Panel with quick settings.
+	 */
+	public abstract JPanel getQuickSettingsPanel();
+
+	/**
+	 * 
 	 * @return a panel with specific help for each sensor.
 	 */
 	protected abstract JPanel getSensorSpecificHelp();
-	
+
 	private void fillSensorPanel() {
-		insidePanel = new JPanel(new GridBagLayout());
+		mInsidePanel = new JPanel(new GridBagLayout());
 
 		GridBagConstraints l = new GridBagConstraints();
 		l.fill = GridBagConstraints.HORIZONTAL;
 		l.anchor = GridBagConstraints.NORTHWEST;
 		l.gridx = 0;
 		l.gridy = 0;
-		getViewport().add(insidePanel);
+		getViewport().add(mInsidePanel);
 
 		// update rates
 		JPanel generalSettingsPanel = fillGeneralSettingsPanel();
-		insidePanel.add(generalSettingsPanel, l);
+		mInsidePanel.add(generalSettingsPanel, l);
 
 		// panel settings
 		JPanel sensorSettings = fillSensorSpecificSettingsPanel();
 		l.gridx = 1;
-		insidePanel.add(sensorSettings, l);
+		mInsidePanel.add(sensorSettings, l);
 	}
 
 	private JPanel fillGeneralSettingsPanel() {
@@ -160,9 +166,15 @@ public abstract class SensorView extends JScrollPane {
 		return mEnabled.isSelected();
 	}
 
-	public void setEnabled(boolean enable) {
-		mEnabled.setSelected(enable);
-		mRefreshEmulatorLabel.setText("-");
+	public void setEnabled(boolean enabled) {
+		if (enabled) {
+			mQuickSettingsParent.add(getQuickSettingsPanel());
+			mEnabled.setBackground(Global.COLOR_ENABLE);
+		} else {
+			mEnabled.setBackground(Global.COLOR_DISABLE);
+			mQuickSettingsParent.remove(getQuickSettingsPanel());
+			mRefreshEmulatorLabel.setText("-");
+		}
 	}
 
 	public boolean updateAverage() {
@@ -309,8 +321,6 @@ public abstract class SensorView extends JScrollPane {
 		return resultPanel;
 	}
 
-	
-
 	public JPanel fillSensorRandomPanel() {
 		JPanel resultPanel = new JPanel(new GridBagLayout());
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -319,11 +329,11 @@ public abstract class SensorView extends JScrollPane {
 				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY)));
 		GridBagConstraints layout = new GridBagConstraints();
 		mRandomText = new JTextField(5);
-		mRandomText.setText("" + model.getRandom());
+		mRandomText.setText("" + mModel.getRandom());
 		layout.gridx = 0;
 		resultPanel.add(mRandomText, layout);
 
-		JLabel label = new JLabel(" " + model.getSI(), JLabel.LEFT);
+		JLabel label = new JLabel(" " + mModel.getSI(), JLabel.LEFT);
 		layout.gridx = 1;
 		resultPanel.add(label, layout);
 		return resultPanel;
@@ -336,7 +346,7 @@ public abstract class SensorView extends JScrollPane {
 
 	public void getSensorUpdateRate(PrintWriter out) {
 		if (isSensorEnabled()) {
-			double updatesPerSecond = model.getCurrentUpdateRate();
+			double updatesPerSecond = mModel.getCurrentUpdateRate();
 			out.println("" + updatesPerSecond);
 		} else {
 			// This sensor is currently disabled
@@ -347,15 +357,11 @@ public abstract class SensorView extends JScrollPane {
 	public void unsetSensorUpdateRate(PrintWriter out) {
 		if (isSensorEnabled()) {
 			out.println("OK");
-			mCurrentUpdateRateText.setText("" + model.getDefaultUpdateRate());
+			mCurrentUpdateRateText.setText("" + mModel.getDefaultUpdateRate());
 		} else {
 			// This sensor is currently disabled
 			out.println("throw IllegalStateException");
 		}
-	}
-
-	public void addEnable(JPanel enabledSensorsPane) {
-		enabledSensorsPane.add(mEnabled);
 	}
 
 	public JCheckBox getUpdateAvg() {
@@ -367,7 +373,7 @@ public abstract class SensorView extends JScrollPane {
 	}
 
 	public SensorModel getModel() {
-		return model;
+		return mModel;
 	}
 
 	public JButton getHelpButton() {
@@ -474,8 +480,6 @@ public abstract class SensorView extends JScrollPane {
 		return panel;
 	}
 
-	
-
 	private JButton getBrowsingButton(String btnText, final String link) {
 		JButton button = new JButton(btnText);
 		button.addActionListener(new ActionListener() {
@@ -518,5 +522,9 @@ public abstract class SensorView extends JScrollPane {
 			mCurrentUpdateRateText.setText("Wrong update rate!");
 			break;
 		}
+	}
+
+	public void setQuickSettingsPanel(JPanel result) {
+		mQuickSettingsParent = result;
 	}
 }

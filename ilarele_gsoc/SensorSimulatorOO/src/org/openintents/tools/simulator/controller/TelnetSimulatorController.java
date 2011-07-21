@@ -30,8 +30,8 @@ import org.openintents.tools.simulator.view.telnet.TelnetSimulatorView;
  * TelnetSimulatorController keeps the behaviour of the TelnetSimulator
  * (listeners, etc.)
  * 
- * TelnetSimulator simulates, using a telnet communication with the emulator, the
- * battery level and the gps position.
+ * TelnetSimulator simulates, using a telnet communication with the emulator,
+ * the battery level and the gps position.
  * 
  * @author ilarele
  */

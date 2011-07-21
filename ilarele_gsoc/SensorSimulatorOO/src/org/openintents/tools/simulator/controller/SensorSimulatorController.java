@@ -36,7 +36,6 @@ import javax.swing.JButton;
 import javax.swing.JTabbedPane;
 import javax.swing.Timer;
 
-import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.controller.sensor.AccelerometerController;
 import org.openintents.tools.simulator.controller.sensor.BarcodeReaderController;
 import org.openintents.tools.simulator.controller.sensor.GravityController;
@@ -58,8 +57,6 @@ import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerMode
 import org.openintents.tools.simulator.view.sensor.DeviceView;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
-import org.openintents.tools.simulator.view.sensor.sensors.OrientationView;
-import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 
 /**
  * SensorSimulatorController keeps the behaviour of the SensorSimulator
@@ -89,19 +86,24 @@ public class SensorSimulatorController implements WindowListener {
 	// the time for a new sensors update cycle in the java application
 	private Timer mUpdateTimer;
 
+	private AllSensorsController mSensorTabController;
+
 	public SensorSimulatorController(final SensorSimulatorModel model,
 			final SensorSimulatorView view) {
 		this.mSensorSimulatorModel = model;
 		this.mSensorSimulatorView = view;
+		mSensors = new ArrayList<SensorController>();
+
+		DeviceView deviceView = view.getDeviceView();
+		mDeviceController = new DeviceController(mSensors, deviceView);
 
 		// sensors
-		mSensors = new ArrayList<SensorController>();
 		mSensors.add(new AccelerometerController(model.getAccelerometer(), view
 				.getAccelerometer()));
 		mSensors.add(new MagneticFieldController(model.getMagneticField(), view
 				.getMagneticField()));
 		mSensors.add(new OrientationController(model.getOrientation(), view
-				.getOrientation()));
+				.getOrientation(), deviceView));
 		mSensors.add(new TemperatureController(model.getTemperature(), view
 				.getTemperature()));
 		mSensors.add(new BarcodeReaderController(model.getBarcodeReader(), view
@@ -120,9 +122,8 @@ public class SensorSimulatorController implements WindowListener {
 		mSensors.add(new GyroscopeController(model.getGyroscope(), view
 				.getGyroscope()));
 
-		DeviceView deviceView = ((OrientationView) ((OrientationController) mSensors
-				.get(SensorModel.POZ_ORIENTATION)).getView()).getDeviceView();
-		mDeviceController = new DeviceController(model, deviceView);
+		mSensorTabController = new AllSensorsController(
+				view.getAllSensorsView(), mSensors);
 
 		JButton sensorPortButton = view.getSensorPortButton();
 		sensorPortButton.addActionListener(new ActionListener() {
@@ -132,29 +133,10 @@ public class SensorSimulatorController implements WindowListener {
 			}
 		});
 
-		// block/unblock buttons for enable/disable sensors
+		// set tabs for each sensor
+		JTabbedPane tabbedPanel = view.getSensorsTabbedPanel();
 		for (final SensorController sensorCtrl : mSensors) {
-			final SensorView sensorView = sensorCtrl.getView();
-			final SensorModel sensorModel = sensorCtrl.getModel();
-
-			final JButton enableBtn = sensorView.getEnabled();
-			enableBtn.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					JTabbedPane tabbedPanel = view.getSensorsTabbedPanel();
-					if (!sensorCtrl.isFixed()) {
-						if (sensorModel.isEnabled()) {
-							sensorModel.setEnabled(false);
-							enableBtn.setBackground(Global.COLOR_DISABLE);
-							tabbedPanel.remove(sensorView);
-						} else {
-							sensorModel.setEnabled(true);
-							enableBtn.setBackground(Global.COLOR_ENABLE);
-							tabbedPanel.add(sensorModel.getName(), sensorView);
-						}
-					}
-				}
-			});
+			sensorCtrl.setTab(tabbedPanel);
 		}
 
 		mUpdateTimer = new Timer(model.getDelay(), new ActionListener() {
@@ -226,7 +208,8 @@ public class SensorSimulatorController implements WindowListener {
 	}
 
 	private void updateFromWiimote() {
-		DeviceView deviceView = mDeviceController.getView();
+		OrientationController orientationController = (OrientationController) mSensors
+				.get(SensorModel.POZ_ORIENTATION);
 		AccelerometerModel accModel = (AccelerometerModel) mSensors.get(
 				SensorModel.POZ_ACCELEROMETER).getModel();
 		AccelerometerView accView = (AccelerometerView) mSensors.get(
@@ -239,9 +222,9 @@ public class SensorSimulatorController implements WindowListener {
 
 		if (success) {
 			// Update controls
-			deviceView.setYawSlider(0); // Wiimote can't support yaw
-			deviceView.setRollSlider(accModel.getWiiRoll());
-			deviceView.setPitchSlider(accModel.getWiiPitch());
+			orientationController.setYaw(0); // Wiimote can't support yaw
+			orientationController.setRoll(accModel.getWiiRoll());
+			orientationController.setPitch(accModel.getWiiPitch());
 		}
 	}
 

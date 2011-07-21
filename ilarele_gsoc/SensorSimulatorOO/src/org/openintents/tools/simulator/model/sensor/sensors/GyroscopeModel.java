@@ -52,11 +52,6 @@ public class GyroscopeModel extends SensorModel {
 	/** Number of summands in partial sum for gyroscope. */
 	private int mPartialAngleSpeedN;
 
-	// current yaw value
-	// private double mCrtYaw;
-	// private double mCrtRoll;
-	// private double mCrtPitch;
-
 	private double mOldYaw;
 	private double mOldRoll;
 	private double mOldPitch;
@@ -67,10 +62,6 @@ public class GyroscopeModel extends SensorModel {
 	private double mRadiusPitch;
 
 	public GyroscopeModel() {
-		super();
-		// mCrtYaw = 0;
-		// mCrtPitch = 0;
-
 		mRadiusPitch = 0.1;
 		mRadiusYaw = 0.15;
 		mRadiusRoll = 0.1;
@@ -228,6 +219,11 @@ public class GyroscopeModel extends SensorModel {
 		mOldPitch = pitch;
 		mOldYaw = yaw;
 		mOldRoll = roll;
+	}
+
+	public double getGravityConstant() {
+		// TODO
+		return 9.8;
 	}
 
 }

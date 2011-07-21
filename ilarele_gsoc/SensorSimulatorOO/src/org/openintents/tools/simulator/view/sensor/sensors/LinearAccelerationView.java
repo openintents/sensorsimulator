@@ -42,8 +42,15 @@ public class LinearAccelerationView extends SensorView {
 	private JTextField mSpringConstantText;
 	private JTextField mDampingConstantText;
 
+	private JPanel mSensorQuickPane;
+
 	public LinearAccelerationView(LinearAccelerationModel model) {
 		super(model);
+		setSensorQuickSettingsPanel();
+	}
+
+	private void setSensorQuickSettingsPanel() {
+		mSensorQuickPane = new JPanel();
 	}
 
 	@Override
@@ -52,7 +59,7 @@ public class LinearAccelerationView extends SensorView {
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Settings"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		LinearAccelerationModel linearAccModel = (LinearAccelerationModel) model;
+		LinearAccelerationModel linearAccModel = (LinearAccelerationModel) mModel;
 
 		JPanel linearAccFieldPane = new JPanel(new GridLayout(0, 3));
 
@@ -105,7 +112,7 @@ public class LinearAccelerationView extends SensorView {
 				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
 				BorderFactory.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
-						model.getName())));
+						mModel.getName())));
 		panel1.add(new JLabel("- measures the acceleration without gravity"));
 		panel1.add(new JLabel("- has values for all 3 axis"));
 		panel1.add(new JLabel("- != 0 when the device is moving"));
@@ -127,4 +134,8 @@ public class LinearAccelerationView extends SensorView {
 		return getSafeDouble(mDampingConstantText, 50);
 	}
 
+	@Override
+	public JPanel getQuickSettingsPanel() {
+		return mSensorQuickPane;
+	}
 }

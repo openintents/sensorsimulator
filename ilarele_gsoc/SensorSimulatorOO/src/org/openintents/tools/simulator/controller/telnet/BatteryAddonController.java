@@ -34,13 +34,13 @@ import org.openintents.tools.simulator.model.telnet.addons.BatteryAddonModel;
 import org.openintents.tools.simulator.view.telnet.addons.BatteryAddonView;
 
 /**
- * BatteryAddonController keeps the behaviour of the battery add-on
- * (listeners, etc.)
+ * BatteryAddonController keeps the behaviour of the battery add-on (listeners,
+ * etc.)
  * 
  * Battery add-on sets emulator battery state (via telnet communication).
  * 
  * @author Peli
- *
+ * 
  */
 public class BatteryAddonController {
 

@@ -24,8 +24,8 @@ import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.view.sensor.sensors.LinearAccelerationView;
 
 /**
- * LinearAccelerationController keeps the behaviour of the LinearAcceleration sensor
- * (listeners, etc.)
+ * LinearAccelerationController keeps the behaviour of the LinearAcceleration
+ * sensor (listeners, etc.)
  * 
  * gravity + linear acceleration = acceleration (from accelerometer sensor)
  * 

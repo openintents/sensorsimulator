@@ -24,8 +24,8 @@ import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerMode
 import org.openintents.tools.simulator.view.sensor.sensors.ProximityView;
 
 /**
- * ProximityController keeps the behaviour of the Proximity sensor
- * (listeners, etc.)
+ * ProximityController keeps the behaviour of the Proximity sensor (listeners,
+ * etc.)
  * 
  * @author Emaad Ahmed Manzoor
  * @author ilarele

@@ -697,7 +697,7 @@ final class SensorSimulatorClient {
 			unsetSensorUpdateRate(sensor);
 			return;
 		}
-			
+
 		mOut.println("setSensorUpdateDelay()");
 		mOut.println(sensor);
 		mOut.println("" + updateDelay);

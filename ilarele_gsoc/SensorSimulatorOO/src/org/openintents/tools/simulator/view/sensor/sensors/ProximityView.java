@@ -47,6 +47,11 @@ public class ProximityView extends SensorView {
 
 	public ProximityView(ProximityModel model) {
 		super(model);
+		setSensorQuickSettingsPanel();
+	}
+
+	private void setSensorQuickSettingsPanel() {
+		mSensorQuickPane = new JPanel();
 	}
 
 	// Proximity
@@ -56,6 +61,7 @@ public class ProximityView extends SensorView {
 	private JRadioButton mProximityNear;
 	private JRadioButton mProximityFar;
 	private ButtonGroup mProximityButtonGroup;
+	private JPanel mSensorQuickPane;
 
 	@Override
 	public JPanel fillSensorSpecificSettingsPanel() {
@@ -65,7 +71,7 @@ public class ProximityView extends SensorView {
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GridBagConstraints c3 = new GridBagConstraints();
 		GridBagConstraints c2 = new GridBagConstraints();
-		ProximityModel proxModel = (ProximityModel) model;
+		ProximityModel proxModel = (ProximityModel) mModel;
 		/*
 		 * Settings for the proximity in centimetres: Value FAR corresponds to
 		 * the maximum value of the proximity. Value NEAR corresponds to any
@@ -196,7 +202,7 @@ public class ProximityView extends SensorView {
 				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
 				BorderFactory.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
-						model.getName())));
+						mModel.getName())));
 		panel1.add(new JLabel(
 				"- measures the distance from the sensor, in centimeters"));
 		panel1.add(new JLabel(
@@ -206,4 +212,8 @@ public class ProximityView extends SensorView {
 		return panel;
 	}
 
+	@Override
+	public JPanel getQuickSettingsPanel() {
+		return mSensorQuickPane;
+	}
 }

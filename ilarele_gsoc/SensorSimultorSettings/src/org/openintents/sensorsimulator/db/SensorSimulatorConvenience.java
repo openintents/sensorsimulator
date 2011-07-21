@@ -21,7 +21,6 @@
 
 package org.openintents.sensorsimulator.db;
 
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;

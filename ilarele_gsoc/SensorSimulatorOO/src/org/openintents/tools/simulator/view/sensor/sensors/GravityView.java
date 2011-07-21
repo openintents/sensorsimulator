@@ -40,8 +40,15 @@ public class GravityView extends SensorView {
 	private JTextField mGravityConstantText;
 	private JTextField mAccelerometerLimitText;
 
+	private JPanel mSensorQuickPane;
+
 	public GravityView(GravityModel model) {
 		super(model);
+		setSensorQuickSettingsPanel();
+	}
+
+	private void setSensorQuickSettingsPanel() {
+		mSensorQuickPane = new JPanel();
 	}
 
 	@Override
@@ -50,7 +57,7 @@ public class GravityView extends SensorView {
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder("Settings"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		GravityModel gravityModel = (GravityModel) model;
+		GravityModel gravityModel = (GravityModel) mModel;
 
 		JPanel gravityFieldPane = new JPanel(new GridLayout(0, 3));
 		gravityFieldPane.setBorder(BorderFactory.createCompoundBorder(
@@ -90,7 +97,7 @@ public class GravityView extends SensorView {
 				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
 				BorderFactory.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
-						model.getName())));
+						mModel.getName())));
 		panel1.add(new JLabel(
 				"- the force of attraction beteen physical bodies"));
 		panel1.add(new JLabel("- has values for all 3 axis"));
@@ -114,5 +121,10 @@ public class GravityView extends SensorView {
 
 	public double getGravityConstant() {
 		return getSafeDouble(mGravityConstantText, 9.80665);
+	}
+
+	@Override
+	public JPanel getQuickSettingsPanel() {
+		return mSensorQuickPane;
 	}
 }

@@ -22,7 +22,7 @@ import java.io.PrintWriter;
  * PressureModel keeps the internal data model behind Pressure Sensor.
  * 
  * @author ilarele
- *
+ * 
  */
 public class PressureModel extends SensorModel {
 
@@ -30,15 +30,15 @@ public class PressureModel extends SensorModel {
 	private double mPressureValue;
 	/** Current read-out value of pressure. */
 	private double mReadPressure;
-	
+
 	/** Partial read-out value of pressure. */
 	private float mPartialPressure;
 	/** Number of summands in partial sum for pressure. */
 	private int mPartialPressureN;
 
 	public PressureModel() {
-		super();
 		mPressureValue = 0.5;
+		mEnabled = true;
 	}
 
 	@Override

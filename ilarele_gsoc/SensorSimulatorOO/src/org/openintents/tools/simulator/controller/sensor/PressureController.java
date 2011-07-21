@@ -16,6 +16,10 @@
 
 package org.openintents.tools.simulator.controller.sensor;
 
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
@@ -24,8 +28,8 @@ import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerMode
 import org.openintents.tools.simulator.view.sensor.sensors.PressureView;
 
 /**
- * PressureController keeps the behaviour of the Pressure sensor
- * (listeners, etc.)
+ * PressureController keeps the behaviour of the Pressure sensor (listeners,
+ * etc.)
  * 
  * Pressure sensor can take values in [0, 1]
  * 
@@ -36,6 +40,26 @@ public class PressureController extends SensorController {
 
 	public PressureController(PressureModel model, PressureView view) {
 		super(model, view);
+		registerPressureSlider(view);
+	}
+
+	private void registerPressureSlider(final PressureView view) {
+		final JSlider pressureSlider = view.getPressureSlider();
+		pressureSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				setPressure((double) pressureSlider.getValue() / 100);
+			}
+		});
+	}
+
+	protected void setPressure(double value) {
+		final PressureModel model = (PressureModel) mSensorModel;
+		final PressureView view = (PressureView) mSensorView;
+		if (model.getReadPressure() != value) {
+			model.setPressure(value);
+			view.setPressure(value);
+		}
 	}
 
 	@Override
@@ -45,7 +69,7 @@ public class PressureController extends SensorController {
 		PressureView pressureView = (PressureView) mSensorView;
 		// Pressure
 		if (pressureModel.isEnabled()) {
-			pressureModel.setPressure(pressureView.getPressure());
+			setPressure(pressureView.getPressure());
 
 			// Add random component:
 			double random = pressureView.getRandom();
@@ -53,7 +77,7 @@ public class PressureController extends SensorController {
 				pressureModel.addPressure(SensorModel.getRandom(random));
 			}
 		} else {
-			pressureModel.setPressure(0);
+			setPressure(0);
 		}
 	}
 

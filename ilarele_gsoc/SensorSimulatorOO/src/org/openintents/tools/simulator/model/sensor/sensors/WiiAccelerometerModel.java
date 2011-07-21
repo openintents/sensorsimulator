@@ -23,7 +23,7 @@ import org.openintents.tools.simulator.model.telnet.WiiMoteData;
  * SensorSimulatorModel keeps the internal data model behind SensorSimulator.
  * 
  * @author Dale Thatcher
- *
+ * 
  */
 public class WiiAccelerometerModel {
 

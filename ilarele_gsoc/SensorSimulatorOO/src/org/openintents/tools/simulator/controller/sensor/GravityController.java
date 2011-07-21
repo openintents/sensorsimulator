@@ -25,8 +25,7 @@ import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.view.sensor.sensors.GravityView;
 
 /**
- * GravityController keeps the behaviour of the Gravity sensor
- * (listeners, etc.)
+ * GravityController keeps the behaviour of the Gravity sensor (listeners, etc.)
  * 
  * gravity + linear acceleration = acceleration (from accelerometer sensor)
  * 

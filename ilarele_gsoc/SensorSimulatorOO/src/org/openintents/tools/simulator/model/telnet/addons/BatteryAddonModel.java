@@ -27,7 +27,7 @@ import org.openintents.tools.simulator.view.telnet.addons.BatteryAddonView;
  * Battery add-on sets emulator battery state (via telnet communication).
  * 
  * @author Peli
- *
+ * 
  */
 public class BatteryAddonModel {
 	// TelnetSimulations variables

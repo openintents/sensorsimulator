@@ -18,6 +18,7 @@ package org.openintents.tools.simulator.view.sensor.sensors;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
@@ -36,7 +37,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
  * 
  * @author Peli
  * @author Josip Balic
- *
+ * 
  */
 public class AccelerometerView extends SensorView {
 
@@ -55,13 +56,20 @@ public class AccelerometerView extends SensorView {
 
 	private WiiAccelerometerView wiiAccelerometerView;
 
+	private JPanel mSensorQuickPane;
+
 	public AccelerometerView(AccelerometerModel model) {
 		super(model);
+		setSensorQuickSettingsPanel();
+	}
+
+	private void setSensorQuickSettingsPanel() {
+		mSensorQuickPane = new JPanel();
 	}
 
 	@Override
 	public JPanel fillSensorSpecificSettingsPanel() {
-		AccelerometerModel accModel = ((AccelerometerModel) model);
+		AccelerometerModel accModel = ((AccelerometerModel) mModel);
 		JPanel resultPanel = new JPanel();
 		resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -86,6 +94,11 @@ public class AccelerometerView extends SensorView {
 		resultPanel.add(realSensorBridgeFieldPane);
 
 		return resultPanel;
+	}
+
+	@Override
+	public JPanel getQuickSettingsPanel() {
+		return mSensorQuickPane;
 	}
 
 	private JPanel fillRealSensorBridge(AccelerometerModel accModel) {
@@ -232,7 +245,7 @@ public class AccelerometerView extends SensorView {
 				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
 				BorderFactory.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
-						model.getName())));
+						mModel.getName())));
 		panel1.add(new JLabel(
 				"- measures the acceleration applied to the device"));
 		panel1.add(new JLabel("- has values for all 3 axis"));
@@ -241,4 +254,5 @@ public class AccelerometerView extends SensorView {
 		panel.add(panel1);
 		return panel;
 	}
+
 }

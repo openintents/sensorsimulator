@@ -30,9 +30,10 @@ import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 
 /**
- * Help Window for sensors. 
+ * Help Window for sensors.
+ * 
  * @author ilarele
- *
+ * 
  */
 public class HelpWindow extends JFrame {
 	private static final long serialVersionUID = -3465061620684511665L;

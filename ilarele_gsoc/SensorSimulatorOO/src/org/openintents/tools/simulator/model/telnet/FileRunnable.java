@@ -88,7 +88,7 @@ public class FileRunnable implements Runnable {
 	}
 
 	public void interrupt() {
-		thread.interrupt();		
+		thread.interrupt();
 	}
 
 }

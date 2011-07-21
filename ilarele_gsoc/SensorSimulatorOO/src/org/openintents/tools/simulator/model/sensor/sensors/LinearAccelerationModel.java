@@ -65,7 +65,6 @@ public class LinearAccelerationModel extends SensorModel {
 	private double mMeterPerPixel;
 
 	public LinearAccelerationModel() {
-		super();
 		mAccX = 0;
 		mAccZ = 0;
 

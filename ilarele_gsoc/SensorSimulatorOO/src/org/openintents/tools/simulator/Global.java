@@ -24,14 +24,14 @@ import javax.swing.ImageIcon;
 public class Global {
 	// main window size
 	public final static int WIDTH = 1000;
-	public final static int HEIGHT = 680;
+	public final static int HEIGHT = 600;
 
 	// main window split percentage
-	public static final double SENSOR_SPLIT_UP = 0.65;
+	public static final double SENSOR_SPLIT_UP = 0.42;
 	public static final double SENSOR_SPLIT_DOWN = 1 - SENSOR_SPLIT_UP;
 
 	// upper panel split percentage
-	public final static double SENSOR_SPLIT_LEFT = 0.3;
+	public final static double SENSOR_SPLIT_LEFT = 0.4;
 	public final static double SENSOR_SPLIT_RIGHT = 1 - SENSOR_SPLIT_LEFT;
 
 	// colors
@@ -57,4 +57,10 @@ public class Global {
 	public static final String HELP_OPENINTENTS_FORUM_URL = "http://openintents.org/en/forum";
 	public static final int WIDTH_HELP = 550;
 	public static final int HEIGHT_HELP = 550;
+	public static final String FILE_CONFIG_PHONE = "configPhone.txt";
+	public static final double DEVICE_CENTER_X = 125;
+	public static final double DEVICE_CENTER_Y = 100;
+	public static final double DEVICE_CENTER_Z = -150;
+	public static final int DEVICE_WIDTH = (int) (SENSOR_SPLIT_LEFT * WIDTH);
+	public static final int DEVICE_HEIGHT = 160;
 }

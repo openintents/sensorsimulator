@@ -77,8 +77,6 @@ public class SensorServerThread implements Runnable {
 		mClientSocket = newClientSocket;
 		mTalking = true;
 
-		mSensorSimulator.blockSensorsEnabling();
-
 		// start ourselves:
 		mThread = new Thread(this);
 		mThread.start();
@@ -124,7 +122,6 @@ public class SensorServerThread implements Runnable {
 					executeCommand(out, in, inputLine);
 				}
 			}
-			mSensorSimulator.unBlockSensorsEnabling();
 			out.close();
 			in.close();
 			mClientSocket.close();
@@ -180,7 +177,8 @@ public class SensorServerThread implements Runnable {
 				sensorCtrl.setCurrentUpdateRate(updateDelay);
 				sensorModel.setSensorUpdateRate(out);
 			} else {
-				System.out.println(sensorName + " throw IllegalArgumentException");
+				System.out.println(sensorName
+						+ " throw IllegalArgumentException");
 				out.println("throw IllegalArgumentException");
 			}
 		} else if (cmd.compareTo("unsetSensorUpdateRate()") == 0) {
@@ -298,7 +296,6 @@ public class SensorServerThread implements Runnable {
 		try {
 			mTalking = false;
 			mClientSocket.close();
-			mSensorSimulator.unBlockSensorsEnabling();
 		} catch (IOException e) {
 			System.err.println("Close failed.");
 			System.exit(1);

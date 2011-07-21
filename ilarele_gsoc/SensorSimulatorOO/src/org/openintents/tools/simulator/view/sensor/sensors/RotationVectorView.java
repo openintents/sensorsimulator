@@ -41,9 +41,15 @@ public class RotationVectorView extends SensorView {
 	private JTextField mRotationVectorTextX;
 	private JTextField mRotationVectorTextY;
 	private JTextField mRotationVectorTextZ;
+	private JPanel mSensorQuickPane;
 
 	public RotationVectorView(RotationVectorModel model) {
 		super(model);
+		setSensorQuickSettingsPanel();
+	}
+
+	private void setSensorQuickSettingsPanel() {
+		mSensorQuickPane = new JPanel();
 	}
 
 	@Override
@@ -53,7 +59,7 @@ public class RotationVectorView extends SensorView {
 				BorderFactory.createTitledBorder("Settings"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GridBagConstraints c3 = new GridBagConstraints();
-		RotationVectorModel rotationModel = (RotationVectorModel) model;
+		RotationVectorModel rotationModel = (RotationVectorModel) mModel;
 
 		// ////////////////////////////
 		// rotation
@@ -67,7 +73,7 @@ public class RotationVectorView extends SensorView {
 
 		// x
 
-		JLabel label = new JLabel("θ(x): ", JLabel.LEFT);
+		JLabel label = new JLabel("Θ(x): ", JLabel.LEFT);
 		rotationFieldPane.add(label, c3);
 		mRotationVectorTextX = new JTextField(5);
 		mRotationVectorTextX.setText("" + rotationModel.getRotationVectorX());
@@ -79,7 +85,7 @@ public class RotationVectorView extends SensorView {
 		rotationFieldPane.add(label, c3);
 
 		// y
-		label = new JLabel("θ(y): ", JLabel.LEFT);
+		label = new JLabel("Θ(y): ", JLabel.LEFT);
 		c3.gridx = 0;
 		c3.gridy = 1;
 		rotationFieldPane.add(label, c3);
@@ -96,7 +102,7 @@ public class RotationVectorView extends SensorView {
 		// z
 		c3.gridx = 0;
 		c3.gridy = 2;
-		label = new JLabel("θ(z): ", JLabel.LEFT);
+		label = new JLabel("Θ(z): ", JLabel.LEFT);
 		rotationFieldPane.add(label, c3);
 
 		mRotationVectorTextZ = new JTextField(5);
@@ -134,10 +140,9 @@ public class RotationVectorView extends SensorView {
 				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY),
 				BorderFactory.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
-						model.getName())));
-		panel1.add(new JLabel(
-				"- measures the angle of rotation around axis(θ)"));
-		panel1.add(new JLabel("- has values for all 3 axis (sin(θ/2))"));
+						mModel.getName())));
+		panel1.add(new JLabel("- measures the angle of rotation around axis(Θ)"));
+		panel1.add(new JLabel("- has values for all 3 axis (sin(Θ/2))"));
 
 		panel.add(panel1);
 		return panel;
@@ -147,5 +152,10 @@ public class RotationVectorView extends SensorView {
 		mRotationVectorTextX.setText("" + v.x);
 		mRotationVectorTextY.setText("" + v.y);
 		mRotationVectorTextZ.setText("" + v.z);
+	}
+
+	@Override
+	public JPanel getQuickSettingsPanel() {
+		return mSensorQuickPane;
 	}
 }

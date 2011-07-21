@@ -22,7 +22,7 @@ import java.io.PrintWriter;
  * LightModel keeps the internal data model behind Light Sensor.
  * 
  * @author ilarele
- *
+ * 
  */
 public class LightModel extends SensorModel {
 
@@ -37,8 +37,8 @@ public class LightModel extends SensorModel {
 	private int mPartialLightN;
 
 	public LightModel() {
-		super();
 		mReadLight = mLightValue = 400;
+		mEnabled = true;
 	}
 
 	@Override

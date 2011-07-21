@@ -73,7 +73,6 @@ public class AccelerometerModel extends SensorModel {
 	/** Number of summands in partial sum for accelerometer. */
 	private int mPartialAccelN;
 
-
 	/** Current position on screen. */
 	private int mMoveX;
 	/** Current position on screen. */
@@ -90,7 +89,7 @@ public class AccelerometerModel extends SensorModel {
 	 * 
 	 * This is set to 1, as only the ratio k/m enters the simulation.
 	 */
-	private double mMass; 
+	private double mMass;
 
 	private double mGamma; // damping of spring
 
@@ -111,7 +110,6 @@ public class AccelerometerModel extends SensorModel {
 	private WiiAccelerometerModel mWiiAccelerometerModel;
 
 	public AccelerometerModel() {
-		super();
 		mAccX = 0;
 		mAccZ = 0;
 

@@ -16,6 +16,10 @@
 
 package org.openintents.tools.simulator.controller.sensor;
 
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
@@ -35,6 +39,27 @@ public class TemperatureController extends SensorController {
 
 	public TemperatureController(TemperatureModel model, TemperatureView view) {
 		super(model, view);
+		registerTemperatureSlider(view);
+	}
+
+	private void registerTemperatureSlider(final TemperatureView view) {
+		final JSlider temperatureSlider = view.getTemperatureSlider();
+		temperatureSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				int value = temperatureSlider.getValue();
+				setTemperature(value);
+			}
+		});
+	}
+
+	protected void setTemperature(double value) {
+		final TemperatureModel model = (TemperatureModel) mSensorModel;
+		final TemperatureView view = (TemperatureView) mSensorView;
+		if (model.getReadTemp() != value) {
+			model.setTemp(value);
+			view.setTemp(value);
+		}
 	}
 
 	@Override
@@ -43,7 +68,7 @@ public class TemperatureController extends SensorController {
 		TemperatureModel tempModel = (TemperatureModel) mSensorModel;
 		TemperatureView tempView = (TemperatureView) mSensorView;
 		if (tempModel.isEnabled()) {
-			tempModel.setTemp(tempView.getTemperature());
+			setTemperature(tempView.getTemperature());
 
 			// Add random component:
 			double random = tempView.getRandom();
@@ -51,7 +76,7 @@ public class TemperatureController extends SensorController {
 				tempModel.addTemp(SensorModel.getRandom(random));
 			}
 		} else {
-			tempModel.setTemp(0);
+			setTemperature(0);
 		}
 	}
 

@@ -36,7 +36,6 @@ public class MagneticFieldModel extends SensorModel {
 	/** Current read-out value of compass z-component. */
 	private double mReadCompassZ;
 
-
 	/** Partial read-out value of compass x-component. */
 	private double mPartialCompassX;
 	/** Partial read-out value of compass y-component. */
@@ -59,7 +58,6 @@ public class MagneticFieldModel extends SensorModel {
 	private double mVertical;
 
 	public MagneticFieldModel() {
-		super();
 		mNorth = 22874.1;
 		mEast = 5939.5;
 		mVertical = 43180.5;

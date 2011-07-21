@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package org.openintents.tools.simulator.model.sensor.sensors;
 
 import java.io.PrintWriter;
@@ -22,7 +21,8 @@ import java.io.PrintWriter;
 import org.openintents.tools.simulator.model.telnet.Vector;
 
 /**
- * RotationVectorModel keeps the internal data model behind RotationVector Sensor.
+ * RotationVectorModel keeps the internal data model behind RotationVector
+ * Sensor.
  * 
  * @author ilarele
  * 
@@ -105,8 +105,8 @@ public class RotationVectorModel extends SensorModel {
 	@Override
 	public void printSensorData(PrintWriter out) {
 		// number of data following + data
-		out.println("3\n" + Math.sin(Math.toRadians(mReadRotationX / 2))
-				+ "\n" + Math.sin(Math.toRadians(mReadRotationY / 2)) + "\n"
+		out.println("3\n" + Math.sin(Math.toRadians(mReadRotationX / 2)) + "\n"
+				+ Math.sin(Math.toRadians(mReadRotationY / 2)) + "\n"
 				+ Math.sin(Math.toRadians(mReadRotationZ / 2)));
 
 	}

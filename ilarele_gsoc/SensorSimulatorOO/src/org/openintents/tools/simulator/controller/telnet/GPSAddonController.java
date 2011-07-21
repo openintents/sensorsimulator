@@ -25,13 +25,12 @@ import org.openintents.tools.simulator.model.telnet.addons.GPSAddonModel;
 import org.openintents.tools.simulator.view.telnet.addons.GPSAddonView;
 
 /**
- * GPSAddonController keeps the behaviour of the gps add-on
- * (listeners, etc.)
+ * GPSAddonController keeps the behaviour of the gps add-on (listeners, etc.)
  * 
  * Gps add-on sets emulator gps position (via telnet communication).
  * 
  * @author Peli
- *
+ * 
  */
 public class GPSAddonController {
 	// GPS variables
