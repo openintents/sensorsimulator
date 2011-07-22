@@ -48,6 +48,7 @@ import javax.swing.event.ChangeListener;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.SensorSimulator;
+import org.openintents.tools.simulator.SensorsRecording;
 import org.openintents.tools.simulator.SimulatorInstances;
 import org.openintents.tools.simulator.TelnetSimulator;
 
@@ -122,6 +123,7 @@ public class SensorSimulatorMain extends JPanel implements WindowListener,
 		tabbedPane.setPreferredSize(new Dimension(Global.WIDTH, Global.HEIGHT));
 		SensorSimulator simulator = new SensorSimulator();
 		TelnetSimulator telnet = new TelnetSimulator();
+		SensorsRecording recording = new SensorsRecording();
 
 		// add instance of this simulator to SensorSimulatorInstances
 		setFirstSimulatorInstance(simulator);
@@ -131,12 +133,16 @@ public class SensorSimulatorMain extends JPanel implements WindowListener,
 		JScrollPane telnetScroll = new JScrollPane(telnet.view);
 		telnetScroll
 				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane recordingScroll = new JScrollPane(recording.view);
+		recordingScroll
+				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-		// add Simulator and Telnet tabs
+		// add Simulator, Telnet and Recording tabs
 		tabbedPane.addTab("Sensor Simulator", simulatorScroll);
-
 		tabbedPane.addTab("Telnet Simulator", telnetScroll);
-
+		tabbedPane.addTab("Recording From Real Device", recordingScroll);
+		
+		
 		// add tabs
 		frame.add(tabbedPane);
 

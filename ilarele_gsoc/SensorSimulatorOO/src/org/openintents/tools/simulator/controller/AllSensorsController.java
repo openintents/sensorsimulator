@@ -1,10 +1,10 @@
 package org.openintents.tools.simulator.controller;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.JSpinner;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.JComboBox;
 
 import org.openintents.tools.simulator.controller.sensor.SensorController;
 import org.openintents.tools.simulator.view.sensor.AllSensorsView;
@@ -18,12 +18,13 @@ public class AllSensorsController {
 			ArrayList<SensorController> sensors) {
 		this.mView = view;
 		this.mSensors = sensors;
-		final JSpinner spinner = view.getSensorsSpinner();
-		spinner.addChangeListener(new ChangeListener() {
+		final JComboBox comboBox = view.getSensorsComboBox();
+		comboBox.addActionListener(new ActionListener() {
 			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				String chosenValue = (String) spinner.getModel().getValue();
-				setEnabledSensors(view.getPhoneSensors().get(chosenValue));
+			public void actionPerformed(ActionEvent e) {
+				 JComboBox cb = (JComboBox)e.getSource();
+			        String chosenValue = (String)cb.getSelectedItem();
+			        setEnabledSensors(view.getPhoneSensors().get(chosenValue));
 			}
 		});
 	}

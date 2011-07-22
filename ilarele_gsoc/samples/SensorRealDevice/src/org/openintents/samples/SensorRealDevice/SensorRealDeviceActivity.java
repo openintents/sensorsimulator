@@ -1,7 +1,5 @@
 package org.openintents.samples.SensorRealDevice;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -95,7 +93,6 @@ public class SensorRealDeviceActivity extends Activity {
 
 	private void initListeners() {
 		mEventListenerAccelerometer = new SensorEventListener() {
-
 			@Override
 			public void onSensorChanged(SensorEvent event) {
 				float[] values = event.values;

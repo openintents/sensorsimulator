@@ -11,10 +11,9 @@ import java.util.Scanner;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerListModel;
 import javax.swing.border.TitledBorder;
 
 import org.openintents.tools.simulator.Global;
@@ -25,7 +24,7 @@ public class AllSensorsView extends JScrollPane {
 	private static final long serialVersionUID = -5966939252818311988L;
 	private ArrayList<SensorView> mSensors;
 	private JPanel mInsidePanel;
-	private JSpinner mPhoneChooser;
+	private JComboBox mPhoneChooser;
 	private HashMap<String, PhoneSensors> mPhoneSensors;
 
 	public AllSensorsView(ArrayList<SensorView> view) {
@@ -78,10 +77,9 @@ public class AllSensorsView extends JScrollPane {
 		mInsidePanel.add(mOthersPanel, l);
 	}
 
-	private JSpinner getPhoneChooser() {
+	private JComboBox getPhoneChooser() {
 		mPhoneSensors = new HashMap<String, PhoneSensors>();
-		SpinnerListModel spinnerModel;
-		final JSpinner result = new JSpinner();
+		
 		// read from file
 		Scanner scn;
 		try {
@@ -98,15 +96,15 @@ public class AllSensorsView extends JScrollPane {
 				}
 				mPhoneSensors.put(phone.name, phone);
 			}
-			spinnerModel = new SpinnerListModel(mPhoneSensors.keySet()
+			
+			JComboBox result = new JComboBox(mPhoneSensors.keySet()
 					.toArray());
-			result.setModel(spinnerModel);
-
+			return result;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
-		return result;
+		return null;
 	}
 
 	private JPanel getOtherSensors() {
@@ -191,7 +189,7 @@ public class AllSensorsView extends JScrollPane {
 		return result;
 	}
 
-	public JSpinner getSensorsSpinner() {
+	public JComboBox getSensorsComboBox() {
 		return mPhoneChooser;
 	}
 

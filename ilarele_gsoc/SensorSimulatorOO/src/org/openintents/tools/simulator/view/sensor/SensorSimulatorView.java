@@ -227,7 +227,7 @@ public class SensorSimulatorView extends JPanel {
 		try {
 			Enumeration<NetworkInterface> nets = NetworkInterface
 					.getNetworkInterfaces();
-			infoText.append("<font color='red'>10.0.0.2</font><br\\>");
+			infoText.append("<font color='red'>10.0.2.2</font><br\\>");
 			for (NetworkInterface netint : Collections.list(nets)) {
 				Enumeration<InetAddress> inetAddresses = netint
 						.getInetAddresses();

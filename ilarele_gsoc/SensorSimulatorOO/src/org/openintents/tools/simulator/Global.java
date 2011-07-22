@@ -63,4 +63,5 @@ public class Global {
 	public static final double DEVICE_CENTER_Z = -150;
 	public static final int DEVICE_WIDTH = (int) (SENSOR_SPLIT_LEFT * WIDTH);
 	public static final int DEVICE_HEIGHT = 160;
+	public static final int RECORDING_PORT = 9100;
 }
