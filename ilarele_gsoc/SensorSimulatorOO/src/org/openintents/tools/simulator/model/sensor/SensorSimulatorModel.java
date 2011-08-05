@@ -30,6 +30,8 @@ import java.util.ArrayList;
 
 import org.openintents.tools.simulator.SensorServer;
 import org.openintents.tools.simulator.SensorSimulator;
+import org.openintents.tools.simulator.SensorsScenario;
+import org.openintents.tools.simulator.model.StateModel;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
 import org.openintents.tools.simulator.model.sensor.sensors.GravityModel;
@@ -250,5 +252,14 @@ public class SensorSimulatorModel {
 
 	public GyroscopeModel getGyroscope() {
 		return (GyroscopeModel) mSensors.get(SensorModel.POZ_GYROSCOPE);
+	}
+
+	public SensorsScenario getScenario() {
+		return mSensorSimulator.scenario;
+	}
+
+	public void loadState(StateModel state) {
+		TemperatureModel temperatureModel = getTemperature();
+		temperatureModel.setTemp(state.getTemperature());
 	}
 }

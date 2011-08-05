@@ -95,58 +95,61 @@ public class XMLUtil {
 			ArrayList<StateModel> states = mModel.getStates();
 
 			// first state:
-			StateModel lastState = states.get(0);
-			float lastTime = lastState.getTime();
-			Element stateElement = buildStateElement(lastState, document);
-			globalElement.appendChild(stateElement);
-			System.out.println("append:" + lastState.getTemperature());
-
-			// next states
-			for (int i = 1; i < states.size(); i++) {
-				StateModel crtState = states.get(i);
-				final int intermediateNo = (int) (lastTime
-						/ Global.INTERPOLATION_DISTANCE - 1);
-				if (intermediateNo == 0) {
-					// no interpolation
-					System.out.println("\tno interp:"
-							+ crtState.getTemperature());
-				} else if (intermediateNo == 1) {
-					// generate only one intermediate state
-					StateModel intermediateState = Interpolate
-							.getIntermediateState(lastState, crtState);
-					stateElement = buildStateElement(intermediateState,
-							document);
-					globalElement.appendChild(stateElement);
-					System.out.println("\tinterpolate 1:"
-							+ intermediateState.getTemperature() + " == "
-							+ lastState.getTemperature() + "&"
-							+ crtState.getTemperature());
-				} else {
-					// generate an array with intermediate states
-					ArrayList<StateModel> interpStates = Interpolate
-							.getIntermediateStates(lastState, crtState,
-									intermediateNo);
-					System.out.println("interp more:" + intermediateNo + ": "
-							+ crtState.getTemperature());
-					// save all resulted states in xml
-					for (StateModel stateModel : interpStates) {
-						stateElement = buildStateElement(stateModel, document);
-						globalElement.appendChild(stateElement);
-					}
-				}
-
-				// save the current state in the xml
-				stateElement = buildStateElement(crtState, document);
+			if (states.size() > 0) {
+				StateModel lastState = states.get(0);
+				float lastTime = lastState.getTime();
+				Element stateElement = buildStateElement(lastState, document);
 				globalElement.appendChild(stateElement);
+				System.out.println("append:" + lastState.getTemperature());
 
-				lastTime = crtState.getTime();
-				lastState = crtState;
+				// next states
+				for (int i = 1; i < states.size(); i++) {
+					StateModel crtState = states.get(i);
+					final int intermediateNo = (int) (lastTime
+							/ Global.INTERPOLATION_DISTANCE - 1);
+					if (intermediateNo == 0) {
+						// no interpolation
+						System.out.println("\tno interp:"
+								+ crtState.getTemperature());
+					} else if (intermediateNo == 1) {
+						// generate only one intermediate state
+						StateModel intermediateState = Interpolate
+								.getIntermediateState(lastState, crtState);
+						stateElement = buildStateElement(intermediateState,
+								document);
+						globalElement.appendChild(stateElement);
+						System.out.println("\tinterpolate 1:"
+								+ intermediateState.getTemperature() + " == "
+								+ lastState.getTemperature() + "&"
+								+ crtState.getTemperature());
+					} else {
+						// generate an array with intermediate states
+						ArrayList<StateModel> interpStates = Interpolate
+								.getIntermediateStates(lastState, crtState,
+										intermediateNo);
+						System.out.println("interp more:" + intermediateNo
+								+ ": " + crtState.getTemperature());
+						// save all resulted states in xml
+						for (StateModel stateModel : interpStates) {
+							stateElement = buildStateElement(stateModel,
+									document);
+							globalElement.appendChild(stateElement);
+						}
+					}
+
+					// save the current state in the xml
+					stateElement = buildStateElement(crtState, document);
+					globalElement.appendChild(stateElement);
+
+					lastTime = crtState.getTime();
+					lastState = crtState;
+				}
+				TransformerFactory transformerFactory = TransformerFactory
+						.newInstance();
+				Transformer transformer = transformerFactory.newTransformer();
+				DOMSource source = new DOMSource(document);
+				transformer.transform(source, new StreamResult(file));
 			}
-			TransformerFactory transformerFactory = TransformerFactory
-					.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(document);
-			transformer.transform(source, new StreamResult(file));
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (TransformerConfigurationException e) {

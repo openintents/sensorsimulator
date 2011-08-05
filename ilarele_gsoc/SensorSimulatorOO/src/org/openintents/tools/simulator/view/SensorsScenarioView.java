@@ -4,15 +4,21 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JEditorPane;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.SpringLayout;
 
 import org.openintents.tools.simulator.Global;
@@ -36,6 +42,8 @@ public class SensorsScenarioView extends JPanel {
 	private JPanel mScenarioPanel;
 	private JPanel mRightPanel;
 	private StateViewBig mCurrentBigView;
+	private JFormattedTextField mStartState;
+	private JFormattedTextField mStopState;
 
 	public SensorsScenarioView(SensorsScenarioModel model) {
 		this.mModel = model;
@@ -111,9 +119,16 @@ public class SensorsScenarioView extends JPanel {
 		JPanel settingsPanel = new JPanel(new GridLayout(1, 0));
 
 		JLabel startLabel = new JLabel("Start state");
+		mStartState = new JFormattedTextField();
+		mStartState.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);
+		mStartState.setValue(1);
 		JLabel stopLabel = new JLabel("Stop state");
+		mStopState = new JFormattedTextField();
+		mStopState.setValue(1);
 		settingsPanel.add(startLabel);
+		settingsPanel.add(mStartState);
 		settingsPanel.add(stopLabel);
+		settingsPanel.add(mStopState);
 		mLoop = new JCheckBox("Loop");
 		settingsPanel.add(mLoop);
 
@@ -220,6 +235,30 @@ public class SensorsScenarioView extends JPanel {
 		mRightPanel.removeAll();
 		mRightPanel.add(mCurrentBigView, BorderLayout.CENTER);
 		repaint();
+	}
+
+	public JButton getPlayButton() {
+		return mPlayBtn;
+	}
+
+	public JButton getStopButton() {
+		return mStopBtn;
+	}
+
+	public JButton getPauseButton() {
+		return mPauseBtn;
+	}
+
+	public JFormattedTextField getStartStateTxt() {
+		return mStartState;
+	}
+
+	public JFormattedTextField getStopStateTxt() {
+		return mStopState;
+	}
+
+	public boolean isLooping() {
+		return mLoop.isSelected();
 	}
 
 }

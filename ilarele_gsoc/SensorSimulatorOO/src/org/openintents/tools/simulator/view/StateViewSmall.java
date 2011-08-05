@@ -62,12 +62,12 @@ public class StateViewSmall extends JPanel {
 		mTransitionTime.setModel(new SpinnerNumberModel(mModel.getTime(),
 				SensorsScenarioModel.MIN_TIME, SensorsScenarioModel.MAX_TIME,
 				0.5));
-		mTransitionTime.setEditor(new JSpinner.NumberEditor(
-				mTransitionTime, "##.#"));
+		mTransitionTime.setEditor(new JSpinner.NumberEditor(mTransitionTime,
+				"##.#"));
 		JFormattedTextField txt = ((JSpinner.NumberEditor) mTransitionTime
 				.getEditor()).getTextField();
 		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
-		
+
 		panel.add(mTransitionTime, BorderLayout.SOUTH);
 		return panel;
 	}

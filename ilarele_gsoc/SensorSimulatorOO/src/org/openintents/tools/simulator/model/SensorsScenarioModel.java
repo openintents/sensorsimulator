@@ -20,10 +20,13 @@ public class SensorsScenarioModel {
 	private ArrayList<StateModel> mStates;
 	private SensorSimulatorModel mSensorSimulator;
 
-	public SensorsScenarioModel(SensorsScenario sensorsRecording,
+	public SensorsScenarioModel(SensorsScenario sensorsRecording) {
+		mStates = new ArrayList<StateModel>();
+	}
+
+	public void setSensorSimulatorModel(
 			SensorSimulatorModel sensorSimulatorModel) {
 		this.mSensorSimulator = sensorSimulatorModel;
-		mStates = new ArrayList<StateModel>();
 		startListening();
 	}
 
@@ -94,6 +97,12 @@ public class SensorsScenarioModel {
 
 	public SensorSimulatorModel getSensorSimulatorModel() {
 		return mSensorSimulator;
+	}
+
+	public StateModel getNextState(int index) {
+		if (index < mStates.size())
+			return mStates.get(index);
+		return null;
 	}
 
 }

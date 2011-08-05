@@ -35,10 +35,20 @@ import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
  * @author ilarele
  */
 public class SensorSimulator {
-	public SensorSimulatorModel model = new SensorSimulatorModel(this);
-	public SensorSimulatorView view = new SensorSimulatorView(model);
-	public SensorSimulatorController controller = new SensorSimulatorController(
-			model, view);
+	public SensorSimulatorModel model;
+	public SensorSimulatorView view;
+	public SensorSimulatorController controller;
+
+	public SensorsScenario scenario;
+
+	public SensorSimulator() {
+		scenario = new SensorsScenario();
+		model = new SensorSimulatorModel(this);
+		view = new SensorSimulatorView(model);
+		controller = new SensorSimulatorController(model, view);
+
+		scenario.setSimulator(this);
+	}
 
 	public void addMessage(String string) {
 		view.addMessage(string);

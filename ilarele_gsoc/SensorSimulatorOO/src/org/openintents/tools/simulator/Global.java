@@ -80,5 +80,6 @@ public class Global {
 	public static final int DEVICE_WIDTH_BIG = 100;
 	public static final int DEVICE_HEIGHT_BIG = 100;
 	public static final float INTERPOLATION_DISTANCE = 0.5f;
+	public static final float MS_IN_SECOND = 1000;
 
 }

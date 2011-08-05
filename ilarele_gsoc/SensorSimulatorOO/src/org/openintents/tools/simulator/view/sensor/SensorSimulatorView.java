@@ -357,7 +357,7 @@ public class SensorSimulatorView extends JPanel {
 		mAllSensorsTab = new AllSensorsView(mSensors);
 		rightPanel.addTab("Sensors", mAllSensorsTab);
 
-		SensorsScenario scenario = new SensorsScenario(mModel);
+		SensorsScenario scenario = mModel.getScenario();
 		JScrollPane scenarioScroll = new JScrollPane(scenario.view);
 		scenarioScroll
 				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
