@@ -26,7 +26,7 @@ import javax.swing.JTextField;
 
 import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
-import org.openintents.tools.simulator.view.sensor.JTextFieldLimit;
+import org.openintents.tools.simulator.util.JTextFieldLimit;
 
 /**
  * BarcodeReaderView keeps the GUI of the BarcodeReader add-on.

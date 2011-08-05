@@ -79,7 +79,7 @@ public class AllSensorsView extends JScrollPane {
 
 	private JComboBox getPhoneChooser() {
 		mPhoneSensors = new HashMap<String, PhoneSensors>();
-		
+
 		// read from file
 		Scanner scn;
 		try {
@@ -96,9 +96,8 @@ public class AllSensorsView extends JScrollPane {
 				}
 				mPhoneSensors.put(phone.name, phone);
 			}
-			
-			JComboBox result = new JComboBox(mPhoneSensors.keySet()
-					.toArray());
+
+			JComboBox result = new JComboBox(mPhoneSensors.keySet().toArray());
 			return result;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

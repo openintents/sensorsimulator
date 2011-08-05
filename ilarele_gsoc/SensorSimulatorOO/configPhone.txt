@@ -1,4 +1,4 @@
-Medium;accelerometer,magnetic field,orientation,light,proximity,temperature,pressure
+Medium;accelerometer,orientation,linear acceleration,gravity,temperature,light,proximity,pressure
 Minimum;accelerometer,magnetic field,orientation
 Nexus S;accelerometer,magnetic field,orientation,linear acceleration,gravity,rotation vector,gyroscope,light,proximity
 Nexus One;accelerometer,magnetic field,orientation,linear acceleration,gravity,rotation vector,gyroscope,light,proximity

@@ -22,9 +22,9 @@ public class AllSensorsController {
 		comboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				 JComboBox cb = (JComboBox)e.getSource();
-			        String chosenValue = (String)cb.getSelectedItem();
-			        setEnabledSensors(view.getPhoneSensors().get(chosenValue));
+				JComboBox cb = (JComboBox) e.getSource();
+				String chosenValue = (String) cb.getSelectedItem();
+				setEnabledSensors(view.getPhoneSensors().get(chosenValue));
 			}
 		});
 	}

@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<global
+	between_time="0.5"
+>
+	<state>
+		<sensor
+			type="temperature"
+		>
+			<value>1</value>
+		</sensor>
+	</state>
+	<state>
+		<sensor
+			type="pressure"
+		>
+			<value>0.5</value>
+		</sensor>
+		<sensor
+			type="light"
+		>
+			<value>400</value>
+		</sensor>
+		<sensor
+			type="temperature"
+		>
+			<value>3</value>
+		</sensor>
+	</state>
+	<state>
+		<sensor
+			type="temperature"
+		>
+			<value>5</value>
+		</sensor>
+
+	</state>
+	<state>
+		<sensor
+			type="temperature"
+		>
+			<value>7</value>
+		</sensor>
+	</state>
+</global>

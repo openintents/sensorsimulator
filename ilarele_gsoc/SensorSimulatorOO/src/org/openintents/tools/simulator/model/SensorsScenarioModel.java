@@ -1,19 +1,33 @@
-package org.openintents.tools.simulator.model.sensor;
+package org.openintents.tools.simulator.model;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import org.openintents.tools.simulator.Global;
-import org.openintents.tools.simulator.SensorsRecording;
+import org.openintents.tools.simulator.SensorsScenario;
+import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 
-public class SensorsRecordingModel {
+public class SensorsScenarioModel {
+
+	public static final double MAX_TIME = 100;
+	public static final double MIN_TIME = 0.5;
 
 	private ServerSocket mServerSocket;
 	private ObjectInputStream mInStream;
+	private ArrayList<StateModel> mStates;
+	private SensorSimulatorModel mSensorSimulator;
 
-	public SensorsRecordingModel(SensorsRecording sensorsRecording) {
+	public SensorsScenarioModel(SensorsScenario sensorsRecording,
+			SensorSimulatorModel sensorSimulatorModel) {
+		this.mSensorSimulator = sensorSimulatorModel;
+		mStates = new ArrayList<StateModel>();
+		startListening();
+	}
+
+	private void startListening() {
 		try {
 			mServerSocket = new ServerSocket(Global.RECORDING_PORT);
 			new Thread(new Runnable() {
@@ -34,7 +48,8 @@ public class SensorsRecordingModel {
 										+ obj[1] + " " + obj[2]);
 							}
 						} catch (IOException e) {
-							System.out.println("IOException:connection closed:" + e.getMessage());
+							System.out.println("IOException:connection closed:"
+									+ e.getMessage());
 						} catch (ClassNotFoundException e) {
 							e.printStackTrace();
 						} finally {
@@ -59,6 +74,26 @@ public class SensorsRecordingModel {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public ArrayList<StateModel> getStates() {
+		return mStates;
+	}
+
+	public void emptyStates() {
+		mStates.clear();
+	}
+
+	public void remove(StateModel model) {
+		mStates.remove(model);
+	}
+
+	public void add(StateModel model) {
+		mStates.add(model);
+	}
+
+	public SensorSimulatorModel getSensorSimulatorModel() {
+		return mSensorSimulator;
 	}
 
 }

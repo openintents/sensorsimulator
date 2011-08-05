@@ -54,6 +54,7 @@ import javax.swing.SpringLayout;
 import javax.swing.border.TitledBorder;
 
 import org.openintents.tools.simulator.Global;
+import org.openintents.tools.simulator.SensorsScenario;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
@@ -355,6 +356,14 @@ public class SensorSimulatorView extends JPanel {
 		JTabbedPane rightPanel = new JTabbedPane();
 		mAllSensorsTab = new AllSensorsView(mSensors);
 		rightPanel.addTab("Sensors", mAllSensorsTab);
+
+		SensorsScenario scenario = new SensorsScenario(mModel);
+		JScrollPane scenarioScroll = new JScrollPane(scenario.view);
+		scenarioScroll
+				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+		rightPanel.addTab("Scenario Simulator", scenarioScroll);
+
 		for (SensorView sensor : mSensors) {
 			SensorModel sensorModel = sensor.getModel();
 			if (sensorModel.isEnabled())

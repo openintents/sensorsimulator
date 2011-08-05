@@ -61,7 +61,6 @@ public class MagneticFieldModel extends SensorModel {
 		mNorth = 22874.1;
 		mEast = 5939.5;
 		mVertical = 43180.5;
-		mEnabled = true;
 	}
 
 	@Override

@@ -54,6 +54,7 @@ public class GravityModel extends SensorModel {
 
 		mGConstant = 9.80665; // meter per second^2
 		mGravityLimit = 10;
+		mEnabled = true;
 	}
 
 	@Override

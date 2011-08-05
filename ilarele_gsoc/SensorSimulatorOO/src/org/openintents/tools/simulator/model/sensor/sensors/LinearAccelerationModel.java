@@ -75,6 +75,7 @@ public class LinearAccelerationModel extends SensorModel {
 		mMass = 1; // mass
 		mGamma = 50; // damping
 		mMeterPerPixel = 1 / 3000.; // meter per pixel
+		mEnabled = true;
 	}
 
 	@Override

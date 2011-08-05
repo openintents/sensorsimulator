@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package org.openintents.tools.simulator.view.sensor;
+package org.openintents.tools.simulator.util;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
