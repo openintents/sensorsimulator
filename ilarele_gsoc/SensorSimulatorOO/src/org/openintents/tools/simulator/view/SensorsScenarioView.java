@@ -4,21 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JEditorPane;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
 import javax.swing.SpringLayout;
 
 import org.openintents.tools.simulator.Global;
@@ -261,4 +256,19 @@ public class SensorsScenarioView extends JPanel {
 		return mLoop.isSelected();
 	}
 
+	public void setStatusText(String text) {
+		mScenarioPanel.add(new JLabel(text));
+	}
+
+	public void clearScenario() {
+		mScenarioPanel.removeAll();
+	}
+
+	public void updateTime(float time) {
+		if (mStatesViewSmall.size() > 0) {
+			StateViewSmall lastStateView = mStatesViewSmall
+					.get(mStatesViewSmall.size() - 1);
+			lastStateView.getTransitionSpinner().setValue(time);
+		}
+	}
 }

@@ -261,5 +261,18 @@ public class SensorSimulatorModel {
 	public void loadState(StateModel state) {
 		TemperatureModel temperatureModel = getTemperature();
 		temperatureModel.setTemp(state.getTemperature());
+
+		LightModel lightModel = getLight();
+		lightModel.setLight(state.getLight());
+
+		ProximityModel proximityModel = getProximity();
+		proximityModel.setProximity(state.getProximity());
+
+		PressureModel pressureModel = getPressure();
+		pressureModel.setPressure(state.getPressure());
+
+		GravityModel gravityModel = getGravity();
+		gravityModel.setGravity(state.getGravity());
 	}
+
 }

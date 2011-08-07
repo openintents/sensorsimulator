@@ -80,9 +80,4 @@ public class BarcodeReaderModel extends SensorModel {
 	public void setBarcode(String value) {
 		barcodeValue = value;
 	}
-
-	@Override
-	public String getTypeConstant() {
-		return "BARCODE";
-	}
 }

@@ -39,7 +39,6 @@ public class XMLUtil {
 			Element root = doc.getDocumentElement();
 			float betweenTime = Float.parseFloat(root
 					.getAttribute("between_time"));
-			System.out.println("between_time = " + betweenTime);
 			statesList = root.getElementsByTagName("state");
 
 			for (int i = 0; i < statesList.getLength(); i++) {
@@ -76,7 +75,6 @@ public class XMLUtil {
 	}
 
 	public static void saveScenarioToXml(File file, SensorsScenarioModel mModel) {
-		System.out.println(file.getAbsolutePath());
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
 				.newInstance();
 		DocumentBuilder documentBuilder;
@@ -100,7 +98,6 @@ public class XMLUtil {
 				float lastTime = lastState.getTime();
 				Element stateElement = buildStateElement(lastState, document);
 				globalElement.appendChild(stateElement);
-				System.out.println("append:" + lastState.getTemperature());
 
 				// next states
 				for (int i = 1; i < states.size(); i++) {
@@ -109,8 +106,6 @@ public class XMLUtil {
 							/ Global.INTERPOLATION_DISTANCE - 1);
 					if (intermediateNo == 0) {
 						// no interpolation
-						System.out.println("\tno interp:"
-								+ crtState.getTemperature());
 					} else if (intermediateNo == 1) {
 						// generate only one intermediate state
 						StateModel intermediateState = Interpolate
@@ -118,17 +113,11 @@ public class XMLUtil {
 						stateElement = buildStateElement(intermediateState,
 								document);
 						globalElement.appendChild(stateElement);
-						System.out.println("\tinterpolate 1:"
-								+ intermediateState.getTemperature() + " == "
-								+ lastState.getTemperature() + "&"
-								+ crtState.getTemperature());
 					} else {
 						// generate an array with intermediate states
 						ArrayList<StateModel> interpStates = Interpolate
 								.getIntermediateStates(lastState, crtState,
 										intermediateNo);
-						System.out.println("interp more:" + intermediateNo
-								+ ": " + crtState.getTemperature());
 						// save all resulted states in xml
 						for (StateModel stateModel : interpStates) {
 							stateElement = buildStateElement(stateModel,

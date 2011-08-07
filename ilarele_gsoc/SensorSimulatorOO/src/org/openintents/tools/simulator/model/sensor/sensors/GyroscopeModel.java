@@ -133,11 +133,6 @@ public class GyroscopeModel extends SensorModel {
 		return "rad/s";
 	}
 
-	@Override
-	public String getTypeConstant() {
-		return TYPE_GYROSCOPE;
-	}
-
 	public double getReadGyroscopeYaw() {
 		return mReadAngleSpeedYaw;
 	}

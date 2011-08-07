@@ -1,6 +1,8 @@
 package org.openintents.tools.simulator.model;
 
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map.Entry;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
@@ -211,7 +213,6 @@ public class StateModel {
 
 	public void fillLinearValues(StateModel s1, StateModel s2, int k, int n) {
 		int n_k = n - k;
-		System.out.println("n=" + n + "  k=" + k + "  n-k=" + (n - k));
 		mTemperature = (n_k * s1.getTemperature() + k * s2.getTemperature())
 				/ n;
 		mLight = (n_k * s1.getLight() + k * s2.getLight()) / n;
@@ -225,5 +226,41 @@ public class StateModel {
 
 	public void setTime(float value) {
 		mTime = value;
+	}
+
+	public static StateModel fromHashTable(Hashtable<Integer, float[]> sensors) {
+		if (sensors.size() == 0)
+			return null;
+		StateModel result = new StateModel();
+		for (Entry<Integer, float[]> sensor : sensors.entrySet()) {
+			fillSensor(result, sensor.getKey(), sensor.getValue());
+		}
+		return result;
+	}
+
+	private static void fillSensor(StateModel state, int sensorType,
+			float[] values) {
+		switch (sensorType) {
+		case SensorModel.TYPE_TEMPERATURE:
+			state.mTemperature = values[0];
+			break;
+		case SensorModel.TYPE_LIGHT:
+			state.mLight = values[0];
+			break;
+		case SensorModel.TYPE_PROXIMITY:
+			state.mProximity = values[0];
+			break;
+		case SensorModel.TYPE_PRESSURE:
+			state.mPressure = values[0];
+			break;
+		case SensorModel.TYPE_LINEAR_ACCELERATION:
+			state.mLinearAcceleration = values;
+			break;
+		case SensorModel.TYPE_GRAVITY:
+			state.mGravity = values;
+			break;
+		default:
+			break;
+		}
 	}
 }

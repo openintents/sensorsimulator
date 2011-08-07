@@ -173,9 +173,4 @@ public class MagneticFieldModel extends SensorModel {
 	public double getReadCompassZ() {
 		return mReadCompassZ;
 	}
-
-	@Override
-	public String getTypeConstant() {
-		return TYPE_MAGNETIC_FIELD;
-	}
 }

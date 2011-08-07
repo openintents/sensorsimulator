@@ -202,6 +202,7 @@ public class SensorSimulatorMain extends JPanel implements WindowListener,
 				} catch (UnsupportedLookAndFeelException e) {
 					e.printStackTrace();
 				}
+
 				createAndShowGUI();
 			}
 		});

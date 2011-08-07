@@ -344,11 +344,6 @@ public class AccelerometerModel extends SensorModel {
 		return mAccelerometerLimit;
 	}
 
-	@Override
-	public String getTypeConstant() {
-		return TYPE_ACCELEROMETER;
-	}
-
 	public void refreshAcceleration(double kView, double gammaView, double dt) {
 		mSpringK = kView;
 		mGamma = gammaView;

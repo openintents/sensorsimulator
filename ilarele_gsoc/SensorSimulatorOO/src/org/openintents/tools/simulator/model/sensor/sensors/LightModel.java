@@ -103,11 +103,6 @@ public class LightModel extends SensorModel {
 		mLightValue += value;
 	}
 
-	@Override
-	public String getTypeConstant() {
-		return TYPE_LIGHT;
-	}
-
 	public double getReadLight() {
 		return mReadLight;
 	}

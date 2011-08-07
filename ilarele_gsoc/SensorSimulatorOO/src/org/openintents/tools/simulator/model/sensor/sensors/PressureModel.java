@@ -116,8 +116,4 @@ public class PressureModel extends SensorModel {
 		setPressure(mPressureValue + value);
 	}
 
-	@Override
-	public String getTypeConstant() {
-		return TYPE_PRESSURE;
-	}
 }

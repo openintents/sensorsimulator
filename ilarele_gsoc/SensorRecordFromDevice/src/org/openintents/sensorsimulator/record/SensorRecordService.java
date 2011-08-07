@@ -40,22 +40,7 @@ public class SensorRecordService extends Service {
 	private ArrayList<SensorEventListener> mListenersArray;
 	// private SensorManagerSimulator mSensorManager;
 	private SensorManager mSensorManager;
-	private Handler mHandler = new Handler(new Callback() {
-		@Override
-		public boolean handleMessage(Message msg) {
-			// event captured by a listener
-			SensorEvent event = (SensorEvent) msg.obj;
-			Log.d(TAG, "handleMessage");
-			// send event values to the server (sockets)
-			try {
-				mOutStream.writeObject(event.values);
-			} catch (IOException e) {
-				Log.e(TAG, e.getMessage());
-			}
-
-			return true;
-		}
-	});
+	private Handler mHandler;
 
 	/**
 	 * Class for clients to access. Because we know this service always runs in
@@ -89,8 +74,33 @@ public class SensorRecordService extends Service {
 		String ipAddress = intent.getStringExtra("ip");
 		try {
 			mRequestSocket = new Socket(ipAddress, Global.PORT);
+			Log.d(TAG, "created socket for ip address:" + ipAddress);
 			mOutStream = new ObjectOutputStream(
 					mRequestSocket.getOutputStream());
+			mHandler = new Handler(new Callback() {
+				@Override
+				public boolean handleMessage(Message msg) {
+					// event captured by a listener
+					Log.d(TAG, "handleMessage");
+					// send event values to the server (sockets)
+					try {
+						// sensorType
+						mOutStream.writeObject(msg.arg1);
+						// float[] - sensor values
+						mOutStream.writeObject(msg.obj);
+
+						// Log.d(TAG, "send message:" + ((float[]) msg.obj)[0] +
+						// " "
+						// + ((float[]) msg.obj)[1] + " " + ((float[])
+						// msg.obj)[2]);
+						//
+					} catch (IOException e) {
+						Log.e(TAG, "Connection closed!");
+					}
+
+					return true;
+				}
+			});
 			mOutStream.flush();
 		} catch (UnknownHostException e) {
 			Log.e(TAG, e.getMessage());
@@ -115,8 +125,8 @@ public class SensorRecordService extends Service {
 			@Override
 			public void onSensorChanged(SensorEvent event) {
 				Message msg = new Message();
-				msg.obj = event;
-				Log.d(TAG, "send message:" + sensorType);
+				msg.obj = event.values.clone();
+				msg.arg1 = sensorType;
 				mHandler.sendMessage(msg);
 			}
 
@@ -134,11 +144,16 @@ public class SensorRecordService extends Service {
 	@Override
 	public void onDestroy() {
 		mNotificationManager.cancel(NOTIFICATION);
+		for (SensorEventListener listener : mListenersArray) {
+			mSensorManager.unregisterListener(listener);
+		}
 		Toast.makeText(this, R.string.sensors_recording_stopped,
 				Toast.LENGTH_SHORT).show();
 		try {
-			mRequestSocket.close();
-			mOutStream.close();
+			if (mRequestSocket != null) {
+				mRequestSocket.close();
+				mOutStream.close();
+			}
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage());
 		}

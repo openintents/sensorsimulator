@@ -31,6 +31,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import javax.swing.JButton;
 import javax.swing.JTabbedPane;
@@ -51,12 +52,14 @@ import org.openintents.tools.simulator.controller.sensor.ProximityController;
 import org.openintents.tools.simulator.controller.sensor.RotationVectorController;
 import org.openintents.tools.simulator.controller.sensor.SensorController;
 import org.openintents.tools.simulator.controller.sensor.TemperatureController;
+import org.openintents.tools.simulator.model.SensorsScenarioModel;
 import org.openintents.tools.simulator.model.StateModel;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.view.SensorsScenarioView;
 import org.openintents.tools.simulator.view.sensor.DeviceView;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
@@ -84,8 +87,8 @@ public class SensorSimulatorController implements WindowListener {
 	public static final int PAUSE = 3;
 	public static final int STOP = 4;
 
-	private int simulatorState = NORMAL;
-	private int toSwitchState = NORMAL;
+	private int mSimulatorState = NORMAL;
+	private int mToSwitchState = NORMAL;
 	private Object mStateLock = new Object();
 
 	private long mScenarioTime = 0;
@@ -107,6 +110,8 @@ public class SensorSimulatorController implements WindowListener {
 	private Timer mUpdateTimer;
 
 	private AllSensorsController mSensorTabController;
+	private SensorsScenario mScenario;
+	private float mNextStateTime; // time in seconds
 
 	public SensorSimulatorController(final SensorSimulatorModel model,
 			final SensorSimulatorView view) {
@@ -116,6 +121,7 @@ public class SensorSimulatorController implements WindowListener {
 
 		DeviceView deviceView = view.getDeviceView();
 		mDeviceController = new DeviceController(mSensors, deviceView);
+		mScenario = mSensorSimulatorModel.getScenario();
 
 		// sensors
 		mSensors.add(new AccelerometerController(model.getAccelerometer(), view
@@ -171,7 +177,7 @@ public class SensorSimulatorController implements WindowListener {
 	}
 
 	private void doTimer() {
-		switch (simulatorState) {
+		switch (mSimulatorState) {
 		case NORMAL: {
 			OrientationModel orientation = (OrientationModel) mSensors.get(
 					SensorModel.POZ_ORIENTATION).getModel();
@@ -257,6 +263,44 @@ public class SensorSimulatorController implements WindowListener {
 			switchState(NORMAL, -1, -1, false);
 		}
 			break;
+		case RECORD: {
+			for (SensorController sensorCtrl : mSensors) {
+				sensorCtrl.getModel().updateSensorReadoutValues();
+			}
+
+			// if it is time for the next state from recording
+			if (Global.INTERPOLATION_DISTANCE * Global.MS_IN_SECOND < (System
+					.currentTimeMillis() - mScenarioTime)) {
+				SensorsScenarioModel scenarioModel = mScenario.model;
+				SensorsScenarioView scenarioView = mScenario.view;
+
+				Hashtable<Integer, float[]> nextStateHashTable = mScenario.controller
+						.getRecordedSensors();
+				// get next state
+				StateModel nextState = StateModel
+						.fromHashTable(nextStateHashTable);
+				if (nextState != null) {
+					scenarioModel.setPrevTimeDistance(mNextStateTime);
+					scenarioView.updateTime(mNextStateTime);
+					mNextStateTime = 0;
+					// empty hashTable
+					nextStateHashTable.clear();
+
+					// load the next state in the model
+					mSensorSimulatorModel.loadState(nextState);
+
+					// add the next state in the scenario
+					scenarioModel.add(nextState);
+					scenarioView.addView(nextState);
+				} else
+					mNextStateTime += Global.INTERPOLATION_DISTANCE;
+
+				// update time
+				mScenarioTime += (long) (Global.INTERPOLATION_DISTANCE * Global.MS_IN_SECOND);
+			}
+
+		}
+			break;
 
 		}
 
@@ -271,8 +315,8 @@ public class SensorSimulatorController implements WindowListener {
 		mSensorSimulatorView.setOutput(newData.toString());
 
 		synchronized (mStateLock) {
-			if (simulatorState != toSwitchState)
-				simulatorState = toSwitchState;
+			if (mSimulatorState != mToSwitchState)
+				mSimulatorState = mToSwitchState;
 		}
 	}
 
@@ -281,10 +325,11 @@ public class SensorSimulatorController implements WindowListener {
 			mStartPosition = mCrtPosition = start;
 			mStopPosition = stop;
 			mIsLooping = isLooping;
-			toSwitchState = newState;
+			mToSwitchState = newState;
+			mNextStateTime = 0;
 			mScenarioTime = System.currentTimeMillis();
 			if (start < 0 || stop < 0 || stop < start)
-				toSwitchState = NORMAL;
+				mToSwitchState = NORMAL;
 		}
 	}
 
@@ -420,5 +465,9 @@ public class SensorSimulatorController implements WindowListener {
 	public RotationVectorController getRotationVector() {
 		return (RotationVectorController) mSensors
 				.get(SensorModel.POZ_ROTATION);
+	}
+
+	public int getState() {
+		return mSimulatorState;
 	}
 }

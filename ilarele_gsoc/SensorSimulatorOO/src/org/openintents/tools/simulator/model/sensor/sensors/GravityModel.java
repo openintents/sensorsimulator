@@ -143,11 +143,6 @@ public class GravityModel extends SensorModel {
 		mGravityZ += addZ;
 	}
 
-	@Override
-	public String getTypeConstant() {
-		return TYPE_GRAVITY;
-	}
-
 	public double getReadGravityX() {
 		return mReadGravityX;
 	}
@@ -172,5 +167,12 @@ public class GravityModel extends SensorModel {
 
 	public double getAccelLimit() {
 		return mGravityLimit;
+	}
+
+	public void setGravity(float[] vec) {
+		mGravityX = vec[0];
+		mGravityY = vec[1];
+		mGravityZ = vec[2];
+
 	}
 }

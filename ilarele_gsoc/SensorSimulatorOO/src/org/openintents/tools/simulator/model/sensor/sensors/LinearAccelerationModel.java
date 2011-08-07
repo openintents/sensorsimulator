@@ -142,11 +142,6 @@ public class LinearAccelerationModel extends SensorModel {
 		return "m/s" + SensorModel.SQUARED;
 	}
 
-	@Override
-	public String getTypeConstant() {
-		return TYPE_LINEAR_ACCELERATION;
-	}
-
 	public double getReadLinearAccelerationX() {
 		return mReadLinearAccX;
 	}

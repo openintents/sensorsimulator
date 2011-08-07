@@ -60,6 +60,7 @@ public class StateControllerSmall {
 		});
 
 		final JSpinner transitionSpinner = mView.getTransitionSpinner();
+		transitionSpinner.setValue(mModel.getTime());
 		transitionSpinner.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {

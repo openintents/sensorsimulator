@@ -50,17 +50,31 @@ public abstract class SensorModel {
 	public static String ACTION_MOVE = "move";
 
 	// Sensors Type
-	public static final String TYPE_ORIENTATION = "TYPE_ORIENTATION";
-	public static final String TYPE_ACCELEROMETER = "TYPE_ACCELEROMETER";
-	public static final String TYPE_GRAVITY = "TYPE_GRAVITY";
-	public static final String TYPE_LINEAR_ACCELERATION = "TYPE_LINEAR_ACCELERATION";
-	public static final String TYPE_TEMPERATURE = "TYPE_TEMPERATURE";
-	public static final String TYPE_MAGNETIC_FIELD = "TYPE_MAGNETIC_FIELD";
-	public static final String TYPE_LIGHT = "TYPE_LIGHT";
-	public static final String TYPE_PROXIMITY = "TYPE_PROXIMITY";
-	public static final String TYPE_PRESSURE = "TYPE_PRESSURE";
-	public static final String TYPE_ROTATION_VECTOR = "TYPE_ROTATION_VECTOR";
-	public static final String TYPE_GYROSCOPE = "TYPE_GYROSCOPE";
+
+	public static final int TYPE_ACCELEROMETER = 1;
+	public static final int TYPE_MAGNETIC_FIELD = 1 + TYPE_ACCELEROMETER;
+	public static final int TYPE_ORIENTATION = 1 + TYPE_MAGNETIC_FIELD;
+	public static final int TYPE_GYROSCOPE = 1 + TYPE_ORIENTATION;
+	public static final int TYPE_LIGHT = 1 + TYPE_GYROSCOPE;
+	public static final int TYPE_PRESSURE = 1 + TYPE_LIGHT;
+	public static final int TYPE_TEMPERATURE = 1 + TYPE_PRESSURE;
+	public static final int TYPE_PROXIMITY = 1 + TYPE_TEMPERATURE;
+	public static final int TYPE_LINEAR_ACCELERATION = 1 + TYPE_PROXIMITY;
+	public static final int TYPE_GRAVITY = 1 + TYPE_LINEAR_ACCELERATION;
+	public static final int TYPE_ROTATION_VECTOR = 1 + TYPE_GRAVITY;
+
+	// public static final String TYPE_ORIENTATION = "TYPE_ORIENTATION";
+	// public static final String TYPE_ACCELEROMETER = "TYPE_ACCELEROMETER";
+	// public static final String TYPE_GRAVITY = "TYPE_GRAVITY";
+	// public static final String TYPE_LINEAR_ACCELERATION =
+	// "TYPE_LINEAR_ACCELERATION";
+	// public static final String TYPE_TEMPERATURE = "TYPE_TEMPERATURE";
+	// public static final String TYPE_MAGNETIC_FIELD = "TYPE_MAGNETIC_FIELD";
+	// public static final String TYPE_LIGHT = "TYPE_LIGHT";
+	// public static final String TYPE_PROXIMITY = "TYPE_PROXIMITY";
+	// public static final String TYPE_PRESSURE = "TYPE_PRESSURE";
+	// public static final String TYPE_ROTATION_VECTOR = "TYPE_ROTATION_VECTOR";
+	// public static final String TYPE_GYROSCOPE = "TYPE_GYROSCOPE";
 
 	// Supported sensors
 	public static final String ORIENTATION = "orientation";
@@ -324,8 +338,6 @@ public abstract class SensorModel {
 	public long getUpdateDuration() {
 		return mUpdateDuration;
 	}
-
-	public abstract String getTypeConstant();
 
 	public void setCurrentUpdateDelay(int updateDelay) {
 		mCurrentUpdateDelay = updateDelay;

@@ -3,7 +3,6 @@ package org.openintents.sensorsimulator.record;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +10,17 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
-public class SensorsAdapter extends ArrayAdapter<SimpleSensor> implements OnItemClickListener {
+public class SensorsAdapter extends ArrayAdapter<SimpleSensor> implements
+		OnItemClickListener {
 
 	private LayoutInflater mInflater;
 
 	public SensorsAdapter(Context context, ArrayList<SimpleSensor> objects) {
 		super(context, R.layout.list_item, objects);
-		mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mInflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	@Override
@@ -31,8 +30,9 @@ public class SensorsAdapter extends ArrayAdapter<SimpleSensor> implements OnItem
 		if (null == convertView) {
 			convertView = mInflater.inflate(R.layout.list_item, null);
 			holder = new ViewHolder();
-			holder.enable = (CheckBox) convertView.findViewById(R.id.item_enabled);
-			
+			holder.enable = (CheckBox) convertView
+					.findViewById(R.id.item_enabled);
+
 			holder.name = (TextView) convertView.findViewById(R.id.item_name);
 			convertView.setTag(holder);
 		} else {
@@ -40,7 +40,7 @@ public class SensorsAdapter extends ArrayAdapter<SimpleSensor> implements OnItem
 		}
 
 		// Bind the data efficiently with the holder.
-		
+
 		holder.name.setText(sensor.getName());
 		holder.enable.setChecked(sensor.isEnabled());
 		return convertView;

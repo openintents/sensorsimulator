@@ -3,7 +3,10 @@ package org.openintents.sensorsimulator.record;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,7 +44,6 @@ public class SensorRecordFromDeviceActivity extends Activity {
 		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_PRESSURE));
 		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_TEMPERATURE));
 		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_PROXIMITY));
-		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_BARCODE_READER));
 		sensorsObjects.add(new SimpleSensor(
 				SimpleSensor.TYPE_LINEAR_ACCELERATION));
 		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_GRAVITY));
@@ -58,31 +60,40 @@ public class SensorRecordFromDeviceActivity extends Activity {
 		recordBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// connect to server (ip set in edittext)
-				String currentIp = mIpAddress.getText().toString();
-				if (currentIp == null || currentIp.equals("")) {
-					Toast.makeText(v.getContext(), R.string.set_ip,
+				// check the internet connection
+				if (isInternetConnected()) {
+
+					// connect to server (ip set in editText)
+					String currentIp = mIpAddress.getText().toString();
+					if (currentIp == null || currentIp.equals("")) {
+						Toast.makeText(v.getContext(), R.string.set_ip,
+								Toast.LENGTH_SHORT).show();
+						return;
+					}
+
+					Intent intent = new Intent(v.getContext(),
+							SensorRecordService.class);
+					intent.putExtra("ip", currentIp);
+					ArrayList<Integer> enabledSensors = new ArrayList<Integer>();
+					for (int i = 0; i < mSensorsAdapter.getCount(); i++) {
+						SimpleSensor item = mSensorsAdapter.getItem(i);
+						if (item.isEnabled())
+							enabledSensors.add(item.getType());
+					}
+					int[] arrayEnabled = new int[enabledSensors.size()];
+					for (int i = 0; i < enabledSensors.size(); i++) {
+						arrayEnabled[i] = enabledSensors.get(i);
+					}
+					intent.putExtra("sensors", arrayEnabled);
+
+					startService(intent);
+				} else {
+					Toast.makeText(SensorRecordFromDeviceActivity.this,
+							"Check your internet connection",
 							Toast.LENGTH_SHORT).show();
-					return;
 				}
-
-				Intent intent = new Intent(v.getContext(),
-						SensorRecordService.class);
-				intent.putExtra("ip", currentIp);
-				ArrayList<Integer> enabledSensors = new ArrayList<Integer>();
-				for (int i = 0; i < mSensorsAdapter.getCount(); i++) {
-					SimpleSensor item = mSensorsAdapter.getItem(i);
-					if (item.isEnabled())
-						enabledSensors.add(item.getType());
-				}
-				int[] arrayEnabled = new int[enabledSensors.size()];
-				for (int i = 0; i < enabledSensors.size(); i++) {
-					arrayEnabled[i] = enabledSensors.get(i);
-				}
-				intent.putExtra("sensors", arrayEnabled);
-
-				startService(intent);
 			}
+
 		});
 		final Button stopBtn = (Button) findViewById(R.id.stop_btn);
 		stopBtn.setOnClickListener(new OnClickListener() {
@@ -93,5 +104,14 @@ public class SensorRecordFromDeviceActivity extends Activity {
 				stopService(intent);
 			}
 		});
+	}
+
+	protected boolean isInternetConnected() {
+		ConnectivityManager connection = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetwork = connection.getActiveNetworkInfo();
+		if (activeNetwork != null && activeNetwork.isAvailable()
+				&& activeNetwork.isConnected())
+			return true;
+		return false;
 	}
 }

@@ -140,11 +140,6 @@ public class RotationVectorModel extends SensorModel {
 		mRotationZValue += addZ;
 	}
 
-	@Override
-	public String getTypeConstant() {
-		return TYPE_GRAVITY;
-	}
-
 	public double getReadRotationVectorX() {
 		return Math.sin(Math.toRadians(mReadRotationX / 2));
 	}

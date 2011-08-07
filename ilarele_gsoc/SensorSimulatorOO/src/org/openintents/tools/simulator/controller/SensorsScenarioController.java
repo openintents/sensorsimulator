@@ -4,11 +4,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Hashtable;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 
+import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.SensorsScenarioModel;
 import org.openintents.tools.simulator.model.StateModel;
 import org.openintents.tools.simulator.util.FileExtensionFilter;
@@ -20,17 +25,24 @@ public class SensorsScenarioController {
 	private SensorsScenarioModel mModel;
 	private SensorSimulatorController mSensorSimulatorController;
 
+	private ServerSocket mServerSocket;
+	private ObjectInputStream mInStream;
+
+	private Hashtable<Integer, float[]> mRecordedSensors;
+	private JButton mRecordBtn;
+
 	public SensorsScenarioController(SensorsScenarioModel model,
 			SensorsScenarioView view) {
 		this.mModel = model;
 		this.mView = view;
-
+		mRecordedSensors = new Hashtable<Integer, float[]>();
 	}
 
 	public void setSensorSimulatorController(
 			SensorSimulatorController sensorSimulatorController) {
 		this.mSensorSimulatorController = sensorSimulatorController;
 		initTopButtonsListeners();
+		startListening();
 	}
 
 	private void initTopButtonsListeners() {
@@ -55,8 +67,9 @@ public class SensorsScenarioController {
 				mModel.emptyStates();
 
 				// show open dialog
-				// File selectedFile = showOpenDialog();
-				File selectedFile = new File("interpolationFiles/save.ss.xml");
+				File selectedFile = showOpenDialog();
+				// File selectedFile = new
+				// File("interpolationFiles/save.ss.xml");
 				// load scenario from xml
 				if (selectedFile != null)
 					XMLUtil.loadScenarioFromXml(selectedFile, mModel);
@@ -76,11 +89,10 @@ public class SensorsScenarioController {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// get file
-				// File file = getSavingFile();
-				File file = new File("interpolationFiles/save.ss.xml");
+				File file = getSavingFile();
+				// File file = new File("interpolationFiles/save.ss.xml");
 				if (file != null) {
 					XMLUtil.saveScenarioToXml(file, mModel);
-					System.out.println("Saved");
 				}
 			}
 		});
@@ -121,6 +133,30 @@ public class SensorsScenarioController {
 			}
 		});
 
+		mRecordBtn = mView.getRecordButton();
+		mRecordBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				switchRecord(mSensorSimulatorController.getState() == SensorSimulatorController.RECORD);
+			}
+		});
+
+	}
+
+	protected void switchRecord(boolean record) {
+		if (record) {
+			mRecordBtn.setText("Record");
+			mSensorSimulatorController.switchState(
+					SensorSimulatorController.NORMAL, -1, -1, false);
+		} else {
+			mRecordBtn.setText("Stop Recording");
+			mModel.emptyStates();
+			mSensorSimulatorController.switchState(
+					SensorSimulatorController.RECORD, 0, 0, false);
+			mView.clearScenario();
+			mView.setStatusText("You can start recording from the application.");
+
+		}
 	}
 
 	protected File getSavingFile() {
@@ -152,6 +188,68 @@ public class SensorsScenarioController {
 		if (JFileChooser.APPROVE_OPTION == result)
 			return fc.getSelectedFile();
 		return null;
+	}
+
+	private void startListening() {
+		try {
+			mServerSocket = new ServerSocket(Global.RECORDING_PORT);
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					Socket connection;
+					while (true) {
+						try {
+							mRecordedSensors.clear();
+							System.out
+									.println("Waiting for connection; blocked in accept");
+							connection = mServerSocket.accept();
+							System.out.println("Connected");
+							mView.clearScenario();
+							mInStream = new ObjectInputStream(connection
+									.getInputStream());
+							while (true) {
+								Integer sensorType = (Integer) mInStream
+										.readObject();
+								float[] values = (float[]) mInStream
+										.readObject();
+
+								// System.out.println("received:" + sensorType +
+								// ":" + values[0]
+								// + " " + values[1] + " " + values[2]);
+								mRecordedSensors.put(sensorType, values);
+							}
+						} catch (IOException e) {
+							System.out.println("Connection closed!");
+							switchRecord(true);
+
+						} catch (ClassNotFoundException e) {
+							e.printStackTrace();
+						} finally {
+							try {
+								mInStream.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+			}).start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void close() {
+		try {
+			mServerSocket.close();
+			mInStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Hashtable<Integer, float[]> getRecordedSensors() {
+		return mRecordedSensors;
 	}
 
 }
