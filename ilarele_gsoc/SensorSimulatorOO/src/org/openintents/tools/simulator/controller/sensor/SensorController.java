@@ -21,12 +21,13 @@ import java.awt.event.ActionListener;
 import java.io.PrintWriter;
 
 import javax.swing.JButton;
-import javax.swing.JTabbedPane;
+import javax.swing.JPanel;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.view.gui.util.SensorButton;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 
 /**
@@ -45,12 +46,12 @@ public abstract class SensorController {
 
 	// if the connection with the emulator has started
 	private boolean mIsFixed;
-	private JTabbedPane mTabPanel;
+	private JPanel mSensorsButtons;
 	private JButton mEnableBtn;
 
 	public SensorController(final SensorModel model, final SensorView view) {
-		this.mSensorModel = model;
-		this.mSensorView = view;
+		mSensorModel = model;
+		mSensorView = view;
 		mIsFixed = false;
 		JButton helpBtn = view.getHelpButton();
 		helpBtn.addActionListener(new ActionListener() {
@@ -158,15 +159,17 @@ public abstract class SensorController {
 	public void setEnable(boolean enabled) {
 		mSensorModel.setEnabled(enabled);
 		mSensorView.setEnabled(enabled);
+
+		SensorButton sensorButton = mSensorView.getSensorButton();
 		if (enabled) {
-			mTabPanel.add(mSensorModel.getName(), mSensorView);
+			mSensorsButtons.add(sensorButton);
 		} else {
-			mTabPanel.remove(mSensorView);
+			mSensorsButtons.remove(sensorButton);
 		}
 	}
 
-	public void setTab(JTabbedPane tabbedPanel) {
-		this.mTabPanel = tabbedPanel;
+	public void setTab(JPanel tabbedPanel) {
+		mSensorsButtons = tabbedPanel;
 		mEnableBtn = mSensorView.getEnabled();
 		mEnableBtn.addActionListener(new ActionListener() {
 			@Override

@@ -1,4 +1,4 @@
-package org.openintents.tools.simulator.controller;
+package org.openintents.tools.simulator.util;
 
 import java.util.ArrayList;
 
@@ -13,6 +13,7 @@ public class Interpolate {
 		for (int i = 1; i < intermediateNo + 1; i++) {
 			StateModel newState = new StateModel();
 			newState.fillLinearValues(s1, s2, i, intermediateNo + 1);
+			newState.fillNonLinearValues(s1, s2, i, intermediateNo + 1);
 			result.add(newState);
 		}
 		return result;
@@ -24,7 +25,8 @@ public class Interpolate {
 		// linear interpolation
 		newState.fillLinearValues(firstState, secondState, 1, 2);
 
-		// TODO: nonlinear interpolation
+		// nonlinear interpolation
+		newState.fillNonLinearValues(firstState, secondState, 1, 2);
 		return newState;
 	}
 

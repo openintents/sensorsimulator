@@ -23,17 +23,16 @@ import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 public class AllSensorsView extends JScrollPane {
 	private static final long serialVersionUID = -5966939252818311988L;
 	private ArrayList<SensorView> mSensors;
-	private JPanel mInsidePanel;
 	private JComboBox mPhoneChooser;
 	private HashMap<String, PhoneSensors> mPhoneSensors;
 
 	public AllSensorsView(ArrayList<SensorView> view) {
-		this.mSensors = view;
-		setMinimumSize(new Dimension(
-				(int) (Global.WIDTH * Global.SENSOR_SPLIT_RIGHT),
-				(int) (Global.HEIGHT * Global.SENSOR_SPLIT_UP)));
-		mInsidePanel = new JPanel(new GridBagLayout());
-		getViewport().add(mInsidePanel);
+		mSensors = view;
+		setPreferredSize(new Dimension(
+				(int) (Global.W_FRAME * Global.SENSOR_SPLIT_RIGHT),
+				Global.H_CONTENT + Global.H_BUTTONS));
+		JPanel insidePanel = new JPanel(new GridBagLayout());
+		getViewport().add(insidePanel);
 
 		GridBagConstraints l = new GridBagConstraints();
 		l.fill = GridBagConstraints.HORIZONTAL;
@@ -41,40 +40,40 @@ public class AllSensorsView extends JScrollPane {
 
 		l.gridx = 0;
 		l.gridy = 0;
-		l.gridwidth = 2;
+		l.gridwidth = 1;
 		l.gridheight = 1;
 		mPhoneChooser = getPhoneChooser();
 		JPanel chooserPanel = new JPanel();
 		chooserPanel.setBorder(BorderFactory
 				.createTitledBorder("Choose Device"));
 		chooserPanel.add(mPhoneChooser);
-		mInsidePanel.add(chooserPanel, l);
+		insidePanel.add(chooserPanel, l);
 
-		l.gridwidth = 1;
+		l.gridwidth = 2;
 		l.weightx = 0.5;
 		l.gridx = 0;
-		l.gridy++;
+		l.gridy = 1;
 		l.gridheight = 2;
 		JPanel mBasicOrientationPanel = getBasicOrientationSensors();
-		mInsidePanel.add(mBasicOrientationPanel, l);
+		insidePanel.add(mBasicOrientationPanel, l);
 
 		l.gridx = 0;
 		l.gridy += 2;
 		l.gridheight = 3;
 		JPanel mExtendedOrientationPanel = getExtendedOrientationSensors();
-		mInsidePanel.add(mExtendedOrientationPanel, l);
+		insidePanel.add(mExtendedOrientationPanel, l);
 
-		l.gridx++;
+		l.gridx = 2;
 		l.gridy = 1;
 		l.gridheight = 3;
 		JPanel mEnvironmentPanel = getEnvironmentSensors();
-		mInsidePanel.add(mEnvironmentPanel, l);
+		insidePanel.add(mEnvironmentPanel, l);
 
-		l.gridx = 1;
+		l.gridx = 2;
 		l.gridy += 3;
 		l.gridheight = 1;
 		JPanel mOthersPanel = getOtherSensors();
-		mInsidePanel.add(mOthersPanel, l);
+		insidePanel.add(mOthersPanel, l);
 	}
 
 	private JComboBox getPhoneChooser() {

@@ -1,6 +1,5 @@
 package org.openintents.tools.simulator.view;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -56,9 +55,9 @@ public class DevicePanel extends JPanel {
 	private int mHeight;
 
 	public DevicePanel(int width, int height, StateModel model) {
-		this.mHeight = height;
-		this.mWidth = width;
-		this.mModel = model;
+		mHeight = height;
+		mWidth = width;
+		mModel = model;
 
 	}
 
@@ -73,10 +72,12 @@ public class DevicePanel extends JPanel {
 		Graphics2D g2 = (Graphics2D) graphics;
 		// draw Line2D.Double
 		for (int i = 0; i < phone.length; i += 2) {
-			if (i == 0)
-				g2.setColor(Color.RED);
-			if (i == 24)
-				g2.setColor(Color.BLUE);
+			if (i == 0) {
+				g2.setColor(Global.COLOR_ENABLE_BLUE);
+			}
+			if (i == 24) {
+				g2.setColor(Global.COLOR_ENABLE_GREEN);
+			}
 
 			Vector v1 = new Vector(phone[i]);
 			Vector v2 = new Vector(phone[i + 1]);

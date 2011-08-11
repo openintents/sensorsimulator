@@ -5,8 +5,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -56,9 +54,6 @@ public class SensorRecordService extends Service {
 	public void onCreate() {
 		mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		// mSensorManager = SensorManagerSimulator.getSystemService(this,
-		// SENSOR_SERVICE);
-		// mSensorManager.connectSimulator();
 		mListenersArray = new ArrayList<SensorEventListener>();
 
 		showNotification();
@@ -81,7 +76,6 @@ public class SensorRecordService extends Service {
 				@Override
 				public boolean handleMessage(Message msg) {
 					// event captured by a listener
-					Log.d(TAG, "handleMessage");
 					// send event values to the server (sockets)
 					try {
 						// sensorType
@@ -96,6 +90,7 @@ public class SensorRecordService extends Service {
 						//
 					} catch (IOException e) {
 						Log.e(TAG, "Connection closed!");
+						clearAll();
 					}
 
 					return true;
@@ -104,13 +99,14 @@ public class SensorRecordService extends Service {
 			mOutStream.flush();
 		} catch (UnknownHostException e) {
 			Log.e(TAG, e.getMessage());
+			clearAll();
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage());
+			clearAll();
 		}
 
 		// get the wanted sensors for recording (from intent)
 		int[] recordingSensors = intent.getIntArrayExtra("sensors");
-		Log.d(TAG, "bz" + Arrays.toString(recordingSensors));
 		for (int sensor : recordingSensors) {
 			// register listeners for each of them
 			registerListener(sensor);
@@ -143,6 +139,10 @@ public class SensorRecordService extends Service {
 
 	@Override
 	public void onDestroy() {
+		clearAll();
+	}
+
+	private void clearAll() {
 		mNotificationManager.cancel(NOTIFICATION);
 		for (SensorEventListener listener : mListenersArray) {
 			mSensorManager.unregisterListener(listener);

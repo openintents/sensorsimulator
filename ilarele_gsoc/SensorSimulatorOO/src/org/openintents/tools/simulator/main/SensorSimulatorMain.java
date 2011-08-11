@@ -21,8 +21,12 @@
 
 package org.openintents.tools.simulator.main;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,15 +38,19 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SpringLayout;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -59,43 +67,166 @@ import org.openintents.tools.simulator.TelnetSimulator;
  */
 public class SensorSimulatorMain extends JPanel implements WindowListener,
 		ChangeListener, ItemListener {
-
-	private static final long serialVersionUID = -5990997086225010821L;
-	// command strings
+	private static final long serialVersionUID = -7248177045429153977L;
 
 	// variable that holds running instances of Sensor Simulators
-	public static SimulatorInstances simulatorInstances = new SimulatorInstances();
+	public SimulatorInstances simulatorInstances = new SimulatorInstances();
+
+	private SensorSimulator mSimulator;
+	private TelnetSimulator mTelnet;
+	private JLabel mStatusBar;
 
 	/**
 	 * Create the GUI and show it. For thread safety, this method should be
 	 * invoked from the event-dispatching thread.
 	 */
-	private static void createAndShowGUI() {
+	private void createAndShowGUI() {
 		// Create and set up the window.
 		JFrame frame = new JFrame("SensorSimulator");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(
+				Global.ICON_SENSOR_SIMULATOR_PATH));
+		JPanel mainPanel = new JPanel(new BorderLayout());
+		JPanel menuBar = new JPanel();
+		JPanel contentPanel = new JPanel();
+		mStatusBar = new JLabel();
+		JPanel statusPanel = new JPanel();
 
-		// Create the menu bar: File Help
-		JMenuBar myMenuBar = new JMenuBar();
-		myMenuBar.setPreferredSize(new Dimension(200, 30));
-		JMenu menuFile = new JMenu("File");
-		myMenuBar.add(menuFile);
-		JMenu menuHelp = new JMenu("Help");
-		myMenuBar.add(menuHelp);
+		fillMainPanel(menuBar, contentPanel, frame);
+		fillStatusPanel(statusPanel, frame);
 
-		// Exit menu
-		JMenuItem menuItemExit = new JMenuItem("Exit");
-		menuItemExit.addActionListener(new ActionListener() {
+		menuBar.setBorder(new EmptyBorder(Global.BORDER_VSIZE,
+				Global.BORDER_HSIZE, Global.BORDER_VSIZE, Global.BORDER_HSIZE));
+		mainPanel.add(menuBar, BorderLayout.NORTH);
+		mainPanel.add(contentPanel, BorderLayout.CENTER);
+		mainPanel.add(statusPanel, BorderLayout.SOUTH);
+
+		mainPanel.setPreferredSize(new Dimension(Global.W_FRAME + 150,
+				Global.H_FRAME));
+		// show frame
+		frame.add(mainPanel);
+		frame.setVisible(true);
+		frame.pack();
+	}
+
+	private void fillStatusPanel(JPanel statusPanel, JFrame frame) {
+		statusPanel.setLayout(new GridLayout(1, 1));
+		statusPanel.setDoubleBuffered(false);
+		statusPanel.add(mStatusBar);
+		statusPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+	}
+
+	/**
+	 * Creates the main panel, with a menu bar and a container panel.
+	 * 
+	 * @param menubar
+	 * @param contentPanel
+	 * @param frame
+	 * 
+	 * @return menu bar panel
+	 */
+	private void fillMainPanel(JPanel menuBar, JPanel contentPanel, JFrame frame) {
+		contentPanel.setLayout(new BorderLayout());
+		// menu
+		menuBar.setLayout(new BoxLayout(menuBar, BoxLayout.X_AXIS));
+
+		// sensor simulator button
+		JButton simulatorButton = createSimulatorButton(contentPanel, frame);
+		menuBar.add(simulatorButton);
+
+		// telnet simulator button
+		JButton telnetButton = createTelnetButton(contentPanel, frame);
+		menuBar.add(telnetButton);
+
+		// settings button
+		JButton settingsButton = createSettingsButton(contentPanel, frame);
+		menuBar.add(Box.createHorizontalGlue());
+		settingsButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		menuBar.add(settingsButton);
+
+		// help button
+		JButton helpButton = createHelpButton();
+		helpButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		menuBar.add(helpButton);
+	}
+
+	private JButton createSettingsButton(final JPanel contentPanel,
+			final JFrame frame) {
+		JButton menuButton = new JButton(Global.MENU_SETTINGS);
+		SpringLayout layout = new SpringLayout();
+		final JPanel settingsPanel = new JPanel(layout);
+		settingsPanel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(Global.COLOR_ENABLE_BLUE),
+				BorderFactory.createEmptyBorder(Global.BORDER_HSIZE,
+						Global.BORDER_HSIZE, Global.BORDER_HSIZE,
+						Global.BORDER_HSIZE)));
+		settingsPanel.add(mSimulator.view.getSettingsPanel());
+
+		menuButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
+				contentPanel.removeAll();
+				contentPanel.add(settingsPanel);
+				printStatus("Settings");
+				contentPanel.validate();
+				contentPanel.repaint();
 			}
 		});
-		menuFile.add(menuItemExit);
+		return menuButton;
+	}
 
+	private JButton createTelnetButton(final JPanel contentPanel,
+			final JFrame frame) {
+		JButton menuButton = new JButton(Global.MENU_CONSOLE);
+		mTelnet = new TelnetSimulator(this);
+		final JScrollPane telnetScroll = new JScrollPane(mTelnet.view);
+		telnetScroll
+				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		menuButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				contentPanel.removeAll();
+				contentPanel.add(telnetScroll);
+				printStatus("Telnet Simulator");
+				contentPanel.validate();
+				contentPanel.repaint();
+			}
+		});
+		return menuButton;
+	}
+
+	private JButton createSimulatorButton(final JPanel contentPanel,
+			final JFrame frame) {
+		JButton menuButton = new JButton(Global.MENU_SENSOR_SIMULATOR);
+		mSimulator = new SensorSimulator(this);
+
+		// add instance of this simulator to SensorSimulatorInstances
+		setFirstSimulatorInstance(mSimulator);
+
+		final JScrollPane simulatorScroll = new JScrollPane(mSimulator.view);
+		simulatorScroll
+				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+		// first, sensor simulator is selected
+		contentPanel.add(simulatorScroll);
+		printStatus("Sensor Simulator");
+		menuButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				contentPanel.removeAll();
+				contentPanel.add(simulatorScroll);
+				printStatus("Sensor Simulator");
+				contentPanel.repaint();
+				frame.pack();
+			}
+		});
+		return menuButton;
+	}
+
+	private JButton createHelpButton() {
 		// Help Online menu
-		JMenuItem menuItemHelpOnline = new JMenuItem("Online Help");
-		menuItemHelpOnline.addActionListener(new ActionListener() {
+		JButton menuButton = new JButton(Global.MENU_HELP);
+		menuButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (Desktop.isDesktopSupported()) {
@@ -115,36 +246,7 @@ public class SensorSimulatorMain extends JPanel implements WindowListener,
 				}
 			}
 		});
-		menuHelp.add(menuItemHelpOnline);
-
-		// Create TabbedPane
-		JTabbedPane tabbedPane = new JTabbedPane();
-		tabbedPane.setPreferredSize(new Dimension(Global.WIDTH, Global.HEIGHT));
-		SensorSimulator simulator = new SensorSimulator();
-		TelnetSimulator telnet = new TelnetSimulator();
-
-		// add instance of this simulator to SensorSimulatorInstances
-		setFirstSimulatorInstance(simulator);
-		JScrollPane simulatorScroll = new JScrollPane(simulator.view);
-		simulatorScroll
-				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		JScrollPane telnetScroll = new JScrollPane(telnet.view);
-		telnetScroll
-				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-		// add Simulator, Telnet and Recording tabs
-		tabbedPane.addTab("Sensor Simulator", simulatorScroll);
-		tabbedPane.addTab("Telnet Simulator", telnetScroll);
-
-		// add tabs
-		frame.add(tabbedPane);
-
-		// add menu
-		frame.setJMenuBar(myMenuBar);
-
-		// show frame
-		frame.setVisible(true);
-		frame.pack();
+		return menuButton;
 	}
 
 	/**
@@ -154,29 +256,13 @@ public class SensorSimulatorMain extends JPanel implements WindowListener,
 	 * @param sensorSimulator
 	 *            , SensorSimulator instance we want to add.
 	 */
-	private static void setFirstSimulatorInstance(SensorSimulator simulator) {
+	private void setFirstSimulatorInstance(SensorSimulator simulator) {
 		simulatorInstances.addSimulator(simulator);
 	}
 
 	/** Add a listener for window events. */
 	void addWindowListener(Window w) {
 		w.addWindowListener(this);
-	}
-
-	// React to window events.
-	public void windowOpened(WindowEvent e) {
-	}
-
-	public void windowClosing(WindowEvent e) {
-	}
-
-	public void windowClosed(WindowEvent e) {
-	}
-
-	public void windowActivated(WindowEvent e) {
-	}
-
-	public void windowDeactivated(WindowEvent e) {
 	}
 
 	/**
@@ -186,26 +272,47 @@ public class SensorSimulatorMain extends JPanel implements WindowListener,
 	 *            , String[] arguments used to run this GUI.
 	 */
 	public static void main(String[] args) {
+		try {
+			// set nimbus theme
+			UIManager
+					.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+
+			// modify some colors from the theme
+			UIManager.put("control", Global.BACK);
+			UIManager.put("text", Global.TEXT);
+			UIManager.put("scrollbar", Global.TEXT);
+			UIManager.put("nimbusBlueGrey", Global.BUTTON);
+			UIManager.put("nimbusBase", Global.TAB);
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
+
 		// Schedule a job for the event-dispatching thread:
 		// creating and showing this application's GUI.
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager
-							.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (UnsupportedLookAndFeelException e) {
-					e.printStackTrace();
-				}
+		final SensorSimulatorMain mainSensorSimulator = new SensorSimulatorMain();
 
-				createAndShowGUI();
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				mainSensorSimulator.createAndShowGUI();
 			}
 		});
+	}
+
+	/**
+	 * Called to set status in the program status bar.
+	 * 
+	 * @param status
+	 */
+	public void printStatus(String status) {
+		mStatusBar.setText(" " + status);
 	}
 
 	/**
@@ -214,15 +321,40 @@ public class SensorSimulatorMain extends JPanel implements WindowListener,
 	 * @param e
 	 *            , ActionEvent that generated action.
 	 */
+	@Override
 	public void windowDeiconified(WindowEvent arg0) {
 	}
 
+	@Override
 	public void windowIconified(WindowEvent arg0) {
 	}
 
+	@Override
 	public void stateChanged(ChangeEvent arg0) {
 	}
 
+	@Override
 	public void itemStateChanged(ItemEvent arg0) {
+	}
+
+	// React to window events.
+	@Override
+	public void windowOpened(WindowEvent e) {
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
 	}
 }

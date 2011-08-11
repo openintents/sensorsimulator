@@ -157,4 +157,10 @@ public class RotationVectorModel extends SensorModel {
 		mRotationYValue = vec.y;
 		mRotationZValue = vec.z;
 	}
+
+	public void setRotationVector(float[] newValue) {
+		mRotationXValue = newValue[0];
+		mRotationYValue = newValue[1];
+		mRotationZValue = newValue[2];
+	}
 }

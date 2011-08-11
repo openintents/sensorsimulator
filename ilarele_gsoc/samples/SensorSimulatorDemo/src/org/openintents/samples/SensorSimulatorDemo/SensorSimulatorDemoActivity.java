@@ -227,20 +227,20 @@ public class SensorSimulatorDemoActivity extends Activity {
 		super.onResume();
 		mSensorManager.registerListener(mEventListenerAccelerometer,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				SensorManager.SENSOR_DELAY_UI);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(mEventListenerLinearAcceleration,
 				mSensorManager
 						.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
 				SensorManager.SENSOR_DELAY_GAME);
 		mSensorManager.registerListener(mEventListenerGravity,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(mEventListenerMagneticField,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
 				SensorManager.SENSOR_DELAY_NORMAL);
 		mSensorManager.registerListener(mEventListenerOrientation,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(mEventListenerTemperature,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_TEMPERATURE),
 				SensorManager.SENSOR_DELAY_NORMAL);

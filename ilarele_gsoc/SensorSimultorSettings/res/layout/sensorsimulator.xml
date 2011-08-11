@@ -53,6 +53,7 @@
 					android:layout_marginTop="10dip" />
 				<EditText
 					android:id="@+id/ipaddress"
+					android:text="10.0.2.2"
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginLeft="10dip"

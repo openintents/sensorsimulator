@@ -2,25 +2,30 @@ package org.openintents.tools.simulator.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.SpringLayout;
+import javax.swing.JSeparator;
+import javax.swing.ScrollPaneConstants;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.controller.StateControllerBig;
 import org.openintents.tools.simulator.controller.StateControllerSmall;
 import org.openintents.tools.simulator.model.SensorsScenarioModel;
 import org.openintents.tools.simulator.model.StateModel;
+import org.openintents.tools.simulator.view.gui.util.TimeScrollBar;
 
 public class SensorsScenarioView extends JPanel {
 	private static final long serialVersionUID = -5566737606706780206L;
@@ -31,122 +36,128 @@ public class SensorsScenarioView extends JPanel {
 	private JButton mSaveBtn;
 	private JButton mPlayBtn;
 	private JCheckBox mLoop;
-	private JButton mStopBtn;
-	private JButton mPauseBtn;
-	private ArrayList<StateViewSmall> mStatesViewSmall;
+	private ArrayList<StateViewSmall> mStatesViewArraySmall;
 	private JPanel mScenarioPanel;
 	private JPanel mRightPanel;
+
 	private StateViewBig mCurrentBigView;
-	private JFormattedTextField mStartState;
-	private JFormattedTextField mStopState;
+	private StateViewSmall mCurrentSmallView;
+
+	private TimeScrollBar mTimeBar;
+	private JScrollBar mHScrollBar;
+	private JButton mStopBtn;
 
 	public SensorsScenarioView(SensorsScenarioModel model) {
-		this.mModel = model;
-		mStatesViewSmall = new ArrayList<StateViewSmall>();
+		mModel = model;
+		mStatesViewArraySmall = new ArrayList<StateViewSmall>();
 		fillLayout();
 	}
 
 	private void fillLayout() {
-		setLayout(new GridLayout());
-		JPanel leftPanel = fillLeftPanel();
-		JPanel rightPanel = fillRightPanel();
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		JSplitPane splitPaneHorizontal = new JSplitPane(
-				JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
-		splitPaneHorizontal.setResizeWeight(Global.SCENARIO_SPLIT_LEFT);
-		add(splitPaneHorizontal);
+		JPanel topButtons = fillTopButtonsPanel();
+		topButtons.setAlignmentX(Component.LEFT_ALIGNMENT);
+		add(topButtons);
+
+		add(new JSeparator());
+
+		JPanel detailedViewPanel = fillDetailedViewPanel();
+		detailedViewPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		add(detailedViewPanel);
+		add(new JSeparator());
+
+		JScrollPane scenarioGridScroll = fillScenarioGridPanel();
+		add(scenarioGridScroll);
+
+		add(new JSeparator());
+
+		JPanel timeBarPanel = fillTimeBarPanel();
+		timeBarPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		add(timeBarPanel);
+
+		JPanel flowControlPanel = fillFlowControlPanel();
+		flowControlPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		add(flowControlPanel);
+
+		refreshStates();
+
 	}
 
-	private JPanel fillRightPanel() {
+	private JPanel fillTimeBarPanel() {
+		final TimeScrollBar timeBar = new TimeScrollBar();
+		timeBar.addMouseListener(new MouseAdapter() {
+			private boolean mIsDragStop = false;
+			private boolean mIsDragStart = false;
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				int x = e.getX();
+				if (!mIsDragStop) {
+					if (!mIsDragStart) {
+						if (x > TimeScrollBar.TIME_SCROLL_W_MARGIN) {
+							int scenarioPosition = (int) (x / timeBar
+									.getPxPerPos());
+							setCrtState(scenarioPosition);
+						}
+					} else {
+						mTimeBar.setStartStateAbsolute(x);
+						refresh(SensorsScenarioView.this);
+					}
+				} else {
+					mTimeBar.setStopStateAbsolute(x);
+					refresh(SensorsScenarioView.this);
+				}
+				mIsDragStart = mIsDragStop = false;
+				super.mouseReleased(e);
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (!mTimeBar.isDragStop(e)) {
+					if (mTimeBar.isDragStart(e)) {
+						mIsDragStart = true;
+					}
+				} else {
+					mIsDragStop = true;
+				}
+
+				super.mousePressed(e);
+			}
+		});
+		mTimeBar = timeBar;
+		return timeBar;
+	}
+
+	private JPanel fillDetailedViewPanel() {
 		mRightPanel = new JPanel(new BorderLayout());
 		return mRightPanel;
 	}
 
-	private JPanel fillLeftPanel() {
-		SpringLayout layout = new SpringLayout();
-		JPanel leftPanel = new JPanel(layout);
-		// fill component panels
-		JPanel topButtons = fillTopButtonsPanel();
-		JPanel scenario = fillScenarioPanel();
-		JPanel flowControl = fillFlowControlPanel();
-
-		leftPanel.add(topButtons);
-
-		JScrollPane scrollScenario = new JScrollPane(scenario);
-		scrollScenario.setPreferredSize(new Dimension((int) (Global.WIDTH
-				* Global.SENSOR_SPLIT_RIGHT * Global.SCENARIO_SPLIT_LEFT),
-				(int) (Global.HEIGHT * Global.SENSOR_SPLIT_UP) - 70));
-		leftPanel.add(scrollScenario);
-
-		leftPanel.add(flowControl);
-
-		// set layout constraints
-		// north + south
-		layout.putConstraint(SpringLayout.NORTH, topButtons, 10,
-				SpringLayout.NORTH, leftPanel);
-		layout.putConstraint(SpringLayout.NORTH, scrollScenario, 10,
-				SpringLayout.SOUTH, topButtons);
-		layout.putConstraint(SpringLayout.NORTH, flowControl, 10,
-				SpringLayout.SOUTH, scrollScenario);
-		layout.putConstraint(SpringLayout.SOUTH, leftPanel, 10,
-				SpringLayout.SOUTH, flowControl);
-
-		// east + west
-		layout.putConstraint(SpringLayout.WEST, topButtons, 10,
-				SpringLayout.WEST, leftPanel);
-		layout.putConstraint(SpringLayout.WEST, scrollScenario, 10,
-				SpringLayout.WEST, leftPanel);
-		layout.putConstraint(SpringLayout.WEST, flowControl, 10,
-				SpringLayout.WEST, leftPanel);
-
-		layout.putConstraint(SpringLayout.EAST, topButtons, -10,
-				SpringLayout.EAST, leftPanel);
-		layout.putConstraint(SpringLayout.EAST, scrollScenario, -10,
-				SpringLayout.EAST, leftPanel);
-		layout.putConstraint(SpringLayout.EAST, flowControl, -10,
-				SpringLayout.EAST, leftPanel);
-		return leftPanel;
-	}
-
 	private JPanel fillFlowControlPanel() {
-		JPanel panel = new JPanel(new GridLayout(0, 1));
-		// start/stop frames + loop
-		JPanel settingsPanel = new JPanel(new GridLayout(1, 0));
-
-		JLabel startLabel = new JLabel("Start state");
-		mStartState = new JFormattedTextField();
-		mStartState.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);
-		mStartState.setValue(1);
-		JLabel stopLabel = new JLabel("Stop state");
-		mStopState = new JFormattedTextField();
-		mStopState.setValue(1);
-		settingsPanel.add(startLabel);
-		settingsPanel.add(mStartState);
-		settingsPanel.add(stopLabel);
-		settingsPanel.add(mStopState);
+		JPanel panel = new JPanel();
+		mPlayBtn = new JButton(Global.ICON_PLAY_PAUSE);
+		mStopBtn = new JButton(Global.ICON_STOP);
 		mLoop = new JCheckBox("Loop");
-		settingsPanel.add(mLoop);
-
-		panel.add(settingsPanel);
-
-		// play/pause/stop
-		JPanel playPanel = new JPanel(new GridLayout(1, 0));
-		mPlayBtn = new JButton("Play");
-		playPanel.add(mPlayBtn);
-		mPauseBtn = new JButton("Pause");
-		playPanel.add(mPauseBtn);
-		mStopBtn = new JButton("Stop");
-		playPanel.add(mStopBtn);
-
-		panel.add(playPanel);
-
+		panel.add(mPlayBtn);
+		panel.add(mStopBtn);
+		panel.add(mLoop);
 		return panel;
 	}
 
-	private JPanel fillScenarioPanel() {
-		mScenarioPanel = new JPanel(new GridLayout(0, 2));
-		refreshStates();
-		return mScenarioPanel;
+	private JScrollPane fillScenarioGridPanel() {
+		mScenarioPanel = new JPanel(new GridLayout(1, 0));
+		JScrollPane scrollScenario = new JScrollPane(mScenarioPanel);
+		scrollScenario
+				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollScenario.setPreferredSize(new Dimension(
+				(int) (Global.W_FRAME * Global.SENSOR_SPLIT_RIGHT),
+				(int) (Global.H_DEVICE_SMALL * 1.5)));
+		scrollScenario.setAlignmentX(Component.LEFT_ALIGNMENT);
+		mHScrollBar = scrollScenario.getHorizontalScrollBar();
+		mHScrollBar.setUnitIncrement(Global.W_DEVICE_SMALL / 2);
+
+		return scrollScenario;
 	}
 
 	private JPanel fillTopButtonsPanel() {
@@ -176,7 +187,6 @@ public class SensorsScenarioView extends JPanel {
 		panel.add(new JLabel(
 				"- start the android application from the device and"
 						+ " follow the instructions from there"));
-		panel.add(new JLabel("for now, check syso"));
 		return panel;
 	}
 
@@ -196,60 +206,72 @@ public class SensorsScenarioView extends JPanel {
 		return mSaveBtn;
 	}
 
+	public JButton getStopButton() {
+		return mStopBtn;
+	}
+
 	public void refreshStates() {
-		mStatesViewSmall.clear();
+		mStatesViewArraySmall.clear();
 		mScenarioPanel.removeAll();
 		ArrayList<StateModel> models = mModel.getStates();
 		if (models != null) {
 			for (StateModel stateModel : models) {
 				addView(stateModel);
 			}
+			if (models.size() > 0) {
+				mTimeBar.setEndPosition(models.size() - 1);
+				refresh();
+			}
 		}
+
 	}
 
 	public void removeFromGui(StateViewSmall view) {
 		view.setVisible(false);
-		mStatesViewSmall.remove(view);
-		mScenarioPanel.remove(view);
-		if (mCurrentBigView != null) {
+		int removedPosition = mStatesViewArraySmall.indexOf(view);
+		mStatesViewArraySmall.remove(removedPosition);
+		mScenarioPanel.remove(removedPosition);
+		if (mCurrentSmallView != null && mCurrentSmallView.equals(view)) {
 			mCurrentBigView.setVisible(false);
 			mCurrentBigView = null;
+			mCurrentSmallView = null;
 		}
+		mTimeBar.removePosition(removedPosition);
+		refresh();
 	}
 
 	public void addView(StateModel stateModel) {
+		addView(stateModel, mStatesViewArraySmall.size());
+	}
+
+	public int addView(StateViewSmall afterView, StateModel stateModel) {
+		int position = mStatesViewArraySmall.indexOf(afterView) + 1;
+		addView(stateModel, position);
+		return position;
+	}
+
+	private void addView(StateModel stateModel, int position) {
 		StateViewSmall stateView = new StateViewSmall(stateModel);
 		new StateControllerSmall(mModel, this, stateModel, stateView);
-		mStatesViewSmall.add(stateView);
-		mScenarioPanel.add(stateView);
+		mStatesViewArraySmall.add(position, stateView);
+		mScenarioPanel.add(stateView, position);
+		if (mStatesViewArraySmall.size() > 1) {
+			mTimeBar.incrementNoStates();
+		}
+		refresh();
 	}
 
 	public void showBigView(StateModel model, StateViewSmall smallView) {
 		mCurrentBigView = new StateViewBig(model, smallView);
+		mCurrentSmallView = smallView;
 		new StateControllerBig(mModel, this, model, mCurrentBigView);
 		mRightPanel.removeAll();
 		mRightPanel.add(mCurrentBigView, BorderLayout.CENTER);
-		repaint();
+		refresh(mRightPanel);
 	}
 
 	public JButton getPlayButton() {
 		return mPlayBtn;
-	}
-
-	public JButton getStopButton() {
-		return mStopBtn;
-	}
-
-	public JButton getPauseButton() {
-		return mPauseBtn;
-	}
-
-	public JFormattedTextField getStartStateTxt() {
-		return mStartState;
-	}
-
-	public JFormattedTextField getStopStateTxt() {
-		return mStopState;
 	}
 
 	public boolean isLooping() {
@@ -262,13 +284,65 @@ public class SensorsScenarioView extends JPanel {
 
 	public void clearScenario() {
 		mScenarioPanel.removeAll();
+		mStatesViewArraySmall.clear();
+		mCurrentBigView = null;
+		mCurrentSmallView = null;
+		mTimeBar.reset();
+		refresh();
 	}
 
-	public void updateTime(float time) {
-		if (mStatesViewSmall.size() > 0) {
-			StateViewSmall lastStateView = mStatesViewSmall
-					.get(mStatesViewSmall.size() - 1);
-			lastStateView.getTransitionSpinner().setValue(time);
-		}
+	public int getStartState() {
+		return mTimeBar.getStartState();
+	}
+
+	public int getStopState() {
+		return mTimeBar.getStopState();
+	}
+
+	public void setStartState(int value) {
+		mTimeBar.setStartState(value);
+		refresh();
+	}
+
+	public void setStopState(int value) {
+		mTimeBar.setStopState(value, true);
+		refresh();
+	}
+
+	public void setCrtState(int position) {
+		mTimeBar.setCurrentPosition(position);
+		updateScrollPosition(position);
+		refresh();
+	}
+
+	protected void updateScrollPosition(int scenarioPosition) {
+		// set scenario scroll bar
+		float scrollPxPerPosition = ((float) mHScrollBar.getMaximum() - mHScrollBar
+				.getVisibleAmount()) / mStatesViewArraySmall.size();
+
+		int newScrollValue = Math.round(scenarioPosition * scrollPxPerPosition);
+		mHScrollBar.setValue(newScrollValue);
+	}
+
+	public void refresh(JPanel comp) {
+		comp.revalidate();
+		comp.repaint();
+	}
+
+	public JScrollBar getScenarioHScroll() {
+		return mHScrollBar;
+	}
+
+	public int getScenarioSize() {
+		return mStatesViewArraySmall.size();
+	}
+
+	public void setCrtPosition(int crtPosition) {
+		mTimeBar.setCurrentPosition(crtPosition);
+		refresh();
+	}
+
+	public void refresh() {
+		refresh(this);
 	}
 }

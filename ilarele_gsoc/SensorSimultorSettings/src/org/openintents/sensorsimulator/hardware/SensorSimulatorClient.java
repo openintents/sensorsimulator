@@ -337,7 +337,7 @@ final class SensorSimulatorClient {
 			int[] sensor = new int[sensors.size()];
 			for (int i = 0; i < sensors.size(); i++) {
 				if (sensors.get(i) != null) {
-					sensor[i] = ((Integer) sensors.get(i).intValue());
+					sensor[i] = (sensors.get(i).intValue());
 				}
 			}
 
@@ -399,9 +399,8 @@ final class SensorSimulatorClient {
 		 */
 		boolean hasSensor(int sensor) {
 			for (int i = 0; i < mSensors.size(); i++) {
-				if (mSensors.get(i) == sensor) {
+				if (mSensors.get(i) == sensor)
 					return true;
-				}
 			}
 			return false;
 		}
@@ -440,11 +439,12 @@ final class SensorSimulatorClient {
 	private boolean enableSensor(Sensor sensorAdd, int delay) {
 		String sensorString = null;
 		boolean result = false;
-		if (delay == -1)
+		if (delay == -1) {
 			sensorString = SensorNames.getSensorName(sensorAdd.sensorToRemove);
-		else
+		} else {
 			sensorString = SensorNames
 					.getSensorName(sensorAdd.sensorToRegister);
+		}
 
 		try {
 			setSensorUpdateDelay(sensorString, delay);
@@ -557,9 +557,8 @@ final class SensorSimulatorClient {
 
 	static boolean hasSensor(ArrayList<Integer> sensors, int sensor) {
 		for (int i = 0; i < sensors.size(); i++) {
-			if (sensors.get(i) == sensor) {
+			if (sensors.get(i) == sensor)
 				return true;
-			}
 		}
 		return false;
 	}
@@ -610,23 +609,25 @@ final class SensorSimulatorClient {
 
 	protected int getNumSensorValues(String sensor) {
 
-		if (LOG_PROTOCOL)
+		if (LOG_PROTOCOL) {
 			Log.i(TAG, "Send: " + sensor);
+		}
 		mOut.println(sensor);
-		if (LOG_PROTOCOL)
+		if (LOG_PROTOCOL) {
 			Log.i(TAG, "Send: getNumSensorValues()");
+		}
 		mOut.println("getNumSensorValues()");
 
 		int num = 0;
 
 		try {
 			String numstr = mIn.readLine();
-			if (numstr.compareTo("throw IllegalArgumentException") == 0) {
+			if (numstr.compareTo("throw IllegalArgumentException") == 0)
 				throw new IllegalArgumentException("Sensor '" + sensor
 						+ "' is not supported.");
-			}
-			if (LOG_PROTOCOL)
+			if (LOG_PROTOCOL) {
 				Log.i(TAG, "Received: " + numstr);
+			}
 
 			num = Integer.parseInt(numstr);
 		} catch (IOException e) {
@@ -640,41 +641,41 @@ final class SensorSimulatorClient {
 
 	protected void readSensor(String sensor, float[] sensorValues,
 			String barcode2) {
-		if (sensorValues == null) {
+		if (sensorValues == null)
 			throw new NullPointerException("readSensor for '" + sensor
 					+ "' called with sensorValues == null.");
-		}
-		if (LOG_PROTOCOL)
+		if (LOG_PROTOCOL) {
 			Log.i(TAG, "Send: getNumSensorValues()");
+		}
 		mOut.println("readSensor()\n" + sensor);
 		int num = 0;
 
 		try {
 			String numstr = mIn.readLine();
-			if (numstr.compareTo("throw IllegalArgumentException") == 0) {
+			if (numstr.compareTo("throw IllegalArgumentException") == 0)
 				throw new IllegalArgumentException("Sensor '" + sensor
 						+ "' is not supported.");
-			} else if (numstr.compareTo("throw IllegalStateException") == 0) {
+			else if (numstr.compareTo("throw IllegalStateException") == 0)
 				throw new IllegalStateException("Sensor '" + sensor
 						+ "' is currently not enabled.");
-			}
-			if (LOG_PROTOCOL)
+			if (LOG_PROTOCOL) {
 				Log.i(TAG, "Received: " + numstr);
+			}
 			num = Integer.parseInt(numstr);
 
-			if (sensorValues.length < num) {
+			if (sensorValues.length < num)
 				throw new ArrayIndexOutOfBoundsException(
 						"readSensor for '"
 								+ sensor
 								+ "' called with sensorValues having too few elements ("
 								+ sensorValues.length
 								+ ") to hold the sensor values (" + num + ").");
-			}
 
 			for (int i = 0; i < num; i++) {
 				String val = mIn.readLine();
-				if (LOG_PROTOCOL)
+				if (LOG_PROTOCOL) {
 					Log.i(TAG, "Received: " + val);
+				}
 
 				sensorValues[i] = Float.parseFloat(val);
 				if (val.length() == 13) {
@@ -704,10 +705,9 @@ final class SensorSimulatorClient {
 
 		try {
 			String numstr = mIn.readLine();
-			if (numstr.compareTo("throw IllegalArgumentException") == 0) {
+			if (numstr.compareTo("throw IllegalArgumentException") == 0)
 				throw new IllegalArgumentException("Sensor '" + sensor
 						+ "' is not supported.");
-			}
 		} catch (IOException e) {
 			System.err
 					.println("Couldn't get I/O for the connection to: x.x.x.x.");
@@ -716,16 +716,15 @@ final class SensorSimulatorClient {
 	}
 
 	protected void unsetSensorUpdateRate(String sensor) {
-		mOut.println("unsetSensorUpdateRate()");
-		mOut.println(sensor);
-
 		try {
+			mOut.println("unsetSensorUpdateRate()");
+			mOut.println(sensor);
+
 			String numstr = mIn.readLine();
-			if (numstr.compareTo("throw IllegalArgumentException") == 0) {
+			if (numstr.compareTo("throw IllegalArgumentException") == 0)
 				throw new IllegalArgumentException("Sensor '" + sensor
 						+ "' is not supported.");
-			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			System.err
 					.println("Couldn't get I/O for the connection to: x.x.x.x.");
 			System.exit(1);

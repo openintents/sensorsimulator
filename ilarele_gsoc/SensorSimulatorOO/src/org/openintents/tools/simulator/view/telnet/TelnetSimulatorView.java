@@ -18,6 +18,7 @@ package org.openintents.tools.simulator.view.telnet;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 
@@ -30,6 +31,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.telnet.TelnetSimulatorModel;
@@ -56,12 +59,12 @@ public class TelnetSimulatorView extends JPanel {
 	public TelnetSimulatorView(TelnetSimulatorModel model) {
 		gpsAddonView = new GPSAddonView(model.getGpsAddon());
 		batteryAddonView = new BatteryAddonView(model.getBatteryAddon());
-
+		setLayout(new BorderLayout());
 		// split [left|right]
-		JPanel leftPanel = fillLeftPanel(model);
+		JPanel connectPanel = fillConnectPanel(model);
 		JTabbedPane rightPanel = fillRightPanel(model);
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				leftPanel, rightPanel);
+				connectPanel, rightPanel);
 		splitPane.setResizeWeight(Global.SENSOR_SPLIT_LEFT);
 		add(splitPane);
 
@@ -85,7 +88,7 @@ public class TelnetSimulatorView extends JPanel {
 
 		JPanel batteryCapacityPanel = new JPanel(new BorderLayout());
 
-		JLabel batteryLabel = new JLabel("Charged", JLabel.CENTER);
+		JLabel batteryLabel = new JLabel("Charged", SwingConstants.CENTER);
 		batteryLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		batteryCapacityPanel.add(batteryLabel, BorderLayout.LINE_START);
@@ -102,7 +105,7 @@ public class TelnetSimulatorView extends JPanel {
 		JScrollPane telnetSettingsScrollPane = new JScrollPane(
 				telnetSettingsPanel);
 		telnetSettingsScrollPane
-				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
 		// Now add neccesary things for battery simulation
 		JPanel batteryPanel = new JPanel();
@@ -172,24 +175,29 @@ public class TelnetSimulatorView extends JPanel {
 		return gpsPanel;
 	}
 
-	private JPanel fillLeftPanel(TelnetSimulatorModel model) {
+	private JPanel fillConnectPanel(TelnetSimulatorModel model) {
 		// telnet JLabel, text field and button
 
 		JPanel connectPanel = new JPanel();
+		connectPanel.setPreferredSize(new Dimension(
+				(int) (Global.W_FRAME * (Global.SENSOR_SPLIT_LEFT - 0.03)),
+				Global.H_CONTENT));
+		// connectPanel.setLayout(new BoxLayout(connectPanel,
+		// BoxLayout.X_AXIS));
+		// first row
 		Font fontNotify = new Font("SansSerif", Font.BOLD, 12);
-
-		JLabel telnetSocketLabel = new JLabel("Telnet socket port", JLabel.LEFT);
+		JLabel telnetSocketLabel = new JLabel("Telnet socket port",
+				SwingConstants.LEFT);
 		telnetSocketLabel.setFont(fontNotify);
-		telnetSocketLabel.setForeground(Global.COLOR_NOTIFY);
 		connectPanel.add(telnetSocketLabel);
 
 		telnetSocketText = new JTextField(5);
 		telnetSocketText.setText("" + model.getPort());
 		connectPanel.add(telnetSocketText);
 
+		// second row
 		telnetSocketButton = new JButton("Connect");
 		telnetSocketButton.setFont(fontNotify);
-		telnetSocketButton.setForeground(Global.COLOR_NOTIFY);
 		connectPanel.add(telnetSocketButton);
 
 		return connectPanel;

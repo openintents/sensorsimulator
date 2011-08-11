@@ -49,7 +49,7 @@ public class AccelerometerModel extends SensorModel {
 	 */
 	private double mAccelX;
 	/** Internal state value of accelerometer x-component. */
-	private double mAaccelY;
+	private double mAccelY;
 	/** Internal state value of accelerometer x-component. */
 	private double mAccelZ;
 
@@ -131,7 +131,7 @@ public class AccelerometerModel extends SensorModel {
 
 	public void setXYZ(Vector vec) {
 		mAccelX = vec.x;
-		mAaccelY = vec.y;
+		mAccelY = vec.y;
 		mAccelZ = vec.z;
 	}
 
@@ -141,30 +141,36 @@ public class AccelerometerModel extends SensorModel {
 		mAccelX += (2 * val - 1) * random;
 
 		val = mRandomGenerator.nextDouble();
-		mAaccelY += (2 * val - 1) * random;
+		mAccelY += (2 * val - 1) * random;
 
 		val = mRandomGenerator.nextDouble();
 		mAccelZ += (2 * val - 1) * random;
 	}
 
 	public void limitate(double limit) {
-		if (mAccelX > limit)
+		if (mAccelX > limit) {
 			mAccelX = limit;
-		if (mAccelX < -limit)
+		}
+		if (mAccelX < -limit) {
 			mAccelX = -limit;
-		if (mAaccelY > limit)
-			mAaccelY = limit;
-		if (mAaccelY < -limit)
-			mAaccelY = -limit;
-		if (mAccelZ > limit)
+		}
+		if (mAccelY > limit) {
+			mAccelY = limit;
+		}
+		if (mAccelY < -limit) {
+			mAccelY = -limit;
+		}
+		if (mAccelZ > limit) {
 			mAccelZ = limit;
-		if (mAccelZ < -limit)
+		}
+		if (mAccelZ < -limit) {
 			mAccelZ = -limit;
+		}
 	}
 
 	public void reset() {
 		mAccelX = 0;
-		mAaccelY = 0;
+		mAccelY = 0;
 		mAccelZ = 0;
 	}
 
@@ -174,7 +180,7 @@ public class AccelerometerModel extends SensorModel {
 		// Form the average
 		if (mAverage) {
 			mPartialAccelX += mAccelX;
-			mPartialAccelY += mAaccelY;
+			mPartialAccelY += mAccelY;
 			mPartialAccelZ += mAccelZ;
 			mPartialAccelN++;
 		}
@@ -197,7 +203,7 @@ public class AccelerometerModel extends SensorModel {
 			} else {
 				// Only take current value
 				mReadAccelx = mAccelX;
-				mReadAccely = mAaccelY;
+				mReadAccely = mAccelY;
 				mReadAccelz = mAccelZ;
 			}
 		}
@@ -221,7 +227,7 @@ public class AccelerometerModel extends SensorModel {
 	}
 
 	public double getAccely() {
-		return mAaccelY;
+		return mAccelY;
 	}
 
 	public double getAccelz() {
@@ -381,5 +387,12 @@ public class AccelerometerModel extends SensorModel {
 
 	public double getAz() {
 		return aZ;
+	}
+
+	public void setAccelerometer(float[] newAcc) {
+		mAccelX = newAcc[0];
+		mAccelY = newAcc[1];
+		mAccelZ = newAcc[2];
+
 	}
 }

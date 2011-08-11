@@ -7,9 +7,6 @@ import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 
 public class SensorsScenarioModel {
 
-	public static final double MAX_TIME = 1000;
-	public static final double MIN_TIME = 0.5;
-
 	private ArrayList<StateModel> mStates;
 	private SensorSimulatorModel mSensorSimulator;
 
@@ -19,7 +16,7 @@ public class SensorsScenarioModel {
 
 	public void setSensorSimulatorModel(
 			SensorSimulatorModel sensorSimulatorModel) {
-		this.mSensorSimulator = sensorSimulatorModel;
+		mSensorSimulator = sensorSimulatorModel;
 	}
 
 	public ArrayList<StateModel> getStates() {
@@ -34,23 +31,22 @@ public class SensorsScenarioModel {
 		mStates.remove(model);
 	}
 
-	public void add(StateModel model) {
-		mStates.add(model);
+	public void add(int position, StateModel model) {
+		mStates.add(position, model);
 	}
 
 	public SensorSimulatorModel getSensorSimulatorModel() {
 		return mSensorSimulator;
 	}
 
-	public StateModel getNextState(int index) {
+	public StateModel getState(int index) {
 		if (index < mStates.size())
 			return mStates.get(index);
 		return null;
 	}
 
-	public void setPrevTimeDistance(float time) {
-		if (mStates.size() > 0) {
-			mStates.get(mStates.size() - 1).setTime(time);
-		}
+	public void add(StateModel stateModel) {
+		int position = mStates.size();
+		add(position, stateModel);
 	}
 }

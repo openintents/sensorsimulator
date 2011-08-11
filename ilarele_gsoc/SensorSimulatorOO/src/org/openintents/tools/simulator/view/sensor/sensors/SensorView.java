@@ -44,6 +44,8 @@ import javax.swing.SwingConstants;
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.util.HtmlTextPane;
+import org.openintents.tools.simulator.view.gui.util.DefaultButton;
+import org.openintents.tools.simulator.view.gui.util.SensorButton;
 import org.openintents.tools.simulator.view.help.HelpWindow;
 
 /**
@@ -58,7 +60,7 @@ public abstract class SensorView extends JScrollPane {
 	private static final String EMPTY_LABEL = "                 -                ";
 	private static Random rand = new Random();
 
-	protected JButton mEnabled;
+	protected DefaultButton mEnabled;
 	private HelpWindow helpWindow;
 
 	// Simulation update
@@ -77,17 +79,19 @@ public abstract class SensorView extends JScrollPane {
 	private JPanel mInsidePanel;
 	private JButton helpBtn;
 	private JPanel mQuickSettingsParent;
+	private SensorButton mSensorButton;
 
 	public SensorView(SensorModel model) {
-		this.mModel = model;
+		mModel = model;
 		setPreferredSize(new Dimension(
-				(int) (Global.WIDTH * Global.SENSOR_SPLIT_RIGHT),
-				(int) (Global.HEIGHT * Global.SENSOR_SPLIT_UP)));
-		mEnabled = new JButton(model.getName());
-		if (model.isEnabled())
-			mEnabled.setBackground(Global.COLOR_ENABLE);
-		else
+				(int) (Global.W_FRAME * Global.SENSOR_SPLIT_RIGHT),
+				Global.H_CONTENT));
+		mEnabled = new DefaultButton(model.getName());
+		if (model.isEnabled()) {
+			mEnabled.setBackground(Global.COLOR_ENABLE_BLUE);
+		} else {
 			mEnabled.setBackground(Global.COLOR_DISABLE);
+		}
 
 		mCurrentUpdateRateText = new JLabel();
 
@@ -166,10 +170,11 @@ public abstract class SensorView extends JScrollPane {
 		return mEnabled.isSelected();
 	}
 
+	@Override
 	public void setEnabled(boolean enabled) {
 		if (enabled) {
 			mQuickSettingsParent.add(getQuickSettingsPanel());
-			mEnabled.setBackground(Global.COLOR_ENABLE);
+			mEnabled.setBackground(Global.COLOR_ENABLE_BLUE);
 		} else {
 			mEnabled.setBackground(Global.COLOR_DISABLE);
 			mQuickSettingsParent.remove(getQuickSettingsPanel());
@@ -275,7 +280,7 @@ public abstract class SensorView extends JScrollPane {
 						BorderFactory.createEmptyBorder(0, 0, 0, 0),
 						"Update delay"), BorderFactory.createMatteBorder(2, 0,
 				0, 0, Color.GRAY)));
-		JLabel nameLabel = new JLabel("Default: ", JLabel.LEFT);
+		JLabel nameLabel = new JLabel("Default: ", SwingConstants.LEFT);
 		layout.gridwidth = 1;
 		layout.gridx = 0;
 		layout.gridy = 0;
@@ -285,7 +290,7 @@ public abstract class SensorView extends JScrollPane {
 		layout.gridx = 1;
 		resultPanel.add(mDefaultUpdateRateText, layout);
 
-		nameLabel = new JLabel("Current: ", JLabel.LEFT);
+		nameLabel = new JLabel("Current: ", SwingConstants.LEFT);
 		layout.gridwidth = 1;
 		layout.gridx = 0;
 		layout.gridy++;
@@ -333,7 +338,7 @@ public abstract class SensorView extends JScrollPane {
 		layout.gridx = 0;
 		resultPanel.add(mRandomText, layout);
 
-		JLabel label = new JLabel(" " + mModel.getSI(), JLabel.LEFT);
+		JLabel label = new JLabel(" " + mModel.getSI(), SwingConstants.LEFT);
 		layout.gridx = 1;
 		resultPanel.add(label, layout);
 		return resultPanel;
@@ -526,5 +531,13 @@ public abstract class SensorView extends JScrollPane {
 
 	public void setQuickSettingsPanel(JPanel result) {
 		mQuickSettingsParent = result;
+	}
+
+	public SensorButton getSensorButton() {
+		return mSensorButton;
+	}
+
+	public void setButton(SensorButton sensorButton) {
+		mSensorButton = sensorButton;
 	}
 }

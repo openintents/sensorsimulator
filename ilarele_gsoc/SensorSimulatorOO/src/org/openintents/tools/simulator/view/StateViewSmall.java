@@ -2,16 +2,9 @@ package org.openintents.tools.simulator.view;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-
 import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.text.NumberFormatter;
-
 import org.openintents.tools.simulator.Global;
-import org.openintents.tools.simulator.model.SensorsScenarioModel;
 import org.openintents.tools.simulator.model.StateModel;
 
 public class StateViewSmall extends JPanel {
@@ -20,10 +13,9 @@ public class StateViewSmall extends JPanel {
 	private JButton mDeleteBtn;
 	private JButton mAddBtn;
 	private JButton mEditBtn;
-	private JSpinner mTransitionTime;
 
 	public StateViewSmall(StateModel stateModel) {
-		this.mModel = stateModel;
+		mModel = stateModel;
 		fillLayout();
 	}
 
@@ -52,23 +44,10 @@ public class StateViewSmall extends JPanel {
 
 	private JPanel fillMainPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
-		DevicePanel devicePanel = new DevicePanel(Global.DEVICE_WIDTH_SMALL,
-				Global.DEVICE_HEIGHT_SMALL, mModel);
+		DevicePanel devicePanel = new DevicePanel(Global.W_DEVICE_SMALL,
+				Global.H_DEVICE_SMALL, mModel);
 		panel.add(devicePanel, BorderLayout.CENTER);
 		panel.setMinimumSize(devicePanel.getPreferredSize());
-
-		// down spinner
-		mTransitionTime = new JSpinner();
-		mTransitionTime.setModel(new SpinnerNumberModel(mModel.getTime(),
-				SensorsScenarioModel.MIN_TIME, SensorsScenarioModel.MAX_TIME,
-				0.5));
-		mTransitionTime.setEditor(new JSpinner.NumberEditor(mTransitionTime,
-				"##.#"));
-		JFormattedTextField txt = ((JSpinner.NumberEditor) mTransitionTime
-				.getEditor()).getTextField();
-		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
-
-		panel.add(mTransitionTime, BorderLayout.SOUTH);
 		return panel;
 	}
 
@@ -83,9 +62,4 @@ public class StateViewSmall extends JPanel {
 	public JButton getAddBtn() {
 		return mAddBtn;
 	}
-
-	public JSpinner getTransitionSpinner() {
-		return mTransitionTime;
-	}
-
 }

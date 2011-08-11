@@ -230,18 +230,24 @@ public class LinearAccelerationModel extends SensorModel {
 	}
 
 	public void limitate(double limit) {
-		if (mAccelX > limit)
+		if (mAccelX > limit) {
 			mAccelX = limit;
-		if (mAccelX < -limit)
+		}
+		if (mAccelX < -limit) {
 			mAccelX = -limit;
-		if (mAccelY > limit)
+		}
+		if (mAccelY > limit) {
 			mAccelY = limit;
-		if (mAccelY < -limit)
+		}
+		if (mAccelY < -limit) {
 			mAccelY = -limit;
-		if (mAccelZ > limit)
+		}
+		if (mAccelZ > limit) {
 			mAccelZ = limit;
-		if (mAccelZ < -limit)
+		}
+		if (mAccelZ < -limit) {
 			mAccelZ = -limit;
+		}
 	}
 
 	public int getMoveZ() {
@@ -258,5 +264,11 @@ public class LinearAccelerationModel extends SensorModel {
 
 	public void setMoveX(int newmovex) {
 		mMoveX = newmovex;
+	}
+
+	public void setLinearAcceleration(float[] newValue) {
+		mAccelX = newValue[0];
+		mAccelY = newValue[1];
+		mAccelZ = newValue[2];
 	}
 }

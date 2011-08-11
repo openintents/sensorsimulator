@@ -26,10 +26,12 @@
 
 package org.openintents.tools.simulator.view.sensor;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.geom.Line2D;
 
 import javax.swing.ButtonGroup;
@@ -112,6 +114,8 @@ public class DeviceView extends JPanel {
 	private JRadioButton mMoveButton;
 	private JRadioButton mYawPitchButton;
 
+	private Stroke mStroke;
+
 	// File usage
 
 	/**
@@ -121,7 +125,7 @@ public class DeviceView extends JPanel {
 	 *            , SensorSimulator that needs MobilePanel in it's frame.
 	 */
 	public DeviceView(SensorSimulatorModel model) {
-		this.mSensorSimulatorModel = model;
+		mSensorSimulatorModel = model;
 
 		SpringLayout layout = new SpringLayout();
 		setLayout(layout);
@@ -159,6 +163,7 @@ public class DeviceView extends JPanel {
 				SpringLayout.EAST, mRollPitchButton);
 
 		setDoubleBuffered(true);
+		mStroke = new BasicStroke(2);
 	}
 
 	/**
@@ -166,7 +171,7 @@ public class DeviceView extends JPanel {
 	 */
 	@Override
 	public Dimension getPreferredSize() {
-		return new Dimension(Global.DEVICE_WIDTH, Global.DEVICE_HEIGHT);
+		return new Dimension(Global.W_DEVICE, Global.H_DEVICE);
 	}
 
 	/**
@@ -181,15 +186,18 @@ public class DeviceView extends JPanel {
 		AccelerometerModel accelerometer = mSensorSimulatorModel
 				.getAccelerometer();
 		Graphics2D g2 = (Graphics2D) graphics;
+		g2.setStroke(mStroke);
 		// draw Line2D.Double
 		double centerx = Global.DEVICE_CENTER_X;
 		double centery = Global.DEVICE_CENTER_Y;
 		double centerz = Global.DEVICE_CENTER_Z;
 		for (int i = 0; i < phone.length; i += 2) {
-			if (i == 0)
-				g2.setColor(Color.RED);
-			if (i == 24)
-				g2.setColor(Color.BLUE);
+			if (i == 0) {
+				g2.setColor(Global.COLOR_ENABLE_BLUE);
+			}
+			if (i == 24) {
+				g2.setColor(Global.COLOR_ENABLE_GREEN);
+			}
 
 			Vector v1 = new Vector(phone[i]);
 			Vector v2 = new Vector(phone[i + 1]);

@@ -146,15 +146,15 @@ public class GyroscopeModel extends SensorModel {
 	}
 
 	public void reset() {
+		mInstantSpeedPitch = 0;
 		mInstantSpeedYaw = 0;
 		mInstantSpeedRoll = 0;
-		mInstantSpeedPitch = 0;
 	}
 
 	public void setXYZ(Vector vec) {
-		mInstantSpeedYaw = vec.x;
-		mInstantSpeedRoll = vec.y;
-		mInstantSpeedPitch = vec.z;
+		mInstantSpeedPitch = vec.x;
+		mInstantSpeedYaw = vec.y;
+		mInstantSpeedRoll = vec.z;
 	}
 
 	public void refreshAngularSpeed(double dt, double crtPitch, double crtYaw,
@@ -174,8 +174,9 @@ public class GyroscopeModel extends SensorModel {
 			double tangentialSpeed = distanceYawRadians / dt;
 			mInstantSpeedYaw = tangentialSpeed / mRadiusYaw;
 			mOldYaw += distanceYawDegrees / 20;
-		} else
+		} else {
 			mInstantSpeedYaw = 0;
+		}
 
 		if (Math.abs(crtPitch - mOldPitch) > EPSILON) {
 			double distancePitchDegrees = crtPitch - mOldPitch;
@@ -184,8 +185,9 @@ public class GyroscopeModel extends SensorModel {
 			double tangentialSpeed = distancePitchRadians / dt;
 			mInstantSpeedPitch = tangentialSpeed / mRadiusPitch;
 			mOldPitch += distancePitchDegrees / 20;
-		} else
+		} else {
 			mInstantSpeedPitch = 0;
+		}
 
 		if (Math.abs(crtRoll - mOldRoll) > EPSILON) {
 			double distanceRollDegrees = crtRoll - mOldRoll;
@@ -194,8 +196,9 @@ public class GyroscopeModel extends SensorModel {
 			double tangentialSpeed = distanceRollRadians / dt;
 			mInstantSpeedRoll = tangentialSpeed / mRadiusRoll;
 			mOldRoll += distanceRollDegrees / 20;
-		} else
+		} else {
 			mInstantSpeedRoll = 0;
+		}
 	}
 
 	public void addRandom(double random) {
@@ -219,6 +222,12 @@ public class GyroscopeModel extends SensorModel {
 	public double getGravityConstant() {
 		// TODO
 		return 9.8;
+	}
+
+	public void setGyroscope(float[] newValue) {
+		mInstantSpeedPitch = newValue[0];
+		mInstantSpeedYaw = newValue[1];
+		mInstantSpeedRoll = newValue[2];
 	}
 
 }

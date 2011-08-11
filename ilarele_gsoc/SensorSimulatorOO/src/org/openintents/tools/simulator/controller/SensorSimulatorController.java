@@ -32,9 +32,10 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.swing.JButton;
-import javax.swing.JTabbedPane;
+import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import org.openintents.tools.simulator.Global;
@@ -59,6 +60,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.util.Interpolate;
 import org.openintents.tools.simulator.view.SensorsScenarioView;
 import org.openintents.tools.simulator.view.sensor.DeviceView;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
@@ -92,13 +94,19 @@ public class SensorSimulatorController implements WindowListener {
 	private Object mStateLock = new Object();
 
 	private long mScenarioTime = 0;
+	private long mScenarioInterpolatedTime = 0;
 	private int mStartPosition = -1;
 	private int mCrtPosition = -1;
 	private int mStopPosition = -1;
 	private boolean mIsLooping = false;
+	private float mSavingTimeInterval = 0.5f;
+	private float mInterpolationTimeInterval = 0.1f;
+	private ArrayList<StateModel> mInterpolatedStates = new ArrayList<StateModel>();
+	private int mCrtInterpolationPosition;
+	private int mNumberOfIntermediarStates;
 
 	// a list with all sensors' controllers
-	private ArrayList<SensorController> mSensors;
+	private Vector<SensorController> mSensors;
 
 	// mobile device (orientation sensor - visual representation) controller
 	private DeviceController mDeviceController;
@@ -111,13 +119,12 @@ public class SensorSimulatorController implements WindowListener {
 
 	private AllSensorsController mSensorTabController;
 	private SensorsScenario mScenario;
-	private float mNextStateTime; // time in seconds
 
 	public SensorSimulatorController(final SensorSimulatorModel model,
 			final SensorSimulatorView view) {
-		this.mSensorSimulatorModel = model;
-		this.mSensorSimulatorView = view;
-		mSensors = new ArrayList<SensorController>();
+		mSensorSimulatorModel = model;
+		mSensorSimulatorView = view;
+		mSensors = new Vector<SensorController>();
 
 		DeviceView deviceView = view.getDeviceView();
 		mDeviceController = new DeviceController(mSensors, deviceView);
@@ -160,7 +167,7 @@ public class SensorSimulatorController implements WindowListener {
 		});
 
 		// set tabs for each sensor
-		JTabbedPane tabbedPanel = view.getSensorsTabbedPanel();
+		JPanel tabbedPanel = view.getSensorsButtonsPanel();
 		for (final SensorController sensorCtrl : mSensors) {
 			sensorCtrl.setTab(tabbedPanel);
 		}
@@ -177,131 +184,150 @@ public class SensorSimulatorController implements WindowListener {
 	}
 
 	private void doTimer() {
-		switch (mSimulatorState) {
-		case NORMAL: {
-			OrientationModel orientation = (OrientationModel) mSensors.get(
-					SensorModel.POZ_ORIENTATION).getModel();
-			AccelerometerModel acc = (AccelerometerModel) mSensors.get(
-					SensorModel.POZ_ACCELEROMETER).getModel();
-			WiiAccelerometerModel wiiAccelerometerModel = acc
-					.getRealDeviceBridgeAddon();
+		synchronized (mStateLock) {
+			switch (mSimulatorState) {
+			case NORMAL: {
+				OrientationModel orientation = (OrientationModel) mSensors.get(
+						SensorModel.POZ_ORIENTATION).getModel();
+				AccelerometerModel acc = (AccelerometerModel) mSensors.get(
+						SensorModel.POZ_ACCELEROMETER).getModel();
+				WiiAccelerometerModel wiiAccelerometerModel = acc
+						.getRealDeviceBridgeAddon();
 
-			if (wiiAccelerometerModel.isUsed()) {
-				updateFromWiimote();
-			}
+				if (wiiAccelerometerModel.isUsed()) {
+					updateFromWiimote();
+				}
 
-			int newDelay = (int) mSensorSimulatorView.getUpdateSensors();
-			if (newDelay > 0) {
-				setDelay(newDelay);
-			}
+				int newDelay = (int) mSensorSimulatorView.getUpdateSensors();
+				if (newDelay > 0) {
+					setDelay(newDelay);
+				}
 
-			// Update sensors:
-			for (SensorController sensorCtrl : mSensors) {
-				sensorCtrl.updateSensorPhysics(orientation,
-						wiiAccelerometerModel, newDelay);
-			}
-			for (SensorController sensorCtrl : mSensors) {
-				sensorCtrl.getModel().updateSensorReadoutValues();
-			}
-
-			long currentTime = System.currentTimeMillis();
-			// From time to time we get the user settings:
-			if (currentTime >= mSensorSimulatorModel.getNextUpdate()) {
-				// Do update
-				mSensorSimulatorModel.addNextUpdate(mSensorSimulatorModel
-						.getDuration());
-				if (mSensorSimulatorModel.getNextUpdate() < currentTime) {
-					// Skip time if we are already behind:
-					mSensorSimulatorModel.setNextUpdate(System
-							.currentTimeMillis());
+				// Update sensors:
+				for (SensorController sensorCtrl : mSensors) {
+					sensorCtrl.updateSensorPhysics(orientation,
+							wiiAccelerometerModel, newDelay);
 				}
 				for (SensorController sensorCtrl : mSensors) {
-					sensorCtrl.updateUserSettings();
-				}
-			}
-		}
-			break;
-		case PLAY: {
-			// take from scenario
-			SensorsScenario scenario = mSensorSimulatorModel.getScenario();
-			for (SensorController sensorCtrl : mSensors) {
-				sensorCtrl.getModel().updateSensorReadoutValues();
-			}
-			// if it is time for the next state
-			if (Global.INTERPOLATION_DISTANCE * Global.MS_IN_SECOND < (System
-					.currentTimeMillis() - mScenarioTime)) {
-				// get next state
-				if (mCrtPosition > mStopPosition) {
-					if (!mIsLooping) {
-						switchState(STOP, -1, -1, false);
-						break;
-					} else
-						mCrtPosition = mStartPosition;
+					sensorCtrl.getModel().updateSensorReadoutValues();
 				}
 
-				StateModel nextState = scenario.model
-						.getNextState(mCrtPosition);
-				mCrtPosition++;
-				if (nextState != null) {
-					// load the next state in the model
-					mSensorSimulatorModel.loadState(nextState);
+				long currentTime = System.currentTimeMillis();
+				// From time to time we get the user settings:
+				if (currentTime >= mSensorSimulatorModel.getNextUpdate()) {
+					// Do update
+					mSensorSimulatorModel.addNextUpdate(mSensorSimulatorModel
+							.getDuration());
+					if (mSensorSimulatorModel.getNextUpdate() < currentTime) {
+						// Skip time if we are already behind:
+						mSensorSimulatorModel.setNextUpdate(System
+								.currentTimeMillis());
+					}
+					for (SensorController sensorCtrl : mSensors) {
+						sensorCtrl.updateUserSettings();
+					}
+				}
+			}
+				break;
+			case PLAY: {
+				// take from scenario
+				SensorsScenario scenario = mScenario;
+				for (SensorController sensorCtrl : mSensors) {
+					sensorCtrl.getModel().updateSensorReadoutValues();
+				}
+
+				float limitMainStates = mSavingTimeInterval
+						* Global.MS_IN_SECOND;
+				float limitInterpolatedStates = mInterpolationTimeInterval
+						* Global.MS_IN_SECOND;
+				float passedScenarioTime = System.currentTimeMillis()
+						- mScenarioTime;
+				float passedInterpolatedTime = System.currentTimeMillis()
+						- mScenarioInterpolatedTime;
+				// check first if we should go to the next main state
+				if (passedScenarioTime > limitMainStates) {
+					// get next main state
+					StateModel crtState = scenario.model.getState(mCrtPosition);
+					if (crtState != null) {
+						// load the next state in the model
+						loadStateIntoTheModel(crtState, mCrtPosition);
+					}
+
+					// check if we should stop
+					if (mCrtPosition == mStopPosition) {
+						if (!mIsLooping) {
+							switchState(NORMAL, mStartPosition, mStopPosition,
+									false);
+							break;
+						} else {
+							mCrtPosition = mStartPosition;
+						}
+					} else {
+						// there are more states => generate interpolated states
+						StateModel nextState = scenario.model
+								.getState(mCrtPosition + 1);
+						mInterpolatedStates = Interpolate
+								.getIntermediateStates(crtState, nextState,
+										mNumberOfIntermediarStates);
+						mCrtInterpolationPosition = 0;
+					}
 
 					// update time
-					mScenarioTime += (long) (Global.INTERPOLATION_DISTANCE * Global.MS_IN_SECOND);
-				} else {
-					switchState(STOP, -1, -1, false);
+					mCrtPosition++;
+					mScenarioTime = System.currentTimeMillis();
+				} else if (passedInterpolatedTime > limitInterpolatedStates
+						&& mCrtInterpolationPosition < mInterpolatedStates
+								.size()) {
+					// if we should go to the next secondary state
+					StateModel interpolatedState = mInterpolatedStates
+							.get(mCrtInterpolationPosition);
+					loadStateIntoTheModel(interpolatedState);
+					mScenarioInterpolatedTime = System.currentTimeMillis();
+					mCrtInterpolationPosition++;
 				}
 			}
-
-		}
-			break;
-		case PAUSE: {
-			mScenarioTime = System.currentTimeMillis();
-		}
-			break;
-		case STOP: {
-			switchState(NORMAL, -1, -1, false);
-		}
-			break;
-		case RECORD: {
-			for (SensorController sensorCtrl : mSensors) {
-				sensorCtrl.getModel().updateSensorReadoutValues();
+				break;
+			case STOP: {
+				mScenario.view.setCrtState(mStartPosition);
+				switchState(NORMAL, mStartPosition, mStopPosition, false);
+				mScenario.view.revalidate();
+				mScenario.view.repaint();
 			}
-
-			// if it is time for the next state from recording
-			if (Global.INTERPOLATION_DISTANCE * Global.MS_IN_SECOND < (System
-					.currentTimeMillis() - mScenarioTime)) {
-				SensorsScenarioModel scenarioModel = mScenario.model;
-				SensorsScenarioView scenarioView = mScenario.view;
-
-				Hashtable<Integer, float[]> nextStateHashTable = mScenario.controller
-						.getRecordedSensors();
-				// get next state
-				StateModel nextState = StateModel
-						.fromHashTable(nextStateHashTable);
-				if (nextState != null) {
-					scenarioModel.setPrevTimeDistance(mNextStateTime);
-					scenarioView.updateTime(mNextStateTime);
-					mNextStateTime = 0;
-					// empty hashTable
-					nextStateHashTable.clear();
-
-					// load the next state in the model
-					mSensorSimulatorModel.loadState(nextState);
-
-					// add the next state in the scenario
-					scenarioModel.add(nextState);
-					scenarioView.addView(nextState);
-				} else
-					mNextStateTime += Global.INTERPOLATION_DISTANCE;
-
-				// update time
-				mScenarioTime += (long) (Global.INTERPOLATION_DISTANCE * Global.MS_IN_SECOND);
+				break;
+			case PAUSE: {
+				// mScenarioTime = System.currentTimeMillis();
 			}
+				break;
+			case RECORD: {
+				for (SensorController sensorCtrl : mSensors) {
+					sensorCtrl.getModel().updateSensorReadoutValues();
+				}
 
-		}
-			break;
+				// if it is time for the next state from recording
+				if (mSavingTimeInterval * Global.MS_IN_SECOND < (System
+						.currentTimeMillis() - mScenarioTime)) {
+					SensorsScenarioModel scenarioModel = mScenario.model;
+					SensorsScenarioView scenarioView = mScenario.view;
 
+					Hashtable<Integer, float[]> nextStateHashTable = mScenario.controller
+							.getRecordedSensors();
+					// get next state
+					StateModel nextState = StateModel
+							.fromHashTable(nextStateHashTable);
+					if (nextState != null) {
+						// load the next state in the model
+						mSensorSimulatorModel.loadState(nextState);
+
+						// add the next state in the scenario
+						scenarioModel.add(nextState);
+						scenarioView.addView(nextState);
+					}
+					// update time
+					mScenarioTime = System.currentTimeMillis();
+				}
+			}
+				break;
+			}
 		}
 
 		// Measure refresh
@@ -315,21 +341,53 @@ public class SensorSimulatorController implements WindowListener {
 		mSensorSimulatorView.setOutput(newData.toString());
 
 		synchronized (mStateLock) {
-			if (mSimulatorState != mToSwitchState)
+			if (mSimulatorState != mToSwitchState) {
 				mSimulatorState = mToSwitchState;
+			}
+		}
+	}
+
+	private void loadStateIntoTheModel(StateModel state) {
+		loadStateIntoTheModel(state, -1, false);
+	}
+
+	private void loadStateIntoTheModel(StateModel state, int position) {
+		loadStateIntoTheModel(state, position, true);
+	}
+
+	private void loadStateIntoTheModel(StateModel state, int position,
+			boolean isMainState) {
+		mSensorSimulatorModel.loadState(state);
+		mSensorSimulatorView.invalidateDevice();
+		if (isMainState) {
+			mScenario.view.setCrtState(position);
 		}
 	}
 
 	public void switchState(int newState, int start, int stop, boolean isLooping) {
+		switchState(newState, start, stop, isLooping, 0, 0);
+	}
+
+	public void switchState(int newState, int start, int stop,
+			boolean isLooping, float savingInterval, float interpolationInterval) {
+
 		synchronized (mStateLock) {
-			mStartPosition = mCrtPosition = start;
-			mStopPosition = stop;
-			mIsLooping = isLooping;
+			// if id not resume, reset the current cursor
+			if (newState == PLAY && mToSwitchState != PAUSE) {
+				mStartPosition = mCrtPosition = start;
+				mStopPosition = stop;
+				mIsLooping = isLooping;
+				mSavingTimeInterval = savingInterval;
+				mInterpolationTimeInterval = interpolationInterval;
+				mNumberOfIntermediarStates = (int) (mSavingTimeInterval / mInterpolationTimeInterval) - 1;
+				if (mNumberOfIntermediarStates < 0) {
+					mNumberOfIntermediarStates = 0;
+				}
+			}
+
 			mToSwitchState = newState;
-			mNextStateTime = 0;
 			mScenarioTime = System.currentTimeMillis();
-			if (start < 0 || stop < 0 || stop < start)
-				mToSwitchState = NORMAL;
+			mScenarioInterpolatedTime = System.currentTimeMillis();
 		}
 	}
 
@@ -382,6 +440,7 @@ public class SensorSimulatorController implements WindowListener {
 		mUpdateTimer.stop();
 	}
 
+	@Override
 	public void windowDeiconified(WindowEvent e) {
 		mUpdateTimer.start();
 	}
@@ -470,4 +529,13 @@ public class SensorSimulatorController implements WindowListener {
 	public int getState() {
 		return mSimulatorState;
 	}
+
+	public float getSavingTime() {
+		return mSensorSimulatorView.getSavingTime();
+	}
+
+	public float getInterpolationTime() {
+		return mSensorSimulatorView.getInterpolationTime();
+	}
+
 }

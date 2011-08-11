@@ -17,6 +17,7 @@
 package org.openintents.tools.simulator;
 
 import org.openintents.tools.simulator.controller.SensorSimulatorController;
+import org.openintents.tools.simulator.main.SensorSimulatorMain;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 
@@ -40,14 +41,21 @@ public class SensorSimulator {
 	public SensorSimulatorController controller;
 
 	public SensorsScenario scenario;
+	private SensorSimulatorMain mMain;
 
-	public SensorSimulator() {
+	public SensorSimulator(SensorSimulatorMain main) {
+		mMain = main;
+
 		scenario = new SensorsScenario();
 		model = new SensorSimulatorModel(this);
 		view = new SensorSimulatorView(model);
 		controller = new SensorSimulatorController(model, view);
-
 		scenario.setSimulator(this);
+
+	}
+
+	public void printStatus(String status) {
+		mMain.printStatus(status);
 	}
 
 	public void addMessage(String string) {

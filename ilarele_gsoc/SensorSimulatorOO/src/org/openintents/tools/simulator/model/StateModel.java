@@ -6,14 +6,18 @@ import java.util.Map.Entry;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
+import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.GravityModel;
+import org.openintents.tools.simulator.model.sensor.sensors.GyroscopeModel;
 import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationModel;
+import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
+import org.openintents.tools.simulator.model.sensor.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.util.Vector3f;
 
 public class StateModel {
 
-	private float mTime;
 	// sensors supported for interpolation
 	private float mTemperature;
 	private float mLight;
@@ -21,36 +25,31 @@ public class StateModel {
 	private float mPressure;
 	private float[] mGravity;
 	private float[] mLinearAcceleration;
-
-	// not supported for interpolation
 	// yaw, pitch, roll
 	private float[] mOrientation;
-
-	// x, y, z
-	// private float[] mAccelerometer;
-
-	// mLight
-	// mProximity
-	// mTemperature
-	// mGravity
+	private float[] mAccelerometer;
+	private float[] mMagneticField;
+	private float[] mRotationVector;
+	private float[] mGyroscope;
 
 	public StateModel(StateModel model) {
-		this.mTime = 0.5f;
-		this.mTemperature = model.getTemperature();
-		this.mLight = model.getLight();
-		this.mProximity = model.getProximity();
-		this.mPressure = model.getPressure();
-		this.mGravity = model.getGravity().clone();
-		this.mLinearAcceleration = model.getLinearAcceleration().clone();
+		mTemperature = model.getTemperature();
+		mLight = model.getLight();
+		mProximity = model.getProximity();
+		mPressure = model.getPressure();
+		mGravity = model.getGravity().clone();
+		mLinearAcceleration = model.getLinearAcceleration().clone();
 
 		// not supported - used for drawing the device
-		this.mOrientation = model.getOrientation().clone();
-		// this.mAccelerometer = model.getAccelerometer().clone();
+		mOrientation = model.getOrientation().clone();
+		mAccelerometer = model.getAccelerometer().clone();
+		mMagneticField = model.getMagneticField().clone();
+		mRotationVector = model.getRotationVector().clone();
+		mGyroscope = model.getGyroscope().clone();
 	}
 
 	public StateModel(SensorSimulatorModel simulatorModel) {
 		this();
-		// mAccelerometer = new float[4];
 		copyState(simulatorModel);
 	}
 
@@ -58,59 +57,14 @@ public class StateModel {
 	 * Empty contructor
 	 */
 	public StateModel() {
-		mTime = 0.5f;
-		mGravity = new float[4];
-		mLinearAcceleration = new float[4];
-		mOrientation = new float[4];
+		mGravity = new float[3];
+		mLinearAcceleration = new float[3];
+		mOrientation = new float[3];
+		mAccelerometer = new float[3];
+		mMagneticField = new float[3];
+		mRotationVector = new float[3];
+		mGyroscope = new float[3];
 	}
-
-	/**
-	 * 
-	 * @return lax, lay, laz
-	 */
-	public float[] getLinearAcceleration() {
-		return mLinearAcceleration;
-	}
-
-	/**
-	 * 
-	 * @return gx, gy, gz
-	 */
-	public float[] getGravity() {
-		return mGravity;
-	}
-
-	public float getTemperature() {
-		return mTemperature;
-	}
-
-	public float getLight() {
-		return mLight;
-	}
-
-	public float getProximity() {
-		return mProximity;
-	}
-
-	public float getPressure() {
-		return mPressure;
-	}
-
-	/**
-	 * 
-	 * @return yaw, pitch, roll
-	 */
-	public float[] getOrientation() {
-		return mOrientation;
-	}
-
-	// /**
-	// *
-	// * @return x, y, z
-	// */
-	// public float[] getAccelerometer() {
-	// return mAccelerometer;
-	// }
 
 	/**
 	 * Saves in the StateModel format all sesnsors data (a lighter format).
@@ -140,10 +94,25 @@ public class StateModel {
 		mOrientation[1] = (float) orientation.getReadPitch();
 		mOrientation[2] = (float) orientation.getReadRoll();
 
-		// AccelerometerModel accelerometer = simulatorModel.getAccelerometer();
-		// mAccelerometer[0] = accelerometer.getReadAccelerometerX();
-		// mAccelerometer[1] = accelerometer.getReadAccelerometerY();
-		// mAccelerometer[2] = accelerometer.getReadAccelerometerZ();
+		AccelerometerModel accelerometer = simulatorModel.getAccelerometer();
+		mAccelerometer[0] = (float) accelerometer.getReadAccelerometerX();
+		mAccelerometer[1] = (float) accelerometer.getReadAccelerometerY();
+		mAccelerometer[2] = (float) accelerometer.getReadAccelerometerZ();
+
+		MagneticFieldModel magneticField = simulatorModel.getMagneticField();
+		mMagneticField[0] = (float) magneticField.getReadCompassX();
+		mMagneticField[1] = (float) magneticField.getReadCompassY();
+		mMagneticField[2] = (float) magneticField.getReadCompassZ();
+
+		RotationVectorModel rotationVector = simulatorModel.getRotationVector();
+		mRotationVector[0] = (float) rotationVector.getReadRotationVectorX();
+		mRotationVector[1] = (float) rotationVector.getReadRotationVectorY();
+		mRotationVector[2] = (float) rotationVector.getReadRotationVectorZ();
+
+		GyroscopeModel gyroscope = simulatorModel.getGyroscope();
+		mGyroscope[0] = (float) gyroscope.getReadGyroscopePitch();
+		mGyroscope[1] = (float) gyroscope.getReadGyroscopeYaw();
+		mGyroscope[2] = (float) gyroscope.getReadGyroscopeRoll();
 	}
 
 	/**
@@ -152,35 +121,47 @@ public class StateModel {
 	 */
 
 	public String getSensorsValues() {
-
 		StringBuffer sb = new StringBuffer();
-		// sb.append(SensorModel.ACCELEROMETER + ":"
-		// + Global.TWO_DECIMAL_FORMAT.format(mAccelerometer[0]) + ", "
-		// + Global.TWO_DECIMAL_FORMAT.format(mAccelerometer[1]) + ", "
-		// + Global.TWO_DECIMAL_FORMAT.format(mAccelerometer[2]) + "\n");
-		sb.append(SensorModel.ORIENTATION + ":"
+		sb.append(SensorModel.ACCELEROMETER + ": "
+				+ Global.TWO_DECIMAL_FORMAT.format(mAccelerometer[0]) + ", "
+				+ Global.TWO_DECIMAL_FORMAT.format(mAccelerometer[1]) + ", "
+				+ Global.TWO_DECIMAL_FORMAT.format(mAccelerometer[2]) + "\n");
+		sb.append(SensorModel.MAGNETIC_FIELD + ": "
+				+ Global.TWO_DECIMAL_FORMAT.format(mMagneticField[0]) + ", "
+				+ Global.TWO_DECIMAL_FORMAT.format(mMagneticField[1]) + ", "
+				+ Global.TWO_DECIMAL_FORMAT.format(mMagneticField[2]) + "\n");
+		sb.append(SensorModel.ORIENTATION + ": "
 				+ Global.TWO_DECIMAL_FORMAT.format(mOrientation[0]) + ", "
 				+ Global.TWO_DECIMAL_FORMAT.format(mOrientation[1]) + ", "
 				+ Global.TWO_DECIMAL_FORMAT.format(mOrientation[2]) + "\n");
-		sb.append(SensorModel.TEMPERATURE + ":"
+		sb.append(SensorModel.TEMPERATURE + ": "
 				+ Global.TWO_DECIMAL_FORMAT.format(mTemperature) + "\n");
-		sb.append(SensorModel.LIGHT + ":"
+		sb.append(SensorModel.LIGHT + ": "
 				+ Global.TWO_DECIMAL_FORMAT.format(mLight) + "\n");
-		sb.append(SensorModel.PROXIMITY + ":"
+		sb.append(SensorModel.PROXIMITY + ": "
 				+ Global.TWO_DECIMAL_FORMAT.format(mProximity) + "\n");
-		sb.append(SensorModel.PRESSURE + ":"
+		sb.append(SensorModel.PRESSURE + ": "
 				+ Global.TWO_DECIMAL_FORMAT.format(mPressure) + "\n");
-		sb.append(SensorModel.LINEAR_ACCELERATION + ":"
+		sb.append(SensorModel.LINEAR_ACCELERATION + ": "
 				+ Global.TWO_DECIMAL_FORMAT.format(mLinearAcceleration[0])
 				+ ", "
 				+ Global.TWO_DECIMAL_FORMAT.format(mLinearAcceleration[1])
 				+ ", "
 				+ Global.TWO_DECIMAL_FORMAT.format(mLinearAcceleration[2])
 				+ "\n");
-		sb.append(SensorModel.GRAVITY + ":"
+		sb.append(SensorModel.GRAVITY + ": "
 				+ Global.TWO_DECIMAL_FORMAT.format(mGravity[0]) + ", "
 				+ Global.TWO_DECIMAL_FORMAT.format(mGravity[1]) + ", "
-				+ Global.TWO_DECIMAL_FORMAT.format(mGravity[2]));
+				+ Global.TWO_DECIMAL_FORMAT.format(mGravity[2]) + "\n");
+
+		sb.append(SensorModel.ROTATION_VECTOR + ": "
+				+ Global.TWO_DECIMAL_FORMAT.format(mRotationVector[0]) + ", "
+				+ Global.TWO_DECIMAL_FORMAT.format(mRotationVector[1]) + ", "
+				+ Global.TWO_DECIMAL_FORMAT.format(mRotationVector[2]) + "\n");
+		sb.append(SensorModel.GYROSCOPE + ": "
+				+ Global.TWO_DECIMAL_FORMAT.format(mGyroscope[0]) + ", "
+				+ Global.TWO_DECIMAL_FORMAT.format(mGyroscope[1]) + ", "
+				+ Global.TWO_DECIMAL_FORMAT.format(mGyroscope[2]));
 		return sb.toString();
 	}
 
@@ -197,6 +178,16 @@ public class StateModel {
 			mLinearAcceleration = sensorValues;
 		} else if (sensorName.equals(SensorModel.GRAVITY)) {
 			mGravity = sensorValues;
+		} else if (sensorName.equals(SensorModel.ACCELEROMETER)) {
+			mAccelerometer = sensorValues;
+		} else if (sensorName.equals(SensorModel.ORIENTATION)) {
+			mOrientation = sensorValues;
+		} else if (sensorName.equals(SensorModel.MAGNETIC_FIELD)) {
+			mMagneticField = sensorValues;
+		} else if (sensorName.equals(SensorModel.ROTATION_VECTOR)) {
+			mRotationVector = sensorValues;
+		} else if (sensorName.equals(SensorModel.GYROSCOPE)) {
+			mGyroscope = sensorValues;
 		}
 	}
 
@@ -206,8 +197,13 @@ public class StateModel {
 		stateSensors.put(SensorModel.LIGHT, new float[] { mLight });
 		stateSensors.put(SensorModel.PROXIMITY, new float[] { mProximity });
 		stateSensors.put(SensorModel.PRESSURE, new float[] { mPressure });
+		stateSensors.put(SensorModel.ORIENTATION, mOrientation);
+		stateSensors.put(SensorModel.ACCELEROMETER, mAccelerometer);
 		stateSensors.put(SensorModel.LINEAR_ACCELERATION, mLinearAcceleration);
 		stateSensors.put(SensorModel.GRAVITY, mGravity);
+		stateSensors.put(SensorModel.MAGNETIC_FIELD, mMagneticField);
+		stateSensors.put(SensorModel.ROTATION_VECTOR, mRotationVector);
+		stateSensors.put(SensorModel.GYROSCOPE, mGyroscope);
 		return stateSensors;
 	}
 
@@ -220,12 +216,25 @@ public class StateModel {
 		mPressure = (n_k * s1.getPressure() + k * s2.getPressure()) / n;
 	}
 
-	public float getTime() {
-		return mTime;
-	}
+	public void fillNonLinearValues(StateModel s1, StateModel s2, int k, int n) {
+		float[] rightAxis = Vector3f.interpolate(s1.getRightAxisOrientation(),
+				s2.getRightAxisOrientation(), k, n);
+		mOrientation[0] = rightAxis[1]; // yaw
+		mOrientation[1] = rightAxis[0]; // pitch
+		mOrientation[2] = rightAxis[2]; // roll
 
-	public void setTime(float value) {
-		mTime = value;
+		mAccelerometer = Vector3f.interpolate(s1.getAccelerometer(),
+				s2.getAccelerometer(), k, n);
+		mGravity = Vector3f.interpolate(s1.getGravity(), s2.getGravity(), k, n);
+		mLinearAcceleration = Vector3f.interpolate(s1.getLinearAcceleration(),
+				s2.getLinearAcceleration(), k, n);
+		mMagneticField = Vector3f.interpolate(s1.getMagneticField(),
+				s2.getMagneticField(), k, n);
+		mRotationVector = Vector3f.interpolate(s1.getRotationVector(),
+				s2.getRotationVector(), k, n);
+
+		mGyroscope = Vector3f.interpolate(s1.getGyroscope(), s2.getGyroscope(),
+				k, n);
 	}
 
 	public static StateModel fromHashTable(Hashtable<Integer, float[]> sensors) {
@@ -241,6 +250,12 @@ public class StateModel {
 	private static void fillSensor(StateModel state, int sensorType,
 			float[] values) {
 		switch (sensorType) {
+		case SensorModel.TYPE_ACCELEROMETER:
+			state.mAccelerometer = values;
+			break;
+		case SensorModel.TYPE_ORIENTATION:
+			state.mOrientation = values;
+			break;
 		case SensorModel.TYPE_TEMPERATURE:
 			state.mTemperature = values[0];
 			break;
@@ -259,8 +274,94 @@ public class StateModel {
 		case SensorModel.TYPE_GRAVITY:
 			state.mGravity = values;
 			break;
+		case SensorModel.TYPE_MAGNETIC_FIELD:
+			state.mMagneticField = values;
+			break;
+		case SensorModel.TYPE_ROTATION_VECTOR:
+			state.mRotationVector = values;
+			break;
+		case SensorModel.TYPE_GYROSCOPE:
+			state.mGyroscope = values;
+			break;
 		default:
 			break;
 		}
 	}
+
+	public float getTemperature() {
+		return mTemperature;
+	}
+
+	public float getLight() {
+		return mLight;
+	}
+
+	public float getProximity() {
+		return mProximity;
+	}
+
+	public float getPressure() {
+		return mPressure;
+	}
+
+	/**
+	 * 
+	 * @return pitch, yaw, roll
+	 */
+	public float[] getGravity() {
+		return mGravity;
+	}
+
+	/**
+	 * 
+	 * @return lax, lay, laz
+	 */
+	public float[] getLinearAcceleration() {
+		return mLinearAcceleration;
+	}
+
+	/**
+	 * Orientation (in degree) Yaw = Rotation about the Y-Axis;Pitch = Rotation
+	 * about the X-Axis; Roll = Rotation about the Z-Axis
+	 * 
+	 * @return yaw, pitch, roll
+	 */
+	public float[] getOrientation() {
+		return mOrientation;
+	}
+
+	/**
+	 * Orientation (in degree) Pitch = Rotation about the X-Axis; Yaw = Rotation
+	 * about the Y-Axis; Roll = Rotation about the Z-Axis
+	 * 
+	 * @return pitch, yaw, roll
+	 */
+	public float[] getRightAxisOrientation() {
+		return new float[] { mOrientation[1], mOrientation[0], mOrientation[2] };
+	}
+
+	/**
+	 * 
+	 * @return x, y, z
+	 */
+	public float[] getAccelerometer() {
+		return mAccelerometer;
+	}
+
+	public float[] getMagneticField() {
+		return mMagneticField;
+	}
+
+	public float[] getRotationVector() {
+		return mRotationVector;
+	}
+
+	/**
+	 * 
+	 * @return pitch, yaw, roll
+	 */
+	public float[] getGyroscope() {
+		return mGyroscope;
+	}
+
 }

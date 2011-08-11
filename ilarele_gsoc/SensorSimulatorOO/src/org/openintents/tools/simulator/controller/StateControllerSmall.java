@@ -4,10 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JSpinner;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.openintents.tools.simulator.model.SensorsScenarioModel;
 import org.openintents.tools.simulator.model.StateModel;
 import org.openintents.tools.simulator.view.SensorsScenarioView;
@@ -23,10 +19,10 @@ public class StateControllerSmall {
 	public StateControllerSmall(SensorsScenarioModel sensorsScenarioModel,
 			SensorsScenarioView sensorsScenarioView, StateModel stateModel,
 			StateViewSmall stateView) {
-		this.mModel = stateModel;
-		this.mView = stateView;
-		this.mSensorScenarioView = sensorsScenarioView;
-		this.mSensorScenarioModel = sensorsScenarioModel;
+		mModel = stateModel;
+		mView = stateView;
+		mSensorScenarioView = sensorsScenarioView;
+		mSensorScenarioModel = sensorsScenarioModel;
 		initListeners();
 	}
 
@@ -54,19 +50,8 @@ public class StateControllerSmall {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				StateModel newModel = new StateModel(mModel);
-				mSensorScenarioModel.add(newModel);
-				mSensorScenarioView.addView(newModel);
-			}
-		});
-
-		final JSpinner transitionSpinner = mView.getTransitionSpinner();
-		transitionSpinner.setValue(mModel.getTime());
-		transitionSpinner.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				float value = Float.parseFloat(""
-						+ transitionSpinner.getValue());
-				mModel.setTime(value);
+				int position = mSensorScenarioView.addView(mView, newModel);
+				mSensorScenarioModel.add(position, newModel);
 			}
 		});
 	}

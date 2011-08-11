@@ -259,6 +259,7 @@ public class SensorSimulatorModel {
 	}
 
 	public void loadState(StateModel state) {
+		// simple
 		TemperatureModel temperatureModel = getTemperature();
 		temperatureModel.setTemp(state.getTemperature());
 
@@ -271,8 +272,27 @@ public class SensorSimulatorModel {
 		PressureModel pressureModel = getPressure();
 		pressureModel.setPressure(state.getPressure());
 
+		// complex
 		GravityModel gravityModel = getGravity();
 		gravityModel.setGravity(state.getGravity());
+
+		LinearAccelerationModel linearAccModel = getLinearAcceleration();
+		linearAccModel.setLinearAcceleration(state.getLinearAcceleration());
+
+		OrientationModel orientationModel = getOrientation();
+		orientationModel.setOrientation(state.getOrientation());
+
+		AccelerometerModel accelerometerModel = getAccelerometer();
+		accelerometerModel.setAccelerometer(state.getAccelerometer());
+
+		MagneticFieldModel magneticFieldModel = getMagneticField();
+		magneticFieldModel.setMagneticField(state.getMagneticField());
+
+		RotationVectorModel rotationVectorModel = getRotationVector();
+		rotationVectorModel.setRotationVector(state.getRotationVector());
+
+		GyroscopeModel gyroscopeModel = getGyroscope();
+		gyroscopeModel.setGyroscope(state.getGyroscope());
 	}
 
 }

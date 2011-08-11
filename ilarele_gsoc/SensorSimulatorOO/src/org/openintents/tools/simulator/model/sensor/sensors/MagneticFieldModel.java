@@ -173,4 +173,10 @@ public class MagneticFieldModel extends SensorModel {
 	public double getReadCompassZ() {
 		return mReadCompassZ;
 	}
+
+	public void setMagneticField(float[] newValue) {
+		mCompassX = newValue[0];
+		mCompassY = newValue[1];
+		mCompassZ = newValue[2];
+	}
 }

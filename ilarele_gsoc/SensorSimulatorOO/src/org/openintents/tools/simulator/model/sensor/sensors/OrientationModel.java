@@ -43,8 +43,8 @@ public class OrientationModel extends SensorModel {
 	private int mPartialN;
 
 	/**
-	 * orientation (in degree) Yaw = Rotation about the Y-Axis Pitch = Rotation
-	 * about the X-Axis Roll = Rotation about the Z-Axis
+	 * orientation (in degree) Yaw = Rotation about the Y-Axis; Pitch = Rotation
+	 * about the X-Axis; Roll = Rotation about the Z-Axis
 	 */
 	private int mYaw;
 	private int mPitch;
@@ -192,7 +192,13 @@ public class OrientationModel extends SensorModel {
 
 	@Override
 	public String toString() {
-		return "[y=" + mYaw + ", r=" + mRoll + ", p=" + mPitch + "]";
+		return "[y=" + mYaw + ", p=" + mPitch + ", r=" + mRoll + "]";
+	}
+
+	public void setOrientation(float[] newValue) {
+		mYaw = (int) newValue[0];
+		mPitch = (int) newValue[1];
+		mRoll = (int) newValue[2];
 	}
 
 }

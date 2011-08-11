@@ -18,6 +18,7 @@
 		<activity
 			android:name=".SensorRecordFromDeviceActivity"
 			android:label="@string/app_name"
+			android:windowSoftInputMode="stateUnchanged"
 		>
 			<intent-filter>
 				<action

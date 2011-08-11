@@ -21,7 +21,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.JRadioButton;
 
@@ -51,12 +51,12 @@ public class DeviceController {
 	private int mMouseDownMoveZ;
 
 	private DeviceView mDeviceView;
-	private ArrayList<SensorController> mSensors;
+	private Vector<SensorController> mSensors;
 
-	public DeviceController(final ArrayList<SensorController> sensors,
+	public DeviceController(final Vector<SensorController> sensors,
 			final DeviceView deviceView) {
-		this.mSensors = sensors;
-		this.mDeviceView = deviceView;
+		mSensors = sensors;
+		mDeviceView = deviceView;
 
 		registerMouseModeButtons();
 		registerMouseListeners();
@@ -64,6 +64,7 @@ public class DeviceController {
 
 	private void registerMouseListeners() {
 		mDeviceView.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mousePressed(MouseEvent e) {
 				OrientationModel orientation = (OrientationModel) mSensors.get(
 						SensorModel.POZ_ORIENTATION).getModel();
@@ -87,6 +88,7 @@ public class DeviceController {
 		});
 
 		mDeviceView.addMouseMotionListener(new MouseMotionListener() {
+			@Override
 			public void mouseDragged(MouseEvent e) {
 				OrientationController orientController = (OrientationController) mSensors
 						.get(SensorModel.POZ_ORIENTATION);
@@ -99,35 +101,43 @@ public class DeviceController {
 				case DeviceView.MOUSE_MODE_YAW_PITCH:
 					// Control yawDegree
 					int newyaw = mMouseDownYaw - (e.getX() - mMouseDownX);
-					while (newyaw > 180)
+					while (newyaw > 180) {
 						newyaw -= 360;
-					while (newyaw < -180)
+					}
+					while (newyaw < -180) {
 						newyaw += 360;
+					}
 
 					orientController.setYaw(newyaw);
 					// Control pitch
 					newpitch = mMouseDownPitch - (e.getY() - mMouseDownY);
-					while (newpitch > 180)
+					while (newpitch > 180) {
 						newpitch -= 360;
-					while (newpitch < -180)
+					}
+					while (newpitch < -180) {
 						newpitch += 360;
+					}
 					orientController.setPitch(newpitch);
 					break;
 
 				case DeviceView.MOUSE_MODE_ROLL_PITCH:
 					// Control roll
 					int newroll = mMouseDownRoll + (e.getX() - mMouseDownX);
-					while (newroll > 180)
+					while (newroll > 180) {
 						newroll -= 360;
-					while (newroll < -180)
+					}
+					while (newroll < -180) {
 						newroll += 360;
+					}
 					orientController.setRoll(newroll);
 					// Control pitch
 					newpitch = mMouseDownPitch - (e.getY() - mMouseDownY);
-					while (newpitch > 180)
+					while (newpitch > 180) {
 						newpitch -= 360;
-					while (newpitch < -180)
+					}
+					while (newpitch < -180) {
 						newpitch += 360;
+					}
 					orientController.setPitch(newpitch);
 					break;
 				case DeviceView.MOUSE_MODE_MOVE:
@@ -146,6 +156,7 @@ public class DeviceController {
 				mDeviceView.doRepaint();
 			}
 
+			@Override
 			public void mouseMoved(MouseEvent evt) {
 				// NOOP
 			}
