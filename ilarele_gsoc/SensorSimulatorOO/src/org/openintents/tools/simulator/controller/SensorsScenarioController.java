@@ -192,11 +192,13 @@ public class SensorsScenarioController {
 	}
 
 	private void closeRecordingConnection() {
-		synchronized (mInStream) {
-			try {
-				mInStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+		if (mInStream != null) {
+			synchronized (mInStream) {
+				try {
+					mInStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -333,6 +335,7 @@ public class SensorsScenarioController {
 					while (true) {
 						try {
 							connection = mServerSocket.accept();
+							mView.clearScenario();
 							mInStream = new ObjectInputStream(connection
 									.getInputStream());
 							while (true) {
