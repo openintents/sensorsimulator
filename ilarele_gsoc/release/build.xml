@@ -54,6 +54,7 @@
 	<property name="thisrelease-dir" value="." />
 	<property name="sensorsimulator-source-dir" value="../SensorSimulator" />
 	<property name="sensorsimulator-samples-dir" value="../samples" />
+	<property name="sensorrecordfromdevice-dir" value="../SensorRecordFromDevice" />
 
 	<!-- standard lib file -->
 	<property name="sensorsimulator-lib-file" value="${sensorsimulator-lib-dir}/sensorsimulator-lib-${version}.jar" />
@@ -143,6 +144,39 @@
 	</target>
 
 
+	<target 
+		name="SensorRecordFromDevice"		
+		depends="setup.dirs"
+		>
+		<echo>------------------------------SensorRecordFromDevice----------------------</echo>
+		<ant
+			dir="${sensorrecordfromdevice-dir}"
+			antfile="build.xml"
+			target="all"
+		/>
+		<copy todir="${sensorsimulator-bin-dir}" flatten="true">
+			<fileset dir="${sensorrecordfromdevice-dir}">
+				<include name="bin/SensorRecordFromDevice-${version}.apk" />
+				<include name="readme_SensorRecordFromDevice.txt" />				
+			</fileset>
+		</copy>
+		<!-- Copy to source release -->
+		<copy todir="${sensorsimulator-dir}/SensorRecordFromDevice">
+		    <fileset dir="${sensorrecordfromdevice-dir}">
+		    	<exclude name="**/bin/**" />
+		    	<exclude name="**/doc/**" />
+		    	<exclude name="**/gen/**" />
+				<exclude name="**/release/**" />
+				<exclude name="**/tmp/**" />
+				<exclude name="**/translations/**" />
+	    		<exclude name="**/.svn" />
+	    		<exclude name="**/build-private.properties" />
+	    		<exclude name="**/local.properties" />
+		    </fileset>
+		</copy>
+	</target>
+
+
 	<target name="SensorSimulator">
 		<echo>------------------------------SensorSimulator----------------------</echo>
 		<!-- Compile -->
@@ -203,6 +237,7 @@
 		name="release"		
 		depends="
 			SensorSimulatorSettings,
+			SensorRecordFromDevice,
 			SensorSimulator,
 			samples"
 		>
