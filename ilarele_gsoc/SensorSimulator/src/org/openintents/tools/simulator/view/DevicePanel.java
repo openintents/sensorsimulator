@@ -1,5 +1,22 @@
+/*
+ * Copyright (C) 2008 - 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -11,6 +28,11 @@ import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.StateModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
 
+/**
+ * Draws the device based on orientation.
+ * @author Peli
+ *
+ */
 public class DevicePanel extends JPanel {
 	private static final long serialVersionUID = 1641228393704045445L;
 	// Mobile size
@@ -50,14 +72,17 @@ public class DevicePanel extends JPanel {
 			{ dx, dy2, sz }, { dx, dy1, sz }, };
 
 	private StateModel mModel;
+	private SensorsScenarioView mScenarioView;
 
 	private int mWidth;
 	private int mHeight;
 
-	public DevicePanel(int width, int height, StateModel model) {
+	public DevicePanel(int width, int height, StateModel model,
+			SensorsScenarioView scenarioView) {
 		mHeight = height;
 		mWidth = width;
 		mModel = model;
+		mScenarioView = scenarioView;
 
 	}
 
@@ -73,7 +98,14 @@ public class DevicePanel extends JPanel {
 		// draw Line2D.Double
 		for (int i = 0; i < phone.length; i += 2) {
 			if (i == 0) {
-				g2.setColor(Global.COLOR_ENABLE_BLUE);
+				// container panel and StateViewSmall
+				StateViewSmall parent = (StateViewSmall) getParent()
+						.getParent();
+				if (!mScenarioView.isCurrentState(parent)) {
+					g2.setColor(Global.COLOR_ENABLE_BLUE);
+				} else {
+					g2.setColor(Color.RED);
+				}
 			}
 			if (i == 24) {
 				g2.setColor(Global.COLOR_ENABLE_GREEN);
@@ -96,8 +128,4 @@ public class DevicePanel extends JPanel {
 		return new Dimension(mWidth, mHeight);
 	}
 
-	public void updateFromState() {
-		// TODO Auto-generated method stub
-
-	}
 }

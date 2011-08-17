@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.openintents.tools.simulator.model;
 
 import java.util.HashMap;
@@ -14,8 +29,18 @@ import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
-import org.openintents.tools.simulator.util.Vector3f;
+import org.openintents.tools.simulator.util.Interpolate;
 
+/**
+ * Represents the model for a scenario state.
+ * Contains all sensors values in float or float[] format.
+ * 
+ * Supported sensors: temperature, light, proximity, pressure, gravity,
+ * linear acceleration, orientation, accelerometer, magnetic field,
+ * rotation vector, gyroscope.
+ * @author ilarele
+ *
+ */
 public class StateModel {
 
 	// sensors supported for interpolation
@@ -113,6 +138,21 @@ public class StateModel {
 		mGyroscope[0] = (float) gyroscope.getReadGyroscopePitch();
 		mGyroscope[1] = (float) gyroscope.getReadGyroscopeYaw();
 		mGyroscope[2] = (float) gyroscope.getReadGyroscopeRoll();
+	}
+
+	public void copyState(StateModel mOwnState) {
+		mTemperature = mOwnState.getTemperature();
+		mLight = mOwnState.getLight();
+		mProximity = mOwnState.getProximity();
+		mPressure = mOwnState.getPressure();
+
+		mLinearAcceleration = mOwnState.getLinearAcceleration().clone();
+		mGravity = mOwnState.getGravity().clone();
+		mOrientation = mOwnState.getOrientation().clone();
+		mAccelerometer = mOwnState.getAccelerometer().clone();
+		mMagneticField = mOwnState.getMagneticField().clone();
+		mRotationVector = mOwnState.getRotationVector().clone();
+		mGyroscope = mOwnState.getGyroscope().clone();
 	}
 
 	/**
@@ -217,24 +257,26 @@ public class StateModel {
 	}
 
 	public void fillNonLinearValues(StateModel s1, StateModel s2, int k, int n) {
-		float[] rightAxis = Vector3f.interpolate(s1.getRightAxisOrientation(),
-				s2.getRightAxisOrientation(), k, n);
+		float[] rightAxis = Interpolate.interpolate(
+				s1.getRightAxisOrientation(), s2.getRightAxisOrientation(), k,
+				n);
 		mOrientation[0] = rightAxis[1]; // yaw
 		mOrientation[1] = rightAxis[0]; // pitch
 		mOrientation[2] = rightAxis[2]; // roll
 
-		mAccelerometer = Vector3f.interpolate(s1.getAccelerometer(),
+		mAccelerometer = Interpolate.interpolate(s1.getAccelerometer(),
 				s2.getAccelerometer(), k, n);
-		mGravity = Vector3f.interpolate(s1.getGravity(), s2.getGravity(), k, n);
-		mLinearAcceleration = Vector3f.interpolate(s1.getLinearAcceleration(),
-				s2.getLinearAcceleration(), k, n);
-		mMagneticField = Vector3f.interpolate(s1.getMagneticField(),
+		mGravity = Interpolate.interpolate(s1.getGravity(), s2.getGravity(), k,
+				n);
+		mLinearAcceleration = Interpolate.interpolate(
+				s1.getLinearAcceleration(), s2.getLinearAcceleration(), k, n);
+		mMagneticField = Interpolate.interpolate(s1.getMagneticField(),
 				s2.getMagneticField(), k, n);
-		mRotationVector = Vector3f.interpolate(s1.getRotationVector(),
+		mRotationVector = Interpolate.interpolate(s1.getRotationVector(),
 				s2.getRotationVector(), k, n);
 
-		mGyroscope = Vector3f.interpolate(s1.getGyroscope(), s2.getGyroscope(),
-				k, n);
+		mGyroscope = Interpolate.interpolate(s1.getGyroscope(),
+				s2.getGyroscope(), k, n);
 	}
 
 	public static StateModel fromHashTable(Hashtable<Integer, float[]> sensors) {

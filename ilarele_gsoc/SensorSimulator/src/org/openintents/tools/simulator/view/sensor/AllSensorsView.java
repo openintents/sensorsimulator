@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.openintents.tools.simulator.view.sensor;
 
 import java.awt.Dimension;
@@ -18,8 +33,19 @@ import javax.swing.border.TitledBorder;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.util.PhoneSensors;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 
+/**
+ * AllSensorsView is a view for SensorSimulator and implements
+ * sensors enabling.
+ * One feature is reading from a file sensors configuration per
+ * device type, meaning which sensors are supported and which are not
+ * by a device (Nexus S, etc).
+ *     
+ * @author ilarele
+ *
+ */
 public class AllSensorsView extends JScrollPane {
 	private static final long serialVersionUID = -5966939252818311988L;
 	private ArrayList<SensorView> mSensors;

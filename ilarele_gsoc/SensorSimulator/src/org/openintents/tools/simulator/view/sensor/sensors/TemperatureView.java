@@ -27,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
@@ -62,7 +63,7 @@ public class TemperatureView extends SensorView {
 		mSensorQuickPane.add(new JLabel("Temp"));
 
 		layout.gridx = 1;
-		mTemperatureSlider = new JSlider(JSlider.HORIZONTAL, -70, 70, 18);
+		mTemperatureSlider = new JSlider(SwingConstants.HORIZONTAL, -70, 70, 18);
 		mTemperatureSlider.setPaintTicks(true);
 		mTemperatureSlider.setPaintLabels(true);
 		mTemperatureSlider.setMajorTickSpacing(35);
@@ -76,7 +77,7 @@ public class TemperatureView extends SensorView {
 	public JPanel fillSensorSpecificSettingsPanel() {
 		JPanel resultPanel = new JPanel(new GridBagLayout());
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Settings"),
+				BorderFactory.createTitledBorder("Parameters"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GridBagConstraints c3 = new GridBagConstraints();
 		GridBagConstraints c2 = new GridBagConstraints();
@@ -92,7 +93,7 @@ public class TemperatureView extends SensorView {
 		c3.gridx = 0;
 		c3.gridy = 0;
 
-		JLabel label = new JLabel("Temperature: ", JLabel.LEFT);
+		JLabel label = new JLabel("Temperature: ", SwingConstants.LEFT);
 		c3.gridwidth = 1;
 		c3.gridx = 0;
 		c3.gridy++;
@@ -103,7 +104,7 @@ public class TemperatureView extends SensorView {
 		c3.gridx = 1;
 		temperatureFieldPane.add(mTemperatureText, c3);
 
-		label = new JLabel(" " + SensorModel.DEGREES + "C", JLabel.LEFT);
+		label = new JLabel(" " + SensorModel.DEGREES + "C", SwingConstants.LEFT);
 		c3.gridx = 2;
 		temperatureFieldPane.add(label, c3);
 

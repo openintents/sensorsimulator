@@ -27,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
 
@@ -60,7 +61,7 @@ public class LightView extends SensorView {
 		mSensorQuickPane.add(new JLabel("Light"));
 
 		layout.gridx = 1;
-		mLightSlider = new JSlider(JSlider.HORIZONTAL, 0, 2000, 400);
+		mLightSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 2000, 400);
 		mLightSlider.setPaintTicks(true);
 		mLightSlider.setPaintLabels(true);
 		mLightSlider.setMajorTickSpacing(500);
@@ -73,7 +74,7 @@ public class LightView extends SensorView {
 	public JPanel fillSensorSpecificSettingsPanel() {
 		JPanel resultPanel = new JPanel(new GridBagLayout());
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Settings"),
+				BorderFactory.createTitledBorder("Parameters"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GridBagConstraints c3 = new GridBagConstraints();
 		GridBagConstraints c2 = new GridBagConstraints();
@@ -88,7 +89,7 @@ public class LightView extends SensorView {
 		c3.gridx = 0;
 		c3.gridy = 0;
 
-		JLabel label = new JLabel("Light Value: ", JLabel.LEFT);
+		JLabel label = new JLabel("Light Value: ", SwingConstants.LEFT);
 		c3.gridwidth = 1;
 		c3.gridx = 0;
 		c3.gridy++;
@@ -99,7 +100,7 @@ public class LightView extends SensorView {
 		c3.gridx = 1;
 		lightFieldPane.add(mLightText, c3);
 
-		label = new JLabel(" lux", JLabel.LEFT);
+		label = new JLabel(" lux", SwingConstants.LEFT);
 		c3.gridx = 2;
 		lightFieldPane.add(label, c3);
 

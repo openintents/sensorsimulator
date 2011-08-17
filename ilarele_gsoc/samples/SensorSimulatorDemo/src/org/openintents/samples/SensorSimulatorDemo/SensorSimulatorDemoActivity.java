@@ -231,31 +231,31 @@ public class SensorSimulatorDemoActivity extends Activity {
 		mSensorManager.registerListener(mEventListenerLinearAcceleration,
 				mSensorManager
 						.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
-				SensorManager.SENSOR_DELAY_GAME);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(mEventListenerGravity,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
 				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(mEventListenerMagneticField,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(mEventListenerOrientation,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
 				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(mEventListenerTemperature,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_TEMPERATURE),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(mEventListenerLight,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(mEventListenerPressure,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(mEventListenerBarcode,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_BARCODE_READER),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(mEventListenerRotationVector,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_FASTEST);
 	}
 
 	@Override

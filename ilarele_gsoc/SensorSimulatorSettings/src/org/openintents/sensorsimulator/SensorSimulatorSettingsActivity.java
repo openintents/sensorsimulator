@@ -126,6 +126,7 @@ public class SensorSimulatorSettingsActivity extends Activity {
 	 * 
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
+	@Override
 	protected void onCreate(Bundle icicle) {
 		// TODO Auto-generated method stub
 		super.onCreate(icicle);
@@ -165,6 +166,7 @@ public class SensorSimulatorSettingsActivity extends Activity {
 
 		mButtonConnect = (Button) findViewById(R.id.buttonconnect);
 		mButtonConnect.setOnClickListener(new OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				connect();
 			}
@@ -172,6 +174,7 @@ public class SensorSimulatorSettingsActivity extends Activity {
 
 		mButtonDisconnect = (Button) findViewById(R.id.buttondisconnect);
 		mButtonDisconnect.setOnClickListener(new OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				disconnect();
 			}
@@ -270,31 +273,31 @@ public class SensorSimulatorSettingsActivity extends Activity {
 		super.onResume();
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				SensorManager.SENSOR_DELAY_GAME);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-				SensorManager.SENSOR_DELAY_GAME);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
-				SensorManager.SENSOR_DELAY_GAME);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_TEMPERATURE),
-				SensorManager.SENSOR_DELAY_GAME);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
-				SensorManager.SENSOR_DELAY_GAME);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
-				SensorManager.SENSOR_DELAY_GAME);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(listener, mSensorManager
 				.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
-				SensorManager.SENSOR_DELAY_GAME);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
-				SensorManager.SENSOR_DELAY_GAME);
+				SensorManager.SENSOR_DELAY_FASTEST);
 		mSensorManager.registerListener(listener,
 				mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
-				SensorManager.SENSOR_DELAY_GAME);
+				SensorManager.SENSOR_DELAY_FASTEST);
 	}
 
 	/**
@@ -504,8 +507,9 @@ public class SensorSimulatorSettingsActivity extends Activity {
 
 					for (int j = 0; j < num; j++) {
 						data += mDecimalFormat.format(values[j]);
-						if (j < num - 1)
+						if (j < num - 1) {
 							data += ", ";
+						}
 					}
 
 					mSingleSensorView[i].mSensorDataTextView.setText(data);
@@ -550,8 +554,8 @@ public class SensorSimulatorSettingsActivity extends Activity {
 				SingleSensorView ssv = new SingleSensorView(this,
 						mSupportedSensors.get(i), sensorbit.get(i), i);
 				ssv.setLayoutParams(new LinearLayout.LayoutParams(
-						LinearLayout.LayoutParams.FILL_PARENT,
-						LinearLayout.LayoutParams.WRAP_CONTENT));
+						android.view.ViewGroup.LayoutParams.FILL_PARENT,
+						android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 				mSensorsList.addView(ssv, i);
 				mSingleSensorView[i] = ssv;
 			}
@@ -620,11 +624,12 @@ public class SensorSimulatorSettingsActivity extends Activity {
 					.findViewById(R.id.sensor_data);
 
 			addView(rowView, new LinearLayout.LayoutParams(
-					LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+					android.view.ViewGroup.LayoutParams.FILL_PARENT,
+					android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 
 			mSensorManager.registerListener(listener,
 					mSensorManager.getDefaultSensor(mSensorBit),
-					SensorManager.SENSOR_DELAY_GAME); // TODO
+					SensorManager.SENSOR_DELAY_FASTEST); // TODO
 		}
 	}
 }

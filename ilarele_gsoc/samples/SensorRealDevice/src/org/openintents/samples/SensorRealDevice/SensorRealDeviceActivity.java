@@ -88,7 +88,6 @@ public class SensorRealDeviceActivity extends Activity {
 		// The rest of your application can stay unmodified.
 		// //////////////////////////////////////////////////////////////
 		initListeners();
-
 	}
 
 	private void initListeners() {

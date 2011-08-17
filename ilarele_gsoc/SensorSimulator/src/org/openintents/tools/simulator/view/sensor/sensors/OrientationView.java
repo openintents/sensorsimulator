@@ -27,6 +27,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
@@ -60,17 +61,17 @@ public class OrientationView extends SensorView {
 		GridBagConstraints c = new GridBagConstraints();
 
 		// labels
-		JLabel yawLabel = new JLabel("Yaw(y)  ", JLabel.CENTER);
+		JLabel yawLabel = new JLabel("Yaw(y)  ", SwingConstants.CENTER);
 		yawLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		JLabel pitchLabel = new JLabel("Pitch(x) ", JLabel.CENTER);
+		JLabel pitchLabel = new JLabel("Pitch(x) ", SwingConstants.CENTER);
 		pitchLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		JLabel rollLabel = new JLabel("Roll(z) ", JLabel.CENTER);
+		JLabel rollLabel = new JLabel("Roll(z) ", SwingConstants.CENTER);
 		rollLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		// Create the slider.
-		mYawSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, -20);
-		mPitchSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, -60);
-		mRollSlider = new JSlider(JSlider.HORIZONTAL, -180, 180, 0);
+		mYawSlider = new JSlider(SwingConstants.HORIZONTAL, -180, 180, -20);
+		mPitchSlider = new JSlider(SwingConstants.HORIZONTAL, -180, 180, -60);
+		mRollSlider = new JSlider(SwingConstants.HORIZONTAL, -180, 180, 0);
 
 		// Turn on labels at major tick marks.
 		mYawSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
@@ -107,7 +108,7 @@ public class OrientationView extends SensorView {
 	public JPanel fillSensorSpecificSettingsPanel() {
 		mSensorSpecificPane = new JPanel();
 		mSensorSpecificPane.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Settings"),
+				BorderFactory.createTitledBorder("Parameters"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		return mSensorSpecificPane;
 	}

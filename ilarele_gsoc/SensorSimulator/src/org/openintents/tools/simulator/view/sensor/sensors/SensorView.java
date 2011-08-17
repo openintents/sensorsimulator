@@ -44,7 +44,6 @@ import javax.swing.SwingConstants;
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.util.HtmlTextPane;
-import org.openintents.tools.simulator.view.gui.util.DefaultButton;
 import org.openintents.tools.simulator.view.gui.util.SensorButton;
 import org.openintents.tools.simulator.view.help.HelpWindow;
 
@@ -60,7 +59,7 @@ public abstract class SensorView extends JScrollPane {
 	private static final String EMPTY_LABEL = "                 -                ";
 	private static Random rand = new Random();
 
-	protected DefaultButton mEnabled;
+	protected JButton mEnabled;
 	private HelpWindow helpWindow;
 
 	// Simulation update
@@ -86,7 +85,7 @@ public abstract class SensorView extends JScrollPane {
 		setPreferredSize(new Dimension(
 				(int) (Global.W_FRAME * Global.SENSOR_SPLIT_RIGHT),
 				Global.H_CONTENT));
-		mEnabled = new DefaultButton(model.getName());
+		mEnabled = new JButton(model.getName());
 		if (model.isEnabled()) {
 			mEnabled.setBackground(Global.COLOR_ENABLE_BLUE);
 		} else {

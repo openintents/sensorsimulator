@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2011 OpenIntents.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openintents.tools.simulator.view;
 
 import java.awt.BorderLayout;
@@ -5,10 +21,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -22,36 +34,51 @@ import javax.swing.ScrollPaneConstants;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.controller.StateControllerBig;
-import org.openintents.tools.simulator.controller.StateControllerSmall;
 import org.openintents.tools.simulator.model.SensorsScenarioModel;
 import org.openintents.tools.simulator.model.StateModel;
 import org.openintents.tools.simulator.view.gui.util.TimeScrollBar;
 
+/**
+ * SensorsScenarioView is represented by the "Scenario Simulator" tab.
+ * 
+ * It contains:
+ * 		a detailed view for the selected state for editing
+ * 		the scenario items in a grid
+ * 		a playbar that covers data regarding dynamic state of the scenario
+ * 		buttons for control the actions over the scenario (create, load, save, record)
+ *   
+ * @author ilarele
+ *
+ */
 public class SensorsScenarioView extends JPanel {
 	private static final long serialVersionUID = -5566737606706780206L;
+	// related model (model-view-controller)
 	private SensorsScenarioModel mModel;
+
+	// view components
 	private JButton mCreateNewBtn;
 	private JButton mLoadBtn;
 	private JButton mRecordBtn;
 	private JButton mSaveBtn;
 	private JButton mPlayBtn;
+	private JButton mStopBtn;
 	private JCheckBox mLoop;
-	private ArrayList<StateViewSmall> mStatesViewArraySmall;
+
 	private JPanel mScenarioPanel;
 	private JPanel mRightPanel;
+
+	private TimeScrollBar mTimeBar;
+	private JScrollBar mHScrollBar;
 
 	private StateViewBig mCurrentBigView;
 	private StateViewSmall mCurrentSmallView;
 
-	private TimeScrollBar mTimeBar;
-	private JScrollBar mHScrollBar;
-	private JButton mStopBtn;
-
 	public SensorsScenarioView(SensorsScenarioModel model) {
 		mModel = model;
-		mStatesViewArraySmall = new ArrayList<StateViewSmall>();
 		fillLayout();
 	}
+
+	// layout initialization
 
 	private void fillLayout() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -72,61 +99,14 @@ public class SensorsScenarioView extends JPanel {
 
 		add(new JSeparator());
 
-		JPanel timeBarPanel = fillTimeBarPanel();
-		timeBarPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		add(timeBarPanel);
+		TimeScrollBar timeBar = new TimeScrollBar(mModel);
+		timeBar.setAlignmentX(Component.LEFT_ALIGNMENT);
+		add(timeBar);
+		mTimeBar = timeBar;
 
 		JPanel flowControlPanel = fillFlowControlPanel();
 		flowControlPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(flowControlPanel);
-
-		refreshStates();
-
-	}
-
-	private JPanel fillTimeBarPanel() {
-		final TimeScrollBar timeBar = new TimeScrollBar();
-		timeBar.addMouseListener(new MouseAdapter() {
-			private boolean mIsDragStop = false;
-			private boolean mIsDragStart = false;
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				int x = e.getX();
-				if (!mIsDragStop) {
-					if (!mIsDragStart) {
-						if (x > TimeScrollBar.TIME_SCROLL_W_MARGIN) {
-							int scenarioPosition = (int) (x / timeBar
-									.getPxPerPos());
-							setCrtState(scenarioPosition);
-						}
-					} else {
-						mTimeBar.setStartStateAbsolute(x);
-						refresh(SensorsScenarioView.this);
-					}
-				} else {
-					mTimeBar.setStopStateAbsolute(x);
-					refresh(SensorsScenarioView.this);
-				}
-				mIsDragStart = mIsDragStop = false;
-				super.mouseReleased(e);
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				if (!mTimeBar.isDragStop(e)) {
-					if (mTimeBar.isDragStart(e)) {
-						mIsDragStart = true;
-					}
-				} else {
-					mIsDragStop = true;
-				}
-
-				super.mousePressed(e);
-			}
-		});
-		mTimeBar = timeBar;
-		return timeBar;
 	}
 
 	private JPanel fillDetailedViewPanel() {
@@ -154,9 +134,10 @@ public class SensorsScenarioView extends JPanel {
 				(int) (Global.W_FRAME * Global.SENSOR_SPLIT_RIGHT),
 				(int) (Global.H_DEVICE_SMALL * 1.5)));
 		scrollScenario.setAlignmentX(Component.LEFT_ALIGNMENT);
+		scrollScenario.setWheelScrollingEnabled(true);
 		mHScrollBar = scrollScenario.getHorizontalScrollBar();
 		mHScrollBar.setUnitIncrement(Global.W_DEVICE_SMALL / 2);
-
+		mHScrollBar.setBlockIncrement(Global.W_DEVICE_SMALL / 2);
 		return scrollScenario;
 	}
 
@@ -190,6 +171,141 @@ public class SensorsScenarioView extends JPanel {
 		return panel;
 	}
 
+	// GUI operation: add/remove/update
+	/**
+	 * Removes a (small) view from the scenario list.
+	 */
+	public void removeView(StateViewSmall view) {
+		view.setVisible(false);
+		// remove from scenario
+		int removedPosition = indexOfView(view);
+		mScenarioPanel.remove(removedPosition);
+		// take care of the big (detailed) view
+		if (mCurrentSmallView != null && mCurrentSmallView.equals(view)) {
+			mCurrentBigView.setVisible(false);
+			mCurrentBigView = null;
+			mCurrentSmallView = null;
+		}
+		// compute the new number of pixels per scenario position
+		mTimeBar.scaleNumberOfPixelsPerPosition();
+		refresh();
+	}
+
+	public void addView(StateViewSmall stateView) {
+		addView(mScenarioPanel.getComponents().length, stateView);
+	}
+
+	/**
+	 * Adds the view to the scenario, compute pixels per position for mTimeBar
+	 * and update scroll position to the new added state.
+	 * 
+	 * @param position
+	 *            of the new added view
+	 * @param stateView
+	 *            the new view to be add in the scenario
+	 */
+	public void addView(int position, StateViewSmall stateView) {
+		mScenarioPanel.add(stateView, position);
+		mTimeBar.scaleNumberOfPixelsPerPosition();
+		updateScrollPosition();
+		refresh();
+	}
+
+	/**
+	 * Sets the model for the detailed view.
+	 * @param model based on which to create the detail view
+	 * @param smallView used to know if we should clean the detailed view
+	 * when deleting a certain state. 
+	 */
+	public void showBigView(StateModel model, StateViewSmall smallView) {
+		mCurrentBigView = new StateViewBig(model, smallView, this);
+		mCurrentSmallView = smallView;
+		// TODO: move controller (like StateControllerSmall is instantiate)
+		new StateControllerBig(mModel, this, model, mCurrentBigView);
+		mRightPanel.removeAll();
+		mRightPanel.add(mCurrentBigView, BorderLayout.CENTER);
+		mModel.setCurrentPosition(indexOfView(smallView));
+		refresh();
+	}
+
+	/**
+	 * Updates mHScrollBar value to the current state from the model, taking into account
+	 * the number of items in the scenario and pixels per position.
+	 */
+	public void updateScrollPosition() {
+		int scenarioPosition = mModel.getCurrentPosition();
+		float scrollPxPerPosition = (((float) mHScrollBar.getMaximum() - mHScrollBar
+				.getVisibleAmount()) / mModel.getStates().size());
+		if (scenarioPosition == 0) {
+			scenarioPosition = -1;
+		}
+		int newScrollValue = (int) ((scenarioPosition + 1) * scrollPxPerPosition);
+		mHScrollBar.setValue(newScrollValue);
+		refresh();
+	}
+
+	/**
+	 * 
+	 * @param toSearchView
+	 * @return The index of the toSearchView in the scenario.
+	 */
+	public int indexOfView(StateViewSmall toSearchView) {
+		Component[] components = mScenarioPanel.getComponents();
+		for (int i = 0; i < components.length; i++) {
+			Component view = components[i];
+			if (view == toSearchView)
+				return i;
+		}
+		return -1;
+	}
+
+	public void addTextToScenario(String text) {
+		mScenarioPanel.add(new JLabel(text));
+	}
+
+	/**
+	 * Checks if a state is the current state (Used to highlight the selected -
+	 * current - state).
+	 * 
+	 * @param toCheckState
+	 * @return
+	 */
+	public boolean isCurrentState(StateViewSmall toCheckState) {
+		int viewPos = indexOfView(toCheckState);
+		if (viewPos != -1)
+			return mModel.getCurrentPosition() == viewPos;
+		return false;
+	}
+
+	public void clearScenario() {
+		mScenarioPanel.removeAll();
+		mCurrentBigView = null;
+		mCurrentSmallView = null;
+		refresh();
+	}
+
+	public void refresh(JPanel comp) {
+		comp.revalidate();
+		comp.repaint();
+	}
+
+	public void refresh() {
+		refresh(this);
+	}
+
+	// getters
+	public JScrollBar getScenarioHScroll() {
+		return mHScrollBar;
+	}
+
+	public TimeScrollBar getTimeBar() {
+		return mTimeBar;
+	}
+
+	public JButton getPlayButton() {
+		return mPlayBtn;
+	}
+
 	public JButton getCreateButton() {
 		return mCreateNewBtn;
 	}
@@ -210,139 +326,7 @@ public class SensorsScenarioView extends JPanel {
 		return mStopBtn;
 	}
 
-	public void refreshStates() {
-		mStatesViewArraySmall.clear();
-		mScenarioPanel.removeAll();
-		ArrayList<StateModel> models = mModel.getStates();
-		if (models != null) {
-			for (StateModel stateModel : models) {
-				addView(stateModel);
-			}
-			if (models.size() > 0) {
-				mTimeBar.setEndPosition(models.size() - 1);
-				refresh();
-			}
-		}
-
-	}
-
-	public void removeFromGui(StateViewSmall view) {
-		view.setVisible(false);
-		int removedPosition = mStatesViewArraySmall.indexOf(view);
-		mStatesViewArraySmall.remove(removedPosition);
-		mScenarioPanel.remove(removedPosition);
-		if (mCurrentSmallView != null && mCurrentSmallView.equals(view)) {
-			mCurrentBigView.setVisible(false);
-			mCurrentBigView = null;
-			mCurrentSmallView = null;
-		}
-		mTimeBar.removePosition(removedPosition);
-		refresh();
-	}
-
-	public void addView(StateModel stateModel) {
-		addView(stateModel, mStatesViewArraySmall.size());
-	}
-
-	public int addView(StateViewSmall afterView, StateModel stateModel) {
-		int position = mStatesViewArraySmall.indexOf(afterView) + 1;
-		addView(stateModel, position);
-		return position;
-	}
-
-	private void addView(StateModel stateModel, int position) {
-		StateViewSmall stateView = new StateViewSmall(stateModel);
-		new StateControllerSmall(mModel, this, stateModel, stateView);
-		mStatesViewArraySmall.add(position, stateView);
-		mScenarioPanel.add(stateView, position);
-		if (mStatesViewArraySmall.size() > 1) {
-			mTimeBar.incrementNoStates();
-		}
-		refresh();
-	}
-
-	public void showBigView(StateModel model, StateViewSmall smallView) {
-		mCurrentBigView = new StateViewBig(model, smallView);
-		mCurrentSmallView = smallView;
-		new StateControllerBig(mModel, this, model, mCurrentBigView);
-		mRightPanel.removeAll();
-		mRightPanel.add(mCurrentBigView, BorderLayout.CENTER);
-		refresh(mRightPanel);
-	}
-
-	public JButton getPlayButton() {
-		return mPlayBtn;
-	}
-
 	public boolean isLooping() {
 		return mLoop.isSelected();
-	}
-
-	public void setStatusText(String text) {
-		mScenarioPanel.add(new JLabel(text));
-	}
-
-	public void clearScenario() {
-		mScenarioPanel.removeAll();
-		mStatesViewArraySmall.clear();
-		mCurrentBigView = null;
-		mCurrentSmallView = null;
-		mTimeBar.reset();
-		refresh();
-	}
-
-	public int getStartState() {
-		return mTimeBar.getStartState();
-	}
-
-	public int getStopState() {
-		return mTimeBar.getStopState();
-	}
-
-	public void setStartState(int value) {
-		mTimeBar.setStartState(value);
-		refresh();
-	}
-
-	public void setStopState(int value) {
-		mTimeBar.setStopState(value, true);
-		refresh();
-	}
-
-	public void setCrtState(int position) {
-		mTimeBar.setCurrentPosition(position);
-		updateScrollPosition(position);
-		refresh();
-	}
-
-	protected void updateScrollPosition(int scenarioPosition) {
-		// set scenario scroll bar
-		float scrollPxPerPosition = ((float) mHScrollBar.getMaximum() - mHScrollBar
-				.getVisibleAmount()) / mStatesViewArraySmall.size();
-
-		int newScrollValue = Math.round(scenarioPosition * scrollPxPerPosition);
-		mHScrollBar.setValue(newScrollValue);
-	}
-
-	public void refresh(JPanel comp) {
-		comp.revalidate();
-		comp.repaint();
-	}
-
-	public JScrollBar getScenarioHScroll() {
-		return mHScrollBar;
-	}
-
-	public int getScenarioSize() {
-		return mStatesViewArraySmall.size();
-	}
-
-	public void setCrtPosition(int crtPosition) {
-		mTimeBar.setCurrentPosition(crtPosition);
-		refresh();
-	}
-
-	public void refresh() {
-		refresh(this);
 	}
 }

@@ -30,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -67,7 +68,7 @@ public class ProximityView extends SensorView {
 	public JPanel fillSensorSpecificSettingsPanel() {
 		JPanel resultPanel = new JPanel(new GridBagLayout());
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Settings"),
+				BorderFactory.createTitledBorder("Parameters"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GridBagConstraints c3 = new GridBagConstraints();
 		GridBagConstraints c2 = new GridBagConstraints();
@@ -85,7 +86,7 @@ public class ProximityView extends SensorView {
 		c3.gridx = 0;
 		c3.gridy = 0;
 
-		JLabel label = new JLabel("Proximity: ", JLabel.LEFT);
+		JLabel label = new JLabel("Proximity: ", SwingConstants.LEFT);
 		c3.gridwidth = 1;
 		c3.gridx = 0;
 		c3.gridy++;
@@ -97,11 +98,11 @@ public class ProximityView extends SensorView {
 		mProximityText.setEnabled(false);
 		proximityFieldPane.add(mProximityText, c3);
 
-		label = new JLabel(" cm", JLabel.LEFT);
+		label = new JLabel(" cm", SwingConstants.LEFT);
 		c3.gridx = 2;
 		proximityFieldPane.add(label, c3);
 
-		label = new JLabel("Maximum range: ", JLabel.LEFT);
+		label = new JLabel("Maximum range: ", SwingConstants.LEFT);
 		c3.gridwidth = 1;
 		c3.gridx = 0;
 		c3.gridy++;
@@ -118,14 +119,17 @@ public class ProximityView extends SensorView {
 		mProximityRangeText.getDocument().addDocumentListener(
 				new DocumentListener() {
 
+					@Override
 					public void changedUpdate(DocumentEvent arg0) {
 						updateProximityText();
 					}
 
+					@Override
 					public void insertUpdate(DocumentEvent arg0) {
 						updateProximityText();
 					}
 
+					@Override
 					public void removeUpdate(DocumentEvent arg0) {
 						updateProximityText();
 					}
@@ -151,7 +155,7 @@ public class ProximityView extends SensorView {
 		c3.gridx = 1;
 		proximityFieldPane.add(mProximityRangeText, c3);
 
-		label = new JLabel(" cm", JLabel.LEFT);
+		label = new JLabel(" cm", SwingConstants.LEFT);
 		c3.gridx = 2;
 		proximityFieldPane.add(label, c3);
 

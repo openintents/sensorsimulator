@@ -26,6 +26,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
 
@@ -69,7 +70,7 @@ public class MagneticFieldView extends SensorView {
 	public JPanel fillSensorSpecificSettingsPanel() {
 		JPanel resultPanel = new JPanel(new GridBagLayout());
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Settings"),
+				BorderFactory.createTitledBorder("Parameters"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GridBagConstraints c3 = new GridBagConstraints();
 		GridBagConstraints c2 = new GridBagConstraints();
@@ -87,7 +88,7 @@ public class MagneticFieldView extends SensorView {
 		c3.gridy = 0;
 
 		JLabel magneticFieldNorthLabel = new JLabel("North component: ",
-				JLabel.LEFT);
+				SwingConstants.LEFT);
 		c3.gridwidth = 1;
 		c3.gridx = 0;
 		c3.gridy++;
@@ -98,12 +99,12 @@ public class MagneticFieldView extends SensorView {
 		c3.gridx = 1;
 		magneticFieldPane.add(mNorthText, c3);
 
-		JLabel nanoTeslaLabel = new JLabel(" nT", JLabel.LEFT);
+		JLabel nanoTeslaLabel = new JLabel(" nT", SwingConstants.LEFT);
 		c3.gridx = 2;
 		magneticFieldPane.add(nanoTeslaLabel, c3);
 
 		JLabel magneticFieldEastLabel = new JLabel("East component: ",
-				JLabel.LEFT);
+				SwingConstants.LEFT);
 		c3.gridwidth = 1;
 		c3.gridx = 0;
 		c3.gridy++;
@@ -114,12 +115,12 @@ public class MagneticFieldView extends SensorView {
 		c3.gridx = 1;
 		magneticFieldPane.add(mEastText, c3);
 
-		nanoTeslaLabel = new JLabel(" nT", JLabel.LEFT);
+		nanoTeslaLabel = new JLabel(" nT", SwingConstants.LEFT);
 		c3.gridx = 2;
 		magneticFieldPane.add(nanoTeslaLabel, c3);
 
 		JLabel magneticFieldVerticalLabel = new JLabel("Vertical component: ",
-				JLabel.LEFT);
+				SwingConstants.LEFT);
 		c3.gridwidth = 1;
 		c3.gridx = 0;
 		c3.gridy++;
@@ -130,7 +131,7 @@ public class MagneticFieldView extends SensorView {
 		c3.gridx = 1;
 		magneticFieldPane.add(mVerticalText, c3);
 
-		JLabel label = new JLabel(" nT", JLabel.LEFT);
+		JLabel label = new JLabel(" nT", SwingConstants.LEFT);
 		c3.gridx = 2;
 		magneticFieldPane.add(label, c3);
 

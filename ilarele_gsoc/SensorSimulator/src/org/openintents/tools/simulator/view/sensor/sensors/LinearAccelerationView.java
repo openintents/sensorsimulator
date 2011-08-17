@@ -24,6 +24,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
@@ -57,7 +58,7 @@ public class LinearAccelerationView extends SensorView {
 	public JPanel fillSensorSpecificSettingsPanel() {
 		JPanel resultPanel = new JPanel();
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Settings"),
+				BorderFactory.createTitledBorder("Parameters"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		LinearAccelerationModel linearAccModel = (LinearAccelerationModel) mModel;
 
@@ -69,34 +70,34 @@ public class LinearAccelerationView extends SensorView {
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
 						"For Computing Linear Acc")));
 
-		JLabel label = new JLabel("Pixels per meter: ", JLabel.LEFT);
+		JLabel label = new JLabel("Pixels per meter: ", SwingConstants.LEFT);
 		linearAccFieldPane.add(label);
 
 		mPixelPerMeterText = new JTextField(5);
 		mPixelPerMeterText.setText("" + linearAccModel.getPixelsPerMeter());
 		linearAccFieldPane.add(mPixelPerMeterText);
 
-		label = new JLabel(" p/m", JLabel.LEFT);
+		label = new JLabel(" p/m", SwingConstants.LEFT);
 		linearAccFieldPane.add(label);
 
-		label = new JLabel("Spring constant:", JLabel.LEFT);
+		label = new JLabel("Spring constant:", SwingConstants.LEFT);
 		linearAccFieldPane.add(label);
 
 		mSpringConstantText = new JTextField(5);
 		mSpringConstantText.setText("" + linearAccModel.getSpringConstant());
 		linearAccFieldPane.add(mSpringConstantText);
 
-		label = new JLabel(" p/s" + SensorModel.SQUARED, JLabel.LEFT);
+		label = new JLabel(" p/s" + SensorModel.SQUARED, SwingConstants.LEFT);
 		linearAccFieldPane.add(label);
 
-		label = new JLabel("Damping constant: ", JLabel.LEFT);
+		label = new JLabel("Damping constant: ", SwingConstants.LEFT);
 		linearAccFieldPane.add(label);
 
 		mDampingConstantText = new JTextField(5);
 		mDampingConstantText.setText("" + linearAccModel.getDampingConstant());
 		linearAccFieldPane.add(mDampingConstantText);
 
-		label = new JLabel(" p/s", JLabel.LEFT);
+		label = new JLabel(" p/s", SwingConstants.LEFT);
 		linearAccFieldPane.add(label);
 
 		resultPanel.add(linearAccFieldPane);

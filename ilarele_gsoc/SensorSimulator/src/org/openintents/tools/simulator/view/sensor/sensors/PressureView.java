@@ -27,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
 
@@ -57,7 +58,7 @@ public class PressureView extends SensorView {
 		mSensorQuickPane.add(new JLabel("Pressure"));
 
 		layout.gridx = 1;
-		mPressureSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
+		mPressureSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100, 0);
 		mPressureSlider.setPaintTicks(true);
 		mPressureSlider.setPaintLabels(true);
 		mPressureSlider.setMajorTickSpacing(50);
@@ -74,7 +75,7 @@ public class PressureView extends SensorView {
 	public JPanel fillSensorSpecificSettingsPanel() {
 		JPanel resultPanel = new JPanel(new GridBagLayout());
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Settings"),
+				BorderFactory.createTitledBorder("Parameters"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GridBagConstraints c3 = new GridBagConstraints();
 		GridBagConstraints c2 = new GridBagConstraints();
@@ -89,7 +90,7 @@ public class PressureView extends SensorView {
 		c3.gridx = 0;
 		c3.gridy = 0;
 
-		JLabel label = new JLabel("Pressure Value: ", JLabel.LEFT);
+		JLabel label = new JLabel("Pressure Value: ", SwingConstants.LEFT);
 		c3.gridwidth = 1;
 		c3.gridx = 0;
 		c3.gridy++;
@@ -100,7 +101,7 @@ public class PressureView extends SensorView {
 		c3.gridx = 1;
 		pressureFieldPane.add(mPressureText, c3);
 
-		label = new JLabel(" lux", JLabel.LEFT);
+		label = new JLabel(" lux", SwingConstants.LEFT);
 		c3.gridx = 2;
 		pressureFieldPane.add(label, c3);
 

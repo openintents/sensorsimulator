@@ -23,6 +23,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
@@ -53,7 +54,7 @@ public class BarcodeReaderView extends SensorView {
 		// Panel for our barcode reader
 		JPanel resultPanel = new JPanel(new GridBagLayout());
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Settings"),
+				BorderFactory.createTitledBorder("Parameters"),
 				BorderFactory.createEmptyBorder(0, 0, 0, 0)));
 
 		GridBagConstraints layout = new GridBagConstraints();
@@ -61,7 +62,7 @@ public class BarcodeReaderView extends SensorView {
 		layout.gridx = 0;
 		layout.gridy = 0;
 
-		JLabel label = new JLabel("Barcode: ", JLabel.LEFT);
+		JLabel label = new JLabel("Barcode: ", SwingConstants.LEFT);
 		layout.gridwidth = 1;
 		layout.gridx = 0;
 		layout.gridy++;

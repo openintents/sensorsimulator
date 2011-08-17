@@ -85,6 +85,7 @@ public class SensorServerThread implements Runnable {
 	/**
 	 * Method to call only once thread.
 	 */
+	@Override
 	public void run() {
 		listenThread();
 	}
@@ -130,8 +131,9 @@ public class SensorServerThread implements Runnable {
 			if (mTalking) {
 				System.err.println("IOException in SensorServerThread.");
 				try {
-					if (mClientSocket != null)
+					if (mClientSocket != null) {
 						mClientSocket.close();
+					}
 				} catch (IOException e2) {
 					System.err.println("Close failed as well.");
 				}
@@ -168,9 +170,9 @@ public class SensorServerThread implements Runnable {
 		String sensorName = in.readLine();
 		SensorController sensorCtrl = getSensorCtrlFromName(sensorName);
 		SensorModel sensorModel = getSensorModelFromName(sensorName);
-		if (cmd.compareTo("getNumSensorValues()") == 0)
+		if (cmd.compareTo("getNumSensorValues()") == 0) {
 			sensorModel.getNumSensorValues(out);
-		else if (cmd.compareTo("setSensorUpdateDelay()") == 0) {
+		} else if (cmd.compareTo("setSensorUpdateDelay()") == 0) {
 			String args = in.readLine();
 			if (sensorModel.isEnabled()) {
 				int updateDelay = Integer.parseInt(args);
@@ -196,8 +198,9 @@ public class SensorServerThread implements Runnable {
 						.addMessage("WARNING: Client sent unexpected command: "
 								+ cmd);
 			}
-		} else
+		} else {
 			out.println("throw IllegalArgumentException");
+		}
 	}
 
 	/**
@@ -232,6 +235,8 @@ public class SensorServerThread implements Runnable {
 			return ctrl.getGravity();
 		else if (sensorName.compareTo(SensorModel.ROTATION_VECTOR) == 0)
 			return ctrl.getRotationVector();
+		else if (sensorName.compareTo(SensorModel.GYROSCOPE) == 0)
+			return ctrl.getGyroscope();
 		return null;
 	}
 
@@ -266,6 +271,8 @@ public class SensorServerThread implements Runnable {
 			return model.getGravity();
 		else if (sensorName.compareTo(SensorModel.ROTATION_VECTOR) == 0)
 			return model.getRotationVector();
+		else if (sensorName.compareTo(SensorModel.GYROSCOPE) == 0)
+			return model.getGyroscope();
 		return null;
 	}
 

@@ -44,7 +44,6 @@ public class Global {
 			"pics/icon_play_pause.png");
 	public static final ImageIcon ICON_STOP = new ImageIcon(
 			"pics/icon_stop.png");
-
 	public static final ImageIcon MENU_SENSOR_SIMULATOR = new ImageIcon(
 			"pics/menu_sensor_simulator.png");
 	public static final ImageIcon MENU_CONSOLE = new ImageIcon(
@@ -55,6 +54,10 @@ public class Global {
 			"pics/menu_help.png");
 
 	public static final String ICON_SENSOR_SIMULATOR_PATH = "pics/icon_sensor_simulator.png";
+
+	public static final File IMAGE_START = new File("pics/button_start.png");
+	public static final File IMAGE_STOP = new File("pics/button_stop.png");
+	public static final File IMAGE_CURSOR = new File("pics/icon_cursor.png");
 
 	// help URLs
 	public static final String HELP_ONE_SENSOR_URL = "http://developer.android.com/reference/android/hardware/SensorEvent.html";
@@ -113,9 +116,6 @@ public class Global {
 
 	public static final int W_DEVICE_BIG = 150;
 	public static final int H_DEVICE_BIG = 150;
-	public static final File IMAGE_START = new File("pics/button_start.png");
-	public static final File IMAGE_STOP = new File("pics/button_stop.png");
-	public static final File IMAGE_CURSOR = new File("pics/icon_cursor.png");
-	public static final String CONFIG_DIR = "configDir.txt";
 
+	public static final String CONFIG_DIR = "configDir.txt";
 }

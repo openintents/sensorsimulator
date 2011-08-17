@@ -24,6 +24,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.model.sensor.sensors.GravityModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
@@ -55,7 +56,7 @@ public class GravityView extends SensorView {
 	public JPanel fillSensorSpecificSettingsPanel() {
 		JPanel resultPanel = new JPanel();
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Settings"),
+				BorderFactory.createTitledBorder("Parameters"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GravityModel gravityModel = (GravityModel) mModel;
 
@@ -65,24 +66,24 @@ public class GravityView extends SensorView {
 				BorderFactory.createTitledBorder(
 						BorderFactory.createEmptyBorder(3, 0, 15, 0),
 						"For Computing Gravity")));
-		JLabel label = new JLabel("Constant g: ", JLabel.LEFT);
+		JLabel label = new JLabel("Constant g: ", SwingConstants.LEFT);
 		gravityFieldPane.add(label);
 
 		mGravityConstantText = new JTextField(5);
 		mGravityConstantText.setText("" + gravityModel.getGravityConstant());
 		gravityFieldPane.add(mGravityConstantText);
 
-		label = new JLabel(" m/s" + SensorModel.SQUARED, JLabel.LEFT);
+		label = new JLabel(" m/s" + SensorModel.SQUARED, SwingConstants.LEFT);
 		gravityFieldPane.add(label);
 
-		label = new JLabel("Acceleration limit: ", JLabel.LEFT);
+		label = new JLabel("Acceleration limit: ", SwingConstants.LEFT);
 		gravityFieldPane.add(label);
 
 		mAccelerometerLimitText = new JTextField(5);
 		mAccelerometerLimitText.setText("" + gravityModel.getAccelLimit());
 		gravityFieldPane.add(mAccelerometerLimitText);
 
-		label = new JLabel(" g", JLabel.LEFT);
+		label = new JLabel(" g", SwingConstants.LEFT);
 		gravityFieldPane.add(label);
 		resultPanel.add(gravityFieldPane);
 		return resultPanel;

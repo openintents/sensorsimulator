@@ -26,6 +26,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.model.sensor.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
@@ -56,7 +57,7 @@ public class RotationVectorView extends SensorView {
 	public JPanel fillSensorSpecificSettingsPanel() {
 		JPanel resultPanel = new JPanel();
 		resultPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Settings"),
+				BorderFactory.createTitledBorder("Parameters"),
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		GridBagConstraints c3 = new GridBagConstraints();
 		RotationVectorModel rotationModel = (RotationVectorModel) mModel;
@@ -73,19 +74,19 @@ public class RotationVectorView extends SensorView {
 
 		// x
 
-		JLabel label = new JLabel("Θ(x): ", JLabel.LEFT);
+		JLabel label = new JLabel("Θ(x): ", SwingConstants.LEFT);
 		rotationFieldPane.add(label, c3);
 		mRotationVectorTextX = new JTextField(5);
 		mRotationVectorTextX.setText("" + rotationModel.getRotationVectorX());
 		c3.gridx = 1;
 		rotationFieldPane.add(mRotationVectorTextX, c3);
 
-		label = new JLabel(rotationModel.getSI(), JLabel.LEFT);
+		label = new JLabel(rotationModel.getSI(), SwingConstants.LEFT);
 		c3.gridx = 2;
 		rotationFieldPane.add(label, c3);
 
 		// y
-		label = new JLabel("Θ(y): ", JLabel.LEFT);
+		label = new JLabel("Θ(y): ", SwingConstants.LEFT);
 		c3.gridx = 0;
 		c3.gridy = 1;
 		rotationFieldPane.add(label, c3);
@@ -95,14 +96,14 @@ public class RotationVectorView extends SensorView {
 		c3.gridx = 1;
 		rotationFieldPane.add(mRotationVectorTextY, c3);
 
-		label = new JLabel(rotationModel.getSI(), JLabel.LEFT);
+		label = new JLabel(rotationModel.getSI(), SwingConstants.LEFT);
 		c3.gridx = 2;
 		rotationFieldPane.add(label, c3);
 
 		// z
 		c3.gridx = 0;
 		c3.gridy = 2;
-		label = new JLabel("Θ(z): ", JLabel.LEFT);
+		label = new JLabel("Θ(z): ", SwingConstants.LEFT);
 		rotationFieldPane.add(label, c3);
 
 		mRotationVectorTextZ = new JTextField(5);
@@ -110,7 +111,7 @@ public class RotationVectorView extends SensorView {
 		c3.gridx = 1;
 		rotationFieldPane.add(mRotationVectorTextZ, c3);
 
-		label = new JLabel(rotationModel.getSI(), JLabel.LEFT);
+		label = new JLabel(rotationModel.getSI(), SwingConstants.LEFT);
 		c3.gridx = 2;
 		rotationFieldPane.add(label, c3);
 

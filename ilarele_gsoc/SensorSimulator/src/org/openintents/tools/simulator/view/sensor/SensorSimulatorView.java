@@ -398,7 +398,7 @@ public class SensorSimulatorView extends JPanel {
 
 		// add sensor specific panel
 		JPanel sensorSpecific = fillSpecificPerSensorPanel();
-		rightPanel.addTab("Sensor Specific Settings", sensorSpecific);
+		rightPanel.addTab("Sensors Parameters", sensorSpecific);
 
 		return rightPanel;
 	}
