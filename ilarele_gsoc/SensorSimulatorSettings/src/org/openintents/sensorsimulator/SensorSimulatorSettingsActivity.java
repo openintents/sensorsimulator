@@ -182,8 +182,11 @@ public class SensorSimulatorSettingsActivity extends Activity {
 
 		setButtonState();
 
-		mEditTextIP.setText(mSensorSimulatorConvenience
-				.getPreference(SensorSimulator.KEY_IPADDRESS));
+		String ipAddress = mSensorSimulatorConvenience
+				.getPreference(SensorSimulator.KEY_IPADDRESS);
+		if (!ipAddress.contentEquals("")) {
+			mEditTextIP.setText(ipAddress);
+		}
 		String s = mSensorSimulatorConvenience
 				.getPreference(SensorSimulator.KEY_SOCKET);
 		if (s.contentEquals("")) {

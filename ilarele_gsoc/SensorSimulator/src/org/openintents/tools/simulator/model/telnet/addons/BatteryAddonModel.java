@@ -32,58 +32,30 @@ import org.openintents.tools.simulator.view.telnet.addons.BatteryAddonView;
 public class BatteryAddonModel {
 	// TelnetSimulations variables
 
-	// Battery variables
-	private boolean mBatteryPresence;
-	private boolean mBatteryAC;
-	private String mBatteryStatus;
-	private String mBatteryHealth;
-
 	private TelnetServer mTelnetServer;
 
 	public BatteryAddonModel(final TelnetServer telnetServer) {
-		this.mTelnetServer = telnetServer;
-		// batteryPercent = 100;
-		mBatteryPresence = true;
-		mBatteryAC = true;
-		mBatteryStatus = "unknown";
-		mBatteryHealth = "unknown";
-	}
-
-	public boolean isPresent() {
-		return mBatteryPresence;
-	}
-
-	public boolean isBatteryAC() {
-		return mBatteryAC;
-	}
-
-	public String getHealth() {
-		return mBatteryHealth;
-	}
-
-	public String getStatus() {
-		return mBatteryStatus;
+		mTelnetServer = telnetServer;
 	}
 
 	public void changePower(int value) {
-		// TODO Auto-generated method stub
-
+		mTelnetServer.changePower(value);
 	}
 
-	public void changePresence(boolean b) {
-		mBatteryPresence = b;
+	public void changePresence(boolean presence) {
+		mTelnetServer.changePresence(presence);
 	}
 
-	public void changeAC(boolean b) {
-		mBatteryAC = b;
+	public void changeAC(boolean ac) {
+		mTelnetServer.changeAC(ac);
 	}
 
 	public void changeStatus(String status) {
-		mBatteryStatus = status;
+		mTelnetServer.changeStatus(status);
 	}
 
 	public void changeHealth(String health) {
-		mBatteryHealth = health;
+		mTelnetServer.changeHealth(health);
 	}
 
 	public void slowEmulation(BatteryAddonView view) {

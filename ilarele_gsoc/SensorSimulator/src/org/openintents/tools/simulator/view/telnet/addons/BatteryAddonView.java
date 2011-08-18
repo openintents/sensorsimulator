@@ -25,6 +25,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.model.telnet.addons.BatteryAddonModel;
 
@@ -59,7 +60,7 @@ public class BatteryAddonView extends JPanel {
 	private JButton mOpenButton;
 
 	public BatteryAddonView(BatteryAddonModel model) {
-		mBatterySlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
+		mBatterySlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100, 50);
 		mBatterySlider.setMajorTickSpacing(10);
 		mBatterySlider.setMinorTickSpacing(5);
 		mBatterySlider.setPaintTicks(true);
@@ -67,16 +68,14 @@ public class BatteryAddonView extends JPanel {
 		mBatterySlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
 		mBatteryPresence = new JCheckBox("Is Present");
-		mBatteryPresence.setSelected(model.isPresent());
+		mBatteryPresence.setSelected(true);
 
 		mBatteryAC = new JCheckBox("AC plugged");
-		mBatteryAC.setSelected(model.isBatteryAC());
+		mBatteryAC.setSelected(true);
 
 		mBatteryStatusList = new JComboBox(mBatteryStatus);
-		mBatteryStatusList.setSelectedItem(model.getStatus());
 
 		mBatteryHealthList = new JComboBox(mBatteryHealth);
-		mBatteryHealthList.setSelectedItem(model.getHealth());
 
 		mBatteryNext = new JButton("Next time event");
 
