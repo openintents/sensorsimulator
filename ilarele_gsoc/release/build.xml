@@ -74,7 +74,6 @@
 		<mkdir dir="${release-dir}"/>
 		<mkdir dir="${sensorsimulator-dir}"/>
 		<mkdir dir="${sensorsimulator-bin-dir}"/>
-		<mkdir dir="${sensorsimulator-bin-dir}/pics"/>
 		<mkdir dir="${sensorsimulator-lib-dir}"/>
 		<mkdir dir="${sensorsimulator-dir}/release"/>
 		
@@ -191,14 +190,9 @@
 			<fileset dir="${sensorsimulator-source-dir}">
 				<include name="bin/sensorsimulator-${version}.jar" />
 				<include name="readme_SensorSimulator.txt" />
-				<include name="configPhone.txt" />
 			</fileset>
 		</copy>
-		<copy todir="${sensorsimulator-bin-dir}/pics">
-		    <fileset dir="${sensorsimulator-source-dir}/pics">
-	    		<include name="*" />
-		    </fileset>
-		</copy>
+		
 		<!-- Copy to source release -->
 		<copy todir="${sensorsimulator-dir}/SensorSimulator">
 		    <fileset dir="${sensorsimulator-source-dir}">

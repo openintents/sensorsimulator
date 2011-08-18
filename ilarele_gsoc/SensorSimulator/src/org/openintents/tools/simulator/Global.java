@@ -17,7 +17,7 @@
 package org.openintents.tools.simulator;
 
 import java.awt.Color;
-import java.io.File;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 
 import javax.swing.ImageIcon;
@@ -31,33 +31,26 @@ public class Global {
 			"#0.0");
 
 	// icons
-	public static final ImageIcon ICON_HELP = new ImageIcon(
-			"pics/icon_help.png");
-	public static final ImageIcon ICON_EDIT = new ImageIcon(
-			"pics/icon_edit.png");
-	public static final ImageIcon ICON_ADD = new ImageIcon("pics/icon_add.png");
-	public static final ImageIcon ICON_DELETE = new ImageIcon(
-			"pics/icon_delete.png");
-	public static final ImageIcon ICON_COPY = new ImageIcon(
-			"pics/icon_copy.png");
-	public static final ImageIcon ICON_PLAY_PAUSE = new ImageIcon(
-			"pics/icon_play_pause.png");
-	public static final ImageIcon ICON_STOP = new ImageIcon(
-			"pics/icon_stop.png");
-	public static final ImageIcon MENU_SENSOR_SIMULATOR = new ImageIcon(
-			"pics/menu_sensor_simulator.png");
-	public static final ImageIcon MENU_CONSOLE = new ImageIcon(
-			"pics/menu_console.png");
-	public static final ImageIcon MENU_SETTINGS = new ImageIcon(
-			"pics/menu_settings.png");
-	public static final ImageIcon MENU_HELP = new ImageIcon(
-			"pics/menu_help.png");
+	public static ImageIcon ICON_HELP;
+	public static ImageIcon ICON_EDIT;
+	public static ImageIcon ICON_ADD;
+	public static ImageIcon ICON_DELETE;
+	public static ImageIcon ICON_COPY;
+	public static ImageIcon ICON_PLAY_PAUSE;
+	public static ImageIcon ICON_STOP;
+	public static ImageIcon MENU_SENSOR_SIMULATOR;
+	public static ImageIcon MENU_CONSOLE;
+	public static ImageIcon MENU_SETTINGS;
+	public static ImageIcon MENU_HELP;
 
-	public static final String ICON_SENSOR_SIMULATOR_PATH = "pics/icon_sensor_simulator.png";
+	public static String ICON_SENSOR_SIMULATOR_PATH;
 
-	public static final File IMAGE_START = new File("pics/button_start.png");
-	public static final File IMAGE_STOP = new File("pics/button_stop.png");
-	public static final File IMAGE_CURSOR = new File("pics/icon_cursor.png");
+	public static InputStream IMAGE_START;
+	public static InputStream IMAGE_STOP;
+	public static InputStream IMAGE_CURSOR;
+
+	public static InputStream FILE_CONFIG_PHONE;
+	public static final String CONFIG_DIR = "configDir.txt";
 
 	// help URLs
 	public static final String HELP_ONE_SENSOR_URL = "http://developer.android.com/reference/android/hardware/SensorEvent.html";
@@ -66,7 +59,6 @@ public class Global {
 	public static final String HELP_OPENINTENTS_FORUM_URL = "http://openintents.org/en/forum";
 	public static final int WIDTH_HELP = 550;
 	public static final int HEIGHT_HELP = 550;
-	public static final String FILE_CONFIG_PHONE = "configPhone.txt";
 	public static final int RECORDING_PORT = 9100;
 
 	public static final float MS_IN_SECOND = 1000;
@@ -117,5 +109,45 @@ public class Global {
 	public static final int W_DEVICE_BIG = 150;
 	public static final int H_DEVICE_BIG = 150;
 
-	public static final String CONFIG_DIR = "configDir.txt";
+	public void initGlobal() {
+		System.out.println(getClass());
+		System.out.println(getClass().getClassLoader());
+		System.out.println(getClass().getClassLoader().getResource(
+				"pics/icon_help.png"));
+		ICON_HELP = new ImageIcon(getClass().getClassLoader().getResource(
+				"pics/icon_help.png"));
+		ICON_EDIT = new ImageIcon(getClass().getClassLoader().getResource(
+				"pics/icon_edit.png"));
+		ICON_ADD = new ImageIcon(getClass().getClassLoader().getResource(
+				"pics/icon_add.png"));
+		ICON_DELETE = new ImageIcon(getClass().getClassLoader().getResource(
+				"pics/icon_delete.png"));
+		ICON_COPY = new ImageIcon(getClass().getClassLoader().getResource(
+				"pics/icon_copy.png"));
+		ICON_PLAY_PAUSE = new ImageIcon(getClass().getClassLoader()
+				.getResource("pics/icon_play_pause.png"));
+		ICON_STOP = new ImageIcon(getClass().getClassLoader().getResource(
+				"pics/icon_stop.png"));
+		MENU_SENSOR_SIMULATOR = new ImageIcon(getClass().getClassLoader()
+				.getResource("pics/menu_sensor_simulator.png"));
+		MENU_CONSOLE = new ImageIcon(getClass().getClassLoader().getResource(
+				"pics/menu_console.png"));
+		MENU_SETTINGS = new ImageIcon(getClass().getClassLoader().getResource(
+				"pics/menu_settings.png"));
+		MENU_HELP = new ImageIcon(getClass().getClassLoader().getResource(
+				"pics/menu_help.png"));
+
+		ICON_SENSOR_SIMULATOR_PATH = getClass().getClassLoader()
+				.getResource("pics/icon_sensor_simulator.png").getFile();
+
+		IMAGE_START = getClass().getClassLoader().getResourceAsStream(
+				"pics/button_start.png");
+		IMAGE_STOP = getClass().getClassLoader().getResourceAsStream(
+				"pics/button_stop.png");
+		IMAGE_CURSOR = getClass().getClassLoader().getResourceAsStream(
+				"pics/icon_cursor.png");
+
+		FILE_CONFIG_PHONE = getClass().getClassLoader().getResourceAsStream(
+				"configPhone.txt");
+	}
 }

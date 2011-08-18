@@ -24,6 +24,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -87,10 +88,10 @@ public class TimeScrollBar extends JPanel {
 		mCursorBufferedImage = loadImage(Global.IMAGE_CURSOR);
 	}
 
-	private BufferedImage loadImage(File imageFile) {
+	private BufferedImage loadImage(InputStream inputStream) {
 		BufferedImage img;
 		try {
-			img = ImageIO.read(imageFile);
+			img = ImageIO.read(inputStream);
 			wImage = img.getWidth(null);
 			hImage = img.getHeight(null);
 			BufferedImage bi = new BufferedImage(wImage, hImage,

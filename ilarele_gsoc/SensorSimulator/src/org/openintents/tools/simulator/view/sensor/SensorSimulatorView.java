@@ -55,6 +55,7 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.SensorsScenario;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;

@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.StateModel;
 

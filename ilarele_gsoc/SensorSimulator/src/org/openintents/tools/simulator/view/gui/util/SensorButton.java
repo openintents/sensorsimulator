@@ -23,6 +23,7 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 
 import javax.swing.JButton;
+
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 

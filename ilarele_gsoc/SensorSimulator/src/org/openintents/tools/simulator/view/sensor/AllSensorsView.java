@@ -18,8 +18,6 @@ package org.openintents.tools.simulator.view.sensor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -107,28 +105,22 @@ public class AllSensorsView extends JScrollPane {
 
 		// read from file
 		Scanner scn;
-		try {
-			scn = new Scanner(new File(Global.FILE_CONFIG_PHONE));
-			scn.useDelimiter(";|\n");
-			while (scn.hasNext()) {
-				PhoneSensors phone = new PhoneSensors();
+		scn = new Scanner(Global.FILE_CONFIG_PHONE);
+		scn.useDelimiter(";|\n");
+		while (scn.hasNext()) {
+			PhoneSensors phone = new PhoneSensors();
 
-				phone.name = scn.next();
-				phone.sensors = new ArrayList<String>();
-				String[] list = scn.next().split(",");
-				for (String sensor : list) {
-					phone.sensors.add(sensor.trim());
-				}
-				mPhoneSensors.put(phone.name, phone);
+			phone.name = scn.next();
+			phone.sensors = new ArrayList<String>();
+			String[] list = scn.next().split(",");
+			for (String sensor : list) {
+				phone.sensors.add(sensor.trim());
 			}
-
-			JComboBox result = new JComboBox(mPhoneSensors.keySet().toArray());
-			return result;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			mPhoneSensors.put(phone.name, phone);
 		}
 
-		return null;
+		JComboBox result = new JComboBox(mPhoneSensors.keySet().toArray());
+		return result;
 	}
 
 	private JPanel getOtherSensors() {
