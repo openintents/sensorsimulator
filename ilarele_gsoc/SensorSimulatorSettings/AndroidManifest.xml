@@ -38,7 +38,7 @@
 		<activity
 			android:name=".SensorSimulatorSettingsActivity"
 			android:label="@string/sensorsimulatorsettings"
-			android:icon="@drawable/mobile_shake_application001a">
+			android:icon="@drawable/icon">
 			<intent-filter>
 				<action
 					android:name="android.intent.action.MAIN" />

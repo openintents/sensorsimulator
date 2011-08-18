@@ -9,7 +9,7 @@
 	     manifest(android:versionName) or manifest.package -->
 	<xmlproperty file="${build.properties.dir}/AndroidManifest.xml" />
 	<property name="version" value="${manifest(android:versionName)}" />
-	<!-- <property name="version" value="2.2"/> -->
+	
 	<!-- The intermediates directory -->
 	<!-- Eclipse uses "bin" for its own output, so we do the same. -->
 	<property name="outdir" value="bin" />
@@ -28,7 +28,7 @@
 	<!-- Output directories -->
 	<property name="outdir-classes" value="${outdir}/classes" />
 	<property name="pics" value="pics" />
-	<property name="configPhone" value="configPhone.txt" />
+	<property name="configPhone" value="${srcdir}/configPhone.txt" />
 	<property name="docdir" value="doc" />
 
 	<!-- Output file -->
@@ -73,8 +73,8 @@
 		</manifest>
 
 		<jar destfile="${out-jar}" update="true" manifest="MANIFEST.MF">
-			<fileset dir="${outdir-classes}" excludes="**/pics **/configPhone.tx*" />
-			<fileset dir="" includes="**/pics/*" />
+			<fileset dir="${outdir-classes}"/>
+			<fileset dir="${srcdir}" includes="${pics}/*" />
 			<fileset file="${configPhone}" />
 		</jar>
 	</target>

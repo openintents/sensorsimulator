@@ -5,6 +5,13 @@
 	android:layout_height="fill_parent"
 	android:orientation="vertical"
 >
+	<Button
+		android:text="@string/send_email_button"
+		android:id="@+id/send_email"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:visibility="gone"
+	></Button>
 	<TextView
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
