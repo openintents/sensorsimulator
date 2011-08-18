@@ -15,5 +15,13 @@
  ****************************************************************************
 
 SensorRecordFromDevice lets you record sensor data from the device.
+Prerequisites:
+- 	Make sure you have internet connection on both the
+	pc/laptop (on which the simulator is running) and on the Android device.
+-	The IP address of your PC must be reachable from your device.
+-	For instance you can connect both to a local wi-fi network.
+
+Steps for using SensorRecordFromDevice are available in the Android
+application.
 
 For updates, please see the SensorSimulator readme file.

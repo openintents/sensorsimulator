@@ -34,7 +34,7 @@ date: 2011-08-11
 - GSoC 2011 project by Ilarele
 - redesign of graphical user interface
 - new scenario simulator
-- record and playback complex sensor states
+- record from real device and playback complex sensor states
 
 ---------------------------------------------------------
 release: 1.1.1

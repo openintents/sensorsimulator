@@ -1,5 +1,2 @@
-change in xml sensor name in sensor type
 save/load/etc only enabled sensors
 copy-cut-paste(move) state
-separate listeners
-thread safe - check more

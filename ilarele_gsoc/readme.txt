@@ -20,15 +20,18 @@
  ****************************************************************************
 
 SensorSimulator lets you simulate sensor events from 
-accelerometer, compass, orientation, and temperature sensors.
-It transmits the simulated sensor data to an Android emulator.
+accelerometer, compass, orientation, temperature, light, proximity,
+pressure, linear acceleration, gravity, gyroscope and rotation vector
+sensors.
 
+It transmits the simulated sensor data to an Android emulator.
+Also, it can record sensor data from an real Android device.
 
 -------------------------------------------------------------
 
 INSTRUCTIONS:
 
-1) Launch bin/SensorSimulator.jar
+1) Launch bin/sensorsimulator.jar
 
 2) Install bin/SensorSimulatorSettings.apk on your Android
    emulator
@@ -48,12 +51,17 @@ INSTRUCTIONS:
    include the lib/sensorsimulator-lib.jar and follow the
    instructions that can be found in the samples source codes.
 
+7) To record from the real device you need internet connection on the
+   Android device and on the pc/laptop on which the simulator is
+   running. The ip address of the simulator must be reachable from
+   your Android device (a local wireless network will do the trick).
+
 -------------------------------------------------------------
 
 Directory structure:
 
-- bin (*): contains the executables SensorSimulator.jar
-           and SensorSimulatorSettings.apk
+- bin (*): contains the executables SensorSimulator.jar,
+           SensorSimulatorSettings.apk and SensorRecordFromDevice.apk
 - lib (*): contains the library sensorsimulator-lib.jar
 - release: contains the build script to assemble the release
 - samples: contains examples how to include the sensor simulator
@@ -62,6 +70,8 @@ Directory structure:
             sensor simulator.
 - SensorSimulatorSettings: contains the source code for
             sensor simulator settings.
+- SensorRecordFromDevice: contains the source code for
+            recording sensors from device.
 
 (*) The directories "bin" and "lib" are only available in the
     downloadable release zip file.
