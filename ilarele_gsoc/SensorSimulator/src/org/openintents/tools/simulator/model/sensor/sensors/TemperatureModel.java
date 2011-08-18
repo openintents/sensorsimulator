@@ -40,7 +40,6 @@ public class TemperatureModel extends SensorModel {
 
 	public TemperatureModel() {
 		temperatureValue = 17.7;
-		mEnabled = true;
 	}
 
 	@Override

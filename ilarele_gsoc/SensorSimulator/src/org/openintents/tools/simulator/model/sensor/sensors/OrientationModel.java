@@ -50,10 +50,6 @@ public class OrientationModel extends SensorModel {
 	private int mPitch;
 	private int mRoll;
 
-	public OrientationModel() {
-		mEnabled = true;
-	}
-
 	@Override
 	public String getName() {
 		return SensorModel.ORIENTATION;

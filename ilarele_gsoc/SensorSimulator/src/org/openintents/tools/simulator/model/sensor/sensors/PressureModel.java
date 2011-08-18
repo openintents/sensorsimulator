@@ -38,7 +38,6 @@ public class PressureModel extends SensorModel {
 
 	public PressureModel() {
 		mPressureValue = 0.5;
-		mEnabled = true;
 	}
 
 	@Override
@@ -104,12 +103,13 @@ public class PressureModel extends SensorModel {
 	}
 
 	public void setPressure(double value) {
-		if (value > 1)
+		if (value > 1) {
 			mPressureValue = 1;
-		else if (value < 0)
+		} else if (value < 0) {
 			mPressureValue = 0;
-		else
+		} else {
 			mPressureValue = value;
+		}
 	}
 
 	public void addPressure(double value) {

@@ -34,23 +34,26 @@ import org.openintents.tools.simulator.view.sensor.AllSensorsView;
 public class AllSensorsController {
 	private AllSensorsView mView;
 	private Vector<SensorController> mSensors;
+	protected String mChosenValue;
 
 	public AllSensorsController(final AllSensorsView view,
 			Vector<SensorController> sensors) {
 		mView = view;
 		mSensors = sensors;
 		final JComboBox comboBox = view.getSensorsComboBox();
+		mChosenValue = (String) comboBox.getSelectedItem();
 		comboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JComboBox cb = (JComboBox) e.getSource();
-				String chosenValue = (String) cb.getSelectedItem();
-				setEnabledSensors(view.getPhoneSensors().get(chosenValue));
+				mChosenValue = (String) cb.getSelectedItem();
+				setEnabledSensors();
 			}
 		});
 	}
 
-	protected void setEnabledSensors(PhoneSensors phoneSensors) {
+	protected void setEnabledSensors() {
+		PhoneSensors phoneSensors = mView.getPhoneSensors().get(mChosenValue);
 		Vector<SensorController> localSensors = mSensors;
 		for (SensorController sensor : localSensors) {
 			if (phoneSensors.sensors.contains(sensor.getName())) {

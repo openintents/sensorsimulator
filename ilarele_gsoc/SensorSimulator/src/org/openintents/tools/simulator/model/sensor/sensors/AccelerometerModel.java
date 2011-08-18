@@ -126,7 +126,6 @@ public class AccelerometerModel extends SensorModel {
 		mGConstant = 9.80665; // meter per second^2
 		mAccelerometerLimit = 10;
 		mWiiAccelerometerModel = new WiiAccelerometerModel();
-		mEnabled = true;
 	}
 
 	public void setXYZ(Vector vec) {

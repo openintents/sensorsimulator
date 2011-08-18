@@ -152,6 +152,7 @@ public class SensorSimulatorController implements WindowListener {
 		for (final SensorController sensorCtrl : mSensors) {
 			sensorCtrl.setTab(tabbedPanel);
 		}
+		mSensorTabController.setEnabledSensors();
 
 		mUpdateTimer = new Timer(model.getDelay(), new ActionListener() {
 			@Override

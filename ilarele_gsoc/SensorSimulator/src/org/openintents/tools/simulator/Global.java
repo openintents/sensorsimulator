@@ -110,10 +110,6 @@ public class Global {
 	public static final int H_DEVICE_BIG = 150;
 
 	public void initGlobal() {
-		System.out.println(getClass());
-		System.out.println(getClass().getClassLoader());
-		System.out.println(getClass().getClassLoader().getResource(
-				"pics/icon_help.png"));
 		ICON_HELP = new ImageIcon(getClass().getClassLoader().getResource(
 				"pics/icon_help.png"));
 		ICON_EDIT = new ImageIcon(getClass().getClassLoader().getResource(

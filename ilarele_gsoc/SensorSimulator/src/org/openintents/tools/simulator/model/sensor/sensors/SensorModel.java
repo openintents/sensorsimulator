@@ -63,19 +63,6 @@ public abstract class SensorModel {
 	public static final int TYPE_GRAVITY = 1 + TYPE_LINEAR_ACCELERATION;
 	public static final int TYPE_ROTATION_VECTOR = 1 + TYPE_GRAVITY;
 
-	// public static final String TYPE_ORIENTATION = "TYPE_ORIENTATION";
-	// public static final String TYPE_ACCELEROMETER = "TYPE_ACCELEROMETER";
-	// public static final String TYPE_GRAVITY = "TYPE_GRAVITY";
-	// public static final String TYPE_LINEAR_ACCELERATION =
-	// "TYPE_LINEAR_ACCELERATION";
-	// public static final String TYPE_TEMPERATURE = "TYPE_TEMPERATURE";
-	// public static final String TYPE_MAGNETIC_FIELD = "TYPE_MAGNETIC_FIELD";
-	// public static final String TYPE_LIGHT = "TYPE_LIGHT";
-	// public static final String TYPE_PROXIMITY = "TYPE_PROXIMITY";
-	// public static final String TYPE_PRESSURE = "TYPE_PRESSURE";
-	// public static final String TYPE_ROTATION_VECTOR = "TYPE_ROTATION_VECTOR";
-	// public static final String TYPE_GYROSCOPE = "TYPE_GYROSCOPE";
-
 	// Supported sensors
 	public static final String ORIENTATION = "orientation";
 	public static final String ACCELEROMETER = "accelerometer";

@@ -38,7 +38,6 @@ public class LightModel extends SensorModel {
 
 	public LightModel() {
 		mReadLight = mLightValue = 400;
-		mEnabled = true;
 	}
 
 	@Override
