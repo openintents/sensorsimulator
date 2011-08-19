@@ -62,6 +62,7 @@ public abstract class SensorModel {
 	public static final int TYPE_LINEAR_ACCELERATION = 1 + TYPE_PROXIMITY;
 	public static final int TYPE_GRAVITY = 1 + TYPE_LINEAR_ACCELERATION;
 	public static final int TYPE_ROTATION_VECTOR = 1 + TYPE_GRAVITY;
+	public static final int TYPE_BARCODE = 1 + TYPE_ROTATION_VECTOR;
 
 	// Supported sensors
 	public static final String ORIENTATION = "orientation";
@@ -194,6 +195,8 @@ public abstract class SensorModel {
 	}
 
 	public abstract String getName();
+
+	public abstract int getType();
 
 	public String getAverageName() {
 		return "average " + getName();

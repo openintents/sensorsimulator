@@ -12,8 +12,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -22,16 +24,32 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class SensorRecordFromDeviceActivity extends Activity {
-	protected static final String TAG = "SensorRecordFromDeviceActivity ";
-	private static final int REQUEST_SENT_MAIL = 1;
+	private static final String TAG = "SensorRecordFromDeviceActivity ";
+
+	private static final String PREF_EMAIL_SENT = "send_device";
+	private static final String PREF_IP_ADDRESS = "ip";
+	private static final String PREF_SUPPORTED_SENSORS = "supported_sensors";
+
+	protected static final CharSequence MSG_INTERNET_CONNECTION = "Please check your internet connection!";
+
+	protected static final CharSequence MSG_CHECK_MIN_ONE = "Please choose at least one sensor!";
+
 	private EditText mIpAddress;
 	private SensorsAdapter mSensorsAdapter;
 	private Button mSendEmail;
+	private SharedPreferences mPreferences;
+	private Editor mPrefsEditor;
+	private String mFullDeviceName;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record);
+
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		mPrefsEditor = mPreferences.edit();
+
+		buildFullDeviceName();
 
 		setIpText();
 		setButtons();
@@ -40,24 +58,38 @@ public class SensorRecordFromDeviceActivity extends Activity {
 		sendDeviceInfo();
 	}
 
+	private void buildFullDeviceName() {
+		String firstChar = android.os.Build.MANUFACTURER.charAt(0) + "";
+		mFullDeviceName = firstChar.toUpperCase()
+				+ android.os.Build.MANUFACTURER.substring(1) + " - "
+				+ android.os.Build.MODEL;
+	}
+
 	private void setIpText() {
 		mIpAddress = (EditText) findViewById(R.id.ip_txt);
+		// load from prefs
+		String savedIpAddress = mPreferences.getString(PREF_IP_ADDRESS, "");
+		if (!savedIpAddress.equals("")) {
+			mIpAddress.setText(savedIpAddress);
+		}
 	}
 
 	private void fillSensorsList() {
 		ArrayList<SimpleSensor> sensorsObjects = new ArrayList<SimpleSensor>();
-		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_ACCELEROMETER));
-		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_MAGNETIC_FIELD));
-		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_ORIENTATION));
-		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_GYROSCOPE));
-		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_LIGHT));
-		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_PRESSURE));
-		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_TEMPERATURE));
-		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_PROXIMITY));
-		sensorsObjects.add(new SimpleSensor(
-				SimpleSensor.TYPE_LINEAR_ACCELERATION));
-		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_GRAVITY));
-		sensorsObjects.add(new SimpleSensor(SimpleSensor.TYPE_ROTATION_VECTOR));
+		// get saved sensors
+		// if enableSensor[5] <=> sensor of type 5 (light) is enabled
+		boolean[] enableSensor = new boolean[SimpleSensor.MAX_SENSORS];
+		String[] savedSensorsString = mPreferences.getString(
+				PREF_SUPPORTED_SENSORS, "").split(" ");
+		for (String savedSensor : savedSensorsString) {
+			if (!savedSensor.equals("")) {
+				int type = Integer.parseInt(savedSensor);
+				enableSensor[type] = true;
+			}
+		}
+		for (int type = 1; type < SimpleSensor.MAX_SENSORS; type++) {
+			sensorsObjects.add(new SimpleSensor(type, enableSensor[type]));
+		}
 
 		final ListView sensorsList = (ListView) findViewById(R.id.sensors_list);
 		mSensorsAdapter = new SensorsAdapter(this, sensorsObjects);
@@ -70,13 +102,10 @@ public class SensorRecordFromDeviceActivity extends Activity {
 		mSendEmail.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				SharedPreferences prefs = PreferenceManager
-						.getDefaultSharedPreferences(SensorRecordFromDeviceActivity.this);
 				sendEMail();
 				// mark it as send anyway (we won't bother the user again)
-				Editor editor = prefs.edit();
-				editor.putBoolean("send_device", true);
-				editor.commit();
+				mPrefsEditor.putBoolean(PREF_EMAIL_SENT, true);
+				mPrefsEditor.commit();
 				mSendEmail.setVisibility(View.GONE);
 			}
 		});
@@ -84,11 +113,27 @@ public class SensorRecordFromDeviceActivity extends Activity {
 		recordBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// check the internet connection
-				if (isInternetConnected()) {
+				// get input and save it in preferences
+				String currentIp = mIpAddress.getText().toString();
 
+				ArrayList<Integer> enabledSensors = new ArrayList<Integer>();
+				StringBuffer enabledString = new StringBuffer();
+				for (int i = 0; i < mSensorsAdapter.getCount(); i++) {
+					SimpleSensor item = mSensorsAdapter.getItem(i);
+					if (item.isEnabled()) {
+						int type = item.getType();
+						enabledSensors.add(type);
+						enabledString.append(type + " ");
+					}
+				}
+				if (enabledString.length() > 0) {
+					enabledString.deleteCharAt(enabledString.length() - 1);
+				}
+				saveToPrefs(currentIp, enabledString.toString());
+
+				// check the Internet connection
+				if (isInternetConnected()) {
 					// connect to server (ip set in editText)
-					String currentIp = mIpAddress.getText().toString();
 					if (currentIp == null || currentIp.equals("")) {
 						Toast.makeText(v.getContext(), R.string.set_ip,
 								Toast.LENGTH_SHORT).show();
@@ -98,27 +143,23 @@ public class SensorRecordFromDeviceActivity extends Activity {
 					Intent intent = new Intent(v.getContext(),
 							SensorRecordService.class);
 					intent.putExtra("ip", currentIp);
-					ArrayList<Integer> enabledSensors = new ArrayList<Integer>();
-					for (int i = 0; i < mSensorsAdapter.getCount(); i++) {
-						SimpleSensor item = mSensorsAdapter.getItem(i);
-						if (item.isEnabled()) {
-							enabledSensors.add(item.getType());
+					if (enabledSensors.size() > 0) {
+						int[] arrayEnabled = new int[enabledSensors.size()];
+						for (int i = 0; i < enabledSensors.size(); i++) {
+							arrayEnabled[i] = enabledSensors.get(i);
 						}
-					}
-					int[] arrayEnabled = new int[enabledSensors.size()];
-					for (int i = 0; i < enabledSensors.size(); i++) {
-						arrayEnabled[i] = enabledSensors.get(i);
-					}
-					intent.putExtra("sensors", arrayEnabled);
+						intent.putExtra("sensors", arrayEnabled);
 
-					startService(intent);
+						startService(intent);
+					} else {
+						Toast.makeText(SensorRecordFromDeviceActivity.this,
+								MSG_CHECK_MIN_ONE, Toast.LENGTH_SHORT).show();
+					}
 				} else {
 					Toast.makeText(SensorRecordFromDeviceActivity.this,
-							"Check your internet connection",
-							Toast.LENGTH_SHORT).show();
+							MSG_INTERNET_CONNECTION, Toast.LENGTH_SHORT).show();
 				}
 			}
-
 		});
 		final Button stopBtn = (Button) findViewById(R.id.stop_btn);
 		stopBtn.setOnClickListener(new OnClickListener() {
@@ -129,6 +170,14 @@ public class SensorRecordFromDeviceActivity extends Activity {
 				stopService(intent);
 			}
 		});
+	}
+
+	protected void saveToPrefs(String ipAddress, String enabledString) {
+		mPrefsEditor.putString(PREF_IP_ADDRESS, ipAddress);
+		Log.d(TAG, "}" + enabledString + "{");
+
+		mPrefsEditor.putString(PREF_SUPPORTED_SENSORS, enabledString);
+		mPrefsEditor.commit();
 	}
 
 	protected boolean isInternetConnected() {
@@ -146,16 +195,16 @@ public class SensorRecordFromDeviceActivity extends Activity {
 			return;
 
 		// check if I already send this report
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		boolean sent = prefs.getBoolean("send_device", false);
+		boolean sent = mPreferences.getBoolean(PREF_EMAIL_SENT, false);
 
 		if (!sent) {
 			// check if the device is known in the release
 			String[] alreadySupported = getString(R.string.supported_phones)
 					.split(",");
 			for (String supported : alreadySupported) {
-				if (supported.trim().equals(android.os.Build.MODEL.trim()))
+
+				if (supported.trim().toLowerCase()
+						.equals(mFullDeviceName.toLowerCase()))
 					return;
 			}
 
@@ -165,36 +214,88 @@ public class SensorRecordFromDeviceActivity extends Activity {
 	}
 
 	private void sendEMail() {
-		SensorManager mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-
-		// List of Sensors Available
-		List<Sensor> list = mSensorManager.getSensorList(Sensor.TYPE_ALL);
-
 		StringBuilder sendText = new StringBuilder();
 		sendText.append("Dear OpenIntents support team,\n\n");
-		sendText.append(android.os.Build.MODEL + ";");
-		for (Sensor sensor : list) {
-			sendText.append(sensor.getName() + ", ");
-		}
-		sendText.append("\n\nPlease fill this information in SensorSimulator/src/configPhone.txt file, "
-				+ "in the following format example:\n");
-		sendText.append("Nexus S;accelerometer,magnetic field,orientation,"
-				+ "linear acceleration,gravity,rotation vector,gyroscope,light,proximity\n\n");
 
-		sendText.append("Also add the device name in the string resource "
-				+ "SensorRecordFromDevice/res/values/string/supported_phones\n");
-		sendText.append("------\n\n");
-		sendText.append("Thanks!\n");
+		sendText.append("Please find below device-specific information for the SensorSimulator.\n\n");
+
+		sendText.append("Add device name in SensorRecordFromDevice/res/values/string/supported_phones.\n");
+		sendText.append("Add configPhone.txt string in SensorSimulator/src/configPhone.txt.\n\n");
+
+		sendText.append("Thanks.\n\n");
+
+		sendText.append("-------------\n");
+		sendText.append("Device name: " + mFullDeviceName + "\n");
+		String configText = buildConfigText();
+		sendText.append("configPhone.txt string: " + configText + "\n\n");
+
+		sendText.append("More device info:\n");
+		sendText.append("Manufacturer: " + Build.MANUFACTURER + "\n");
+		sendText.append("Brand: " + Build.BRAND + "\n");
+		sendText.append("Product: " + Build.PRODUCT + "\n");
+		sendText.append("Device: " + Build.DEVICE + "\n");
+		sendText.append("Board: " + Build.HARDWARE + "\n");
+		sendText.append("Bootloader: " + Build.BOOTLOADER + "\n");
+		sendText.append("Radio: " + Build.RADIO + "\n");
+		sendText.append("User: " + Build.USER + "\n");
+		sendText.append("Version: " + Build.VERSION.RELEASE + "\n");
+		sendText.append("-------------\n\n");
 
 		Intent sendIntent = new Intent(Intent.ACTION_SEND);
 		sendIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
 				new String[] { "support@openintents.org" });
 		sendIntent.putExtra(Intent.EXTRA_TEXT, sendText.toString());
 		sendIntent.putExtra(Intent.EXTRA_SUBJECT,
-				"SensorSimulator: new device sensor configuration.");
+				"SensorSimulator: new device sensor configuration for "
+						+ mFullDeviceName);
 		sendIntent.setType("message/rfc822");
-		startActivityForResult(
-				Intent.createChooser(sendIntent, "Send message:"),
-				REQUEST_SENT_MAIL);
+		startActivity(Intent.createChooser(sendIntent, "Send message:"));
+	}
+
+	private String buildConfigText() {
+		SensorManager mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+		// List of all available sensors
+		List<Sensor> list = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+
+		StringBuffer sb = new StringBuffer();
+		sb.append(mFullDeviceName + ";");
+		for (Sensor sensor : list) {
+			String name = getNameByType(sensor.getType());
+			if (name != null) {
+				sb.append(name + ",");
+			}
+		}
+		if (list.size() > 0) {
+			sb.deleteCharAt(sb.length() - 1);
+		}
+		return sb.toString();
+	}
+
+	private String getNameByType(int type) {
+		switch (type) {
+		case Sensor.TYPE_ACCELEROMETER:
+			return "accelerometer";
+		case Sensor.TYPE_GRAVITY:
+			return "gravity";
+		case Sensor.TYPE_GYROSCOPE:
+			return "gyroscope";
+		case Sensor.TYPE_LIGHT:
+			return "light";
+		case Sensor.TYPE_LINEAR_ACCELERATION:
+			return "linear acceleration";
+		case Sensor.TYPE_MAGNETIC_FIELD:
+			return "magnetic field";
+		case Sensor.TYPE_ORIENTATION:
+			return "orientation";
+		case Sensor.TYPE_PRESSURE:
+			return "pressure";
+		case Sensor.TYPE_PROXIMITY:
+			return "proximity";
+		case Sensor.TYPE_ROTATION_VECTOR:
+			return "rotation vector";
+		case Sensor.TYPE_TEMPERATURE:
+			return "temperature";
+		}
+		return null;
 	}
 }

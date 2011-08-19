@@ -127,4 +127,9 @@ public class ProximityModel extends SensorModel {
 	public double getReadProximity() {
 		return mReadProximity;
 	}
+
+	@Override
+	public int getType() {
+		return TYPE_PROXIMITY;
+	}
 }

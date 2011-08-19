@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -85,6 +86,8 @@ public class SensorsScenarioController {
 
 	protected boolean mJustAdded = false;
 	private TimeScrollBar mTimeBar;
+	private JButton mPlayPauseBtn;
+	private JButton mStopBtn;
 
 	public SensorsScenarioController(SensorsScenarioModel model,
 			SensorsScenarioView view) {
@@ -145,8 +148,8 @@ public class SensorsScenarioController {
 			}
 		});
 
-		JButton stopBtn = mView.getStopButton();
-		stopBtn.addActionListener(new ActionListener() {
+		mStopBtn = mView.getStopButton();
+		mStopBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				mSensorSimulatorController
@@ -154,8 +157,8 @@ public class SensorsScenarioController {
 			}
 		});
 
-		JButton playPauseBtn = mView.getPlayButton();
-		playPauseBtn.addActionListener(new ActionListener() {
+		mPlayPauseBtn = mView.getPlayButton();
+		mPlayPauseBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				switch (mSensorSimulatorController.getState()) {
@@ -295,18 +298,23 @@ public class SensorsScenarioController {
 		mView.updateScrollPosition();
 	}
 
-	protected void switchRecord(boolean record) {
-		if (record) {
+	protected void switchRecord(boolean stopRecord) {
+		if (stopRecord) {
 			mRecordBtn.setText("Record");
 			closeRecordingConnection();
 			mSensorSimulatorController
 					.switchState(SensorSimulatorController.NORMAL);
+			mPlayPauseBtn.setEnabled(true);
+			mStopBtn.setEnabled(true);
+			mView.setAfterRecordScenario();
 		} else {
 			mRecordBtn.setText("Stop Recording");
 			clearOldScenario();
 			mSensorSimulatorController
 					.switchState(SensorSimulatorController.RECORD);
 			mView.addTextToScenario("You can start recording from the application.");
+			mPlayPauseBtn.setEnabled(false);
+			mStopBtn.setEnabled(false);
 		}
 	}
 
@@ -468,6 +476,8 @@ public class SensorsScenarioController {
 					while (true) {
 						try {
 							connection = mServerSocket.accept();
+							// switch to recording view
+							switchRecord(false);
 							mView.clearScenario();
 							mInStream = new ObjectInputStream(connection
 									.getInputStream());
@@ -607,10 +617,12 @@ public class SensorsScenarioController {
 			// if it is time for the next state from recording
 			if (mSavingTimeInterval * Global.MS_IN_SECOND < (System
 					.currentTimeMillis() - mScenarioTime)) {
-				Hashtable<Integer, float[]> nextStateHashTable = getRecordedSensors();
+				// enable recorded sensors in the simulator
+				// (if they aren't yet)
+				enableSensors(mRecordedSensors);
 				// get next state
 				StateModel nextState = StateModel
-						.fromHashTable(nextStateHashTable);
+						.getStateFromRecordedSensors(mRecordedSensors);
 				if (nextState != null) {
 					// load the next state in the model
 					mSensorSimulatorController.loadStateIntoTheModel(nextState);
@@ -630,8 +642,10 @@ public class SensorsScenarioController {
 		}
 	}
 
-	public Hashtable<Integer, float[]> getRecordedSensors() {
-		return mRecordedSensors;
+	private void enableSensors(Hashtable<Integer, float[]> recordedSensors) {
+		for (Entry<Integer, float[]> sensor : recordedSensors.entrySet()) {
+			mSensorSimulatorController.enableSensor(sensor.getKey());
+		}
 	}
 
 	private boolean isLooping() {

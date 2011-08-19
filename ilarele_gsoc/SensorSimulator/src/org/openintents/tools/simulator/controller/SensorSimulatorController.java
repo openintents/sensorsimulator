@@ -372,12 +372,6 @@ public class SensorSimulatorController implements WindowListener {
 				.get(SensorModel.POZ_ORIENTATION);
 	}
 
-	public void setFix(boolean value) {
-		for (SensorController sensor : mSensors) {
-			sensor.setFix(value);
-		}
-	}
-
 	public PressureController getPressure() {
 		return (PressureController) mSensors.get(SensorModel.POZ_PRESSURE);
 	}
@@ -410,5 +404,48 @@ public class SensorSimulatorController implements WindowListener {
 
 	public float getInterpolationTime() {
 		return mSensorSimulatorView.getInterpolationTime();
+	}
+
+	public void enableSensor(int sensorType) {
+		switch (sensorType) {
+		case SensorModel.TYPE_ACCELEROMETER:
+			mSensorSimulatorModel.getAccelerometer().setEnabled(true);
+			break;
+		case SensorModel.TYPE_GRAVITY:
+			mSensorSimulatorModel.getGravity().setEnabled(true);
+			break;
+		case SensorModel.TYPE_GYROSCOPE:
+			mSensorSimulatorModel.getGyroscope().setEnabled(true);
+			break;
+		case SensorModel.TYPE_LIGHT:
+			mSensorSimulatorModel.getLight().setEnabled(true);
+			break;
+		case SensorModel.TYPE_LINEAR_ACCELERATION:
+			mSensorSimulatorModel.getLinearAcceleration().setEnabled(true);
+			break;
+		case SensorModel.TYPE_MAGNETIC_FIELD:
+			mSensorSimulatorModel.getMagneticField().setEnabled(true);
+			break;
+
+		case SensorModel.TYPE_ORIENTATION:
+			mSensorSimulatorModel.getOrientation().setEnabled(true);
+			break;
+		case SensorModel.TYPE_PRESSURE:
+			mSensorSimulatorModel.getPressure().setEnabled(true);
+			break;
+		case SensorModel.TYPE_PROXIMITY:
+			mSensorSimulatorModel.getProximity().setEnabled(true);
+			break;
+		case SensorModel.TYPE_ROTATION_VECTOR:
+			mSensorSimulatorModel.getRotationVector().setEnabled(true);
+			break;
+		case SensorModel.TYPE_TEMPERATURE:
+			mSensorSimulatorModel.getTemperature().setEnabled(true);
+			break;
+		}
+	}
+
+	public Vector<SensorController> getSensors() {
+		return mSensors;
 	}
 }

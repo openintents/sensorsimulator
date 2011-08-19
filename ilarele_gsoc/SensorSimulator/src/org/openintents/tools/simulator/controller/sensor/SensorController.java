@@ -45,14 +45,12 @@ public abstract class SensorController {
 	protected SensorView mSensorView;
 
 	// if the connection with the emulator has started
-	private boolean mIsFixed;
 	private JPanel mSensorsButtons;
 	private JButton mEnableBtn;
 
 	public SensorController(final SensorModel model, final SensorView view) {
 		mSensorModel = model;
 		mSensorView = view;
-		mIsFixed = false;
 		JButton helpBtn = view.getHelpButton();
 		helpBtn.addActionListener(new ActionListener() {
 			@Override
@@ -140,14 +138,6 @@ public abstract class SensorController {
 		}
 	}
 
-	public void setFix(boolean value) {
-		mIsFixed = value;
-	}
-
-	public boolean isFixed() {
-		return mIsFixed;
-	}
-
 	public SensorModel getModel() {
 		return mSensorModel;
 	}
@@ -159,7 +149,6 @@ public abstract class SensorController {
 	public void setEnable(boolean enabled) {
 		mSensorModel.setEnabled(enabled);
 		mSensorView.setEnabled(enabled);
-
 		SensorButton sensorButton = mSensorView.getSensorButton();
 		if (enabled) {
 			mSensorsButtons.add(sensorButton);
@@ -183,4 +172,7 @@ public abstract class SensorController {
 		return mSensorModel.getName();
 	}
 
+	public int getType() {
+		return mSensorModel.getType();
+	}
 }

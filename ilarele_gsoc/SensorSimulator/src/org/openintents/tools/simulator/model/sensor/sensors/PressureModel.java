@@ -116,4 +116,8 @@ public class PressureModel extends SensorModel {
 		setPressure(mPressureValue + value);
 	}
 
+	@Override
+	public int getType() {
+		return TYPE_PRESSURE;
+	}
 }

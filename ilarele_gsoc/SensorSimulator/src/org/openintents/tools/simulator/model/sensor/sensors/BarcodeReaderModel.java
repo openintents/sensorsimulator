@@ -62,10 +62,11 @@ public class BarcodeReaderModel extends SensorModel {
 	@Override
 	public void printSensorData(PrintWriter out) {
 		// number of data following + data
-		if (barcodeValue.length() == 13)
+		if (barcodeValue.length() == 13) {
 			out.println("1\n" + barcodeValue);
-		else
+		} else {
 			out.println("1\n1");
+		}
 	}
 
 	public String getBarcode() {
@@ -79,5 +80,10 @@ public class BarcodeReaderModel extends SensorModel {
 
 	public void setBarcode(String value) {
 		barcodeValue = value;
+	}
+
+	@Override
+	public int getType() {
+		return TYPE_BARCODE;
 	}
 }

@@ -179,4 +179,9 @@ public class MagneticFieldModel extends SensorModel {
 		mCompassY = newValue[1];
 		mCompassZ = newValue[2];
 	}
+
+	@Override
+	public int getType() {
+		return TYPE_MAGNETIC_FIELD;
+	}
 }

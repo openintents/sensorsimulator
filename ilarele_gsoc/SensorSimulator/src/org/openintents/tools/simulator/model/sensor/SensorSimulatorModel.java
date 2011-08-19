@@ -294,5 +294,4 @@ public class SensorSimulatorModel {
 		GyroscopeModel gyroscopeModel = getGyroscope();
 		gyroscopeModel.setGyroscope(state.getGyroscope());
 	}
-
 }

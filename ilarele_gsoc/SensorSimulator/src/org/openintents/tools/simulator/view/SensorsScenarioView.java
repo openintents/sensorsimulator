@@ -329,4 +329,12 @@ public class SensorsScenarioView extends JPanel {
 	public boolean isLooping() {
 		return mLoop.isSelected();
 	}
+
+	public void setAfterRecordScenario() {
+		if (mScenarioPanel.getComponents().length > 0
+				&& mScenarioPanel.getComponent(0) instanceof JLabel) {
+			mScenarioPanel.remove(0);
+			refresh();
+		}
+	}
 }

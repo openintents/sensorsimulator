@@ -279,7 +279,8 @@ public class StateModel {
 				s2.getGyroscope(), k, n);
 	}
 
-	public static StateModel fromHashTable(Hashtable<Integer, float[]> sensors) {
+	public static StateModel getStateFromRecordedSensors(
+			Hashtable<Integer, float[]> sensors) {
 		if (sensors.size() == 0)
 			return null;
 		StateModel result = new StateModel();

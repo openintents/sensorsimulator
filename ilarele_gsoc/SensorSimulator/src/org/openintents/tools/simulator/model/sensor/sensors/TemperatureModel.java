@@ -112,4 +112,8 @@ public class TemperatureModel extends SensorModel {
 		out.println("1\n" + mReadTemperature);
 	}
 
+	@Override
+	public int getType() {
+		return TYPE_TEMPERATURE;
+	}
 }

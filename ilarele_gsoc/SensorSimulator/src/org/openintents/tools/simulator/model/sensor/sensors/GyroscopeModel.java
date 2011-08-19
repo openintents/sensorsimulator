@@ -230,4 +230,8 @@ public class GyroscopeModel extends SensorModel {
 		mInstantSpeedRoll = newValue[2];
 	}
 
+	@Override
+	public int getType() {
+		return TYPE_GYROSCOPE;
+	}
 }

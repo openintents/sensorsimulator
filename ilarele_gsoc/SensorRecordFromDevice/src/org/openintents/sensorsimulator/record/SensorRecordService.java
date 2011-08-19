@@ -3,7 +3,6 @@ package org.openintents.sensorsimulator.record;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -24,6 +23,10 @@ import android.widget.Toast;
 
 public class SensorRecordService extends Service {
 	private static final String TAG = "SensorRecordService";
+
+	private static final CharSequence MSG_SERVER_UNREACHABLE = "Please check"
+			+ " the IP address and make sure that you have started the java"
+			+ " desktop application!";
 
 	// service
 	private NotificationManager mNotificationManager;
@@ -55,15 +58,10 @@ public class SensorRecordService extends Service {
 		mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 		mListenersArray = new ArrayList<SensorEventListener>();
-
-		showNotification();
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Toast.makeText(this, R.string.sensors_recording_started,
-				Toast.LENGTH_SHORT).show();
-
 		// start socket connection
 		// get ip address (from intent)
 		String ipAddress = intent.getStringExtra("ip");
@@ -90,26 +88,26 @@ public class SensorRecordService extends Service {
 						//
 					} catch (IOException e) {
 						Log.e(TAG, "Connection closed!");
-						clearAll();
+						clearAll(false);
 					}
 
 					return true;
 				}
 			});
 			mOutStream.flush();
-		} catch (UnknownHostException e) {
-			Log.e(TAG, e.getMessage());
-			clearAll();
+
+			// get the wanted sensors for recording (from intent)
+			int[] recordingSensors = intent.getIntArrayExtra("sensors");
+			for (int sensor : recordingSensors) {
+				// register listeners for each of them
+				registerListener(sensor);
+			}
+			showNotification();
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage());
-			clearAll();
-		}
-
-		// get the wanted sensors for recording (from intent)
-		int[] recordingSensors = intent.getIntArrayExtra("sensors");
-		for (int sensor : recordingSensors) {
-			// register listeners for each of them
-			registerListener(sensor);
+			Toast.makeText(this, MSG_SERVER_UNREACHABLE, Toast.LENGTH_LONG)
+					.show();
+			clearAll(true);
 		}
 
 		return START_STICKY;
@@ -139,16 +137,18 @@ public class SensorRecordService extends Service {
 
 	@Override
 	public void onDestroy() {
-		clearAll();
+		clearAll(false);
 	}
 
-	private void clearAll() {
+	private void clearAll(boolean silent) {
 		mNotificationManager.cancel(NOTIFICATION);
 		for (SensorEventListener listener : mListenersArray) {
 			mSensorManager.unregisterListener(listener);
 		}
-		Toast.makeText(this, R.string.sensors_recording_stopped,
-				Toast.LENGTH_SHORT).show();
+		if (!silent) {
+			Toast.makeText(this, R.string.sensors_recording_stopped,
+					Toast.LENGTH_SHORT).show();
+		}
 		try {
 			if (mRequestSocket != null) {
 				mRequestSocket.close();
