@@ -268,7 +268,7 @@ public class SensorSimulatorView extends JPanel {
 		mSensorPortText.setText("" + mModel.getSimulationPort());
 		settingsPanel.add(mSensorPortText);
 
-		mSensorPortButton = new JButton("Set");
+		mSensorPortButton = new JButton("Change");
 		mSensorPortButton.setFont(fontNotify);
 		layout.gridx = 2;
 		layout.gridy = 0;

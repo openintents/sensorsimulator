@@ -101,7 +101,7 @@ public class PressureView extends SensorView {
 		c3.gridx = 1;
 		pressureFieldPane.add(mPressureText, c3);
 
-		label = new JLabel(" lux", SwingConstants.LEFT);
+		label = new JLabel(mModel.getSI(), SwingConstants.LEFT);
 		c3.gridx = 2;
 		pressureFieldPane.add(label, c3);
 

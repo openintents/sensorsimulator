@@ -42,7 +42,7 @@ public class HelpWindow extends JFrame {
 		super();
 		setTitle("Information - " + view.getModel().getName());
 		setSize(Global.WIDTH_HELP, Global.HEIGHT_HELP);
-		setLocation(300, 200);
+		setLocation(150, 50);
 		Container contentPane = getContentPane();
 		contentPane.add(view.getHelpPanel());
 
@@ -51,6 +51,7 @@ public class HelpWindow extends JFrame {
 			private static final long serialVersionUID = -2757256936195546496L;
 
 			// close the frame when the user presses escape
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}

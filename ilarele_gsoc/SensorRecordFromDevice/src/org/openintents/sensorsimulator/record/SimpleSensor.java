@@ -7,6 +7,9 @@ public class SimpleSensor {
 	// for <= 2.1 API - 8 sensors
 	// for > 2.1 API - 11 sensors
 	protected static final int MAX_SENSORS = 11;
+	public static final int TYPE_LINEAR_ACCELERATION = 9;
+	public static final int TYPE_GRAVITY = 10;
+	public static final int TYPE_ROTATION_VECTOR = 11;
 
 	public static final String NAME_ACCELEROMETER = "accelerometer";
 	public static final String NAME_MAGNETIC_FIELD = "magnetic field";
@@ -52,11 +55,11 @@ public class SimpleSensor {
 			return NAME_TEMPERATURE;
 		case Sensor.TYPE_PROXIMITY:
 			return NAME_PROXIMITY;
-		case Sensor.TYPE_LINEAR_ACCELERATION:
+		case TYPE_LINEAR_ACCELERATION:
 			return NAME_LINEAR_ACCELERATION;
-		case Sensor.TYPE_GRAVITY:
+		case TYPE_GRAVITY:
 			return NAME_GRAVITY;
-		case Sensor.TYPE_ROTATION_VECTOR:
+		case TYPE_ROTATION_VECTOR:
 			return NAME_ROTATION_VECTOR;
 		}
 		return null;

@@ -54,7 +54,7 @@ public class Global {
 
 	// help URLs
 	public static final String HELP_ONE_SENSOR_URL = "http://developer.android.com/reference/android/hardware/SensorEvent.html";
-	public static final String HELP_SENSOR_SIMULATOR_DESCRIPTION_URL = "http://openintents.org/en/node/23";
+	public static final String HELP_SENSOR_SIMULATOR_DESCRIPTION_URL = "http://openintents.org/en/node/885";
 	public static final String HELP_OPENINTENTS_CONTACT_URL = "http://openintents.org/en/contact";
 	public static final String HELP_OPENINTENTS_FORUM_URL = "http://openintents.org/en/forum";
 	public static final int WIDTH_HELP = 550;

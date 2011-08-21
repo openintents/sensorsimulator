@@ -234,9 +234,6 @@ public class SensorRecordFromDeviceActivity extends Activity {
 		sendText.append("Brand: " + Build.BRAND + "\n");
 		sendText.append("Product: " + Build.PRODUCT + "\n");
 		sendText.append("Device: " + Build.DEVICE + "\n");
-		sendText.append("Board: " + Build.HARDWARE + "\n");
-		sendText.append("Bootloader: " + Build.BOOTLOADER + "\n");
-		sendText.append("Radio: " + Build.RADIO + "\n");
 		sendText.append("User: " + Build.USER + "\n");
 		sendText.append("Version: " + Build.VERSION.RELEASE + "\n");
 		sendText.append("-------------\n\n");
@@ -275,13 +272,13 @@ public class SensorRecordFromDeviceActivity extends Activity {
 		switch (type) {
 		case Sensor.TYPE_ACCELEROMETER:
 			return "accelerometer";
-		case Sensor.TYPE_GRAVITY:
+		case SimpleSensor.TYPE_GRAVITY:
 			return "gravity";
 		case Sensor.TYPE_GYROSCOPE:
 			return "gyroscope";
 		case Sensor.TYPE_LIGHT:
 			return "light";
-		case Sensor.TYPE_LINEAR_ACCELERATION:
+		case SimpleSensor.TYPE_LINEAR_ACCELERATION:
 			return "linear acceleration";
 		case Sensor.TYPE_MAGNETIC_FIELD:
 			return "magnetic field";
@@ -291,7 +288,7 @@ public class SensorRecordFromDeviceActivity extends Activity {
 			return "pressure";
 		case Sensor.TYPE_PROXIMITY:
 			return "proximity";
-		case Sensor.TYPE_ROTATION_VECTOR:
+		case SimpleSensor.TYPE_ROTATION_VECTOR:
 			return "rotation vector";
 		case Sensor.TYPE_TEMPERATURE:
 			return "temperature";
