@@ -17,6 +17,7 @@
 package org.openintents.tools.simulator.view;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -99,12 +100,16 @@ public class DevicePanel extends JPanel {
 		for (int i = 0; i < phone.length; i += 2) {
 			if (i == 0) {
 				// container panel and StateViewSmall
-				StateViewSmall parent = (StateViewSmall) getParent()
-						.getParent();
-				if (!mScenarioView.isCurrentState(parent)) {
-					g2.setColor(Global.COLOR_ENABLE_BLUE);
+				Container parentView = getParent().getParent();
+				if (parentView instanceof StateViewSmall) {
+					if (!mScenarioView
+							.isCurrentState((StateViewSmall) parentView)) {
+						g2.setColor(Global.COLOR_ENABLE_BLUE);
+					} else {
+						g2.setColor(Color.RED);
+					}
 				} else {
-					g2.setColor(Color.RED);
+					g2.setColor(Global.COLOR_ENABLE_BLUE);
 				}
 			}
 			if (i == 24) {

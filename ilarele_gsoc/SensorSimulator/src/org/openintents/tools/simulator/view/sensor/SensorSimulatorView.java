@@ -432,8 +432,10 @@ public class SensorSimulatorView extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					contentPanel.removeAll();
 					contentPanel.add(sensor);
-					mLastPressedSensor.setSelectedSensor(false);
-					mLastPressedSensor.repaint();
+					if (mLastPressedSensor != null) {
+						mLastPressedSensor.setSelectedSensor(false);
+						mLastPressedSensor.repaint();
+					}
 					sensorButton.setSelectedSensor(true);
 					mLastPressedSensor = sensorButton;
 					sensorButton.repaint();

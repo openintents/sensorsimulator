@@ -1,2 +1,2 @@
-load C:\Users\ewee\Desktop\save.ss.xml
-save C:\Users\ewee\Desktop\save.ss.xml
+load C:\Users\ewee\Documents
+save C:\Users\ewee\Documents
