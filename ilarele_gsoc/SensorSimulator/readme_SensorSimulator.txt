@@ -29,7 +29,7 @@ It transmits the simulated sensor data to an Android emulator.
 
 ---------------------------------------------------------
 release: 2.0
-date: 2011-08-11
+date: 2011-08-24
 
 - GSoC 2011 project by Ilarele
 - redesign of graphical user interface
