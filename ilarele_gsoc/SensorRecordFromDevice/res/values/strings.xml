@@ -31,6 +31,6 @@
 	<string
 		name="sensors_record_label"
 	>Sensors Record</string>
-	<string name="supported_phones">HTC - Nexus One,Samsung - Nexus S,Acer - A500</string>
+	<string name="supported_phones">HTC - Nexus One,Samsung - Nexus S,Acer - A500,Motorola - Xoom</string>
 	<string name="send_email_button">Send us your sensors configuration.</string>
 </resources>
