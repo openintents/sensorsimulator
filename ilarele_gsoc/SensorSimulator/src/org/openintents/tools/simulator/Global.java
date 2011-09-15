@@ -17,7 +17,11 @@
 package org.openintents.tools.simulator;
 
 import java.awt.Color;
+import java.awt.Desktop;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 
 import javax.swing.ImageIcon;
@@ -41,7 +45,7 @@ public class Global {
 	public static ImageIcon MENU_SENSOR_SIMULATOR;
 	public static ImageIcon MENU_CONSOLE;
 	public static ImageIcon MENU_SETTINGS;
-	public static ImageIcon MENU_HELP;
+	public static ImageIcon MENU_ABOUT;
 
 	public static String ICON_SENSOR_SIMULATOR_PATH;
 
@@ -57,8 +61,12 @@ public class Global {
 	public static final String HELP_SENSOR_SIMULATOR_DESCRIPTION_URL = "http://openintents.org/en/node/885";
 	public static final String HELP_OPENINTENTS_CONTACT_URL = "http://openintents.org/en/contact";
 	public static final String HELP_OPENINTENTS_FORUM_URL = "http://openintents.org/en/forum";
+	public static final String HELP_OPENINTENTS_REPO = "http://code.google.com/p/openintents/";
+
 	public static final int WIDTH_HELP = 550;
 	public static final int HEIGHT_HELP = 550;
+	public static final int WIDTH_ABOUT = 410;
+	public static final int HEIGHT_ABOUT = 140;
 	public static final int RECORDING_PORT = 9100;
 
 	public static final float MS_IN_SECOND = 1000;
@@ -130,8 +138,8 @@ public class Global {
 				"pics/menu_console.png"));
 		MENU_SETTINGS = new ImageIcon(getClass().getClassLoader().getResource(
 				"pics/menu_settings.png"));
-		MENU_HELP = new ImageIcon(getClass().getClassLoader().getResource(
-				"pics/menu_help.png"));
+		MENU_ABOUT = new ImageIcon(getClass().getClassLoader().getResource(
+				"pics/menu_about.png"));
 
 		ICON_SENSOR_SIMULATOR_PATH = getClass().getClassLoader()
 				.getResource("pics/icon_sensor_simulator.png").getFile();
@@ -145,5 +153,22 @@ public class Global {
 
 		FILE_CONFIG_PHONE = getClass().getClassLoader().getResourceAsStream(
 				"configPhone.txt");
+	}
+
+	public static void startBrowser(String link) {
+		if (Desktop.isDesktopSupported()) {
+			Desktop desktop = Desktop.getDesktop();
+			if (desktop.isSupported(Desktop.Action.BROWSE)) {
+				URI uri;
+				try {
+					uri = new URI(link);
+					desktop.browse(uri);
+				} catch (URISyntaxException e2) {
+					e2.printStackTrace();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
 	}
 }

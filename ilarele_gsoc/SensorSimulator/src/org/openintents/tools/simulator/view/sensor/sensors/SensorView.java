@@ -18,16 +18,12 @@ package org.openintents.tools.simulator.view.sensor.sensors;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Random;
 
 import javax.swing.BorderFactory;
@@ -489,20 +485,7 @@ public abstract class SensorView extends JScrollPane {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (Desktop.isDesktopSupported()) {
-					Desktop desktop = Desktop.getDesktop();
-					if (desktop.isSupported(Desktop.Action.BROWSE)) {
-						URI uri;
-						try {
-							uri = new URI(link);
-							desktop.browse(uri);
-						} catch (URISyntaxException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
+				Global.startBrowser(link);
 			}
 		});
 		return button;

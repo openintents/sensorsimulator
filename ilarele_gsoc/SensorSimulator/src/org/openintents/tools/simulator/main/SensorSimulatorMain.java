@@ -23,7 +23,6 @@ package org.openintents.tools.simulator.main;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -34,10 +33,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -58,6 +53,7 @@ import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.SensorSimulator;
 import org.openintents.tools.simulator.SimulatorInstances;
 import org.openintents.tools.simulator.TelnetSimulator;
+import org.openintents.tools.simulator.view.help.AboutWindow;
 
 /**
  * Main class of our sensor simulator. This class creates a Frame that is filled
@@ -144,10 +140,10 @@ public class SensorSimulatorMain extends JPanel implements WindowListener,
 		settingsButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		menuBar.add(settingsButton);
 
-		// help button
-		JButton helpButton = createHelpButton();
-		helpButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		menuBar.add(helpButton);
+		// about button
+		JButton aboutButton = createAboutButton();
+		aboutButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		menuBar.add(aboutButton);
 	}
 
 	private JButton createSettingsButton(final JPanel contentPanel,
@@ -172,6 +168,7 @@ public class SensorSimulatorMain extends JPanel implements WindowListener,
 				contentPanel.repaint();
 			}
 		});
+		menuButton.setToolTipText("Settings");
 		return menuButton;
 	}
 
@@ -192,6 +189,7 @@ public class SensorSimulatorMain extends JPanel implements WindowListener,
 				contentPanel.repaint();
 			}
 		});
+		menuButton.setToolTipText("Telnet Simulator");
 		return menuButton;
 	}
 
@@ -220,32 +218,21 @@ public class SensorSimulatorMain extends JPanel implements WindowListener,
 				frame.pack();
 			}
 		});
+		menuButton.setToolTipText("Sensor Simulator");
 		return menuButton;
 	}
 
-	private JButton createHelpButton() {
-		// Help Online menu
-		JButton menuButton = new JButton(Global.MENU_HELP);
+	private JButton createAboutButton() {
+		// About menu
+		JButton menuButton = new JButton(Global.MENU_ABOUT);
 		menuButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (Desktop.isDesktopSupported()) {
-					Desktop desktop = Desktop.getDesktop();
-					if (desktop.isSupported(Desktop.Action.BROWSE)) {
-						URI uri;
-						try {
-							uri = new URI(
-									Global.HELP_SENSOR_SIMULATOR_DESCRIPTION_URL);
-							desktop.browse(uri);
-						} catch (URISyntaxException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
+				AboutWindow wnd = new AboutWindow();
+				wnd.setVisible(true);
 			}
 		});
+		menuButton.setToolTipText("About");
 		return menuButton;
 	}
 

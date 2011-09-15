@@ -39,7 +39,6 @@ public class HelpWindow extends JFrame {
 	private static final long serialVersionUID = -3465061620684511665L;
 
 	public HelpWindow(SensorView view) {
-		super();
 		setTitle("Information - " + view.getModel().getName());
 		setSize(Global.WIDTH_HELP, Global.HEIGHT_HELP);
 		setLocation(150, 50);
