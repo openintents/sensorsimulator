@@ -40,7 +40,9 @@ public class SensorEvent extends Object {
 
 	public int accuracy;
 	public Sensor sensor;
+	@Deprecated
 	public String time;
+	public long timestamp;
 	public float[] values = null;
 	public int type;
 	@SuppressWarnings("unused")
@@ -70,6 +72,7 @@ public class SensorEvent extends Object {
 		values = values2;
 		type = type2;
 		SimpleDateFormat dataFormat = new SimpleDateFormat(DATE_FORMAT);
+		timestamp = System.nanoTime();
 		time = dataFormat.format(calendar.getTime());
 	}
 

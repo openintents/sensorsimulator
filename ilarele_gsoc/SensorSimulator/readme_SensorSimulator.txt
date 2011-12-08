@@ -28,6 +28,12 @@ It transmits the simulated sensor data to an Android emulator.
 
 
 ---------------------------------------------------------
+release: 2.0.1
+date: 
+
+- include timestamp in SensorEvent (GCI task by Aviral Dasgupta, issue 395)
+
+---------------------------------------------------------
 release: 2.0
 date: 2011-08-24
 
