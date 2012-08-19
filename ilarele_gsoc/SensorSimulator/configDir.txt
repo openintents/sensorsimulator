@@ -1,2 +1,0 @@
-load C:\Users\ewee\Documents
-save C:\Users\ewee\Documents
