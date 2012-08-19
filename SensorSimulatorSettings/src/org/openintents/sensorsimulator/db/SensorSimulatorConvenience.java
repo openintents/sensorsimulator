@@ -29,37 +29,39 @@ import android.net.Uri;
 import android.util.Log;
 
 /**
- * Class that defines our Convenience and it's methods.
- * It is used to insert and get our IP address and socket from
- * our Content Provider.
+ * Class that defines our Convenience and it's methods. It is used to insert and
+ * get our IP address and socket from our Content Provider.
  * 
  * @author Peli
  */
 public class SensorSimulatorConvenience {
-	
+
 	/**
 	 * TAG for logging.
 	 */
 	private static final String TAG = "SensorSimulatorConvenience";
-	
+
 	private Context mContext;
 	private ContentResolver mContentResolver;
-	
+
 	/**
-	 * Constructor. 
+	 * Constructor.
 	 * 
-	 * @param context The activity context.
+	 * @param context
+	 *            The activity context.
 	 */
 	public SensorSimulatorConvenience(Context context) {
 		mContext = context;
 		mContentResolver = mContext.getContentResolver();
 	}
-	
+
 	/**
 	 * Updates the 'value' for the preferenceID.
 	 * 
-	 * @param name The name of the preference.
-	 * @param value The value to set.
+	 * @param name
+	 *            The name of the preference.
+	 * @param value
+	 *            The value to set.
 	 */
 	public void setPreference(final String name, final String value) {
 
@@ -67,35 +69,39 @@ public class SensorSimulatorConvenience {
 
 			if (mContentResolver == null)
 				Log.i(TAG, "Panic!.");
-			Cursor c = mContentResolver.query(SensorSimulator.Settings.CONTENT_URI, 
-					SensorSimulator.SENSORSIMULATOR_PROJECTION, 
-					SensorSimulator.Settings.KEY + "= '" + name + "'",
-					null,
+			Cursor c = mContentResolver.query(
+					SensorSimulator.Settings.CONTENT_URI,
+					SensorSimulator.SENSORSIMULATOR_PROJECTION,
+					SensorSimulator.Settings.KEY + "= '" + name + "'", null,
 					SensorSimulator.Settings.DEFAULT_SORT_ORDER);
-			
+
 			if (c == null) {
 				Log.e(TAG, "missing hardware provider");
 				return;
 			}
-			
-			
+
 			if (c == null || c.getCount() < 1) {
-				
+
 				ContentValues values = new ContentValues(2);
 				values.put(SensorSimulator.Settings.KEY, name);
 				values.put(SensorSimulator.Settings.VALUE, value);
-				mContentResolver.insert(SensorSimulator.Settings.CONTENT_URI, values);
+				mContentResolver.insert(SensorSimulator.Settings.CONTENT_URI,
+						values);
 			} else if (c.getCount() >= 1) {
-				
+
 				// This is the key, so we can update it:
 				c.moveToFirst();
-				String id = c.getString(c.getColumnIndexOrThrow(SensorSimulator.Settings._ID));
+				String id = c.getString(c
+						.getColumnIndexOrThrow(SensorSimulator.Settings._ID));
 				ContentValues cv = new ContentValues();
 				cv.put(SensorSimulator.Settings.VALUE, value);
-				mContentResolver.update(Uri.withAppendedPath(SensorSimulator.Settings.CONTENT_URI, id), cv, null, null );
-				
+				mContentResolver.update(Uri.withAppendedPath(
+						SensorSimulator.Settings.CONTENT_URI, id), cv, null,
+						null);
+
 				// c.requery();
-				c.getString(c.getColumnIndexOrThrow(SensorSimulator.Settings.VALUE));
+				c.getString(c
+						.getColumnIndexOrThrow(SensorSimulator.Settings.VALUE));
 			} else {
 				Log.e(TAG, "table 'settings' corrupt. Multiple KEY!");
 			}
@@ -106,23 +112,24 @@ public class SensorSimulatorConvenience {
 	}
 
 	/**
-	 * Obtains the 'value' for preferenceID, 
-	 * or returns "" if not existent.
+	 * Obtains the 'value' for preferenceID, or returns "" if not existent.
 	 * 
-	 * @param name The name of the preference.
+	 * @param name
+	 *            The name of the preference.
 	 * @return The value for preference 'name'.
 	 */
 	public String getPreference(final String name) {
 		try {
-			//Log.i(TAG, "getPreference()");
-			Cursor c = mContentResolver.query(SensorSimulator.Settings.CONTENT_URI, 
-					SensorSimulator.SENSORSIMULATOR_PROJECTION, 
-					SensorSimulator.Settings.KEY + "= '" + name + "'",
-					null,
+			// Log.i(TAG, "getPreference()");
+			Cursor c = mContentResolver.query(
+					SensorSimulator.Settings.CONTENT_URI,
+					SensorSimulator.SENSORSIMULATOR_PROJECTION,
+					SensorSimulator.Settings.KEY + "= '" + name + "'", null,
 					SensorSimulator.Settings.DEFAULT_SORT_ORDER);
 			if (c.getCount() >= 1) {
 				c.moveToFirst();
-				return c.getString(c.getColumnIndexOrThrow(SensorSimulator.Settings.VALUE));
+				return c.getString(c
+						.getColumnIndexOrThrow(SensorSimulator.Settings.VALUE));
 			} else if (c.getCount() == 0) {
 				// This value does not exist yet!
 				return "";

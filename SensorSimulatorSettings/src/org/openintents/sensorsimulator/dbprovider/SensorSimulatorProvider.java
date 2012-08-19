@@ -38,8 +38,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 /**
- * Provides access to a preferences related to hardware or 
- * hardware simulation. 
+ * Provides access to a preferences related to hardware or hardware simulation.
  * 
  * @author Peli
  */
@@ -54,35 +53,35 @@ public class SensorSimulatorProvider extends ContentProvider {
 	private static final String DATABASE_NAME = "sensorsimulator.db";
 	private static final int DATABASE_VERSION = 1;
 
-	/** 
+	/**
 	 * Name of the table
 	 */
 	private static final String DATABASE_TABLE_SETTINGS = "settings";
-	
+
 	private static HashMap<String, String> PREFERENCES_PROJECTION_MAP;
-	
+
 	// Basic tables
 	private static final int SETTINGS = 1;
 	private static final int SETTING_ID = 2;
-	
+
 	private static final UriMatcher URL_MATCHER;
 
 	/**
-	 * HardwareProvider maintains the following tables:
-	 *  * preferences: preferences related to hardware abstraction
-	 *                 or hardware simulation.
+	 * HardwareProvider maintains the following tables: * preferences:
+	 * preferences related to hardware abstraction or hardware simulation.
 	 */
 	private static class DatabaseHelper extends SQLiteOpenHelper {
 
 		DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        }
+			super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		}
 
 		/**
 		 * Creates tables "settings".
 		 */
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL("CREATE TABLE " + SensorSimulatorProvider.DATABASE_TABLE_SETTINGS + " ("
+			db.execSQL("CREATE TABLE "
+					+ SensorSimulatorProvider.DATABASE_TABLE_SETTINGS + " ("
 					+ "_id INTEGER PRIMARY KEY," // Database Version 1
 					+ SensorSimulator.Settings.KEY + " VARCHAR," // V1
 					+ SensorSimulator.Settings.VALUE + " VARCHAR" // V1
@@ -92,29 +91,30 @@ public class SensorSimulatorProvider extends ContentProvider {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");
-			db.execSQL("DROP TABLE IF EXISTS " + SensorSimulatorProvider.DATABASE_TABLE_SETTINGS);
+			db.execSQL("DROP TABLE IF EXISTS "
+					+ SensorSimulatorProvider.DATABASE_TABLE_SETTINGS);
 			onCreate(db);
 		}
 	}
 
 	/**
-	 * With this method we create new DatabaseHelper with which we can
-	 * access our database.
+	 * With this method we create new DatabaseHelper with which we can access
+	 * our database.
 	 */
 	public boolean onCreate() {
 		mOpenHelper = new DatabaseHelper(getContext());
-        return true;
+		return true;
 	}
 
 	/**
 	 * Implementation of query method for this database.
 	 */
 	public Cursor query(Uri url, String[] projection, String selection,
-			String[] selectionArgs,String sort) {
+			String[] selectionArgs, String sort) {
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
 		Log.i(TAG, "Query for URL: " + url);
-		
+
 		String defaultOrderBy = null;
 		switch (URL_MATCHER.match(url)) {
 		case SETTINGS:
@@ -142,7 +142,8 @@ public class SensorSimulatorProvider extends ContentProvider {
 		}
 
 		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        Cursor c = qb.query(db, projection, selection, selectionArgs,null,null,orderBy);
+		Cursor c = qb.query(db, projection, selection, selectionArgs, null,
+				null, orderBy);
 		c.setNotificationUri(getContext().getContentResolver(), url);
 		return c;
 	}
@@ -154,57 +155,57 @@ public class SensorSimulatorProvider extends ContentProvider {
 		} else {
 			values = new ContentValues();
 		}
-		
+
 		// insert is supported for items or lists
 		switch (URL_MATCHER.match(url)) {
 		case SETTINGS:
 			return insertPreferences(url, values);
-		
+
 		default:
 			throw new IllegalArgumentException("Unknown URL " + url);
 		}
 	}
-	
+
 	public Uri insertPreferences(Uri url, ContentValues values) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        long rowID;
-		
+		long rowID;
+
 		Resources r = Resources.getSystem();
-		
 
 		// Make sure that the fields are all set
 		if (!values.containsKey(Settings.KEY)) {
 			values.put(Settings.KEY, r.getString(R.string.new_item));
 		}
-		
+
 		if (!values.containsKey(Settings.VALUE)) {
 			values.put(Settings.VALUE, "");
 		}
-		
-		
-		rowID = db.insert(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS, SensorSimulator.Settings.KEY, values);
+
+		rowID = db.insert(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS,
+				SensorSimulator.Settings.KEY, values);
 		if (rowID > 0) {
-			Uri uri = ContentUris.withAppendedId(Settings.CONTENT_URI,rowID);
+			Uri uri = ContentUris.withAppendedId(Settings.CONTENT_URI, rowID);
 			getContext().getContentResolver().notifyChange(uri, null);
 			return uri;
 		}
-		
+
 		// If everything works, we should not reach the following line:
 		throw new SQLException("Failed to insert row into " + url);
 	}
 
 	public int delete(Uri url, String where, String[] whereArgs) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        int count;
-		//long rowId;
+		int count;
+		// long rowId;
 		switch (URL_MATCHER.match(url)) {
 		case SETTINGS:
-			count = db.delete(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS, where, whereArgs);
+			count = db.delete(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS,
+					where, whereArgs);
 			break;
 
 		case SETTING_ID:
 			String segment = url.getPathSegments().get(1); // contains rowId
-			//rowId = Long.parseLong(segment);
+			// rowId = Long.parseLong(segment);
 			String whereString;
 			if (!TextUtils.isEmpty(where)) {
 				whereString = " AND (" + where + ')';
@@ -212,8 +213,8 @@ public class SensorSimulatorProvider extends ContentProvider {
 				whereString = "";
 			}
 
-			count = db
-					.delete(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS, "_id=" + segment + whereString, whereArgs);
+			count = db.delete(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS,
+					"_id=" + segment + whereString, whereArgs);
 			break;
 
 		default:
@@ -228,16 +229,17 @@ public class SensorSimulatorProvider extends ContentProvider {
 			String[] whereArgs) {
 		Log.i(TAG, "update called for: " + url);
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        int count;
-		//long rowId;
+		int count;
+		// long rowId;
 		switch (URL_MATCHER.match(url)) {
 		case SETTINGS:
-			count = db.update(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS, values, where, whereArgs);
+			count = db.update(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS,
+					values, where, whereArgs);
 			break;
 
 		case SETTING_ID:
 			String segment = url.getPathSegments().get(1); // contains rowId
-			//rowId = Long.parseLong(segment);
+			// rowId = Long.parseLong(segment);
 			String whereString;
 			if (!TextUtils.isEmpty(where)) {
 				whereString = " AND (" + where + ')';
@@ -245,9 +247,8 @@ public class SensorSimulatorProvider extends ContentProvider {
 				whereString = "";
 			}
 
-			count = db
-					.update(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS, values, 
-							"_id=" + segment + whereString, whereArgs);
+			count = db.update(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS,
+					values, "_id=" + segment + whereString, whereArgs);
 			break;
 
 		default:
@@ -274,13 +275,17 @@ public class SensorSimulatorProvider extends ContentProvider {
 
 	static {
 		URL_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-		URL_MATCHER.addURI("org.openintents.sensorsimulator", "settings", SETTINGS);
-		URL_MATCHER.addURI("org.openintents.sensorsimulator", "settings/#", SETTING_ID);
-		
+		URL_MATCHER.addURI("org.openintents.sensorsimulator", "settings",
+				SETTINGS);
+		URL_MATCHER.addURI("org.openintents.sensorsimulator", "settings/#",
+				SETTING_ID);
+
 		PREFERENCES_PROJECTION_MAP = new HashMap<String, String>();
 		PREFERENCES_PROJECTION_MAP.put(Settings._ID, "settings._id");
-		PREFERENCES_PROJECTION_MAP.put(Settings.KEY, "settings." + Settings.KEY);
-		PREFERENCES_PROJECTION_MAP.put(Settings.VALUE, "settings." + Settings.VALUE);
-		
+		PREFERENCES_PROJECTION_MAP
+				.put(Settings.KEY, "settings." + Settings.KEY);
+		PREFERENCES_PROJECTION_MAP.put(Settings.VALUE, "settings."
+				+ Settings.VALUE);
+
 	}
 }

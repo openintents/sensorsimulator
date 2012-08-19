@@ -18,34 +18,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.openintents.sensorsimulator.hardware;
 
 /**
- * Class that represents SensorEventListener of android.hardware.SensorEventListener.
- * This class represents listener and it needs to be created because 
- * android's SensorEventListener doesn't recognize our Sensor and 
- * SensorEvent classes.
+ * Class that represents SensorEventListener of
+ * android.hardware.SensorEventListener. This class represents listener and it
+ * needs to be created because android's SensorEventListener doesn't recognize
+ * our Sensor and SensorEvent classes.
  * 
  * @author Josip Balic
- *
+ * 
  */
 public interface SensorEventListener {
-	
+
 	/**
 	 * Method that represents onAccuracyChanged, this method is currently not
 	 * used in sensor simulations.
 	 * 
-	 * @param sensor, Sensor that we want to change accuracy.
-	 * @param accuracy, integer of new accuracy.
+	 * @param sensor
+	 *            , Sensor that we want to change accuracy.
+	 * @param accuracy
+	 *            , integer of new accuracy.
 	 */
 	public abstract void onAccuracyChanged(Sensor sensor, int accuracy);
-	
+
 	/**
-	 * Method onSensorChanged is called when new SensorEvent with new input 
-	 * is created.
+	 * Method onSensorChanged is called when new SensorEvent with new input is
+	 * created.
 	 * 
-	 * @param event, SensorEvent that holds new input variables.
+	 * @param event
+	 *            , SensorEvent that holds new input variables.
 	 */
 	public abstract void onSensorChanged(SensorEvent event);
 

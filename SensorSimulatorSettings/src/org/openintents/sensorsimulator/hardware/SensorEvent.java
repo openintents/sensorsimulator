@@ -28,61 +28,70 @@ import java.util.GregorianCalendar;
 import android.content.Context;
 
 /**
- * This class simulates SensorEvent of android.hardware.sensorevent. 
- * Once sensor values are changed, SensorEvent object is created and
- * it contains values, type of sensor it's linked to and time when
- * values are changed and send to the sensor's listener. 
+ * This class simulates SensorEvent of android.hardware.sensorevent. Once sensor
+ * values are changed, SensorEvent object is created and it contains values,
+ * type of sensor it's linked to and time when values are changed and send to
+ * the sensor's listener.
  * 
  * @author Josip Balic
- *
+ * 
  */
-public class SensorEvent extends Object{
+public class SensorEvent extends Object {
 
 	public int accuracy;
 	public Sensor sensor;
+	@Deprecated
 	public String time;
+	public long timestamp;
 	public float[] values = null;
 	public int type;
 	@SuppressWarnings("unused")
 	private Context mContext;
-	
-	//BARCODE
+
+	// BARCODE
 	public String barcode;
-	
+
 	public static final String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
 	Calendar calendar = new GregorianCalendar();
-	
+
 	/**
-	 * Constructor for SensorEvent. Every SensorEvent contains context of the application,
-	 * values of the sensor, integer that represents sensor and time when sensor
-	 * values have changed.
+	 * Constructor for SensorEvent. Every SensorEvent contains context of the
+	 * application, values of the sensor, integer that represents sensor and
+	 * time when sensor values have changed.
 	 * 
-	 * @param context, Context of application it belongs to.
-	 * @param values2, float[] values that this SensorEvent contains.
-	 * @param type2, integer number of sensor that this SensorEvent is linked to.
+	 * @param context
+	 *            , Context of application it belongs to.
+	 * @param values2
+	 *            , float[] values that this SensorEvent contains.
+	 * @param type2
+	 *            , integer number of sensor that this SensorEvent is linked to.
 	 */
 	protected SensorEvent(Context context, float[] values2, int type2) {
 		super();
 		mContext = context;
-        values = values2;
-        type = type2;
-        SimpleDateFormat dataFormat = new SimpleDateFormat(DATE_FORMAT);
-        time = dataFormat.format(calendar.getTime());
+		values = values2;
+		type = type2;
+		SimpleDateFormat dataFormat = new SimpleDateFormat(DATE_FORMAT);
+		timestamp = System.nanoTime();
+		time = dataFormat.format(calendar.getTime());
 	}
 
 	/**
 	 * Since barcode sensor implementation works with String attribute and not
-	 * float, new type of SensorEvent is created only for barcode reader. It contains
-	 * String attribute instead of float values.
+	 * float, new type of SensorEvent is created only for barcode reader. It
+	 * contains String attribute instead of float values.
 	 * 
-	 * @param context, Context of application it belongs to.
-	 * @param barcode2, String attribute that represents barcode.
-	 * @param sensorType, integer of sensor this event is linked to.
+	 * @param context
+	 *            , Context of application it belongs to.
+	 * @param barcode2
+	 *            , String attribute that represents barcode.
+	 * @param sensorType
+	 *            , integer of sensor this event is linked to.
 	 */
 	public SensorEvent(Context context, String barcode2, int sensorType) {
 		mContext = context;
 		barcode = barcode2;
 		type = sensorType;
 	}
-	
+
 }

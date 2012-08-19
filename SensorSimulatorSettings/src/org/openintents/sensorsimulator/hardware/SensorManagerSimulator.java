@@ -31,7 +31,7 @@ import android.widget.Toast;
 /**
  * Replaces SensorManager with possibility to connect to SensorSimulator.
  * 
- * Note: This class does not extend SensorManager directly, because its 
+ * Note: This class does not extend SensorManager directly, because its
  * constructor is not public.
  * 
  * @author Peli
@@ -47,75 +47,83 @@ public class SensorManagerSimulator {
 	 */
 	@SuppressWarnings("unused")
 	private static final String TAG = "SensorManagerSimulator";
-	
+
 	/**
 	 * Client that communicates with the SensorSimulator application.
 	 */
 	private static SensorSimulatorClient mClient;
-	
+
 	private SensorManager mSensorManager = null;
 	private Context mContext;
-	
+
 	public static final int SENSOR_DELAY_FASTEST = 0;
 	public static final int SENSOR_DELAY_GAME = 1;
 	public static final int SENSOR_DELAY_NORMAL = 3;
 	public static final int SENSOR_DELAY_UI = 2;
-	
+
 	private static Sensor sensors;
-	
+
 	/**
 	 * Constructor.
 	 * 
-	 * If the SensorManagerSimulator is not connected, the default SensorManager is used.
-	 * This is obtained through (SensorManager) getSystemService(Context.SENSOR_SERVICE),
-	 * but can be overwritten using setDefaultSensorManager().
+	 * If the SensorManagerSimulator is not connected, the default SensorManager
+	 * is used. This is obtained through (SensorManager)
+	 * getSystemService(Context.SENSOR_SERVICE), but can be overwritten using
+	 * setDefaultSensorManager().
 	 * 
-	 * @param context Context of the activity.
+	 * @param context
+	 *            Context of the activity.
 	 */
-	private SensorManagerSimulator(Context context, SensorManager systemsensormanager) {
+	private SensorManagerSimulator(Context context,
+			SensorManager systemsensormanager) {
 		mContext = context;
 		mSensorManager = systemsensormanager;
 		mClient = new SensorSimulatorClient(mContext, this);
 	}
 
 	/**
-	 * This method is used in our program to make a new sensor manager simulator through
-	 * which we emulate our sensor input.
+	 * This method is used in our program to make a new sensor manager simulator
+	 * through which we emulate our sensor input.
 	 * 
-	 * @param context, Context of the activity
-	 * @param sensorManager, String that is used for checking in if loop
+	 * @param context
+	 *            , Context of the activity
+	 * @param sensorManager
+	 *            , String that is used for checking in if loop
 	 * @return instance, instance of SensorManagerSimulator
 	 */
-	public static SensorManagerSimulator getSystemService(Context context, String sensorManager) {
+	public static SensorManagerSimulator getSystemService(Context context,
+			String sensorManager) {
 		if (instance == null) {
 			if (sensorManager.equals(Context.SENSOR_SERVICE)) {
 				if (SensorManagerSimulator.isRealSensorsAvailable()) {
-					instance = new SensorManagerSimulator(context, (SensorManager)context.getSystemService(sensorManager));
-				}
-				else {
+					instance = new SensorManagerSimulator(context,
+							(SensorManager) context
+									.getSystemService(sensorManager));
+				} else {
 					instance = new SensorManagerSimulator(context, null);
 					Toast.makeText(
-							context, "Android SensorManager disabled, 1.5 SDK emulator crashes when using it... Make sure to connect SensorSimulator", Toast.LENGTH_LONG).show();	
-				
+							context,
+							"Android SensorManager disabled, 1.5 SDK emulator crashes when using it... Make sure to connect SensorSimulator",
+							Toast.LENGTH_LONG).show();
 				}
-				
 			}
 		}
 		return instance;
 	}
-	
+
 	/**
-	 * Set the SensorManager if the SensorManagerSimulator is not connected to the
-	 * SensorSimulator.
+	 * Set the SensorManager if the SensorManagerSimulator is not connected to
+	 * the SensorSimulator.
 	 * 
-	 * By default, it is set to (SensorManager) getSystemService(Context.SENSOR_SERVICE).
+	 * By default, it is set to (SensorManager)
+	 * getSystemService(Context.SENSOR_SERVICE).
 	 * 
 	 * @param sensormanager
 	 */
 	public void setDefaultSensorManager(SensorManager sensormanager) {
 		mSensorManager = sensormanager;
 	}
-	
+
 	/**
 	 * Returns the available sensors.
 	 * 
@@ -126,18 +134,17 @@ public class SensorManagerSimulator {
 			return mClient.getSensors();
 		} else {
 			if (mSensorManager != null) {
-				//return mSensorManager.getSensors();
 				return null;
 			}
 			return null;
 		}
 	}
 
-    /**
-     *  Method that checks for the 1.5 SDK Emulator bug...
-     *  
-     * @return boolean true or false
-     */
+	/**
+	 * Method that checks for the 1.5 SDK Emulator bug...
+	 * 
+	 * @return boolean true or false
+	 */
 	private static boolean isRealSensorsAvailable() {
 		if (Build.VERSION.SDK.equals("3")) {
 			// We are on 1.5 SDK
@@ -148,18 +155,23 @@ public class SensorManagerSimulator {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Registers a listener for given sensors.
 	 * 
-	 * @param listener, SensorEventListener object
-	 * @param sensor, Sensor object that represents sensor we want to register
-	 * @param rate, rate of events. This is only a hint to the system. events may be received 
-	 *        faster or slower than the specified rate. Usually events are received faster
+	 * @param listener
+	 *            , SensorEventListener object
+	 * @param sensor
+	 *            , Sensor object that represents sensor we want to register
+	 * @param rate
+	 *            , rate of events. This is only a hint to the system. events
+	 *            may be received faster or slower than the specified rate.
+	 *            Usually events are received faster
 	 * @return boolean, true or false if registering was successful or not
 	 */
 
-	public boolean registerListener(SensorEventListener listener, Sensor sensor, int rate) {
+	public boolean registerListener(SensorEventListener listener,
+			Sensor sensor, int rate) {
 		if (mClient.connected) {
 			mClient.registerListener(listener, sensor, rate);
 			return true;
@@ -168,92 +180,84 @@ public class SensorManagerSimulator {
 				return false;
 			}
 			return false;
-			//return mSensorManager.registerListener(listener, sensor, rate);
 		}
 	}
-
 
 	/**
 	 * Unregisters a listener for the sensors with which it is registered.
 	 * 
-	 * @param listener, a SensorEventListener object
-	 * @param sensors, Sensor object that represent sensor we want to unregister
+	 * @param listener
+	 *            , a SensorEventListener object
+	 * @param sensors
+	 *            , Sensor object that represent sensor we want to unregister
 	 */
 
 	public void unregisterListener(SensorEventListener listener, Sensor sensor) {
 		if (mClient.connected) {
 			mClient.unregisterListener(listener, sensor);
-		} else {
-			if (mSensorManager == null) {
-				//mSensorManager.unregisterListener(listener, sensor);
-			}
 		}
 	}
 
 	/**
 	 * Unregisters a listener for the sensors with which it is registered.
 	 * 
-	 * @param listener a SensorListener object
+	 * @param listener
+	 *            a SensorListener object
 	 */
-	
+
 	public void unregisterListener(SensorEventListener listener) {
 		if (mClient.connected) {
 			mClient.unregisterListener(listener);
-		} else {
-			if (mSensorManager != null) {
-				//mSensorManager.unregisterListener(listener);
-			}
 		}
 	}
-	
 
-	//  Member function extensions:
+	// Member function extensions:
 	/**
-	 * Connect to the Sensor Simulator.
-	 * (All the settings should have been set already.)
+	 * Connect to the Sensor Simulator. (All the settings should have been set
+	 * already.)
 	 */
 	public void connectSimulator() {
 		mClient.connect();
 	};
-	
+
 	/**
 	 * Disconnect from the Sensor Simulator.
 	 */
 	public void disconnectSimulator() {
 		mClient.disconnect();
 	}
-	
+
 	/**
 	 * Returns whether the Sensor Simulator is currently connected.
 	 */
 	public boolean isConnectedSimulator() {
 		return mClient.connected;
 	}
-	
+
 	/**
-	 * When we register Sensor we use SensorManager.getDefaultSensor(SENSOR.TYPE).
-	 * This method simulates that command. If it's first time we are registering new
-	 * sensor, new sensor object is created. Otherwise we check if sensor is already 
-	 * registered. If it's not, we add it to our Sensor object so that it can be
-	 * registered. If it's already registered, than this method was called in 
+	 * When we register Sensor we use
+	 * SensorManager.getDefaultSensor(SENSOR.TYPE). This method simulates that
+	 * command. If it's first time we are registering new sensor, new sensor
+	 * object is created. Otherwise we check if sensor is already registered. If
+	 * it's not, we add it to our Sensor object so that it can be registered. If
+	 * it's already registered, than this method was called in
 	 * unregisterListener method and we add that sensor to our Sensor object to
 	 * be unregistered.
 	 * 
-	 * @param type, integer number of sensor to be registered or unregistered.
+	 * @param type
+	 *            , integer number of sensor to be registered or unregistered.
 	 * @return sensors, Sensor object that is used in our methods.
 	 */
-	public Sensor getDefaultSensor (int type){
-		if(sensors == null) {
+	public Sensor getDefaultSensor(int type) {
+		if (sensors == null) {
 			sensors = new Sensor(mContext, type);
-			return sensors;			
-		}else if(sensors.checkList(type)){
+			return sensors;
+		} else if (sensors.checkList(type)) {
 			sensors.addSensor(type);
 			return sensors;
-		}else{
+		} else {
 			sensors.removeSensor(type);
 			return sensors;
 		}
-		
 	}
-
 }

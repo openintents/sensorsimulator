@@ -27,7 +27,22 @@ It transmits the simulated sensor data to an Android emulator.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-----------------
+---------------------------------------------------------
+release: 2.0.1
+date: 
+
+- include timestamp in SensorEvent (GCI task by Aviral Dasgupta, issue 395)
+
+---------------------------------------------------------
+release: 2.0
+date: 2011-08-24
+
+- GSoC 2011 project by Ilarele
+- redesign of graphical user interface
+- new scenario simulator
+- record from real device and playback complex sensor states
+
+---------------------------------------------------------
 release: 1.1.1
 date: 2011-06-03
 
@@ -36,7 +51,7 @@ date: 2011-06-03
 - add Record and Playback buttons (patch by Prithvi Raj)
 - add proximity sensor (patch by Emaad Ahmed Manzoor)
 
-----------------
+---------------------------------------------------------
 release: 1.1.0-rc1
 date: 2011-01-05
 
@@ -46,7 +61,7 @@ date: 2011-01-05
   Electrical Engineering and Computing.
 - SWT (Standard Widget Toolkit) support by Lee Sanghoon
 
-----------------
+---------------------------------------------------------
 release: 1.0.0-beta1
 date: 2009-07-01
 
@@ -54,7 +69,7 @@ date: 2009-07-01
 - apply patch by Danne to work around the
   sensor Emulator bug in the SDK 1.5.
 
-----------------
+---------------------------------------------------------
 release: 0.9.0
 date: 2008-09-05
 
@@ -62,27 +77,27 @@ upgrade to Android SDK 0.9.
 - adapt new conventions for accelerometer and orientation
   sensors.
 
-----------------
+---------------------------------------------------------
 release: 0.1.7
 date: 2008-04-19
 
 - Added Dale Thatcher's Wii mote patch.
   http://blog.dalethatcher.com/2008/04/howto-get-wii-mote-data-into-android.html
 
-----------------
+---------------------------------------------------------
 release: 0.1.6
 date: 2008-04-09
 
 - no changes
 
-----------------
+---------------------------------------------------------
 release: 0.1.5
 date: 2008-03-28
 
 - Performance patch included (by Ogurash).
 - Special characters implemented as unicode.
 
-----------------
+---------------------------------------------------------
 release: 0.1.4
 date: 2008-03-12
 
@@ -92,7 +107,7 @@ new features:
     time-resolution. Accelerometer can be specified by spring constant
     and damping terms.
 
-----------------
+---------------------------------------------------------
 release: 0.1.3
 date: 2008-02-24
 
@@ -106,7 +121,7 @@ known issues:
   - the new Sensors methods related to sensor update
     rate are not yet implemented.
 
-----------------
+---------------------------------------------------------
 release: 0.1.2
 date: 2008-01-28
 

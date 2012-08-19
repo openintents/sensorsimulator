@@ -1,0 +1,24 @@
+In Java Application (server)
+0. in SensorModel class, add constants for the new server:  POZ_X, TYPE_X, X
+1. describe sensor:
+	add classes:
+		XModel
+		XView
+		XController
+2.	add sensor in the code:
+		in SensorSimulatorModel add sensors.add(new XModel())
+		in SensorSimulatorView add sensors.add(new XView(xmodel))
+		in SensorSimulatorController add sensors.add(new XController(xmodel, xview))
+3.	add sensor in communication:
+		add (in model.sensor.SensorServerThread class) code in the method getSensorModelFromName, getSensorCtrlFromName
+
+
+in SettingsActivity
+1. in Sensor class, add TYPE_X
+2. in SensorNames class:
+		add TYPE_X
+		add code for the new sensor in getSensorName, getSensorInteger, getNumSensorValues
+		
+3.	if it is a new sensor in android api:
+		increment SensorNames.SENSOR_MAX_BIT 
+		increment SensorSimulatorClient.MAX_SENSOR
