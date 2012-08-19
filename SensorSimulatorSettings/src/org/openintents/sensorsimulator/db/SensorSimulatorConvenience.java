@@ -1,25 +1,6 @@
-/*
- * Port of OpenIntents simulator to Android 2.1, extension to multi
- * emulator support, and GPS and battery simulation is developed as a
- * diploma thesis of Josip Balic at the University of Zagreb, Faculty of
- * Electrical Engineering and Computing.
- * 
- * Copyright (C) 2008-2010 OpenIntents.org
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.openintents.sensorsimulator.db;
+
+import org.openintents.sensorsimulator.dbprovider.SensorSimulatorProvider;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -29,14 +10,13 @@ import android.net.Uri;
 import android.util.Log;
 
 /**
- * Class that defines our Convenience and it's methods.
- * It is used to insert and get our IP address and socket from
- * our Content Provider.
+ * Convenience functions to access settings.
  * 
  * @author Peli
+ *
  */
 public class SensorSimulatorConvenience {
-	
+
 	/**
 	 * TAG for logging.
 	 */
@@ -44,7 +24,7 @@ public class SensorSimulatorConvenience {
 	
 	private Context mContext;
 	private ContentResolver mContentResolver;
-	
+
 	/**
 	 * Constructor. 
 	 * 
@@ -54,7 +34,7 @@ public class SensorSimulatorConvenience {
 		mContext = context;
 		mContentResolver = mContext.getContentResolver();
 	}
-	
+
 	/**
 	 * Updates the 'value' for the preferenceID.
 	 * 
@@ -62,9 +42,17 @@ public class SensorSimulatorConvenience {
 	 * @param value The value to set.
 	 */
 	public void setPreference(final String name, final String value) {
-
+		/*
+		// This value does not exist yet. Let's insert it:
+		ContentValues values2 = new ContentValues(2);
+		values2.put(Preferences.NAME, name);
+		values2.put(Preferences.VALUE, value);
+		mContentResolver.insert(Preferences.CONTENT_URI, values2);
+		*/
+		
+		//Log.i(TAG, "set setting");
 		try {
-
+			//Log.i(TAG, "get Cursor.");
 			if (mContentResolver == null)
 				Log.i(TAG, "Panic!.");
 			Cursor c = mContentResolver.query(SensorSimulator.Settings.CONTENT_URI, 
@@ -72,6 +60,8 @@ public class SensorSimulatorConvenience {
 					SensorSimulator.Settings.KEY + "= '" + name + "'",
 					null,
 					SensorSimulator.Settings.DEFAULT_SORT_ORDER);
+			//Log.i(TAG, "got Cursor.");
+			//Log.i(TAG, "Cursor: " + c.toString());
 			
 			if (c == null) {
 				Log.e(TAG, "missing hardware provider");
@@ -80,12 +70,15 @@ public class SensorSimulatorConvenience {
 			
 			
 			if (c == null || c.getCount() < 1) {
+				//Log.i(TAG, "Insert");
 				
+				// This value does not exist yet. Let's insert it:
 				ContentValues values = new ContentValues(2);
 				values.put(SensorSimulator.Settings.KEY, name);
 				values.put(SensorSimulator.Settings.VALUE, value);
 				mContentResolver.insert(SensorSimulator.Settings.CONTENT_URI, values);
 			} else if (c.getCount() >= 1) {
+				//Log.i(TAG, "Update");
 				
 				// This is the key, so we can update it:
 				c.moveToFirst();
@@ -135,5 +128,6 @@ public class SensorSimulatorConvenience {
 			return "Preferences table corrupt!";
 		}
 	}
+
 
 }

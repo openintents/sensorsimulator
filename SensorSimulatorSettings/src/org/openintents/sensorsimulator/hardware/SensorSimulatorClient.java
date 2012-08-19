@@ -1,10 +1,5 @@
-/*
- * Port of OpenIntents simulator to Android 2.1, extension to multi
- * emulator support, and GPS and battery simulation is developed as a
- * diploma thesis of Josip Balic at the University of Zagreb, Faculty of
- * Electrical Engineering and Computing.
- * 
- * Copyright (C) 2008-2010 OpenIntents.org
+/* 
+ * Copyright (C) 2008 OpenIntents.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +15,7 @@
  */
 
 package org.openintents.sensorsimulator.hardware;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,26 +25,18 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
+
 import org.openintents.sensorsimulator.db.SensorSimulator;
 import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
 
 import android.content.Context;
+import android.hardware.SensorListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 
-/**
- * SensorSimulatorClient is responsible for connecting and disconnecting our
- * SensorManagerSimulator. It also handles all the outputs and inputs. TCP connection
- * is created between this class and our java GUI responsible for simulating
- * sensors. This class contains all the methods needed for sending and also 
- * receiving inputs, as well outputs.
- * 
- * @author Peli
- * @author Josip Balic
- */
 final class SensorSimulatorClient {
 	
 	/**
@@ -73,36 +61,26 @@ final class SensorSimulatorClient {
     PrintWriter mOut;
     BufferedReader mIn;
     
-    private ArrayList<Listener> mListeners = new ArrayList<Listener>();
-    
-    @SuppressWarnings("unused")
-	private SensorManagerSimulator mSensorManager;
+    private /*static final*/ ArrayList<Listener> mListeners = new ArrayList<Listener>();
 	
-    /**
-     * Constructor for our SensorSimulatorClient.
-     * 
-     * @param context, Context of our application
-     * @param sensorManager, SensorManagerSimulator that created this client
-     */
-	protected SensorSimulatorClient(Context context, SensorManagerSimulator sensorManager) {
+	protected SensorSimulatorClient(Context context) {
 		connected = false;
 		mContext = context;
-		mSensorManager = sensorManager;
 		mSensorSimulatorConvenience = new SensorSimulatorConvenience(mContext);
 	}
 	
-	/**
-	 * Method used to connect our application with SensorSimulator GUI.
-	 */
 	protected void connect() {
 		
+		// if (connected) return;
+
         mSocket = null;
         mOut = null;
         mIn = null;
 
         Log.i(TAG, "Starting connection...");
         
-        // get Info from ContentProvider       
+        // get Info from ContentProvider
+        
         String ipaddress = mSensorSimulatorConvenience.getPreference(SensorSimulator.KEY_IPADDRESS);
         String socket = mSensorSimulatorConvenience.getPreference(SensorSimulator.KEY_SOCKET);
         
@@ -110,10 +88,23 @@ final class SensorSimulatorClient {
         
         try {
             mSocket = new Socket(ipaddress, Integer.parseInt(socket));
+        	/*
+        	 * !!!!! Socket with timeout does not work due to bug in Android SDK:
+        	 * http://groups.google.com/group/android-developers/browse_thread/thread/bd9a4057713d9f50/c76645b31078445a
+            
+            // socket with timeout:
+        	mSocket = new Socket();
+        	SocketAddress sockaddr = new InetSocketAddress(ipaddress, Integer.parseInt(socket));
+            
+        	int timeoutMs = 3000; // 3 seconds
+        	mSocket.connect(sockaddr, timeoutMs);
+        	*/
         	
             mOut = new PrintWriter(mSocket.getOutputStream(), true);
             mIn = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
         } catch (UnknownHostException e) {
+            //System.err.println("Don't know about host: ");
+            //System.exit(1);
         	Log.e(TAG, "Don't know about host: " + ipaddress + " : " + socket);
         	return;
         } catch (SocketTimeoutException e) {
@@ -140,18 +131,17 @@ final class SensorSimulatorClient {
 		Log.i(TAG, "Received: " + fromServer);
         
 		if (fromServer.equals("SensorSimulator")) {
+			// OK
 			connected = true;
 			Log.i(TAG, "Connected");
 		} else {
+			// Who is that???
 			Log.i(TAG, "Problem connecting: Wrong string sent.");
 			disconnect();
 		}
                
 	}
 	
-	/**
-	 * Method used to disconnect our application and SensorSimulator GUI.
-	 */
 	protected void disconnect() {
 		if (connected) {
 			Log.i(TAG, "Disconnect()");
@@ -167,45 +157,28 @@ final class SensorSimulatorClient {
 			
 			connected = false;
 		} else {
-			//already disconnected, nothing to do.
+			// aldready disconnected. Nothing to do.
 		}
 	}
 	
-	/**
-	 * Method used to get supported sensors from SensorSimulator GUI.
-	 * 
-	 * @return sensors, ArrayList<Integer> of supported sensors.
-	 */
-	protected ArrayList<Integer> getSensors() {
+	protected int getSensors() {
 		Log.i(TAG, "getSensors");
-		//Get String array of supported sensors from SensorSimulator GUI.
 		String[] sensornames = getSupportedSensors();
-		//Convert that array to ArrayList of integers.
-		ArrayList<Integer> sensors = SensorNames.getSensorsFromNames(sensornames);
+		Log.i(TAG, "sensornames: " + sensornames.length);
+		int sensors = SensorNames.getSensorsFromNames(sensornames);
+		Log.i(TAG, "sensors: " + sensors);
 		return sensors;
 	}
-    
+
 	/** Delay in milliseconds */
 	private int DELAY_MS_FASTEST = 0;
 	private int DELAY_MS_GAME = 20;
 	private int DELAY_MS_UI = 60;
 	private int DELAY_MS_NORMAL = 200;
 	
-	/**
-	 * Method that registers listener for specific sensor. All sensors can't be 
-	 * registered through this method like they can on real device, so registration
-	 * of each sensor must be done.
-	 * 
-	 * @param listener, SensorEventListener for the sensor we are registering
-	 * @param sensor, Sensor we are registering
-	 * @param rate, integer rate of updates
-	 * @return boolean, true of false if registration was successful
-	 */
-	protected boolean registerListener(SensorEventListener listener, Sensor sensor, int rate) {
+	protected boolean registerListener(SensorListener listener, int sensors, int rate) {
 
         int delay = -1;
-        
-        //here we check the sensor rate that is going to be applied to listener
         switch(rate)
         {
         case SensorManager.SENSOR_DELAY_FASTEST:
@@ -228,9 +201,6 @@ final class SensorSimulatorClient {
             return false;
         }
         boolean result;
-        
-        //and here we check our listeners Array, for every sensor we create new listener
-        //and add it to our array
         synchronized(mListeners)
         {
             Listener l = null;
@@ -243,27 +213,20 @@ final class SensorSimulatorClient {
                     break;
                 }
             }
-
-            if(mListeners.isEmpty())
+            if(l == null)
             {
-            	l = new Listener(listener, sensor, delay);
-            	result = enableSensor(sensor, delay);
+                l = new Listener(listener, sensors, delay);
+                result = enableSensor(sensors, delay);
                 if(result)
                 {
-                    mListeners.add(l);                  
-                	sensor.addSensorToList(sensor.sensorToRegister);
-                	sensor.addSensor(0);
-                	mListeners.notify();
+                    mListeners.add(l);
+                    mListeners.notify();
                 }
             } else
             {
-            	l = new Listener(listener, sensor, delay);
-            	result = enableSensor(sensor, delay);
+                result = enableSensor(sensors, delay);
                 if(result) {
-                	l.addSensors(sensor, delay);
-                	mListeners.add(l);
-                	sensor.addSensor(0);
-                	mListeners.notify();
+                    l.addSensors(sensors, delay);
                 }
             }
         }
@@ -271,107 +234,50 @@ final class SensorSimulatorClient {
         return result;
 	}
 
-	/**
-	 * Called to unregister specific sensor.
-	 * 
-	 * @param listener, SensorEventListener of the sensor
-	 * @param sensor, Sensor we want to unregister
-	 */
-	protected void unregisterListener(SensorEventListener listener, Sensor sensor) {
+	protected boolean registerListener(SensorListener listener, int sensors) {
+		return registerListener(listener, sensors, SensorManager.SENSOR_DELAY_NORMAL);
+	}
+
+	protected void unregisterListener(SensorListener listener, int sensors) {
 	    synchronized(mListeners)
         {
-	    	Iterator<Listener> itr = mListeners.iterator();
-	    	do
+            int size = mListeners.size();
+            int i = 0;
+            do
             {
-
-	    		Listener element = itr.next();
-
-	    		if(element.hasSensor(sensor.sensorToRemove))
-
+                if(i >= size)
+                    break;
+                Listener l = (Listener)mListeners.get(i);
+                if(l.mSensorListener == listener)
                 {
-	    			//Line below is used to disable sensor 
-                	boolean result = enableSensor(sensor, -1);
-
-                	if(result){
-
-                		if(mListeners.size()==1){
-                			mListeners = new ArrayList<Listener>();
-                		}else{
-                		mListeners.remove(element);
-                		}
-
-                		sensor.removeSensorFromList(sensor.sensorToRemove);
-                		sensor.removeSensor(0);
-                        break;
-                	}
+                    enableSensor(sensors, -1);
+                    if(l.removeSensors(sensors) == 0)
+                        mListeners.remove(i);
+                    break;
                 }
-
-            } while(itr.hasNext());
-
+                i++;
+            } while(true);
         }
 	}
 
-	/**
-	 * Called when we want to unregister listener and all of it's sensors.
-	 * 
-	 * @param listener, SensorEventListener of listener and it's sensors we want to 
-	 * unregister
-	 */
-	protected void unregisterListener(SensorEventListener listener) {
-		
-		if(mListeners.size()!=0){
-
-			Iterator<Listener> itr = mListeners.iterator();
-			Sensor mSensor = itr.next().mSensor;
-			ArrayList<Integer> sensors = mSensor.getList();
-
-			int[] sensor = new int[sensors.size()];
-			for(int i=0;i<sensors.size();i++){
-				if(sensors.get(i)!=null){
-					sensor[i]=((Integer)sensors.get(i).intValue());
-				}
-			}
-
-			for(int i=0;i<sensor.length;i++){
-				mSensor.removeSensor(sensor[i]);
-				unregisterListener(listener,mSensor);
-			}
-		}
-
+	protected void unregisterListener(SensorListener listener) {
+        unregisterListener(listener, SensorManager.SENSOR_ALL);
 	}
 
 
 	/////////////////////////////////////////////////////
 	// Internal functions
-	/**
-	 * SensorSimulatorClient holds also a private Listener class. Every time new sensor
-	 * is enabled, new instance of this class is created and it's stored in SensorSimulatorClient.
-	 * That way we know which sensors have registered listeners and which listener is representing
-	 * which sensor.
-	 * 
-	 * @author Peli
-	 * @author Josip Balic
-	 */
+	
     private class Listener
     {
-
-    	private SensorEventListener mSensorListener;
-    	private Sensor mSensor;
-    	private ArrayList<Integer> mSensors;
+        private SensorListener mSensorListener;
+        private int mSensors;
         private int mDelay;
         private long mNextUpdateTime;
         
-        /**
-         * addSensors is used to add sensor to listener it creates.
-         * @param sensor Sensor, Sensor object in which sensor we want to enable is located
-         * @param delay, integer that represents delay for this sensor
-         * @return mSensors, Sensor object
-         */
-        ArrayList<Integer> addSensors(Sensor sensor, int delay)
+        int addSensors(int sensors, int delay)
         {
-        	int sensors = sensor.sensorToRegister;
-        	sensor.addSensorToList(sensors);
-        	mSensors.add(sensors);
+            mSensors |= sensors;
             if (delay < mDelay) {
             	mDelay = delay;
             	mNextUpdateTime = 0;
@@ -379,103 +285,66 @@ final class SensorSimulatorClient {
             return mSensors;
         }
 
-        /**
-         * Method used to find if this Listener contains particular sensor.
-         * @param sensor, integer of the sensor
-         * @return true or false, true if this sensor created this listener, otherwise false
-         */
-        boolean hasSensor(int sensor)
+        int removeSensors(int sensors)
         {
-        	for(int i=0; i<mSensors.size();i++){
-        		if(mSensors.get(i) == sensor){
-        			return true;
-        		}
-        	}
-        	return false;
+            mSensors &= ~sensors;
+            return mSensors;
         }
 
-        /**
-         * Constructor of Listener class
-         * 
-         * @param listener, SensorEventListener that needs to be saved in SensorSimulatorClient.
-         * @param sensor, Sensor that created SensorEventListener
-         * @param delay, integer that represents delay of sensor
-         */
-        Listener(SensorEventListener listener, Sensor sensor, int delay)
+        boolean hasSensor(int sensor)
         {
- 
+            return (mSensors & sensor) != 0;
+        }
+
+        Listener(SensorListener listener, int sensors, int delay)
+        {
         	mSensorListener = listener;
-        	mSensors = new ArrayList<Integer>();
-        	mSensors.add(sensor.sensorToRegister);
+        	mSensors = sensors;
         	mDelay = delay;
         	mNextUpdateTime = 0;
-        	mSensor = sensor;
         }
     }
     
     /**
-     * Enables the sensor.
+     * Enables the sensors.
      * 
-     * @param sensorAdd, Sensor object that contains sensor to be added
-     * @param delay, integer delay of sensor values
-     * @return True, if sensor is enabled
+     * @param sensors
+     * @param delay
+     * @return True if at least one of the sensors could be enabled.
      */
-    private boolean enableSensor(Sensor sensorAdd, int delay) {
-
-    	ArrayList<Integer> sensors = new ArrayList<Integer>();
-    	ArrayList<String> sensornames = new ArrayList<String>();
-    	String sensorString = null;
+    private boolean enableSensor(int sensors, int delay) {
+    	String[] sensornames = SensorNames.getSensorNames(sensors);
     	boolean result = false;
-    	
-    	if(delay==-1){
-    		sensors.add(sensorAdd.sensorToRemove);
-    		sensornames = SensorNames.getSensorNames(sensors);
-    	}else{
-    		sensors.add(sensorAdd.sensorToRegister);
-    		sensornames = SensorNames.getSensorNames(sensors);
-    	}
-    	
-    	Iterator<String> iter = sensornames.iterator();
-    	do{
-    		try{
-    			if(delay==-1){
-    				sensorString = iter.next().toString();
-    				disableSensor(sensorString);
-    			}else{
-
-    				sensorString = iter.next().toString();
-
-    				enableSensor(sensorString);
+    	for (String sensor : sensornames) {
+    		try {
+    			if (delay == -1) {
+    				disableSensor(sensor);
+    			} else {
+    				enableSensor(sensor);
     				float updatesPerSecond = 1000;
     				if (delay > 0) {
     					updatesPerSecond = 1000 / delay;
     				}
-    				setSensorUpdateRate(sensorString, updatesPerSecond);
+    				setSensorUpdateRate(sensor, updatesPerSecond);
     			}
     			result = true;
-    		}catch (IllegalArgumentException e) {
-    			Log.d(TAG, "Sensor " + sensorString + " not supported");
+    		} catch (IllegalArgumentException e) {
+    			Log.d(TAG, "Sensor " + sensor + " not supported");
     		}
-    	}while(iter.hasNext());
-    	  
+    	}
+    	
     	if (!mHandler.hasMessages(MSG_UPDATE_SENSORS)) {
     		mHandler.sendMessage(mHandler.obtainMessage(MSG_UPDATE_SENSORS));
     	}
-    	sensors.clear();
-    	sensornames.clear();
-    	sensorString =null;
-    	return result; 
+    	return result;
     }
-       
+    
+    
     private static final int MSG_UPDATE_SENSORS = 1;
     
-    //Increase needed if new sensor is added
-    private static int MAX_SENSOR = 9;
+    private static int MAX_SENSOR = 5;
     private float[][] mValues = new float[MAX_SENSOR][];
     private boolean[] mValuesCached = new boolean[MAX_SENSOR];
-    
-    //String that is used for barcode output
-    private String barcode;
     
 	/** Handle the process of updating sensors */
     protected Handler mHandler = new Handler() {
@@ -499,7 +368,6 @@ final class SensorSimulatorClient {
             		}
             	}
 
- 
             	for (Listener l : mListeners) {
             		if (current >= l.mNextUpdateTime) {
             			// do the update:
@@ -510,23 +378,15 @@ final class SensorSimulatorClient {
             				if (hasSensor(l.mSensors, sensorbit)) {
             					// Get current sensor values (if not yet cached)
             					if (!mValuesCached[i]) {
-            						readSensor(sensorbit, mValues[i], barcode);
+            						readSensor(sensorbit, mValues[i]);
             						mValuesCached[i] = true;
             					}
-            					//Check if input received is for barcode sensor or for other
-            					//sensor and create appropriate
-            					if(barcode!=null){
-            						SensorEvent event = new SensorEvent(mContext, barcode, sensorbit);
-            						barcode = null;
-            						l.mSensorListener.onSensorChanged(event);
-            					}else{
-            					SensorEvent event = new SensorEvent(mContext, mValues[i], sensorbit);
-            					l.mSensorListener.onSensorChanged(event);
-            					}
+            					// Send the current sensor values to this listener
+            					l.mSensorListener.onSensorChanged(sensorbit, mValues[i]);
             				}
             				
             				// switch to next sensor
-            				sensorbit++;
+            				sensorbit <<= 1;
             			}
             			
             			// Set next update time:
@@ -561,21 +421,14 @@ final class SensorSimulatorClient {
 	/////////////////////////////////////////////////////////////
 	// Bridge to old API
 
-	static boolean hasSensor(ArrayList<Integer> sensors, int sensor) {
-		for(int i=0; i<sensors.size(); i++){
-			if(sensors.get(i)==sensor){
-				return true;
-			}
-		}
-    	return false;
+	static boolean hasSensor(int sensors, int sensor) {
+    	return (sensors & sensor) != 0;
     }
     
-	//Here we added to original method a barcode2 String also so that we can
-	//get incoming barcode variables as a String and not float[] values
-    private void readSensor(int sensorbit, float[] sensorValues, String barcode2) {
+    private void readSensor(int sensorbit, float[] sensorValues) {
     	String sensorname = SensorNames.getSensorName(sensorbit);
     	try {
-    		readSensor(sensorname, sensorValues, barcode2);
+    		readSensor(sensorname, sensorValues);
     	} catch (IllegalStateException e) {
     		// Sensor is currently not enabled.
     		// For the new API (SDK 0.9 and higher) we catch this exception
@@ -698,13 +551,17 @@ final class SensorSimulatorClient {
 		return num;
 	}
 	
-    protected void readSensor(String sensor, float[] sensorValues, String barcode2) {
+    protected void readSensor(String sensor, float[] sensorValues) {
 		if (sensorValues == null) {
 			throw new NullPointerException (
 					"readSensor for '" + sensor
 					+ "' called with sensorValues == null.");
 		}
 		if (LOG_PROTOCOL) Log.i(TAG, "Send: getNumSensorValues()");
+		//mOut.println("readSensor()");
+		//if (LOG_PROTOCOL) Log.i(TAG, "Send: " + sensor);
+        //mOut.println(sensor);
+		// For performance reasons, send these commands together
 		mOut.println("readSensor()\n" + sensor);
 		int num = 0;
 		
@@ -730,22 +587,16 @@ final class SensorSimulatorClient {
 						+ num + ").");
 	        }
 			
+			//sensorValues = new float[num];
 			for (int i=0; i<num; i++) {
 				String val = mIn.readLine();
 				if (LOG_PROTOCOL) Log.i(TAG, "Received: " + val);
 		        
 				sensorValues[i] = Float.parseFloat(val);
-				if(val.length()==13){
-					barcode2 = val;
-					barcode = barcode2;
-				}
 			}
 		} catch (IOException e) {
 			System.err.println("Couldn't get I/O for the connection to: x.x.x.x.");
             System.exit(1);
-		} catch (NullPointerException e2) {
-		    Log.e(TAG, "Error reading sensors: Is the client running?");
-		    System.exit(1);
 		}
 	}
 	
@@ -835,7 +686,7 @@ final class SensorSimulatorClient {
 						"Sensor '" + sensor
 						+ "' is not supported.");
 			}			
-			Log.i(TAG, "Received: " + numstr); 
+			Log.i(TAG, "Received: " + numstr); // should be numstr=="OK"
 	        
 			Log.i(TAG, "Send: " + updatesPerSecond);
 	        mOut.println("" + updatesPerSecond);			
@@ -860,7 +711,7 @@ final class SensorSimulatorClient {
 						"Sensor '" + sensor
 						+ "' is not supported.");
 			}
-			Log.i(TAG, "Received: " + numstr); 
+			Log.i(TAG, "Received: " + numstr); // should be numstr=="OK"
 		} catch (IOException e) {
 			System.err.println("Couldn't get I/O for the connection to: x.x.x.x.");
             System.exit(1);

@@ -1,15 +1,10 @@
 <?xml version="1.0" ?>
-<project name="SensorSimulator" default="package">
+<project name="FavoriteLocations" default="package">
 
 	<!-- Read properties from OpenIntents property file -->
 	<property file="build.properties" />
 	<property file="${build.properties.dir}/build.properties" />
-
-	<!-- Read manifest properties , e.g. 
-	     manifest(android:versionName) or manifest.package -->
-	<xmlproperty file="${build.properties.dir}/AndroidManifest.xml" />
-	<property name="version" value="${manifest(android:versionName)}" />
-
+		
 	<!-- The intermediates directory -->
 	<!-- Eclipse uses "bin" for its own output, so we do the same. -->
 	<property name="outdir" value="bin" />
@@ -18,6 +13,7 @@
 
 	<!-- Version number -->
 	<property name="version.num" value="${version}"/>
+	<buildnumber file="build.num"/>
     <tstamp>
 		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
 	</tstamp>
@@ -30,7 +26,7 @@
 	<property name="docdir" value="doc" />
 	
 	<!-- Output file -->
-	<property name="out-jar" value="${outdir}/sensorsimulator-${version}.jar" />
+	<property name="out-jar" value="${outdir}/sensorsimulator.jar" />
     
     <!-- Rules -->
 
@@ -69,9 +65,9 @@
 		<manifest file="MANIFEST.MF">
 			<!-- attribute name="Built-By" value="${user.name}"/ -->
 			<attribute name="Main-Class" 
-				value="hr.fer.tel.sensorsimulator.SensorSimulatorMain"/>
+				value="org.openintents.tools.sensorsimulator.SensorSimulator"/>
 			<attribute name="Implementation-Version" 
-				value="${version.num}"/>   
+				value="${version.num}-b${build.number}"/>   
 			<attribute name="Built-Date" value="${TODAY}"/>                 
 		</manifest>
 

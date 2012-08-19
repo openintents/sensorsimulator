@@ -1,10 +1,5 @@
-/*
- * Port of OpenIntents simulator to Android 2.1, extension to multi
- * emulator support, and GPS and battery simulation is developed as a
- * diploma thesis of Josip Balic at the University of Zagreb, Faculty of
- * Electrical Engineering and Computing.
- * 
- * Copyright (C) 2008-2010 OpenIntents.org
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            /* 
+ * Copyright (C) 2008 OpenIntents.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,23 +17,17 @@
 package org.openintents.sensorsimulator;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 import org.openintents.sensorsimulator.db.SensorSimulator;
 import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
-import org.openintents.sensorsimulator.hardware.Sensor;
-import org.openintents.sensorsimulator.hardware.SensorEvent;
-import org.openintents.sensorsimulator.hardware.SensorEventListener;
 import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
 import org.openintents.sensorsimulator.hardware.SensorNames;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.hardware.SensorListener;
 import android.hardware.SensorManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,7 +44,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TabHost.TabSpec;
 
@@ -64,15 +52,10 @@ import android.widget.TabHost.TabSpec;
  * 
  * The connection is outbound to the SensorSimulator.
  * 
- * Important to connect at least once using this activity, so that IP and port
- * can be stored and used later in another application. This activity is used
- * to see our simulations effects and to test them.
- * 
  * @author Peli
- * @author Josip Balic
  *
  */
-public class SensorSimulatorSettingsActivity extends Activity{
+public class SensorSimulatorSettingsActivity extends Activity implements SensorListener {
 	/**
 	 * TAG for logging.
 	 */
@@ -93,8 +76,7 @@ public class SensorSimulatorSettingsActivity extends Activity{
 	
 	DecimalFormat mDecimalFormat;
 	
-	ArrayList<String> mSupportedSensors = new ArrayList<String>();
-
+	String[] mSupportedSensors;
 	
 	/**
 	 * Number of supported sensors.
@@ -144,11 +126,12 @@ public class SensorSimulatorSettingsActivity extends Activity{
 		super.onCreate(icicle);
 		
 		setContentView(R.layout.sensorsimulator);
-
-		//add as sensor manager our's sensor manager simulator
+		// SensorSimulatorConvenience.mContentResolver = getContentResolver();
+		
+		// Start with Android's sensor manager
+		//mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 		mSensorManager = SensorManagerSimulator.getSystemService(this, SENSOR_SERVICE);
 		
-		//set convenience for storing and loading IP and port for connection
 		mSensorSimulatorConvenience = new SensorSimulatorConvenience(this);
 		
 		Context context = this;
@@ -170,6 +153,7 @@ public class SensorSimulatorSettingsActivity extends Activity{
 		
 		mTabHost.setCurrentTab(0);
 	
+//		mEditText = (EditText) findViewById(R.id.edittext);
 		mEditTextIP = (EditText) findViewById(R.id.ipaddress);
 		mEditTextSocket = (EditText) findViewById(R.id.socket);
 		
@@ -201,100 +185,33 @@ public class SensorSimulatorSettingsActivity extends Activity{
 		
 		// Format for output of data
 		mDecimalFormat = new DecimalFormat("#0.00");
-		      
+		
+		
 		readAllSensors(); // Basic sensor information
 		
 		mSensorsList = (LinearLayout) findViewById(R.id.sensordatalist);
 
 		fillSensorList(); // Fills the sensor list manually, giving us more control
 		
-		//if we use simulation of GPS, here we register location manager for the GPS
-		LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-		LocationListener mlocListener = new MyLocationListener();
-		mlocManager.requestLocationUpdates( LocationManager.GPS_PROVIDER, 0, 0, mlocListener);
-		
 	}
 	
 	/**
-	 * Inner class that represents our Location Listener. Each time
-	 * we receive GPS input, Toast message is made and it contains variables 
-	 * which are send to the emulator. In order for Toast message to display,
-	 * emulator should be connected to internet.
-	 * 
-	 * @author Josip Balic
-	 */
-	public class MyLocationListener implements LocationListener{
-
-		/**
-		 * Method that gets location changes. Once location is received, Toast message
-		 * with Latitude, Longitude and Altitude is made. This is just an example how
-		 * LocationListener should be used in applications.
-		 */
-		@Override
-		public void onLocationChanged(Location location) {
-			location.getLatitude();
-			location.getLongitude();
-			location.getAltitude();
-
-			String Text = "My current location is: " + "Longitude = " + location.getLongitude() + 
-			" Latitude = " + location.getLatitude() + " Altitude = " + location.getAltitude();
-			
-			Toast.makeText( getApplicationContext(), Text, Toast.LENGTH_SHORT).show();
-			
-		}
-
-		@Override
-		public void onProviderDisabled(String provider) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onProviderEnabled(String provider) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
-	
-	/**
-	 * Called when activity comes to foreground. In onResume() method
-	 * we register our sensors listeners, important - sensor listeners
-	 * are not and should not be registered before, but in on resume
-	 * method.
+	 * Called when activity comes to foreground.
 	 */
     @Override
     protected void onResume() {
         super.onResume();
-        mSensorManager.registerListener(listener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), 
-        		SensorManager.SENSOR_DELAY_FASTEST);
-        mSensorManager.registerListener(listener, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), 
-        		SensorManager.SENSOR_DELAY_FASTEST);
-        mSensorManager.registerListener(listener, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), 
-        		SensorManager.SENSOR_DELAY_FASTEST);
-        mSensorManager.registerListener(listener, mSensorManager.getDefaultSensor(Sensor.TYPE_TEMPERATURE), 
-        		SensorManager.SENSOR_DELAY_FASTEST);
-        mSensorManager.registerListener(listener,
-        		mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
-        		SensorManager.SENSOR_DELAY_FASTEST);
-        mSensorManager.registerListener(listener,
-                mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
-                SensorManager.SENSOR_DELAY_FASTEST);    
+        
+        mSensorManager.registerListener(this, 
+                SensorManager.SENSOR_ACCELEROMETER | 
+                SensorManager.SENSOR_MAGNETIC_FIELD | 
+                SensorManager.SENSOR_ORIENTATION,
+                SensorManager.SENSOR_DELAY_FASTEST);
     }
 
-    /**
-     * Called when activity is stopped. Here we unregister all of currently
-     * existing listeners.
-     */
     @Override
     protected void onStop() {
-    	mSensorManager.unregisterListener(listener);
+        mSensorManager.unregisterListener(this);
         super.onStop();
     }
     
@@ -308,8 +225,7 @@ public class SensorSimulatorSettingsActivity extends Activity{
 
 	/**
 	 * Called when the user leaves.
-	 * Here we store the IP address and port, unregister existing listeners and
-	 * close the connection with sensor simulator.
+	 * Here we store the IP address and port.
 	 */
     @Override
     protected void onPause() {
@@ -321,8 +237,8 @@ public class SensorSimulatorSettingsActivity extends Activity{
 		String oldSocket = mSensorSimulatorConvenience.getPreference(SensorSimulator.KEY_SOCKET);
 		
 		if (! (newIP.contentEquals(oldIP) && newSocket.contentEquals(oldSocket)) ) {
-			// new values, unregister existing listeners and disconnect from simulator
-			mSensorManager.unregisterListener(listener);
+			// new values
+	        mSensorManager.unregisterListener(this);
 			mSensorManager.disconnectSimulator();
 			
 			// Save the values
@@ -361,11 +277,6 @@ public class SensorSimulatorSettingsActivity extends Activity{
 
 	///////////////////////////////////////
 	
-	/**
-	 * This method is used to connect our activity with sensor simulator.
-	 * If we already have opened connection, than we unregister all the listeners,
-	 * close existing connection and we create new connection.
-	 */
 	public void connect() {
 		Log.i(TAG, "Connect");
 		String newIP = mEditTextIP.getText().toString();
@@ -375,7 +286,7 @@ public class SensorSimulatorSettingsActivity extends Activity{
 		
 		if (! (newIP.contentEquals(oldIP) && newSocket.contentEquals(oldSocket)) ) {
 			// new values
-			mSensorManager.unregisterListener(listener);
+	        mSensorManager.unregisterListener(this);
 			mSensorManager.disconnectSimulator();
 			
 			// Save the values
@@ -398,17 +309,28 @@ public class SensorSimulatorSettingsActivity extends Activity{
 			mTextSensorType.setText(R.string.real_device_data);
 		}
  		
+ 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ 		// TODO Is this an Android bug?? notifyDataSetChanged()
+ 		// call results in performance loss later.
+ 		// 
+ 		// I've asked about this here:
+ 		// http://groups.google.com/group/android-developers/browse_frm/thread/ad4a386116f2e915
+ 		//
+ 		// Keeping the line below works, but has really 
+ 		// slow performance, because for each small text change
+ 		// the whole row is recreated.
+ 		//
+		// Now notify the ListAdapter of the changes:
+//		mSensorListAdapter.notifyDataSetChanged();
+		//mSensorListAdapter.notifyDataSetInvalidated();
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ 		
  		fillSensorList();
 		
 	}
 	
-	/**
-	 * Method disconnect() is used to close existing connection with sensor
-	 * simulator. When disconnect is called, all registered sensors are getting
-	 * unregistered.
-	 */
 	public void disconnect() {
-		mSensorManager.unregisterListener(listener);
+		mSensorManager.unregisterListener(this);
 		mSensorManager.disconnectSimulator();
 		
 		readAllSensors();
@@ -424,10 +346,6 @@ public class SensorSimulatorSettingsActivity extends Activity{
  		fillSensorList();
 	}
 	
-	/**
-	 * This method is used to set button states. If we are connected with sensor
-	 * simulator, than we can't click on button connect anymore and vice versa.
-	 */
 	public void setButtonState() {
 		boolean connected = mSensorManager.isConnectedSimulator();
 		mButtonConnect.setEnabled(!connected);
@@ -446,92 +364,79 @@ public class SensorSimulatorSettingsActivity extends Activity{
         Log.d(TAG, "Sensors: " + mSensorManager.getSensors());
         Log.d(TAG, "Connected: " + mSensorManager.isConnectedSimulator());
         
-        ArrayList<Integer> sensors = mSensorManager.getSensors();
+        int sensors = mSensorManager.getSensors();
+        Log.d(TAG, "sensors: " + sensors);
         
-        if(sensors!=null){
         mSupportedSensors = SensorNames.getSensorNames(sensors);
-        }
+        Log.d(TAG, "mSupportedSensors: " + mSupportedSensors);
         
 		// Now set values that are related to sensor updates:
-        if(mSupportedSensors!=null){
-        mNumSensors = mSupportedSensors.size();
-        }       
+		mNumSensors = mSupportedSensors.length;
+        
 	}
 	
-	/**
-	 * Our listener for this application. This listener holds all sensors 
-	 * we enable. If we are developing application which is using 2 or more
-	 * sensors, it's advisable to use only one listener per one sensor.
-	 */
-	private SensorEventListener listener = new SensorEventListener(){
-		
-		/**
-		 * onAccuracyChanged must be added, but it doesn't need any editing.
-		 */
-		@Override
-		public void onAccuracyChanged(Sensor sensor, int acc){
-		}
-		
-		/**
-		 * onSensorChanged method is used to write events of our enabled sensors
-		 * in our application.
-		 */
-		@Override
-		public void onSensorChanged(SensorEvent event){
-			int sensor = event.type;
-			float[] values = event.values;
-			for (int i = 0; i < mNumSensors; i++) {
-	        	if ((mSingleSensorView[i].mSensorBit == sensor) && sensor!=9) {
-	        		// Update this view
-	        		String data = "";
-	        		int num = SensorNames.getNumSensorValues(sensor);
-	        		
-	        		for (int j = 0; j < num; j++) {
-	        			data += mDecimalFormat.format(values[j]);
-	        			if (j < num-1) data += ", ";
-	        		}
-	                	
-	        		mSingleSensorView[i].mTextView.setText(data);
-	        		break;
-	        	}
-			}
-			
-			//If Barcode is enabled, this method is used only for Barcode output
-			for (int i = 0; i < mNumSensors; i++) {
-	        	if ((mSingleSensorView[i].mSensorBit == sensor) && sensor==9) {
-	        		// Update this view
-	        		String data = "";
-                    data = event.barcode;
-	                	
-	        		mSingleSensorView[i].mTextView.setText(data);
-	        		break;
-	        	}
+	
+	public void onSensorChanged(int sensor, float[] values) {
+        //Log.d(TAG, "onSensorChanged: " + sensor + ", x: " + values[0] + ", y: " + values[1] + ", z: " + values[2]);
+        
+		// T-mobile G1 patch
+		/*
+		if (sensor == SensorManager.SENSOR_ORIENTATION) {
+			if (values[1] > 90 || values[1] < -90) {
+				values[2] = - values[2];
+				//values[0] += 180;
+				//if (values[0] > 360) {
+				//	values[0] -= 360;
+				//}
 			}
 		}
+		*/
+		
+		
+        // Update the display
+        for (int i = 0; i < mNumSensors; i++) {
+        	if (mSingleSensorView[i].mSensorBit == sensor) {
+        		// Update this view
+        		String data = "";
+        		int num = SensorNames.getNumSensorValues(sensor);
+        		//int num = 3;
+        		
+        		for (int j = 0; j < num; j++) {
+        			data += mDecimalFormat.format(values[j]);
+        			if (j < num-1) data += ", ";
+        		}
+        		//Log.d(TAG, "onSensorChanged - setText: " + i + ": " + data);
+                	
+        		mSingleSensorView[i].mTextView.setText(data);
+        		break;
+        	}
+        }
+        
+	}
 
-	};
+	public void onAccuracyChanged(int sensor, int accuracy) {
+		
+	}
 
 	/** 
      * Fills the sensor list with currently active sensors.
      */
 	
     void fillSensorList() {
-    	if(mSupportedSensors!=null){
-        mSensorsList.removeAllViews();
+    	// First clean the list
+    	mSensorsList.removeAllViews();
     	
     	// Now we fill the list, one by one:
-    	int max = mSupportedSensors.size();
-
+    	int max = mSupportedSensors.length;
     	mSingleSensorView = new SingleSensorView[max];
     	
-    	//Log.i(TAG, "fillSensorList: " + max);
+    	Log.i(TAG, "fillSensorList: " + max);
     	for (int i=0; i < max; i++) {
-    		String[] sensorsNames = new String[mSupportedSensors.size()];
-    		ArrayList<Integer> sensorbit = SensorNames.getSensorsFromNames(mSupportedSensors.toArray(sensorsNames));
+    		int sensorbit = SensorNames.getSensorsFromNames(new String[] {mSupportedSensors[i]});
     		SingleSensorView ssv = 
     			new SingleSensorView(this, 
-    					mSupportedSensors.get(i), 
-    					sensorbit.get(i),
+    					mSupportedSensors[i], 
+    					sensorbit,
     					i);
     		ssv.setLayoutParams(new LinearLayout.LayoutParams(
     				LinearLayout.LayoutParams.FILL_PARENT,
@@ -539,28 +444,19 @@ public class SensorSimulatorSettingsActivity extends Activity{
     		mSensorsList.addView(ssv, i);
     		mSingleSensorView[i] = ssv;
     	}
-    	}
     }
-    	
+    
     /**
      * Layout for displaying single sensor.
-     * 
-     * @author Peli
-     * @author Josip Balic
      */
     private class SingleSensorView extends LinearLayout {
 
-        @SuppressWarnings("unused")
-		private TextView mTitle;
+        private TextView mTitle;
         
-        @SuppressWarnings("unused")
-		LinearLayout mL1;
-        @SuppressWarnings("unused")
-		LinearLayout mL1a;
-        @SuppressWarnings("unused")
-		LinearLayout mL1b;
-        @SuppressWarnings("unused")
-		LinearLayout mL1c;
+        LinearLayout mL1;
+        LinearLayout mL1a;
+        LinearLayout mL1b;
+        LinearLayout mL1c;
         
         CheckBox  mCheckBox;
         TextView mTextView;
@@ -568,11 +464,9 @@ public class SensorSimulatorSettingsActivity extends Activity{
         
         ArrayAdapter<String> mUpdateRateAdapter;
         
-        @SuppressWarnings("unused")
-		Context mContext;
+        Context mContext;
         
-        @SuppressWarnings("unused")
-		int mSensorId;
+        int mSensorId;
         String mSensor;
         int mSensorBit;
         
@@ -581,10 +475,9 @@ public class SensorSimulatorSettingsActivity extends Activity{
          * sensor update rate.
          * (-1 for no default index).
          */
-        @SuppressWarnings("unused")
-		int mDefaultValueIndex;
+        int mDefaultValueIndex;
 		
-    	public SingleSensorView(Context context, String sensor, int sensorbit, int sensorId) {
+    	public SingleSensorView(Context context, String sensor, int sensorbit, /*String[] updateRates, */int sensorId) {
     		super(context);
     		Log.i(TAG, "SingleSensorView - constructor");
     		
@@ -622,10 +515,6 @@ public class SensorSimulatorSettingsActivity extends Activity{
 
     	}
     	
-    	/**
-    	 * Method that checks checkbox status. If we click on checkbox sensor is
-    	 * enabled, otherwise sensor is disabled.
-    	 */
     	public void updateSensorStateInformation() {
     		// We add a listener for the CheckBox:
     		mCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -634,10 +523,9 @@ public class SensorSimulatorSettingsActivity extends Activity{
     				if (isChecked) {
     					int pos = mSpinner.getSelectedItemPosition();
     					int updateRate = mDelayValue[pos];
-    					mSensorManager.registerListener(listener,mSensorManager.getDefaultSensor(mSensorBit),
-    						  updateRate);
+    					mSensorManager.registerListener(SensorSimulatorSettingsActivity.this, mSensorBit, updateRate);
     				} else {
-    					mSensorManager.unregisterListener(listener, mSensorManager.getDefaultSensor(mSensorBit));
+    					mSensorManager.unregisterListener(SensorSimulatorSettingsActivity.this, mSensorBit);
     				}
     				
     				updateSensorStateInformation();

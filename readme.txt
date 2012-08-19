@@ -1,10 +1,5 @@
  ****************************************************************************
- * Port of OpenIntents simulator to Android 2.1, extension to multi         *
- * emulator support, and GPS and battery simulation is developed as a       *
- * diploma thesis of Josip Balic at the University of Zagreb, Faculty of    *
- * Electrical Engineering and Computing.                                    *
- *                                                                          *
- * Copyright (C) 2008-2010 OpenIntents.org                                  *
+ * Copyright (C) 2008-2009 OpenIntents.org                                  *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *

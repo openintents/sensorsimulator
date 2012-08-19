@@ -30,12 +30,7 @@
 	<!-- Read properties from OpenIntents property file -->
 	<property file="build.properties" />
 	<property file="${build.properties.dir}/build.properties" />
-
-	<!-- Read manifest properties , e.g. 
-	     manifest(android:versionName) or manifest.package -->
-	<xmlproperty file="${build.properties.dir}/AndroidManifest.xml" />
-	<property name="version" value="${manifest(android:versionName)}" />
-
+			
 	<!-- Base name of the release files -->
 	<property name="sensorsimulator-name" value="sensorsimulator-${version}" />
 		
@@ -56,7 +51,7 @@
 	<property name="sensorsimulator-samples-dir" value="../samples" />
 
 	<!-- standard lib file -->
-	<property name="sensorsimulator-lib-file" value="${sensorsimulator-lib-dir}/sensorsimulator-lib-${version}.jar" />
+	<property name="sensorsimulator-lib-file" value="${sensorsimulator-lib-dir}/sensorsimulator-lib.jar" />
 	
 	<target
 		name="help"
@@ -116,13 +111,13 @@
 		/>
 		<copy todir="${sensorsimulator-bin-dir}" flatten="true">
 			<fileset dir="${base-dir}">
-				<include name="bin/SensorSimulatorSettings-${version}.apk" />
+				<include name="bin/SensorSimulatorSettings.apk" />
 				<include name="readme_SensorSimulatorSettings.txt" />				
 			</fileset>
 		</copy>
 		<!-- Copy lib to binary release -->
 		<copy
-			file="${base-dir}/bin/sensorsimulator-lib-${version}.jar"
+			file="${base-dir}/bin/sensorsimulator-lib.jar"
 			tofile="${sensorsimulator-lib-file}"
 			/>
 		<!-- Copy to source release -->
@@ -131,12 +126,7 @@
 		    	<exclude name="**/bin/**" />
 		    	<exclude name="**/doc/**" />
 		    	<exclude name="**/gen/**" />
-				<exclude name="**/release/**" />
-				<exclude name="**/tmp/**" />
-				<exclude name="**/translations/**" />
 	    		<exclude name="**/.svn" />
-	    		<exclude name="**/build-private.properties" />
-	    		<exclude name="**/local.properties" />
 		    </fileset>
 		</copy>
 	</target>
@@ -154,7 +144,7 @@
 		<!-- Copy to binary release -->
 		<copy todir="${sensorsimulator-bin-dir}" flatten="true">
 			<fileset dir="${sensorsimulator-source-dir}">
-				<include name="bin/sensorsimulator-${version}.jar" />
+				<include name="bin/sensorsimulator.jar" />
 				<include name="readme_SensorSimulator.txt" />				
 			</fileset>
 		</copy>
@@ -165,8 +155,6 @@
 		    	<exclude name="**/doc/**" />
 		    	<exclude name="**/gen/**" />
 	    		<exclude name="**/.svn" />
-	    		<exclude name="**/MANIFEST.MF" />
-	    		<exclude name="**/SensorData.txt" />
 		    </fileset>
 		</copy>
 	</target>	
@@ -179,12 +167,7 @@
 		    	<exclude name="**/bin/**" />
 		    	<exclude name="**/doc/**" />
 		    	<exclude name="**/gen/**" />
-				<exclude name="**/release/**" />
-				<exclude name="**/tmp/**" />
-				<exclude name="**/translations/**" />
 	    		<exclude name="**/.svn" />
-	    		<exclude name="**/build-private.properties" />
-	    		<exclude name="**/local.properties" />
 		    </fileset>
 		</copy>
 	</target>	

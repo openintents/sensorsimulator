@@ -23,10 +23,13 @@ import android.provider.BaseColumns;
  * Definition for content provider related to hardware.
  * Stores hardware abstraction and hardware simulator related data.
  *
- *@author Peli
  */
 public abstract class SensorSimulator {
 	
+	/**
+	 * TAG for logging.
+	 */
+	private static final String TAG = "SensorSimulator";
 	
 	/**
 	 * Hardware preferences.
@@ -60,6 +63,7 @@ public abstract class SensorSimulator {
 
     }
 
+	// Some default settings values
 	/**
 	 * The key for IP address.
 	 * Value: 'IP address'.

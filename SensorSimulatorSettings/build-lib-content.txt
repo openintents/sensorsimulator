@@ -1,7 +1,7 @@
-# sensorsimulator-lib class files
+# openintents-lib class files
 #
 # Below is a list of classes that are
-# included in the build of sensorsimulator-lib.jar
+# included in the build of openintents-lib.jar
 #
 # This file is used in build.xml
 

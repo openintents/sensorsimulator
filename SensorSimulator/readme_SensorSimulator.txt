@@ -1,5 +1,5 @@
  ****************************************************************************
- * Copyright (C) 2008-2011 OpenIntents.org                                  *
+ * Copyright (C) 2008-2009 OpenIntents.org                                  *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -26,27 +26,7 @@ It transmits the simulated sensor data to an Android emulator.
   (requires Java Runtime Environment 1.6.0 or higher).
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
-----------------
-release: 1.1.1
-date: 2011-06-03
-
-- fix crashing - issue 77 (patch by Emaad Ahmed Manzoor)
-- add light sensor support (patch by Elena Burceanu)
-- add Record and Playback buttons (patch by Prithvi Raj)
-- add proximity sensor (patch by Emaad Ahmed Manzoor)
-
-----------------
-release: 1.1.0-rc1
-date: 2011-01-05
-
-- Port of OpenIntents simulator to Android 2.1, extension to multi
-  emulator support, and GPS and battery simulation is developed as a 
-  diploma thesis of Josip Balic at the University of Zagreb, Faculty of
-  Electrical Engineering and Computing.
-- SWT (Standard Widget Toolkit) support by Lee Sanghoon
-
-----------------
+---------------------------------------------------------
 release: 1.0.0-beta1
 date: 2009-07-01
 
@@ -54,7 +34,7 @@ date: 2009-07-01
 - apply patch by Danne to work around the
   sensor Emulator bug in the SDK 1.5.
 
-----------------
+---------------------------------------------------------
 release: 0.9.0
 date: 2008-09-05
 
@@ -62,27 +42,27 @@ upgrade to Android SDK 0.9.
 - adapt new conventions for accelerometer and orientation
   sensors.
 
-----------------
+---------------------------------------------------------
 release: 0.1.7
 date: 2008-04-19
 
 - Added Dale Thatcher's Wii mote patch.
   http://blog.dalethatcher.com/2008/04/howto-get-wii-mote-data-into-android.html
 
-----------------
+---------------------------------------------------------
 release: 0.1.6
 date: 2008-04-09
 
 - no changes
 
-----------------
+---------------------------------------------------------
 release: 0.1.5
 date: 2008-03-28
 
 - Performance patch included (by Ogurash).
 - Special characters implemented as unicode.
 
-----------------
+---------------------------------------------------------
 release: 0.1.4
 date: 2008-03-12
 
@@ -92,7 +72,7 @@ new features:
     time-resolution. Accelerometer can be specified by spring constant
     and damping terms.
 
-----------------
+---------------------------------------------------------
 release: 0.1.3
 date: 2008-02-24
 
@@ -106,7 +86,7 @@ known issues:
   - the new Sensors methods related to sensor update
     rate are not yet implemented.
 
-----------------
+---------------------------------------------------------
 release: 0.1.2
 date: 2008-01-28
 

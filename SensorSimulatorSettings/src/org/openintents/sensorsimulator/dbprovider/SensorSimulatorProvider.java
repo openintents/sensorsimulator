@@ -41,7 +41,6 @@ import android.util.Log;
  * Provides access to a preferences related to hardware or 
  * hardware simulation. 
  * 
- * @author Peli
  */
 public class SensorSimulatorProvider extends ContentProvider {
 
@@ -97,18 +96,11 @@ public class SensorSimulatorProvider extends ContentProvider {
 		}
 	}
 
-	/**
-	 * With this method we create new DatabaseHelper with which we can
-	 * access our database.
-	 */
 	public boolean onCreate() {
 		mOpenHelper = new DatabaseHelper(getContext());
         return true;
 	}
 
-	/**
-	 * Implementation of query method for this database.
-	 */
 	public Cursor query(Uri url, String[] projection, String selection,
 			String[] selectionArgs,String sort) {
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
@@ -182,6 +174,9 @@ public class SensorSimulatorProvider extends ContentProvider {
 		}
 		
 		
+		// TODO: Here we should check, whether item exists already. 
+		// (see TagsProvider)
+		// insert the item. 
 		rowID = db.insert(SensorSimulatorProvider.DATABASE_TABLE_SETTINGS, SensorSimulator.Settings.KEY, values);
 		if (rowID > 0) {
 			Uri uri = ContentUris.withAppendedId(Settings.CONTENT_URI,rowID);

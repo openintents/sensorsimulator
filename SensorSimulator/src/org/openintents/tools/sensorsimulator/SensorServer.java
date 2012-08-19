@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2008 OpenIntents.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,84 +22,81 @@ import java.net.Socket;
 
 /**
  * Listens for incoming connections from an Android phone or emulator.
- *
+ * 
  * Connections are then passed to the {@link SensorServerThread}.
- *
+ * 
  * @author Peli
  *
  */
 public class SensorServer implements Runnable {
 
-	public ISensorSimulator mSensorSimulator;
-
+	public SensorSimulator mSensorSimulator;
+	
 	/**
-	 * linked list of all successors, so that we can destroy them
+	 * linked list of all successors, so that we can destroy them 
 	 * when needed.
 	 */
 	public Thread mThread;
 	public SensorServerThread firstThread;
 	public SensorServerThread lastThread;
-
+	
 	private ServerSocket serverSocket;
-
-
+	
+	
 	public int port;
-	public boolean listening;
-
-
+	public boolean listening; 
+	
+	
 	/**
 	 * Constructor to start as server that listens for connections.
-	 *
-	 * @param newSensorSimulator, SensorSimulator instance that started server.
+	 * @param newSensorSimulator
 	 */
-	public SensorServer(ISensorSimulator newSensorSimulator) {
+	public SensorServer(SensorSimulator newSensorSimulator) {
 		mSensorSimulator = newSensorSimulator;
 		firstThread = null;
 		lastThread = null;
 		listening = true;
-
+		
 		// start ourselves:
 		mThread = new Thread(this);
 		mThread.start();
 	}
-
-
-	/**
-	 * Method that is called when starting a thread for network connection.
-	 */
+	
+	
+	// Called when starting a thread for network connection
 	public void run() {
 		listenServer();
 	}
-
-	/**
-	 * Method that starts thread for network connection.
-	 */
+	
     public void listenServer() {
     	// obtain port number:
     	port = mSensorSimulator.getPort();
     	if (port == 0) return;
-
+    	
     	serverSocket = null;
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
+            //System.err.println("Could not listen on port: 4444.");
+            //System.exit(1);
         	mSensorSimulator.addMessage("Could not listen on port: " + port);
         	return;
         }
-
+        
+        
         Socket clientSocket = null;
         try {
         	mSensorSimulator.addMessage("Listening on port " + port + "...");
         	while (listening) {
         		clientSocket = serverSocket.accept();
-
+        		
         		// First we notify this:
         		mSensorSimulator.newClient();
-
+        		
         		 // Start again new thread:
-                SensorServerThread newThread
+                SensorServerThread newThread 
                 	= new SensorServerThread(mSensorSimulator, clientSocket);
-
+                
                 // set the linking:
                 if (firstThread == null) {
                 	// this is the first thread:
@@ -112,15 +109,16 @@ public class SensorServer implements Runnable {
                 	lastThread = newThread;
                 }
         	}
-
+            
         } catch (IOException e) {
         	if (listening) {
         		System.err.println("Accept failed.");
+        		//System.exit(1);
         	} else {
         		// everything ok, socket closed by user.
         	}
         }
-
+        
         try {
         	serverSocket.close();
         } catch (IOException e) {
@@ -128,12 +126,12 @@ public class SensorServer implements Runnable {
             System.exit(1);
         }
     }
-
+    
     /**
      * Stop all active threads and then oneself.
      */
     public void stop() {
-
+    	
     	// go through the list and kill in turn
     	SensorServerThread sst;
     	SensorServerThread ssthelp;
@@ -143,10 +141,13 @@ public class SensorServer implements Runnable {
     		//sst.mThread.interrupt();
     		sst.stop();
     	}
-
+    	
     	// finally kill ourselves:
     	listening = false;
-
+    	//mThread.interrupt();
+    	
+    	// rather close the socket
+    	// (see http://java.sun.com/j2se/1.4.2/docs/guide/misc/threadPrimitiveDeprecation.html )
     	try {
     		if (serverSocket != null) {
     			mSensorSimulator.addMessage("Closing listening server...");
@@ -156,8 +157,8 @@ public class SensorServer implements Runnable {
             System.err.println("Close failed.");
             System.exit(1);
         }
-
+    	
     }
-
-
+    
+    
 }
