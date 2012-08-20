@@ -96,67 +96,86 @@ final class SensorSimulatorClient {
 	/**
 	 * Method used to connect our application with SensorSimulator GUI.
 	 */
-	protected void connect() {
+	protected synchronized void connect() {
 
-		mSocket = null;
-		mOut = null;
-		mIn = null;
+		// networking operations are no longer permitted to run on the main
+		// thread as of Honeycomb (API level 11)
+		Thread t = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				mSocket = null;
+				mOut = null;
+				mIn = null;
 
-		Log.i(TAG, "Starting connection...");
+				Log.i(TAG, "Starting connection...");
 
-		// get Info from ContentProvider
-		String ipaddress = mSensorSimulatorConvenience
-				.getPreference(SensorSimulator.KEY_IPADDRESS);
-		String socket = mSensorSimulatorConvenience
-				.getPreference(SensorSimulator.KEY_SOCKET);
+				// get Info from ContentProvider
+				String ipaddress = mSensorSimulatorConvenience
+						.getPreference(SensorSimulator.KEY_IPADDRESS);
+				String socket = mSensorSimulatorConvenience
+						.getPreference(SensorSimulator.KEY_SOCKET);
 
-		Log.i(TAG, "Connecting to " + ipaddress + " : " + socket);
+				Log.i(TAG, "Connecting to " + ipaddress + " : " + socket);
 
+				try {
+					mSocket = new Socket(ipaddress, Integer.parseInt(socket));
+
+					mOut = new PrintWriter(mSocket.getOutputStream(), true);
+					mIn = new BufferedReader(new InputStreamReader(
+							mSocket.getInputStream()));
+				} catch (UnknownHostException e) {
+					Log.e(TAG, "Don't know about host: " + ipaddress + " : " + socket);
+					return;
+				} catch (SocketTimeoutException e) {
+					Log.e(TAG, "Connection time out: " + ipaddress + " : " + socket);
+					return;
+				} catch (IOException e) {
+					Log.e(TAG, "Couldn't get I/O for the connection to: " + ipaddress
+							+ " : " + socket);
+					Log.e(TAG,
+							"---------------------------------------------------------------");
+					Log.e(TAG, "Do you have the following permission in your manifest?");
+					Log.e(TAG,
+							"<uses-permission android:name=\"android.permission.INTERNET\"/>");
+					Log.e(TAG,
+							"---------------------------------------------------------------");
+					System.exit(1);
+				}
+
+				Log.i(TAG, "Read line...");
+
+				String fromServer = "";
+				try {
+					fromServer = mIn.readLine();
+				} catch (IOException e) {
+					System.err
+							.println("Couldn't get I/O for the connection to: x.x.x.x.");
+					System.exit(1);
+				}
+				Log.i(TAG, "Received: " + fromServer);
+
+				if (fromServer.equals("SensorSimulator")) {
+					connected = true;
+					Log.i(TAG, "Connected");
+				} else {
+					Log.i(TAG, "Problem connecting: Wrong string sent.");
+					disconnect();
+				}
+				
+				// wake up main thread
+				synchronized (SensorSimulatorClient.this) {
+					SensorSimulatorClient.this.notifyAll();
+				}
+			}
+		});
+
+		t.start();
 		try {
-			mSocket = new Socket(ipaddress, Integer.parseInt(socket));
-
-			mOut = new PrintWriter(mSocket.getOutputStream(), true);
-			mIn = new BufferedReader(new InputStreamReader(
-					mSocket.getInputStream()));
-		} catch (UnknownHostException e) {
-			Log.e(TAG, "Don't know about host: " + ipaddress + " : " + socket);
-			return;
-		} catch (SocketTimeoutException e) {
-			Log.e(TAG, "Connection time out: " + ipaddress + " : " + socket);
-			return;
-		} catch (IOException e) {
-			Log.e(TAG, "Couldn't get I/O for the connection to: " + ipaddress
-					+ " : " + socket);
-			Log.e(TAG,
-					"---------------------------------------------------------------");
-			Log.e(TAG, "Do you have the following permission in your manifest?");
-			Log.e(TAG,
-					"<uses-permission android:name=\"android.permission.INTERNET\"/>");
-			Log.e(TAG,
-					"---------------------------------------------------------------");
-			System.exit(1);
+			wait();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-
-		Log.i(TAG, "Read line...");
-
-		String fromServer = "";
-		try {
-			fromServer = mIn.readLine();
-		} catch (IOException e) {
-			System.err
-					.println("Couldn't get I/O for the connection to: x.x.x.x.");
-			System.exit(1);
-		}
-		Log.i(TAG, "Received: " + fromServer);
-
-		if (fromServer.equals("SensorSimulator")) {
-			connected = true;
-			Log.i(TAG, "Connected");
-		} else {
-			Log.i(TAG, "Problem connecting: Wrong string sent.");
-			disconnect();
-		}
-
 	}
 
 	/**
@@ -585,23 +604,45 @@ final class SensorSimulatorClient {
 	// ////////////////////////////////////////////////////////////////
 	// DEPRECATED FUNCTIONS FOLLOW
 
-	protected String[] getSupportedSensors() {
-		mOut.println("getSupportedSensors()");
-		String[] sensors = { "" };
-		int num = 0;
-
-		try {
-			String numstr = mIn.readLine();
-			num = Integer.parseInt(numstr);
-
-			sensors = new String[num];
-			for (int i = 0; i < num; i++) {
-				sensors[i] = mIn.readLine();
+	String[] sensors;
+	protected synchronized String[] getSupportedSensors() {
+		sensors = new String [] { "" };
+		
+		// networking operations are no longer permitted to run on the main
+		// thread as of Honeycomb (API level 11)
+		Thread t = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				mOut.println("getSupportedSensors()");
+				int num = 0;
+				
+				try {
+					String numstr = mIn.readLine();
+					num = Integer.parseInt(numstr);
+					
+					sensors = new String[num];
+					for (int i = 0; i < num; i++) {
+						sensors[i] = mIn.readLine();
+					}
+				} catch (IOException e) {
+					System.err
+							.println("Couldn't get I/O for the connection to: x.x.x.x.");
+					// TODO: give user feedback (e.g. toast) and return to app
+					System.exit(1); 
+				} finally {
+					synchronized (SensorSimulatorClient.this) {
+						SensorSimulatorClient.this.notifyAll();
+					}
+				}
 			}
-		} catch (IOException e) {
-			System.err
-					.println("Couldn't get I/O for the connection to: x.x.x.x.");
-			System.exit(1);
+		});
+		
+		t.start();
+		try {
+			wait();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 
 		return sensors;
@@ -639,7 +680,9 @@ final class SensorSimulatorClient {
 		return num;
 	}
 
-	protected void readSensor(String sensor, float[] sensorValues,
+	float[] sensorValuesTemp;
+	String barcode2Temp;
+	protected synchronized void readSensor(final String sensor, float[] sensorValues,
 			String barcode2) {
 		if (sensorValues == null)
 			throw new NullPointerException("readSensor for '" + sensor
@@ -647,87 +690,152 @@ final class SensorSimulatorClient {
 		if (LOG_PROTOCOL) {
 			Log.i(TAG, "Send: getNumSensorValues()");
 		}
-		mOut.println("readSensor()\n" + sensor);
-		int num = 0;
+		
+		// copy values so network thread can work with them
+		sensorValuesTemp = sensorValues;
+		barcode2Temp = barcode2;
+		
+		// networking operations are no longer permitted to run on the main
+		// thread as of Honeycomb (API level 11)
+		Thread t = new Thread(new Runnable() {
 
+			public void run() {
+				mOut.println("readSensor()\n" + sensor);
+				int num = 0;
+
+				try {
+					String numstr = mIn.readLine();
+					if (numstr.compareTo("throw IllegalArgumentException") == 0)
+						throw new IllegalArgumentException("Sensor '" + sensor
+								+ "' is not supported.");
+					else if (numstr.compareTo("throw IllegalStateException") == 0)
+						throw new IllegalStateException("Sensor '" + sensor
+								+ "' is currently not enabled.");
+					if (LOG_PROTOCOL) {
+						Log.i(TAG, "Received: " + numstr);
+					}
+					num = Integer.parseInt(numstr);
+
+					if (sensorValuesTemp.length < num)
+						throw new ArrayIndexOutOfBoundsException(
+								"readSensor for '"
+										+ sensor
+										+ "' called with sensorValues having too few elements ("
+										+ sensorValuesTemp.length
+										+ ") to hold the sensor values (" + num
+										+ ").");
+
+					for (int i = 0; i < num; i++) {
+						String val = mIn.readLine();
+						if (LOG_PROTOCOL) {
+							Log.i(TAG, "Received: " + val);
+						}
+
+						sensorValuesTemp[i] = Float.parseFloat(val);
+						if (val.length() == 13) {
+							barcode2Temp = val;
+							barcode = barcode2Temp;
+						}
+					}
+				} catch (IOException e) {
+					System.err
+							.println("Couldn't get I/O for the connection to: x.x.x.x.");
+					System.exit(1);
+				} catch (NullPointerException e2) {
+					Log.e(TAG, "Error reading sensors: Is the client running?");
+					System.exit(1);
+				} finally {
+					synchronized (SensorSimulatorClient.this) {
+						SensorSimulatorClient.this.notifyAll();
+					}
+				}
+			}
+		});
+		
+		t.start();
 		try {
-			String numstr = mIn.readLine();
-			if (numstr.compareTo("throw IllegalArgumentException") == 0)
-				throw new IllegalArgumentException("Sensor '" + sensor
-						+ "' is not supported.");
-			else if (numstr.compareTo("throw IllegalStateException") == 0)
-				throw new IllegalStateException("Sensor '" + sensor
-						+ "' is currently not enabled.");
-			if (LOG_PROTOCOL) {
-				Log.i(TAG, "Received: " + numstr);
-			}
-			num = Integer.parseInt(numstr);
-
-			if (sensorValues.length < num)
-				throw new ArrayIndexOutOfBoundsException(
-						"readSensor for '"
-								+ sensor
-								+ "' called with sensorValues having too few elements ("
-								+ sensorValues.length
-								+ ") to hold the sensor values (" + num + ").");
-
-			for (int i = 0; i < num; i++) {
-				String val = mIn.readLine();
-				if (LOG_PROTOCOL) {
-					Log.i(TAG, "Received: " + val);
-				}
-
-				sensorValues[i] = Float.parseFloat(val);
-				if (val.length() == 13) {
-					barcode2 = val;
-					barcode = barcode2;
-				}
-			}
-		} catch (IOException e) {
-			System.err
-					.println("Couldn't get I/O for the connection to: x.x.x.x.");
-			System.exit(1);
-		} catch (NullPointerException e2) {
-			Log.e(TAG, "Error reading sensors: Is the client running?");
-			System.exit(1);
+			wait();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
+		
+		// copy values got from network thread 
+		sensorValues =  sensorValuesTemp;
+		barcode2 = barcode2Temp;
 	}
 
-	protected void setSensorUpdateDelay(String sensor, int updateDelay) {
+	protected synchronized void setSensorUpdateDelay(final String sensor, final int updateDelay) {
 		if (updateDelay == -1) {
 			unsetSensorUpdateRate(sensor);
 			return;
 		}
 
-		mOut.println("setSensorUpdateDelay()");
-		mOut.println(sensor);
-		mOut.println("" + updateDelay);
-
-		try {
-			String numstr = mIn.readLine();
-			if (numstr.compareTo("throw IllegalArgumentException") == 0)
-				throw new IllegalArgumentException("Sensor '" + sensor
-						+ "' is not supported.");
-		} catch (IOException e) {
-			System.err
+		// networking operations are no longer permitted to run on the main
+		// thread as of Honeycomb (API level 11)
+		Thread t = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				mOut.println("setSensorUpdateDelay()");
+				mOut.println(sensor);
+				mOut.println("" + updateDelay);
+				
+				try {
+					String numstr = mIn.readLine();
+					if (numstr.compareTo("throw IllegalArgumentException") == 0)
+						throw new IllegalArgumentException("Sensor '" + sensor
+								+ "' is not supported.");
+				} catch (IOException e) {
+					System.err
 					.println("Couldn't get I/O for the connection to: x.x.x.x.");
-			System.exit(1);
+					System.exit(1);
+				} finally {
+					synchronized (SensorSimulatorClient.this) {
+						SensorSimulatorClient.this.notifyAll();
+					}
+				}
+			}
+		});
+		
+		t.start();
+		try {
+			wait();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 
-	protected void unsetSensorUpdateRate(String sensor) {
-		try {
-			mOut.println("unsetSensorUpdateRate()");
-			mOut.println(sensor);
+	protected synchronized void unsetSensorUpdateRate(final String sensor) {
+		// networking operations are no longer permitted to run on the main
+		// thread as of Honeycomb (API level 11)
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					mOut.println("unsetSensorUpdateRate()");
+					mOut.println(sensor);
 
-			String numstr = mIn.readLine();
-			if (numstr.compareTo("throw IllegalArgumentException") == 0)
-				throw new IllegalArgumentException("Sensor '" + sensor
-						+ "' is not supported.");
-		} catch (Exception e) {
-			System.err
-					.println("Couldn't get I/O for the connection to: x.x.x.x.");
-			System.exit(1);
+					String numstr = mIn.readLine();
+					if (numstr.compareTo("throw IllegalArgumentException") == 0)
+						throw new IllegalArgumentException("Sensor '" + sensor
+								+ "' is not supported.");
+				} catch (Exception e) {
+					System.err
+							.println("Couldn't get I/O for the connection to: x.x.x.x.");
+					System.exit(1);
+				} finally {
+					synchronized (SensorSimulatorClient.this) {
+						SensorSimulatorClient.this.notifyAll();
+					}
+				}
+			}
+		});
+		
+		t.start();
+		try {
+			wait();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 
