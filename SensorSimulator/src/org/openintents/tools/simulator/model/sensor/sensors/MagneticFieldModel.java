@@ -122,15 +122,15 @@ public class MagneticFieldModel extends SensorModel {
 	}
 
 	@Override
-	public void getNumSensorValues(PrintWriter out) {
-		out.println("3");
+	public int getNumSensorValues() {
+		return 3;
 	}
 
 	@Override
-	public void printSensorData(PrintWriter out) {
+	public String printSensorData() {
 		// number of data following + data
-		out.println("3\n" + mReadCompassX + "\n" + mReadCompassY + "\n"
-				+ mReadCompassZ);
+		return "3\n" + mReadCompassX + "\n" + mReadCompassY + "\n"
+				+ mReadCompassZ;
 	}
 
 	@Override

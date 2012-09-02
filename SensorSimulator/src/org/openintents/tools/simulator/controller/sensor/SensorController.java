@@ -98,15 +98,6 @@ public abstract class SensorController {
 		return data.toString();
 	}
 
-	public void readSensor(PrintWriter out) {
-		if (mSensorModel.isEnabled()) {
-			mSensorModel.printSensorData(out);
-		} else {
-			// This sensor is currently disabled
-			out.println("throw IllegalStateException");
-		}
-	}
-
 	public void updateEmulatorRefresh(long maxCount) {
 		long updateEmulatorCount = mSensorModel.incUpdateEmulatorCount();
 		long updateEmulatorTime = mSensorModel.getEmulatorTime();

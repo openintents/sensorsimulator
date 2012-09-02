@@ -124,15 +124,15 @@ public class LinearAccelerationModel extends SensorModel {
 	}
 
 	@Override
-	public void getNumSensorValues(PrintWriter out) {
-		out.println("3");
+	public int getNumSensorValues() {
+		return 3;
 	}
 
 	@Override
-	public void printSensorData(PrintWriter out) {
+	public String printSensorData() {
 		// number of data following + data
-		out.println("3\n" + mReadLinearAccX + "\n" + mReadLinearAccY + "\n"
-				+ mReadLinearAccZ);
+		return "3\n" + mReadLinearAccX + "\n" + mReadLinearAccY + "\n"
+				+ mReadLinearAccZ;
 
 	}
 

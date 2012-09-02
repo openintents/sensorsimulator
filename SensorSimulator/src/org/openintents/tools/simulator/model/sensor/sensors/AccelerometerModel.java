@@ -31,6 +31,7 @@ import org.openintents.tools.simulator.model.telnet.Vector;
 public class AccelerometerModel extends SensorModel {
 
 	private static Random mRandomGenerator = new Random();
+	
 	/**
 	 * Current read-out value of accelerometer x-component.
 	 * 
@@ -275,15 +276,15 @@ public class AccelerometerModel extends SensorModel {
 	}
 
 	@Override
-	public void getNumSensorValues(PrintWriter out) {
-		out.println("3");
+	public int getNumSensorValues() {
+		return 3;
 	}
 
 	@Override
-	public void printSensorData(PrintWriter out) {
+	public String printSensorData() {
 		// number of data following + data
-		out.println("3\n" + mReadAccelx + "\n" + mReadAccely + "\n"
-				+ mReadAccelz);
+		return "3\n" + mReadAccelx + "\n" + mReadAccely + "\n"
+				+ mReadAccelz;
 	}
 
 	public int getMoveX() {

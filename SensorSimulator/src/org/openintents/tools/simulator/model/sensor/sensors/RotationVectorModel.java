@@ -98,16 +98,16 @@ public class RotationVectorModel extends SensorModel {
 	}
 
 	@Override
-	public void getNumSensorValues(PrintWriter out) {
-		out.println("3");
+	public int getNumSensorValues() {
+		return 3;
 	}
 
 	@Override
-	public void printSensorData(PrintWriter out) {
+	public String printSensorData() {
 		// number of data following + data
-		out.println("3\n" + Math.sin(Math.toRadians(mReadRotationX / 2)) + "\n"
+		return "3\n" + Math.sin(Math.toRadians(mReadRotationX / 2)) + "\n"
 				+ Math.sin(Math.toRadians(mReadRotationY / 2)) + "\n"
-				+ Math.sin(Math.toRadians(mReadRotationZ / 2)));
+				+ Math.sin(Math.toRadians(mReadRotationZ / 2));
 
 	}
 

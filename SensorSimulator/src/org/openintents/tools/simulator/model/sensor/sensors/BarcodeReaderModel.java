@@ -55,17 +55,17 @@ public class BarcodeReaderModel extends SensorModel {
 	}
 
 	@Override
-	public void getNumSensorValues(PrintWriter out) {
-		out.println("1");
+	public int getNumSensorValues() {
+		return 1;
 	}
 
 	@Override
-	public void printSensorData(PrintWriter out) {
+	public String printSensorData() {
 		// number of data following + data
 		if (barcodeValue.length() == 13) {
-			out.println("1\n" + barcodeValue);
+			return "1\n" + barcodeValue;
 		} else {
-			out.println("1\n1");
+			return "1\n1";
 		}
 	}
 

@@ -79,14 +79,14 @@ public class LightModel extends SensorModel {
 	}
 
 	@Override
-	public void getNumSensorValues(PrintWriter out) {
-		out.println("1");
+	public int getNumSensorValues() {
+		return 1;
 	}
 
 	@Override
-	public void printSensorData(PrintWriter out) {
+	public String printSensorData() {
 		// number of data following + data
-		out.println("1\n" + mReadLight);
+		return "1\n" + mReadLight;
 	}
 
 	@Override

@@ -26,6 +26,7 @@ import org.openintents.tools.simulator.model.telnet.Vector;
  * @author ilarele
  */
 public class GravityModel extends SensorModel {
+	
 	// gravity
 	private double mGravityX;
 	private double mGravityY;
@@ -101,15 +102,15 @@ public class GravityModel extends SensorModel {
 	}
 
 	@Override
-	public void getNumSensorValues(PrintWriter out) {
-		out.println("3");
+	public int getNumSensorValues() {
+		return 3;
 	}
 
 	@Override
-	public void printSensorData(PrintWriter out) {
+	public String printSensorData() {
 		// number of data following + data
-		out.println("3\n" + mReadGravityX + "\n" + mReadGravityY + "\n"
-				+ mReadGravityZ);
+		return "3\n" + mReadGravityX + "\n" + mReadGravityY + "\n"
+				+ mReadGravityZ;
 
 	}
 

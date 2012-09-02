@@ -144,11 +144,11 @@ public abstract class SensorModel {
 	}
 
 	/**
-	 * Prints into the output stream the number of output values for the sensor.
+	 * Returns the number of parameters of the sensor values.
 	 * 
 	 * @param out
 	 */
-	public abstract void getNumSensorValues(PrintWriter out);
+	public abstract int getNumSensorValues();
 
 	/**
 	 * It is used in communication with the emulator, when sending sensor
@@ -156,7 +156,7 @@ public abstract class SensorModel {
 	 * 
 	 * @param out
 	 */
-	public abstract void printSensorData(PrintWriter out);
+	public abstract String printSensorData();
 
 	/**
 	 * 
@@ -280,26 +280,6 @@ public abstract class SensorModel {
 		setEnabled(enable);
 	}
 
-	public void setSensorUpdateRate(PrintWriter out) {
-		if (isEnabled()) {
-			double updatesPerSecond = getCurrentUpdateRate();
-			out.println("" + updatesPerSecond);
-		} else {
-			// This sensor is currently disabled
-			out.println("throw IllegalStateException");
-		}
-	}
-
-	public void unsetSensorUpdateRate(PrintWriter out) {
-		if (isEnabled()) {
-			out.println("OK");
-			mCurrentUpdateDelay = getDefaultUpdateRate();
-		} else {
-			// This sensor is currently disabled
-			out.println("throw IllegalStateException");
-		}
-	}
-
 	public void setAvgUpdate(boolean b) {
 		mUpdateAverage = b;
 	}
@@ -331,6 +311,10 @@ public abstract class SensorModel {
 
 	public void setCurrentUpdateDelay(int updateDelay) {
 		mCurrentUpdateDelay = updateDelay;
+	}
+
+	public void resetCurrentUpdateDelay() {
+		mCurrentUpdateDelay = getDefaultUpdateRate();
 	}
 
 	public void setUpdateRates() {

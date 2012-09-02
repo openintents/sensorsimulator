@@ -135,14 +135,14 @@ public class OrientationModel extends SensorModel {
 	}
 
 	@Override
-	public void getNumSensorValues(PrintWriter out) {
-		out.println("3");
+	public int getNumSensorValues() {
+		return 3;
 	}
 
 	@Override
-	public void printSensorData(PrintWriter out) {
+	public String printSensorData() {
 		// number of data following + data
-		out.println("3\n" + mReadYaw + "\n" + mReadPitch + "\n" + mReadRoll);
+		return "3\n" + mReadYaw + "\n" + mReadPitch + "\n" + mReadRoll;
 	}
 
 	@Override

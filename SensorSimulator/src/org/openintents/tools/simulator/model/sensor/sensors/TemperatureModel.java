@@ -81,8 +81,8 @@ public class TemperatureModel extends SensorModel {
 	}
 
 	@Override
-	public void getNumSensorValues(PrintWriter out) {
-		out.println("1");
+	public int getNumSensorValues() {
+		return 1;
 	}
 
 	public double getTemperature() {
@@ -107,9 +107,9 @@ public class TemperatureModel extends SensorModel {
 	}
 
 	@Override
-	public void printSensorData(PrintWriter out) {
+	public String printSensorData() {
 		// number of data following + data
-		out.println("1\n" + mReadTemperature);
+		return "1\n" + mReadTemperature;
 	}
 
 	@Override

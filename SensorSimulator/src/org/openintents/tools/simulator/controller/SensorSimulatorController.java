@@ -448,4 +448,39 @@ public class SensorSimulatorController implements WindowListener {
 	public Vector<SensorController> getSensors() {
 		return mSensors;
 	}
+
+	/**
+	 * Returns the controller component of a sensor by name.
+	 * 
+	 * @param sensorName
+	 *            name of the sensor to be returned
+	 * @return controller component of the specified sensor
+	 */
+	public SensorController getSensorCtrlFromName(String sensorName) {
+		if (sensorName.compareTo(SensorModel.ACCELEROMETER) == 0)
+			return getAccelerometer();
+		else if (sensorName.compareTo(SensorModel.MAGNETIC_FIELD) == 0)
+			return getMagneticField();
+		else if (sensorName.compareTo(SensorModel.ORIENTATION) == 0)
+			return getOrientation();
+		else if (sensorName.compareTo(SensorModel.TEMPERATURE) == 0)
+			return getTemperature();
+		else if (sensorName.compareTo(SensorModel.BARCODE_READER) == 0)
+			return getBarcodeReader();
+		else if (sensorName.compareTo(SensorModel.LIGHT) == 0)
+			return getLight();
+		else if (sensorName.compareTo(SensorModel.PROXIMITY) == 0)
+			return getProximity();
+		else if (sensorName.compareTo(SensorModel.PRESSURE) == 0)
+			return getPressure();
+		else if (sensorName.compareTo(SensorModel.LINEAR_ACCELERATION) == 0)
+			return getLinearAcceleration();
+		else if (sensorName.compareTo(SensorModel.GRAVITY) == 0)
+			return getGravity();
+		else if (sensorName.compareTo(SensorModel.ROTATION_VECTOR) == 0)
+			return getRotationVector();
+		else if (sensorName.compareTo(SensorModel.GYROSCOPE) == 0)
+			return getGyroscope();
+		return null;
+	}
 }
