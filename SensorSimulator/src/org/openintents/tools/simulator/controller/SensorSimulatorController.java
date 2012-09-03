@@ -36,6 +36,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import org.openintents.tools.simulator.SensorServerThreadListener;
 import org.openintents.tools.simulator.controller.sensor.AccelerometerController;
 import org.openintents.tools.simulator.controller.sensor.BarcodeReaderController;
 import org.openintents.tools.simulator.controller.sensor.GravityController;
@@ -74,7 +75,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
  * @author ilarele
  */
 
-public class SensorSimulatorController implements WindowListener {
+public class SensorSimulatorController implements WindowListener,
+		SensorServerThreadListener {
 
 	public static final int NORMAL = 0;
 	public static final int RECORD = 1;
@@ -482,5 +484,56 @@ public class SensorSimulatorController implements WindowListener {
 		else if (sensorName.compareTo(SensorModel.GYROSCOPE) == 0)
 			return getGyroscope();
 		return null;
+	}
+
+	// SensorServerThreadListener methods
+	// ////////////////////////////////////////////////////
+	@Override
+	public String[] getSupportedSensors() {
+		return mSensorSimulatorModel.getSupportedSensors();
+	}
+
+	@Override
+	public int getNumSensorValues(String sensorName) {
+		return mSensorSimulatorModel.getSensorModelFromName(sensorName)
+				.getNumSensorValues();
+	}
+
+	@Override
+	public void setSensorUpdateDelay(String sensorName, int updateDelay)
+			throws IllegalArgumentException {
+		if (mSensorSimulatorModel.getSensorModelFromName(sensorName)
+				.isEnabled())
+			getSensorCtrlFromName(sensorName).setCurrentUpdateRate(updateDelay);
+		else
+			throw new IllegalArgumentException();
+	}
+
+	@Override
+	public void unsetSensorUpdateRate(String sensorName)
+			throws IllegalStateException {
+		SensorModel sensorModel = mSensorSimulatorModel
+				.getSensorModelFromName(sensorName);
+		if (sensorModel.isEnabled()) {
+			SensorController sensorCtrl = getSensorCtrlFromName(sensorName);
+
+			sensorModel.resetCurrentUpdateDelay();
+			sensorCtrl.setCurrentUpdateRate(sensorModel.getDefaultUpdateRate());
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	@Override
+	public String readSensor(String sensorName) {
+		SensorModel sensorModel = mSensorSimulatorModel
+				.getSensorModelFromName(sensorName);
+		if (sensorModel.isEnabled()) {
+			getSensorCtrlFromName(sensorName).updateEmulatorRefresh(
+					mSensorSimulatorView.getRefreshCount());
+			return sensorModel.printSensorData();
+		} else {
+			throw new IllegalStateException();
+		}
 	}
 }

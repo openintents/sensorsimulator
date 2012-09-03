@@ -59,6 +59,8 @@ public class SensorServerThread implements Runnable {
 	 */
 	private boolean mTalking;
 
+	private SensorServerThreadListener mServerThreadListener;
+
 	/**
 	 * Constructor to start as thread.
 	 * 
@@ -74,6 +76,8 @@ public class SensorServerThread implements Runnable {
 		mPreviousThread = null;
 		mClientSocket = newClientSocket;
 		mTalking = true;
+		mServerThreadListener = mSensorSimulator.controller;
+
 
 		// start ourselves:
 		mThread = new Thread(this);
@@ -96,14 +100,18 @@ public class SensorServerThread implements Runnable {
 					mClientSocket.getInputStream()));
 			String inputLine, outputLine;
 
+			// say hi
 			outputLine = "SensorSimulator";
 			out.println(outputLine);
 
 			mSensorSimulator.addMessage("Incoming connection opened.");
 
+			// handle commands
 			while ((inputLine = in.readLine()) != null) {
 				executeCommand(out, in, inputLine);
 			}
+			
+			// clean up
 			out.close();
 			in.close();
 			mClientSocket.close();
@@ -146,72 +154,50 @@ public class SensorServerThread implements Runnable {
 	 *            command to be executed
 	 * @throws IOException
 	 */
-	private void executeCommand(PrintWriter out, BufferedReader in, String cmd)
+	private void executeCommand(PrintWriter out, BufferedReader in, String cmd) 
 			throws IOException {
+		
+		// get list of supported sensors
 		if (cmd.compareTo("getSupportedSensors()") == 0) {
-			String[] supportedSensors = mSensorSimulator.model
-					.getSupportedSensors();
+			String[] supportedSensors = mServerThreadListener.getSupportedSensors();
 			out.println(supportedSensors.length);
 			for (int i = 0; i < supportedSensors.length; i++) {
 				out.println(supportedSensors[i]);
 			}
 		} else {
-			String sensorName = in.readLine();
-			SensorController sensorCtrl = mSensorSimulator.controller
-					.getSensorCtrlFromName(sensorName);
-			SensorModel sensorModel = mSensorSimulator.model
-					.getSensorModelFromName(sensorName);
-			// get number of components of sensor data value
-			if (cmd.compareTo("getNumSensorValues()") == 0) {
-				out.println(sensorModel.getNumSensorValues());
-			}
-			// get sensor update delay
-			else if (cmd.compareTo("setSensorUpdateDelay()") == 0) {
-				String args = in.readLine();
-				if (sensorModel.isEnabled()) {
+			try {
+				String sensorName = in.readLine();
+
+				// get number of components of sensor data value
+				if (cmd.compareTo("getNumSensorValues()") == 0) {
+					// out.println(sensorModel.getNumSensorValues());
+					out.println(mServerThreadListener.getNumSensorValues(sensorName));
+				}
+				// get sensor update delay
+				else if (cmd.compareTo("setSensorUpdateDelay()") == 0) {
+					String args = in.readLine();
 					int updateDelay = Integer.parseInt(args);
-					sensorCtrl.setCurrentUpdateRate(updateDelay);
-					out.println("" + sensorModel.getCurrentUpdateRate());
-				} else {
-					System.out.println(sensorName
-							+ " throw IllegalArgumentException");
-					out.println("throw IllegalArgumentException");
-				}
-			}
-			// unset sensor update rate
-			else if (cmd.compareTo("unsetSensorUpdateRate()") == 0) {
-				if (sensorModel.isEnabled()) {
-					sensorModel.resetCurrentUpdateDelay();
-					sensorCtrl.setCurrentUpdateRate(sensorModel
-							.getDefaultUpdateRate());
+
+					mServerThreadListener.setSensorUpdateDelay(sensorName, updateDelay);
 					out.println("OK");
-				} else {
-					// This sensor is currently disabled
-					out.println("throw IllegalStateException");
 				}
-			}
-			// read sensor
-			else if (cmd.compareTo("readSensor()") == 0) {
-				if (sensorCtrl != null) {
-					if (sensorModel.isEnabled()) {
-						out.println(sensorModel.printSensorData());
-					} else {
-						// This sensor is currently disabled
-						out.println("throw IllegalStateException");
-					}
-					sensorCtrl.updateEmulatorRefresh(mSensorSimulator.view
-							.getRefreshCount());
-				} else {
-					out.println("throw IllegalArgumentException");
-					// ??? The client is violating the protocol.
-					mSensorSimulator
-							.addMessage("WARNING: Client sent unexpected command: "
-									+ cmd);
+				// unset sensor update rate
+				else if (cmd.compareTo("unsetSensorUpdateRate()") == 0) {
+					mServerThreadListener.unsetSensorUpdateRate(sensorName);
+					out.println("OK");
 				}
-			}
-			// unknown command
-			else {
+				// read sensor
+				else if (cmd.compareTo("readSensor()") == 0) {
+					out.println(mServerThreadListener.readSensor(sensorName));
+				}
+				// unknown command
+				else {
+					throw new IllegalArgumentException();
+				}
+			} catch (IllegalArgumentException iae) {
 				out.println("throw IllegalArgumentException");
+			} catch (IllegalStateException ise) {
+				out.println("throw IllegalStateException");
 			}
 		}
 	}
