@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import org.openintents.tools.simulator.controller.sensor.SensorController;
+import org.openintents.tools.simulator.logging.Logg;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 
 /**
@@ -43,7 +44,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
  */
 public class SensorServerThread implements Runnable {
 
-	private SensorSimulator mSensorSimulator;
+	private static final String TAG = SensorServerThread.class.getName();
 
 	/**
 	 * linked list of all successors, so that we can destroy them when needed.
@@ -64,19 +65,18 @@ public class SensorServerThread implements Runnable {
 	/**
 	 * Constructor to start as thread.
 	 * 
-	 * @param newSensorSimulator
-	 *            , SensorSimulator instance of simulator that starts thread
+	 * @param serverThreadListener
+	 *            , delegate for all operations
 	 * @param newClientSocket
 	 *            , Socket that is used in connecting
 	 */
-	public SensorServerThread(SensorSimulator newSensorSimulator,
+	public SensorServerThread(SensorServerThreadListener serverThreadListener,
 			Socket newClientSocket) {
-		mSensorSimulator = newSensorSimulator;
 		mNextThread = null;
 		mPreviousThread = null;
 		mClientSocket = newClientSocket;
 		mTalking = true;
-		mServerThreadListener = mSensorSimulator.controller;
+		mServerThreadListener = serverThreadListener;
 
 
 		// start ourselves:
@@ -100,11 +100,11 @@ public class SensorServerThread implements Runnable {
 					mClientSocket.getInputStream()));
 			String inputLine, outputLine;
 
-			// say hi
+			// say hi to client
 			outputLine = "SensorSimulator";
 			out.println(outputLine);
 
-			mSensorSimulator.addMessage("Incoming connection opened.");
+			Logg.i(TAG, "Incoming connection opened.");
 
 			// handle commands
 			while ((inputLine = in.readLine()) != null) {
@@ -118,13 +118,13 @@ public class SensorServerThread implements Runnable {
 
 		} catch (IOException e) {
 			if (mTalking) {
-				System.err.println("IOException in SensorServerThread.");
+				Logg.e(TAG, "IOException in SensorServerThread.");
 				try {
 					if (mClientSocket != null) {
 						mClientSocket.close();
 					}
 				} catch (IOException e2) {
-					System.err.println("Close failed as well.");
+					Logg.e(TAG, "Close failed as well.");
 				}
 			} else {
 				// everything fine. Our mouth was shut deliberately.
@@ -139,7 +139,7 @@ public class SensorServerThread implements Runnable {
 		if (mNextThread != null) {
 			mNextThread.mPreviousThread = mPreviousThread;
 		}
-		mSensorSimulator.addMessage("Incoming connection closed.");
+		Logg.i(TAG, "Incoming connection closed.");
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class SensorServerThread implements Runnable {
 			mTalking = false;
 			mClientSocket.close();
 		} catch (IOException e) {
-			System.err.println("Close failed.");
+			Logg.e(TAG, "Close failed.");
 			System.exit(1);
 		}
 	}

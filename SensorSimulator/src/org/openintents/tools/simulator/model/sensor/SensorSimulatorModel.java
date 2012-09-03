@@ -85,7 +85,6 @@ public class SensorSimulatorModel {
 
 	// Server for sending out sensor data
 	private SensorServer mSensorServer;
-	private int mIncomingConnections;
 
 	// Simulation delay:
 	private int mDelay;
@@ -97,7 +96,6 @@ public class SensorSimulatorModel {
 		mSensorsPort = 8010;
 		mDelay = 500;
 
-		mIncomingConnections = 0;
 		mUpdate = 10;
 
 		// sensors
@@ -125,13 +123,6 @@ public class SensorSimulatorModel {
 		// Variables for timing:
 		mUpdateSensorCount = 0;
 		mUpdateSensorTime = System.currentTimeMillis();
-	}
-
-	/**
-	 * This method is called by SensorServerThread when a new client connects.
-	 */
-	public void newClient() {
-		mIncomingConnections++;
 	}
 
 	public MagneticFieldModel getMagneticField() {

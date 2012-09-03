@@ -17,6 +17,8 @@
 package org.openintents.tools.simulator;
 
 import org.openintents.tools.simulator.controller.SensorSimulatorController;
+import org.openintents.tools.simulator.logging.Logg;
+import org.openintents.tools.simulator.logging.LoggPrintable;
 import org.openintents.tools.simulator.main.SensorSimulatorMain;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
@@ -35,7 +37,7 @@ import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
  * 
  * @author ilarele
  */
-public class SensorSimulator {
+public class SensorSimulator implements LoggPrintable {
 	public SensorSimulatorModel model;
 	public SensorSimulatorView view;
 	public SensorSimulatorController controller;
@@ -45,6 +47,8 @@ public class SensorSimulator {
 
 	public SensorSimulator(SensorSimulatorMain main) {
 		mMain = main;
+		
+		Logg.addLoggPrintable(this);
 
 		scenario = new SensorsScenario();
 		model = new SensorSimulatorModel(this);
@@ -58,14 +62,12 @@ public class SensorSimulator {
 		mMain.printStatus(status);
 	}
 
-	public void addMessage(String string) {
-		view.addMessage(string);
+	@Override
+	public void println(String msg) {
+		view.addMessage(msg);		
 	}
 
-	/**
-	 * Called (from SensorServer) when a new client connects
-	 */
-	public void newClient() {
-		model.newClient();
+	public int getSimulationPort() {
+		return model.getSimulationPort();
 	}
 }

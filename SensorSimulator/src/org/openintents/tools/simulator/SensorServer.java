@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.openintents.tools.simulator.logging.Logg;
+
 /**
  * Listens for incoming connections from an Android phone or emulator.
  * 
@@ -29,6 +31,8 @@ import java.net.Socket;
  * 
  */
 public class SensorServer implements Runnable {
+	private static final String TAG = SensorServer.class.getName();
+
 	private SensorSimulator mSensorSimulator;
 
 	/**
@@ -72,7 +76,7 @@ public class SensorServer implements Runnable {
 	 */
 	public void listenServer() {
 		// obtain port number:
-		mPort = mSensorSimulator.model.getSimulationPort();
+		mPort = mSensorSimulator.getSimulationPort();
 		if (mPort == 0)
 			return;
 
@@ -80,9 +84,8 @@ public class SensorServer implements Runnable {
 		try {
 			mServerSocket = new ServerSocket(mPort);
 		} catch (IOException e) {
-			// mSensorSimulator.addMessage("Could not listen on port: " +
-			// mPort);
-			e.printStackTrace();
+			Logg.e(TAG, "Could not listen on port: " + mPort);
+			// e.printStackTrace();
 			return;
 		}
 
@@ -91,12 +94,9 @@ public class SensorServer implements Runnable {
 			while (mListening) {
 				clientSocket = mServerSocket.accept();
 
-				// First we notify this:
-				mSensorSimulator.newClient();
-
 				// Start again new thread:
 				SensorServerThread newThread = new SensorServerThread(
-						mSensorSimulator, clientSocket);
+						mSensorSimulator.controller, clientSocket);
 
 				// set the linking:
 				if (mFirstThread == null) {
@@ -113,7 +113,7 @@ public class SensorServer implements Runnable {
 
 		} catch (IOException e) {
 			if (mListening) {
-				System.err.println("Accept failed.");
+				Logg.e(TAG, "Accept failed.");
 			} else {
 				// everything ok, socket closed by user.
 			}
@@ -122,7 +122,7 @@ public class SensorServer implements Runnable {
 		try {
 			mServerSocket.close();
 		} catch (IOException e) {
-			System.err.println("Close failed.");
+			Logg.e(TAG, "Close failed");
 			System.exit(1);
 		}
 	}
@@ -146,11 +146,11 @@ public class SensorServer implements Runnable {
 
 		try {
 			if (mServerSocket != null) {
-				mSensorSimulator.addMessage("Closing listening server...");
+				Logg.i(TAG, "Closing listening server...");
 				mServerSocket.close();
 			}
 		} catch (IOException e) {
-			System.err.println("Close failed.");
+			Logg.e(TAG, "Close failed.");
 			System.exit(1);
 		}
 	}
