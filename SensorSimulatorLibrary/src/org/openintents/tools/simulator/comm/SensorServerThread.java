@@ -27,9 +27,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import org.openintents.tools.simulator.controller.sensor.SensorController;
 import org.openintents.tools.simulator.logging.Logg;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 
 /**
  * Handles the communication with the SensorClient from the Android phone or
