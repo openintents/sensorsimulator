@@ -504,14 +504,6 @@ public class SensorSimulatorView extends JPanel {
 	}
 
 	/**
-	 * Sets the socket port for listening
-	 */
-	public void setPort() {
-		addMessage("Closing port " + mModel.getSimulationPort());
-		mModel.restartSensorServer();
-	}
-
-	/**
 	 * Adds new message to message box. If scroll position is at end, it will
 	 * scroll to new message.
 	 * 

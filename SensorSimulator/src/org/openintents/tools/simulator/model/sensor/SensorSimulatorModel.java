@@ -28,9 +28,9 @@ package org.openintents.tools.simulator.model.sensor;
 
 import java.util.ArrayList;
 
-import org.openintents.tools.simulator.SensorServer;
 import org.openintents.tools.simulator.SensorSimulator;
 import org.openintents.tools.simulator.SensorsScenario;
+import org.openintents.tools.simulator.comm.SensorServer;
 import org.openintents.tools.simulator.model.StateModel;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
@@ -83,9 +83,6 @@ public class SensorSimulatorModel {
 	// sensors
 	private ArrayList<SensorModel> mSensors;
 
-	// Server for sending out sensor data
-	private SensorServer mSensorServer;
-
 	// Simulation delay:
 	private int mDelay;
 	private SensorSimulator mSensorSimulator;
@@ -112,8 +109,6 @@ public class SensorSimulatorModel {
 		mSensors.add(new GravityModel());
 		mSensors.add(new RotationVectorModel());
 		mSensors.add(new GyroscopeModel());
-
-		mSensorServer = new SensorServer(sensorSimulator);
 
 		mUserSettingsDuration = 500; // Update every half second. This should
 		// be enough.
@@ -161,15 +156,6 @@ public class SensorSimulatorModel {
 
 	public int getSimulationPort() {
 		return mSensorsPort;
-	}
-
-	public void stopSensorServer() {
-		mSensorServer.stop();
-	}
-
-	public void restartSensorServer() {
-		mSensorServer.stop();
-		mSensorServer = new SensorServer(mSensorSimulator);
 	}
 
 	public double getUpdateSensors() {

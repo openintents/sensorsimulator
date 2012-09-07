@@ -36,7 +36,8 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import org.openintents.tools.simulator.SensorServerThreadListener;
+import org.openintents.tools.simulator.comm.SensorServer;
+import org.openintents.tools.simulator.comm.SensorServerThreadListener;
 import org.openintents.tools.simulator.controller.sensor.AccelerometerController;
 import org.openintents.tools.simulator.controller.sensor.BarcodeReaderController;
 import org.openintents.tools.simulator.controller.sensor.GravityController;
@@ -102,6 +103,7 @@ public class SensorSimulatorController implements WindowListener,
 
 	private AllSensorsController mSensorTabController;
 	private SensorsScenarioController mScenarioController;
+	private SensorServer mSensorServer;
 
 	public SensorSimulatorController(final SensorSimulatorModel model,
 			final SensorSimulatorView view) {
@@ -145,7 +147,7 @@ public class SensorSimulatorController implements WindowListener,
 		sensorPortButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				model.restartSensorServer();
+				restartSensorServer();
 			}
 		});
 
@@ -165,6 +167,9 @@ public class SensorSimulatorController implements WindowListener,
 		mUpdateTimer.setCoalesce(true);
 
 		mUpdateTimer.start();
+		
+		// start server
+		mSensorServer = new SensorServer(this, model.getSimulationPort());
 	}
 
 	private void doTimer() {
@@ -485,7 +490,14 @@ public class SensorSimulatorController implements WindowListener,
 			return getGyroscope();
 		return null;
 	}
+	
+	public void restartSensorServer() {
+		mSensorServer.stop();
+		mSensorServer = new SensorServer(this,
+				mSensorSimulatorModel.getSimulationPort());
+	}
 
+	// ////////////////////////////////////////////////////
 	// SensorServerThreadListener methods
 	// ////////////////////////////////////////////////////
 	@Override

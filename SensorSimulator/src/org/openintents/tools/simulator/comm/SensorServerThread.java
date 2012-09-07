@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package org.openintents.tools.simulator;
+package org.openintents.tools.simulator.comm;
 
 import java.io.BufferedReader;
 import java.io.IOException;

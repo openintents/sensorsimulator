@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.openintents.tools.simulator;
+package org.openintents.tools.simulator.comm;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -28,12 +28,11 @@ import org.openintents.tools.simulator.logging.Logg;
  * Connections are then passed to the {@link SensorServerThread}.
  * 
  * @author Peli
+ * @author donat3llo
  * 
  */
 public class SensorServer implements Runnable {
 	private static final String TAG = SensorServer.class.getName();
-
-	private SensorSimulator mSensorSimulator;
 
 	/**
 	 * linked list of all successors, so that we can destroy them when needed.
@@ -43,6 +42,7 @@ public class SensorServer implements Runnable {
 	private SensorServerThread mLastThread;
 
 	private ServerSocket mServerSocket;
+	private SensorServerThreadListener mThreadListener;
 
 	private int mPort;
 	private boolean mListening;
@@ -50,15 +50,22 @@ public class SensorServer implements Runnable {
 	/**
 	 * Constructor to start as server that listens for connections.
 	 * 
-	 * @param newSensorSimulator
-	 *            , SensorSimulator instance that started server.
+	 * @param sensorServerThreadListener
+	 *            implements the simulator command api
+	 * @param port
+	 *            the port on which to listen
 	 */
-	public SensorServer(SensorSimulator newSensorSimulator) {
-		mSensorSimulator = newSensorSimulator;
+	public SensorServer(SensorServerThreadListener sensorServerThreadListener,
+			int port) {
+		mPort = port;
+		if (mPort == 0)
+			return;
+
+		mThreadListener = sensorServerThreadListener;
 		mFirstThread = null;
 		mLastThread = null;
 		mListening = true;
-
+		
 		// start ourselves:
 		mThread = new Thread(this);
 		mThread.start();
@@ -75,10 +82,6 @@ public class SensorServer implements Runnable {
 	 * Method that starts thread for network connection.
 	 */
 	public void listenServer() {
-		// obtain port number:
-		mPort = mSensorSimulator.getSimulationPort();
-		if (mPort == 0)
-			return;
 
 		mServerSocket = null;
 		try {
@@ -96,7 +99,7 @@ public class SensorServer implements Runnable {
 
 				// Start again new thread:
 				SensorServerThread newThread = new SensorServerThread(
-						mSensorSimulator.controller, clientSocket);
+						mThreadListener, clientSocket);
 
 				// set the linking:
 				if (mFirstThread == null) {

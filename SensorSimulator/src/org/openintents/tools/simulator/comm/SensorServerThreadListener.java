@@ -1,4 +1,4 @@
-package org.openintents.tools.simulator;
+package org.openintents.tools.simulator.comm;
 
 public interface SensorServerThreadListener {
 

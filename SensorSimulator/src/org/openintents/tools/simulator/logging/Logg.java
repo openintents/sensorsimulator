@@ -6,19 +6,19 @@ import java.util.List;
 public class Logg {
 
 	private static List<LoggPrintable> mLoggPrintables;
-	
-	{
+
+	// for testing
+	static {
 		mLoggPrintables = new LinkedList<LoggPrintable>();
 		mLoggPrintables.add(new LoggPrintable() {
-			
+
 			@Override
 			public void println(String msg) {
 				System.out.println(msg);
 			}
 		});
 	}
-	
-	
+
 	public static void addLoggPrintable(LoggPrintable printable) {
 		mLoggPrintables.add(printable);
 	}
