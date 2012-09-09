@@ -27,6 +27,8 @@
 package org.openintents.tools.simulator.model.sensor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.openintents.tools.simulator.SensorSimulator;
 import org.openintents.tools.simulator.SensorsScenario;
@@ -43,6 +45,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
 import org.openintents.tools.simulator.model.sensor.sensors.ProximityModel;
 import org.openintents.tools.simulator.model.sensor.sensors.RotationVectorModel;
+import org.openintents.tools.simulator.model.sensor.sensors.SensorType;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
 
@@ -81,7 +84,7 @@ public class SensorSimulatorModel {
 	private long mUserSettingsNextUpdate;
 
 	// sensors
-	private ArrayList<SensorModel> mSensors;
+	private Map<SensorType, SensorModel> mSensors;
 
 	// Simulation delay:
 	private int mDelay;
@@ -95,20 +98,20 @@ public class SensorSimulatorModel {
 
 		mUpdate = 10;
 
-		// sensors
-		mSensors = new ArrayList<SensorModel>();
-		mSensors.add(new AccelerometerModel());
-		mSensors.add(new MagneticFieldModel());
-		mSensors.add(new OrientationModel());
-		mSensors.add(new TemperatureModel());
-		mSensors.add(new BarcodeReaderModel());
-		mSensors.add(new LightModel());
-		mSensors.add(new ProximityModel());
-		mSensors.add(new PressureModel());
-		mSensors.add(new LinearAccelerationModel());
-		mSensors.add(new GravityModel());
-		mSensors.add(new RotationVectorModel());
-		mSensors.add(new GyroscopeModel());
+		// new sensors
+		mSensors = new HashMap<SensorType, SensorModel>();
+		mSensors.put(SensorType.ACCELEROMETER, new AccelerometerModel());
+		mSensors.put(SensorType.MAGNETIC_FIELD, new MagneticFieldModel());
+		mSensors.put(SensorType.ORIENTATION, new OrientationModel());
+		mSensors.put(SensorType.TEMPERATURE, new TemperatureModel());
+		mSensors.put(SensorType.BARCODE_READER, new BarcodeReaderModel());
+		mSensors.put(SensorType.LIGHT, new LightModel());
+		mSensors.put(SensorType.PROXIMITY, new ProximityModel());
+		mSensors.put(SensorType.PRESSURE, new PressureModel());
+		mSensors.put(SensorType.LINEAR_ACCELERATION, new LinearAccelerationModel());
+		mSensors.put(SensorType.GRAVITY, new GravityModel());
+		mSensors.put(SensorType.ROTATION, new RotationVectorModel());
+		mSensors.put(SensorType.GYROSCOPE, new GyroscopeModel());
 
 		mUserSettingsDuration = 500; // Update every half second. This should
 		// be enough.
@@ -120,37 +123,7 @@ public class SensorSimulatorModel {
 		mUpdateSensorTime = System.currentTimeMillis();
 	}
 
-	public MagneticFieldModel getMagneticField() {
-		return (MagneticFieldModel) mSensors
-				.get(SensorModel.POZ_MAGNETIC_FIELD);
-	}
-
-	public TemperatureModel getTemperature() {
-		return (TemperatureModel) mSensors.get(SensorModel.POZ_TEMPERATURE);
-	}
-
-	public BarcodeReaderModel getBarcodeReader() {
-		return (BarcodeReaderModel) mSensors
-				.get(SensorModel.POZ_BARCODE_READER);
-	}
-
-	public LightModel getLight() {
-		return (LightModel) mSensors.get(SensorModel.POZ_LIGHT);
-	}
-
-	public ProximityModel getProximity() {
-		return (ProximityModel) mSensors.get(SensorModel.POZ_PROXIMITY);
-	}
-
-	public AccelerometerModel getAccelerometer() {
-		return (AccelerometerModel) mSensors.get(SensorModel.POZ_ACCELEROMETER);
-	}
-
-	public OrientationModel getOrientation() {
-		return (OrientationModel) mSensors.get(SensorModel.POZ_ORIENTATION);
-	}
-
-	public ArrayList<SensorModel> getSensors() {
+	public Map <SensorType, SensorModel> getSensors() {
 		return mSensors;
 	}
 
@@ -210,65 +183,44 @@ public class SensorSimulatorModel {
 		mDelay = newdelay;
 	}
 
-	public PressureModel getPressure() {
-		return (PressureModel) mSensors.get(SensorModel.POZ_PRESSURE);
-	}
-
-	public LinearAccelerationModel getLinearAcceleration() {
-		return (LinearAccelerationModel) mSensors
-				.get(SensorModel.POZ_LINEAR_ACCELERATION);
-	}
-
-	public GravityModel getGravity() {
-		return (GravityModel) mSensors.get(SensorModel.POZ_GRAVITY);
-	}
-
-	public RotationVectorModel getRotationVector() {
-		return (RotationVectorModel) mSensors.get(SensorModel.POZ_ROTATION);
-	}
-
-	public GyroscopeModel getGyroscope() {
-		return (GyroscopeModel) mSensors.get(SensorModel.POZ_GYROSCOPE);
-	}
-
 	public SensorsScenario getScenario() {
 		return mSensorSimulator.scenario;
 	}
 
 	public void loadState(StateModel state) {
 		// simple
-		TemperatureModel temperatureModel = getTemperature();
+		TemperatureModel temperatureModel = (TemperatureModel) getSensorModelFromName(SensorType.TEMPERATURE);
 		temperatureModel.setTemp(state.getTemperature());
 
-		LightModel lightModel = getLight();
+		LightModel lightModel = (LightModel) getSensorModelFromName(SensorType.LIGHT);
 		lightModel.setLight(state.getLight());
 
-		ProximityModel proximityModel = getProximity();
+		ProximityModel proximityModel = (ProximityModel) getSensorModelFromName(SensorType.PROXIMITY);
 		proximityModel.setProximity(state.getProximity());
 
-		PressureModel pressureModel = getPressure();
+		PressureModel pressureModel = (PressureModel) getSensorModelFromName(SensorType.PRESSURE);
 		pressureModel.setPressure(state.getPressure());
 
 		// complex
-		GravityModel gravityModel = getGravity();
+		GravityModel gravityModel = (GravityModel) getSensorModelFromName(SensorType.GRAVITY);
 		gravityModel.setGravity(state.getGravity());
 
-		LinearAccelerationModel linearAccModel = getLinearAcceleration();
+		LinearAccelerationModel linearAccModel = (LinearAccelerationModel) getSensorModelFromName(SensorType.LINEAR_ACCELERATION);
 		linearAccModel.setLinearAcceleration(state.getLinearAcceleration());
 
-		OrientationModel orientationModel = getOrientation();
+		OrientationModel orientationModel = (OrientationModel) getSensorModelFromName(SensorType.ORIENTATION);
 		orientationModel.setOrientation(state.getOrientation());
 
-		AccelerometerModel accelerometerModel = getAccelerometer();
+		AccelerometerModel accelerometerModel = (AccelerometerModel) getSensorModelFromName(SensorType.ACCELEROMETER);
 		accelerometerModel.setAccelerometer(state.getAccelerometer());
 
-		MagneticFieldModel magneticFieldModel = getMagneticField();
+		MagneticFieldModel magneticFieldModel = (MagneticFieldModel) getSensorModelFromName(SensorType.MAGNETIC_FIELD);
 		magneticFieldModel.setMagneticField(state.getMagneticField());
 
-		RotationVectorModel rotationVectorModel = getRotationVector();
+		RotationVectorModel rotationVectorModel = (RotationVectorModel) getSensorModelFromName(SensorType.ROTATION);
 		rotationVectorModel.setRotationVector(state.getRotationVector());
 
-		GyroscopeModel gyroscopeModel = getGyroscope();
+		GyroscopeModel gyroscopeModel = (GyroscopeModel) getSensorModelFromName(SensorType.GYROSCOPE);
 		gyroscopeModel.setGyroscope(state.getGyroscope());
 	}
 
@@ -279,33 +231,8 @@ public class SensorSimulatorModel {
 	 *            name of the model component to be returned
 	 * @return model component of the specified sensor
 	 */
-	public SensorModel getSensorModelFromName(String sensorName) {
-//		SensorSimulatorModel model = mSensorSimulator.model;
-		if (sensorName.compareTo(SensorModel.ACCELEROMETER) == 0)
-			return getAccelerometer();
-		else if (sensorName.compareTo(SensorModel.MAGNETIC_FIELD) == 0)
-			return getMagneticField();
-		else if (sensorName.compareTo(SensorModel.ORIENTATION) == 0)
-			return getOrientation();
-		else if (sensorName.compareTo(SensorModel.TEMPERATURE) == 0)
-			return getTemperature();
-		else if (sensorName.compareTo(SensorModel.BARCODE_READER) == 0)
-			return getBarcodeReader();
-		else if (sensorName.compareTo(SensorModel.LIGHT) == 0)
-			return getLight();
-		else if (sensorName.compareTo(SensorModel.PROXIMITY) == 0)
-			return getProximity();
-		else if (sensorName.compareTo(SensorModel.PRESSURE) == 0)
-			return getPressure();
-		else if (sensorName.compareTo(SensorModel.LINEAR_ACCELERATION) == 0)
-			return getLinearAcceleration();
-		else if (sensorName.compareTo(SensorModel.GRAVITY) == 0)
-			return getGravity();
-		else if (sensorName.compareTo(SensorModel.ROTATION_VECTOR) == 0)
-			return getRotationVector();
-		else if (sensorName.compareTo(SensorModel.GYROSCOPE) == 0)
-			return getGyroscope();
-		return null;
+	public SensorModel getSensorModelFromName(SensorType sensorType) {
+		return mSensors.get(sensorType);
 	}
 
 	/**
@@ -315,9 +242,9 @@ public class SensorSimulatorModel {
 	 */
 	public String[] getSupportedSensors() {
 		ArrayList<String> resultArray = new ArrayList<String>();
-		for (SensorModel sensor : getSensors()) {
-			if (sensor.isEnabled()) {
-				resultArray.add(sensor.getName());
+		for (Map.Entry<SensorType, SensorModel> sensorEntry : getSensors().entrySet()) {
+			if (sensorEntry.getValue().isEnabled()) {
+				resultArray.add(sensorEntry.getValue().getName());
 			}
 		}
 		return resultArray.toArray(new String[resultArray.size()]);

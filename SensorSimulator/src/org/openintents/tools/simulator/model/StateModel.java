@@ -20,15 +20,21 @@ import java.util.Hashtable;
 import java.util.Map.Entry;
 
 import org.openintents.tools.simulator.Global;
+import org.openintents.tools.simulator.controller.sensor.TemperatureController;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.GravityModel;
 import org.openintents.tools.simulator.model.sensor.sensors.GyroscopeModel;
+import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
 import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
+import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
+import org.openintents.tools.simulator.model.sensor.sensors.ProximityModel;
 import org.openintents.tools.simulator.model.sensor.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensor.sensors.SensorType;
+import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
 import org.openintents.tools.simulator.util.Interpolate;
 
 /**
@@ -95,13 +101,13 @@ public class StateModel {
 	 * Saves in the StateModel format all sesnsors data (a lighter format).
 	 */
 	public void copyState(SensorSimulatorModel simulatorModel) {
-		mTemperature = (float) simulatorModel.getTemperature().getReadTemp();
-		mLight = (float) simulatorModel.getLight().getReadLight();
-		mProximity = (float) simulatorModel.getProximity().getReadProximity();
-		mPressure = (float) simulatorModel.getPressure().getReadPressure();
+		mTemperature = (float) ((TemperatureModel) simulatorModel.getSensorModelFromName(SensorType.TEMPERATURE)).getReadTemp();
+		mLight = (float) ((LightModel) simulatorModel.getSensorModelFromName(SensorType.LIGHT)).getReadLight();
+		mProximity = (float) ((ProximityModel) simulatorModel.getSensorModelFromName(SensorType.PROXIMITY)).getReadProximity();
+		mPressure = (float) ((PressureModel) simulatorModel.getSensorModelFromName(SensorType.PRESSURE)).getReadPressure();
 
-		LinearAccelerationModel linearAcceleration = simulatorModel
-				.getLinearAcceleration();
+		LinearAccelerationModel linearAcceleration = (LinearAccelerationModel) simulatorModel
+				.getSensorModelFromName(SensorType.LINEAR_ACCELERATION);
 		mLinearAcceleration[0] = (float) linearAcceleration
 				.getReadLinearAccelerationX();
 		mLinearAcceleration[1] = (float) linearAcceleration
@@ -109,32 +115,34 @@ public class StateModel {
 		mLinearAcceleration[2] = (float) linearAcceleration
 				.getReadLinearAccelerationZ();
 
-		GravityModel gravity = simulatorModel.getGravity();
+		GravityModel gravity = (GravityModel) simulatorModel
+				.getSensorModelFromName(SensorType.GRAVITY);
 		mGravity[0] = (float) gravity.getReadGravityX();
 		mGravity[1] = (float) gravity.getReadGravityY();
 		mGravity[2] = (float) gravity.getReadGravityZ();
 
-		OrientationModel orientation = simulatorModel.getOrientation();
+		OrientationModel orientation = (OrientationModel) simulatorModel.getSensorModelFromName(SensorType.ORIENTATION);
 		mOrientation[0] = (float) orientation.getReadYaw();
 		mOrientation[1] = (float) orientation.getReadPitch();
 		mOrientation[2] = (float) orientation.getReadRoll();
 
-		AccelerometerModel accelerometer = simulatorModel.getAccelerometer();
+		AccelerometerModel accelerometer = (AccelerometerModel) simulatorModel.getSensorModelFromName(SensorType.ACCELEROMETER);
 		mAccelerometer[0] = (float) accelerometer.getReadAccelerometerX();
 		mAccelerometer[1] = (float) accelerometer.getReadAccelerometerY();
 		mAccelerometer[2] = (float) accelerometer.getReadAccelerometerZ();
 
-		MagneticFieldModel magneticField = simulatorModel.getMagneticField();
+		MagneticFieldModel magneticField = (MagneticFieldModel) simulatorModel.getSensorModelFromName(SensorType.MAGNETIC_FIELD);
 		mMagneticField[0] = (float) magneticField.getReadCompassX();
 		mMagneticField[1] = (float) magneticField.getReadCompassY();
 		mMagneticField[2] = (float) magneticField.getReadCompassZ();
 
-		RotationVectorModel rotationVector = simulatorModel.getRotationVector();
+		RotationVectorModel rotationVector = (RotationVectorModel) simulatorModel
+				.getSensorModelFromName(SensorType.ROTATION);
 		mRotationVector[0] = (float) rotationVector.getReadRotationVectorX();
 		mRotationVector[1] = (float) rotationVector.getReadRotationVectorY();
 		mRotationVector[2] = (float) rotationVector.getReadRotationVectorZ();
 
-		GyroscopeModel gyroscope = simulatorModel.getGyroscope();
+		GyroscopeModel gyroscope = (GyroscopeModel) simulatorModel.getSensorModelFromName(SensorType.GYROSCOPE);
 		mGyroscope[0] = (float) gyroscope.getReadGyroscopePitch();
 		mGyroscope[1] = (float) gyroscope.getReadGyroscopeYaw();
 		mGyroscope[2] = (float) gyroscope.getReadGyroscopeRoll();

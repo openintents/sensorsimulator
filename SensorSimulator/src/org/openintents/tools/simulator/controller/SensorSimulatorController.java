@@ -54,8 +54,19 @@ import org.openintents.tools.simulator.controller.sensor.TemperatureController;
 import org.openintents.tools.simulator.model.StateModel;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
+import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
+import org.openintents.tools.simulator.model.sensor.sensors.GravityModel;
+import org.openintents.tools.simulator.model.sensor.sensors.GyroscopeModel;
+import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
+import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationModel;
+import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
+import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
+import org.openintents.tools.simulator.model.sensor.sensors.ProximityModel;
+import org.openintents.tools.simulator.model.sensor.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensor.sensors.SensorType;
+import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.DeviceView;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
@@ -116,28 +127,40 @@ public class SensorSimulatorController implements WindowListener,
 		mScenarioController = mSensorSimulatorModel.getScenario().controller;
 
 		// sensors
-		mSensors.add(new AccelerometerController(model.getAccelerometer(), view
+		mSensors.add(new AccelerometerController((AccelerometerModel) model
+				.getSensorModelFromName(SensorType.ACCELEROMETER), view
 				.getAccelerometer()));
-		mSensors.add(new MagneticFieldController(model.getMagneticField(), view
+		mSensors.add(new MagneticFieldController((MagneticFieldModel) model
+				.getSensorModelFromName(SensorType.MAGNETIC_FIELD), view
 				.getMagneticField()));
-		mSensors.add(new OrientationController(model.getOrientation(), view
+		mSensors.add(new OrientationController((OrientationModel) model
+				.getSensorModelFromName(SensorType.ORIENTATION), view
 				.getOrientation(), deviceView));
-		mSensors.add(new TemperatureController(model.getTemperature(), view
+		mSensors.add(new TemperatureController((TemperatureModel) model
+				.getSensorModelFromName(SensorType.TEMPERATURE), view
 				.getTemperature()));
-		mSensors.add(new BarcodeReaderController(model.getBarcodeReader(), view
+		mSensors.add(new BarcodeReaderController((BarcodeReaderModel) model
+				.getSensorModelFromName(SensorType.BARCODE_READER), view
 				.getBarcodeReader()));
-		mSensors.add(new LightController(model.getLight(), view.getLight()));
-		mSensors.add(new ProximityController(model.getProximity(), view
+		mSensors.add(new LightController((LightModel) model
+				.getSensorModelFromName(SensorType.LIGHT), view.getLight()));
+		mSensors.add(new ProximityController((ProximityModel) model
+				.getSensorModelFromName(SensorType.PROXIMITY), view
 				.getProximity()));
-		mSensors.add(new PressureController(model.getPressure(), view
+		mSensors.add(new PressureController((PressureModel) model
+				.getSensorModelFromName(SensorType.PRESSURE), view
 				.getPressure()));
-		mSensors.add(new LinearAccelerationController(model
-				.getLinearAcceleration(), view.getLinearAceleration()));
-		mSensors.add(new GravityController(model.getGravity(), view
-				.getGravity()));
-		mSensors.add(new RotationVectorController(model.getRotationVector(),
-				view.getRotationVector()));
-		mSensors.add(new GyroscopeController(model.getGyroscope(), view
+		mSensors.add(new LinearAccelerationController(
+				(LinearAccelerationModel) model
+						.getSensorModelFromName(SensorType.LINEAR_ACCELERATION),
+				view.getLinearAceleration()));
+		mSensors.add(new GravityController((GravityModel) model
+				.getSensorModelFromName(SensorType.GRAVITY), view.getGravity()));
+		mSensors.add(new RotationVectorController((RotationVectorModel) model
+				.getSensorModelFromName(SensorType.ROTATION), view
+				.getRotationVector()));
+		mSensors.add(new GyroscopeController((GyroscopeModel) model
+				.getSensorModelFromName(SensorType.GYROSCOPE), view
 				.getGyroscope()));
 
 		mSensorTabController = new AllSensorsController(
@@ -147,7 +170,10 @@ public class SensorSimulatorController implements WindowListener,
 		sensorPortButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				restartSensorServer();
+				mSensorServer.stop();
+				mSensorServer = new SensorServer(
+						SensorSimulatorController.this, mSensorSimulatorModel
+								.getSimulationPort());
 			}
 		});
 
@@ -346,61 +372,6 @@ public class SensorSimulatorController implements WindowListener,
 	public void windowOpened(WindowEvent arg0) {
 	}
 
-	public MagneticFieldController getMagneticField() {
-		return (MagneticFieldController) mSensors
-				.get(SensorModel.POZ_MAGNETIC_FIELD);
-	}
-
-	public TemperatureController getTemperature() {
-		return (TemperatureController) mSensors
-				.get(SensorModel.POZ_TEMPERATURE);
-	}
-
-	public BarcodeReaderController getBarcodeReader() {
-		return (BarcodeReaderController) mSensors
-				.get(SensorModel.POZ_BARCODE_READER);
-	}
-
-	public LightController getLight() {
-		return (LightController) mSensors.get(SensorModel.POZ_LIGHT);
-	}
-
-	public ProximityController getProximity() {
-		return (ProximityController) mSensors.get(SensorModel.POZ_PROXIMITY);
-	}
-
-	public AccelerometerController getAccelerometer() {
-		return (AccelerometerController) mSensors
-				.get(SensorModel.POZ_ACCELEROMETER);
-	}
-
-	public OrientationController getOrientation() {
-		return (OrientationController) mSensors
-				.get(SensorModel.POZ_ORIENTATION);
-	}
-
-	public PressureController getPressure() {
-		return (PressureController) mSensors.get(SensorModel.POZ_PRESSURE);
-	}
-
-	public GravityController getGravity() {
-		return (GravityController) mSensors.get(SensorModel.POZ_GRAVITY);
-	}
-
-	public LinearAccelerationController getLinearAcceleration() {
-		return (LinearAccelerationController) mSensors
-				.get(SensorModel.POZ_LINEAR_ACCELERATION);
-	}
-
-	public RotationVectorController getRotationVector() {
-		return (RotationVectorController) mSensors
-				.get(SensorModel.POZ_ROTATION);
-	}
-
-	public GyroscopeController getGyroscope() {
-		return (GyroscopeController) mSensors.get(SensorModel.POZ_GYROSCOPE);
-	}
-
 	public int getState() {
 		return mSimulatorState;
 	}
@@ -416,38 +387,37 @@ public class SensorSimulatorController implements WindowListener,
 	public void enableSensor(int sensorType) {
 		switch (sensorType) {
 		case SensorModel.TYPE_ACCELEROMETER:
-			mSensorSimulatorModel.getAccelerometer().setEnabled(true);
+			mSensorSimulatorModel.getSensorModelFromName(SensorType.ACCELEROMETER).setEnabled(true);
 			break;
 		case SensorModel.TYPE_GRAVITY:
-			mSensorSimulatorModel.getGravity().setEnabled(true);
+			mSensorSimulatorModel.getSensorModelFromName(SensorType.GRAVITY).setEnabled(true);
 			break;
 		case SensorModel.TYPE_GYROSCOPE:
-			mSensorSimulatorModel.getGyroscope().setEnabled(true);
+			mSensorSimulatorModel.getSensorModelFromName(SensorType.GYROSCOPE).setEnabled(true);
 			break;
 		case SensorModel.TYPE_LIGHT:
-			mSensorSimulatorModel.getLight().setEnabled(true);
+			mSensorSimulatorModel.getSensorModelFromName(SensorType.LIGHT).setEnabled(true);
 			break;
 		case SensorModel.TYPE_LINEAR_ACCELERATION:
-			mSensorSimulatorModel.getLinearAcceleration().setEnabled(true);
+			mSensorSimulatorModel.getSensorModelFromName(SensorType.LINEAR_ACCELERATION).setEnabled(true);
 			break;
 		case SensorModel.TYPE_MAGNETIC_FIELD:
-			mSensorSimulatorModel.getMagneticField().setEnabled(true);
+			mSensorSimulatorModel.getSensorModelFromName(SensorType.MAGNETIC_FIELD).setEnabled(true);
 			break;
-
 		case SensorModel.TYPE_ORIENTATION:
-			mSensorSimulatorModel.getOrientation().setEnabled(true);
+			mSensorSimulatorModel.getSensorModelFromName(SensorType.ORIENTATION).setEnabled(true);
 			break;
 		case SensorModel.TYPE_PRESSURE:
-			mSensorSimulatorModel.getPressure().setEnabled(true);
+			mSensorSimulatorModel.getSensorModelFromName(SensorType.PRESSURE).setEnabled(true);
 			break;
 		case SensorModel.TYPE_PROXIMITY:
-			mSensorSimulatorModel.getProximity().setEnabled(true);
+			mSensorSimulatorModel.getSensorModelFromName(SensorType.PROXIMITY).setEnabled(true);
 			break;
 		case SensorModel.TYPE_ROTATION_VECTOR:
-			mSensorSimulatorModel.getRotationVector().setEnabled(true);
+			mSensorSimulatorModel.getSensorModelFromName(SensorType.ROTATION).setEnabled(true);
 			break;
 		case SensorModel.TYPE_TEMPERATURE:
-			mSensorSimulatorModel.getTemperature().setEnabled(true);
+			mSensorSimulatorModel.getSensorModelFromName(SensorType.TEMPERATURE).setEnabled(true);
 			break;
 		}
 	}
@@ -465,38 +435,39 @@ public class SensorSimulatorController implements WindowListener,
 	 */
 	public SensorController getSensorCtrlFromName(String sensorName) {
 		if (sensorName.compareTo(SensorModel.ACCELEROMETER) == 0)
-			return getAccelerometer();
+			return (AccelerometerController) mSensors
+					.get(SensorModel.POZ_ACCELEROMETER);
 		else if (sensorName.compareTo(SensorModel.MAGNETIC_FIELD) == 0)
-			return getMagneticField();
+			return (MagneticFieldController) mSensors
+					.get(SensorModel.POZ_MAGNETIC_FIELD);
 		else if (sensorName.compareTo(SensorModel.ORIENTATION) == 0)
-			return getOrientation();
+			return (OrientationController) mSensors
+					.get(SensorModel.POZ_ORIENTATION);
 		else if (sensorName.compareTo(SensorModel.TEMPERATURE) == 0)
-			return getTemperature();
+			return (TemperatureController) mSensors
+					.get(SensorModel.POZ_TEMPERATURE);
 		else if (sensorName.compareTo(SensorModel.BARCODE_READER) == 0)
-			return getBarcodeReader();
+			return (BarcodeReaderController) mSensors
+					.get(SensorModel.POZ_BARCODE_READER);
 		else if (sensorName.compareTo(SensorModel.LIGHT) == 0)
-			return getLight();
+			return (LightController) mSensors.get(SensorModel.POZ_LIGHT);
 		else if (sensorName.compareTo(SensorModel.PROXIMITY) == 0)
-			return getProximity();
+			return (ProximityController) mSensors.get(SensorModel.POZ_PROXIMITY);
 		else if (sensorName.compareTo(SensorModel.PRESSURE) == 0)
-			return getPressure();
+			return (PressureController) mSensors.get(SensorModel.POZ_PRESSURE);
 		else if (sensorName.compareTo(SensorModel.LINEAR_ACCELERATION) == 0)
-			return getLinearAcceleration();
+			return (LinearAccelerationController) mSensors
+					.get(SensorModel.POZ_LINEAR_ACCELERATION);
 		else if (sensorName.compareTo(SensorModel.GRAVITY) == 0)
-			return getGravity();
+			return (GravityController) mSensors.get(SensorModel.POZ_GRAVITY);
 		else if (sensorName.compareTo(SensorModel.ROTATION_VECTOR) == 0)
-			return getRotationVector();
+			return (RotationVectorController) mSensors
+					.get(SensorModel.POZ_ROTATION);
 		else if (sensorName.compareTo(SensorModel.GYROSCOPE) == 0)
-			return getGyroscope();
+			return (GyroscopeController) mSensors.get(SensorModel.POZ_GYROSCOPE);
 		return null;
 	}
 	
-	public void restartSensorServer() {
-		mSensorServer.stop();
-		mSensorServer = new SensorServer(this,
-				mSensorSimulatorModel.getSimulationPort());
-	}
-
 	// ////////////////////////////////////////////////////
 	// SensorServerThreadListener methods
 	// ////////////////////////////////////////////////////
@@ -507,14 +478,16 @@ public class SensorSimulatorController implements WindowListener,
 
 	@Override
 	public int getNumSensorValues(String sensorName) {
-		return mSensorSimulatorModel.getSensorModelFromName(sensorName)
+		SensorType sensorType = getSensorTypeFromString(sensorName);
+		return mSensorSimulatorModel.getSensorModelFromName(sensorType)
 				.getNumSensorValues();
 	}
 
 	@Override
 	public void setSensorUpdateDelay(String sensorName, int updateDelay)
 			throws IllegalArgumentException {
-		if (mSensorSimulatorModel.getSensorModelFromName(sensorName)
+		SensorType sensorType = getSensorTypeFromString(sensorName);
+		if (mSensorSimulatorModel.getSensorModelFromName(sensorType)
 				.isEnabled())
 			getSensorCtrlFromName(sensorName).setCurrentUpdateRate(updateDelay);
 		else
@@ -524,8 +497,9 @@ public class SensorSimulatorController implements WindowListener,
 	@Override
 	public void unsetSensorUpdateRate(String sensorName)
 			throws IllegalStateException {
+		SensorType sensorType = getSensorTypeFromString(sensorName);
 		SensorModel sensorModel = mSensorSimulatorModel
-				.getSensorModelFromName(sensorName);
+				.getSensorModelFromName(sensorType);
 		if (sensorModel.isEnabled()) {
 			SensorController sensorCtrl = getSensorCtrlFromName(sensorName);
 
@@ -538,8 +512,10 @@ public class SensorSimulatorController implements WindowListener,
 
 	@Override
 	public String readSensor(String sensorName) {
+		SensorType sensorType = getSensorTypeFromString(sensorName);
+		
 		SensorModel sensorModel = mSensorSimulatorModel
-				.getSensorModelFromName(sensorName);
+				.getSensorModelFromName(sensorType);
 		if (sensorModel.isEnabled()) {
 			getSensorCtrlFromName(sensorName).updateEmulatorRefresh(
 					mSensorSimulatorView.getRefreshCount());
@@ -547,5 +523,37 @@ public class SensorSimulatorController implements WindowListener,
 		} else {
 			throw new IllegalStateException();
 		}
+	}
+	
+	/** 
+	 * Helper
+	 */
+	public static SensorType getSensorTypeFromString(String sensorName) {
+		if (sensorName.compareTo(SensorModel.ACCELEROMETER) == 0)
+			return SensorType.ACCELEROMETER;
+		else if (sensorName.compareTo(SensorModel.MAGNETIC_FIELD) == 0)
+			return SensorType.MAGNETIC_FIELD;
+		else if (sensorName.compareTo(SensorModel.ORIENTATION) == 0)
+			return SensorType.ORIENTATION;
+		else if (sensorName.compareTo(SensorModel.TEMPERATURE) == 0)
+			return SensorType.TEMPERATURE;
+		else if (sensorName.compareTo(SensorModel.BARCODE_READER) == 0)
+			return SensorType.BARCODE_READER;
+		else if (sensorName.compareTo(SensorModel.LIGHT) == 0)
+			return SensorType.LIGHT;
+		else if (sensorName.compareTo(SensorModel.PROXIMITY) == 0)
+			return SensorType.PROXIMITY;
+		else if (sensorName.compareTo(SensorModel.PRESSURE) == 0)
+			return SensorType.PRESSURE;
+		else if (sensorName.compareTo(SensorModel.LINEAR_ACCELERATION) == 0)
+			return SensorType.LINEAR_ACCELERATION;
+		else if (sensorName.compareTo(SensorModel.GRAVITY) == 0)
+			return SensorType.GRAVITY;
+		else if (sensorName.compareTo(SensorModel.ROTATION_VECTOR) == 0)
+			return SensorType.ROTATION;
+		else if (sensorName.compareTo(SensorModel.GYROSCOPE) == 0)
+			return SensorType.GYROSCOPE;
+		else
+			return null;
 	}
 }

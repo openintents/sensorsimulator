@@ -1,0 +1,5 @@
+package org.openintents.tools.simulator.model.sensor.sensors;
+
+public enum SensorType {
+	ACCELEROMETER, MAGNETIC_FIELD, ORIENTATION, TEMPERATURE, BARCODE_READER, LIGHT, PROXIMITY, PRESSURE, LINEAR_ACCELERATION, GRAVITY, ROTATION, GYROSCOPE
+}
