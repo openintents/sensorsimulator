@@ -52,9 +52,9 @@ public class SensorSimulator implements LoggPrintable {
 		Logg.addLoggPrintable(this);
 
 		scenario = new SensorsScenario();
-		model = new SensorSimulatorModel(this);
-		view = new SensorSimulatorView(model);
-		controller = new SensorSimulatorController(model, view);
+		model = new SensorSimulatorModel();
+		view = new SensorSimulatorView(model, scenario);
+		controller = new SensorSimulatorController(model, view, scenario);
 		scenario.setSimulator(this);
 
 	}

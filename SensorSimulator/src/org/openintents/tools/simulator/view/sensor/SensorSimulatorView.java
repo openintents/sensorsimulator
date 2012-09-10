@@ -145,8 +145,11 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 	private RefreshRateMeter mRefreshRateMeter;
 	private SensorSimulatorController mSensorSimulatorController;
 
-	public SensorSimulatorView(SensorSimulatorModel model) {
+	private SensorsScenario mScenario;
+
+	public SensorSimulatorView(SensorSimulatorModel model, SensorsScenario scenario) {
 		mModel = model;
+		mScenario = scenario;
 		setLayout(new BorderLayout());
 
 		// sensors
@@ -427,14 +430,13 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 
 	private JTabbedPane fillRightPanel() {
 		JTabbedPane rightPanel = new JTabbedPane();
-		SensorsScenario scenario = mModel.getScenario();
 
 		// add enable sensors panel
 		mAllSensorsTab = new AllSensorsView(mSensors);
 		rightPanel.addTab("Sensors", mAllSensorsTab);
 
 		// add scenario panel
-		JScrollPane scenarioScroll = new JScrollPane(scenario.view);
+		JScrollPane scenarioScroll = new JScrollPane(mScenario.view);
 		scenarioScroll
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scenarioScroll.setPreferredSize(new Dimension(

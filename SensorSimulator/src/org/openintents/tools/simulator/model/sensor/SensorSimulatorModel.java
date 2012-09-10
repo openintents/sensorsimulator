@@ -30,9 +30,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openintents.tools.simulator.SensorSimulator;
-import org.openintents.tools.simulator.SensorsScenario;
-import org.openintents.tools.simulator.comm.SensorServer;
 import org.openintents.tools.simulator.model.StateModel;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
@@ -45,8 +42,8 @@ import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
 import org.openintents.tools.simulator.model.sensor.sensors.ProximityModel;
 import org.openintents.tools.simulator.model.sensor.sensors.RotationVectorModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorType;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensor.sensors.SensorType;
 import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
 
 /**
@@ -64,11 +61,7 @@ public class SensorSimulatorModel {
 	// sensors
 	private Map<SensorType, SensorModel> mSensors;
 
-	// Simulation delay:
-	private SensorSimulator mSensorSimulator;
-
-	public SensorSimulatorModel(SensorSimulator sensorSimulator) {
-		mSensorSimulator = sensorSimulator;
+	public SensorSimulatorModel() {
 
 		// new sensors
 		mSensors = new HashMap<SensorType, SensorModel>();
@@ -86,14 +79,13 @@ public class SensorSimulatorModel {
 		mSensors.put(SensorType.GYROSCOPE, new GyroscopeModel());
 	}
 
-	public Map <SensorType, SensorModel> getSensors() {
-		return mSensors;
-	}
-
-	public SensorsScenario getScenario() {
-		return mSensorSimulator.scenario;
-	}
-
+	/**
+	 * Loads a state into the data model. A state consists of a value set for
+	 * all sensors.
+	 * 
+	 * @param state
+	 *            the state to load
+	 */
 	public void loadState(StateModel state) {
 		// simple
 		TemperatureModel temperatureModel = (TemperatureModel) getSensorModelFromName(SensorType.TEMPERATURE);
@@ -149,7 +141,7 @@ public class SensorSimulatorModel {
 	 */
 	public String[] getSupportedSensors() {
 		ArrayList<String> resultArray = new ArrayList<String>();
-		for (Map.Entry<SensorType, SensorModel> sensorEntry : getSensors().entrySet()) {
+		for (Map.Entry<SensorType, SensorModel> sensorEntry : mSensors.entrySet()) {
 			if (sensorEntry.getValue().isEnabled()) {
 				resultArray.add(sensorEntry.getValue().getName());
 			}

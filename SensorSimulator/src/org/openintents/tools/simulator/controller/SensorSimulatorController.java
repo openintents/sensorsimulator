@@ -36,6 +36,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import org.openintents.tools.simulator.SensorsScenario;
 import org.openintents.tools.simulator.comm.SensorServer;
 import org.openintents.tools.simulator.comm.SensorServerThreadListener;
 import org.openintents.tools.simulator.controller.sensor.AccelerometerController;
@@ -133,7 +134,7 @@ public class SensorSimulatorController implements WindowListener,
 
 
 	public SensorSimulatorController(final SensorSimulatorModel model,
-			final SensorSimulatorView view) {
+			final SensorSimulatorView view, SensorsScenario scenario) {
 		mSensorSimulatorModel = model;
 		mSensorSimulatorView = view;
 		mRefreshRateMeter = new RefreshRateMeter(view.getRefreshCount());
@@ -144,7 +145,7 @@ public class SensorSimulatorController implements WindowListener,
 
 		DeviceView deviceView = view.getDeviceView();
 		mDeviceController = new DeviceController(mSensors, deviceView);
-		mScenarioController = mSensorSimulatorModel.getScenario().controller;
+		mScenarioController = scenario.controller;
 
 		// sensors
 		mSensors.add(new AccelerometerController((AccelerometerModel) model
