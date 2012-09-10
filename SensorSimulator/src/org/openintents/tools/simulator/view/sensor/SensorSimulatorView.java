@@ -62,6 +62,7 @@ import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.SensorsScenario;
 import org.openintents.tools.simulator.controller.RefreshRateMeter;
 import org.openintents.tools.simulator.controller.RefreshRateObserver;
+import org.openintents.tools.simulator.controller.SensorSimulatorController;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
@@ -142,6 +143,7 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 	private JTextField mPlaybackTime;
 	
 	private RefreshRateMeter mRefreshRateMeter;
+	private SensorSimulatorController mSensorSimulatorController;
 
 	public SensorSimulatorView(SensorSimulatorModel model) {
 		mModel = model;
@@ -284,7 +286,7 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 		layout.gridy = 0;
 		layout.gridwidth = 2;
 		mSensorPortText = new JTextField(5);
-		mSensorPortText.setText("" + mModel.getSimulationPort());
+		mSensorPortText.setText("" + SensorSimulatorController.DEFAULT_PORT);
 		settingsPanel.add(mSensorPortText);
 
 		mSensorPortButton = new JButton("Change");
@@ -302,9 +304,26 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 		settingsPanel.add(label, layout);
 
 		mUpdateText = new JTextField(5);
-		mUpdateText.setText("" + mModel.getUpdateSensors());
+		mUpdateText.setText("" + SensorSimulatorController.TIMER_DEFAULT_DELAY);
 		layout.gridx++;
 		settingsPanel.add(mUpdateText, layout);
+		mUpdateText.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				mSensorSimulatorController.setUpdateDelay((int) getUpdateSensors());
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				mSensorSimulatorController.setUpdateDelay((int) getUpdateSensors());
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				mSensorSimulatorController.setUpdateDelay((int) getUpdateSensors());
+			}
+		});
 
 		label = new JLabel(" ms", SwingConstants.LEFT);
 		layout.gridx++;
@@ -765,6 +784,10 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 	public void setRefreshRateMeter(RefreshRateMeter refreshRateMeter) {
 		mRefreshRateMeter = refreshRateMeter;
 		mRefreshRateMeter.addObserver(this);
+	}
+	
+	public void setSensorSimulatorController (SensorSimulatorController sensorSimulatorController) {
+		mSensorSimulatorController = sensorSimulatorController;
 	}
 
 	// RefreshRateObserver methods /////////////////////////

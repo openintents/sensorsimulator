@@ -95,6 +95,8 @@ public class SensorSimulatorController implements WindowListener,
 	public static final int PLAY = 2;
 	public static final int PAUSE = 3;
 	public static final int STOP = 4;
+	public static final int TIMER_DEFAULT_DELAY = 500;
+	public static final int DEFAULT_PORT = 8010;
 
 	private int mSimulatorState = NORMAL;
 	private int mToSwitchState = NORMAL;
@@ -109,6 +111,8 @@ public class SensorSimulatorController implements WindowListener,
 	private SensorSimulatorModel mSensorSimulatorModel;
 	private SensorSimulatorView mSensorSimulatorView;
 
+	private int mSensorsPort = DEFAULT_PORT;
+	
 	// the time for a new sensors update cycle in the java application
 	private Timer mUpdateTimer;
 
@@ -134,6 +138,8 @@ public class SensorSimulatorController implements WindowListener,
 		mSensorSimulatorView = view;
 		mRefreshRateMeter = new RefreshRateMeter(view.getRefreshCount());
 		view.setRefreshRateMeter(mRefreshRateMeter);
+		view.setSensorSimulatorController(this);
+		
 		mSensors = new Vector<SensorController>();
 
 		DeviceView deviceView = view.getDeviceView();
@@ -185,9 +191,8 @@ public class SensorSimulatorController implements WindowListener,
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				mSensorServer.stop();
-				mSensorServer = new SensorServer(
-						SensorSimulatorController.this, mSensorSimulatorModel
-								.getSimulationPort());
+				mSensorServer = new SensorServer(SensorSimulatorController.this,
+						getSimulationPort());
 			}
 		});
 
@@ -198,7 +203,7 @@ public class SensorSimulatorController implements WindowListener,
 		}
 		mSensorTabController.setEnabledSensors();
 
-		mUpdateTimer = new Timer(model.getDelay(), new ActionListener() {
+		mUpdateTimer = new Timer(TIMER_DEFAULT_DELAY, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 				doTimer();
@@ -214,7 +219,7 @@ public class SensorSimulatorController implements WindowListener,
 																// now.
 
 		// start server
-		mSensorServer = new SensorServer(this, model.getSimulationPort());
+		mSensorServer = new SensorServer(this, getSimulationPort());
 	}
 
 	private void doTimer() {
@@ -232,15 +237,10 @@ public class SensorSimulatorController implements WindowListener,
 					updateFromWiimote();
 				}
 
-				int newDelay = (int) mSensorSimulatorView.getUpdateSensors();
-				if (newDelay > 0) {
-					setDelay(newDelay);
-				}
-
 				// Update sensors:
 				for (SensorController sensorCtrl : mSensors) {
 					sensorCtrl.updateSensorPhysics(orientation,
-							wiiAccelerometerModel, newDelay);
+							wiiAccelerometerModel, mUpdateTimer.getDelay());
 				}
 				for (SensorController sensorCtrl : mSensors) {
 					sensorCtrl.getModel().updateSensorReadoutValues();
@@ -312,9 +312,10 @@ public class SensorSimulatorController implements WindowListener,
 		}
 	}
 
-	private void setDelay(int newdelay) {
-		mUpdateTimer.setDelay(newdelay);
-		mSensorSimulatorModel.setDelay(newdelay);
+	public void setUpdateDelay(int newdelay) {
+		if (newdelay > 0) {
+			mUpdateTimer.setDelay(newdelay);
+		}
 	}
 
 	private void updateFromWiimote() {
@@ -424,6 +425,10 @@ public class SensorSimulatorController implements WindowListener,
 
 	public Vector<SensorController> getSensors() {
 		return mSensors;
+	}
+	
+	public int getSimulationPort() {
+		return mSensorsPort;
 	}
 
 	/**

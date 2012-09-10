@@ -38,17 +38,17 @@ import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
  * @author ilarele
  */
 public class SensorSimulator implements LoggPrintable {
+	
 	public SensorSimulatorModel model;
 	public SensorSimulatorView view;
 	public SensorSimulatorController controller;
 
 	public SensorsScenario scenario;
 	private SensorSimulatorMain mMain;
-	private int mSensorsPort = 8010;
 
 	public SensorSimulator(SensorSimulatorMain main) {
 		mMain = main;
-		
+
 		Logg.addLoggPrintable(this);
 
 		scenario = new SensorsScenario();
@@ -65,10 +65,6 @@ public class SensorSimulator implements LoggPrintable {
 
 	@Override
 	public void println(String msg) {
-		view.addMessage(msg);		
-	}
-
-	public int getSimulationPort() {
-		return mSensorsPort;
+		view.addMessage(msg);
 	}
 }

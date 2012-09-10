@@ -60,27 +60,15 @@ import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
  * @author Josip Balic
  */
 public class SensorSimulatorModel {
-	private int mSensorsPort;
-
-	private float mUpdate;
-
-	// for measuring updates:
-	private int mUpdateSensorCount;
 
 	// sensors
 	private Map<SensorType, SensorModel> mSensors;
 
 	// Simulation delay:
-	private int mDelay;
 	private SensorSimulator mSensorSimulator;
 
 	public SensorSimulatorModel(SensorSimulator sensorSimulator) {
 		mSensorSimulator = sensorSimulator;
-		// Initialize variables
-		mSensorsPort = 8010;
-		mDelay = 500;
-
-		mUpdate = 10;
 
 		// new sensors
 		mSensors = new HashMap<SensorType, SensorModel>();
@@ -96,33 +84,10 @@ public class SensorSimulatorModel {
 		mSensors.put(SensorType.GRAVITY, new GravityModel());
 		mSensors.put(SensorType.ROTATION, new RotationVectorModel());
 		mSensors.put(SensorType.GYROSCOPE, new GyroscopeModel());
-
-		// Variables for timing:
-		mUpdateSensorCount = 0;
 	}
 
 	public Map <SensorType, SensorModel> getSensors() {
 		return mSensors;
-	}
-
-	public int getSimulationPort() {
-		return mSensorsPort;
-	}
-
-	public double getUpdateSensors() {
-		return mUpdate;
-	}
-
-	public int getDelay() {
-		return mDelay;
-	}
-
-	public void setUpdateSensorCount(int newVal) {
-		mUpdateSensorCount = newVal;
-	}
-
-	public void setDelay(int newdelay) {
-		mDelay = newdelay;
 	}
 
 	public SensorsScenario getScenario() {
