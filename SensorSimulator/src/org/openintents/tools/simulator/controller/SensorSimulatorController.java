@@ -125,12 +125,15 @@ public class SensorSimulatorController implements WindowListener,
 	 * Duration in milliseconds until user setting changes are read out.
 	 */
 	private long mUserSettingsDuration;
+	private RefreshRateMeter mRefreshRateMeter;
 
 
 	public SensorSimulatorController(final SensorSimulatorModel model,
 			final SensorSimulatorView view) {
 		mSensorSimulatorModel = model;
 		mSensorSimulatorView = view;
+		mRefreshRateMeter = new RefreshRateMeter(view.getRefreshCount());
+		view.setRefreshRateMeter(mRefreshRateMeter);
 		mSensors = new Vector<SensorController>();
 
 		DeviceView deviceView = view.getDeviceView();
@@ -267,8 +270,8 @@ public class SensorSimulatorController implements WindowListener,
 				break;
 			}
 
-			// Measure refresh
-			updateSensorRefresh();
+			// Measure sensor refreshment rate
+			mRefreshRateMeter.count();
 
 			// Now show updated data
 			StringBuffer newData = new StringBuffer();
@@ -332,24 +335,6 @@ public class SensorSimulatorController implements WindowListener,
 			orientationController.setYaw(0); // Wiimote can't support yaw
 			orientationController.setRoll(accModel.getWiiRoll());
 			orientationController.setPitch(accModel.getWiiPitch());
-		}
-	}
-
-	/**
-	 * Updates the information about sensors refresh time.
-	 */
-	public void updateSensorRefresh() {
-		int updateSensorCount = mSensorSimulatorModel.incUpdateSensorCount();
-		long maxcount = mSensorSimulatorView.getRefreshCount();
-		if (maxcount >= 0 && updateSensorCount >= maxcount) {
-			long newtime = System.currentTimeMillis();
-			double ms = (double) (newtime - mSensorSimulatorModel
-					.getUpdateSensorTime()) / ((double) maxcount);
-			mSensorSimulatorModel.setRefreshSensors(ms);
-			mSensorSimulatorView.setRefreshSensorsLabel(ms);
-
-			mSensorSimulatorModel.setUpdateSensorCount(0);
-			mSensorSimulatorModel.setUpdateSensorTime(newtime);
 		}
 	}
 

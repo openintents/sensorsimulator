@@ -55,9 +55,13 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.SensorsScenario;
+import org.openintents.tools.simulator.controller.RefreshRateMeter;
+import org.openintents.tools.simulator.controller.RefreshRateObserver;
 import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
@@ -100,7 +104,7 @@ import org.openintents.tools.simulator.view.sensor.sensors.TemperatureView;
  * @author Josip Balic
  * @author ilarele
  */
-public class SensorSimulatorView extends JPanel {
+public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 	private static final long serialVersionUID = -587503580193069930L;
 
 	// port for sensor simulation
@@ -136,6 +140,8 @@ public class SensorSimulatorView extends JPanel {
 
 	private JTextField mSaveTime;
 	private JTextField mPlaybackTime;
+	
+	private RefreshRateMeter mRefreshRateMeter;
 
 	public SensorSimulatorView(SensorSimulatorModel model) {
 		mModel = model;
@@ -314,6 +320,23 @@ public class SensorSimulatorView extends JPanel {
 		mRefreshCountText.setText("10");
 		layout.gridx++;
 		settingsPanel.add(mRefreshCountText, layout);
+		mRefreshCountText.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				mRefreshRateMeter.setMaxCount(getRefreshCount());
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				mRefreshRateMeter.setMaxCount(getRefreshCount());
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				mRefreshRateMeter.setMaxCount(getRefreshCount());
+			}
+		});
 
 		label = new JLabel(" times", SwingConstants.LEFT);
 		layout.gridx++;
@@ -644,10 +667,6 @@ public class SensorSimulatorView extends JPanel {
 		return getSafeDouble(mUpdateText);
 	}
 
-	public double getRefreshAfter() {
-		return getSafeDouble(mRefreshCountText);
-	}
-
 	public BarcodeReaderView getBarcodeReader() {
 		return (BarcodeReaderView) mSensors.get(SensorModel.POZ_BARCODE_READER);
 	}
@@ -682,11 +701,6 @@ public class SensorSimulatorView extends JPanel {
 
 	public long getRefreshCount() {
 		return (long) getSafeDouble(mRefreshCountText);
-	}
-
-	public void setRefreshSensorsLabel(double ms) {
-		mRefreshSensorsLabel.setText(Global.TWO_DECIMAL_FORMAT.format(ms)
-				+ " ms");
 	}
 
 	public void setOutput(String data) {
@@ -748,4 +762,14 @@ public class SensorSimulatorView extends JPanel {
 		return getSafeFloat(mPlaybackTime);
 	}
 
+	public void setRefreshRateMeter(RefreshRateMeter refreshRateMeter) {
+		mRefreshRateMeter = refreshRateMeter;
+		mRefreshRateMeter.addObserver(this);
+	}
+
+	// RefreshRateObserver methods /////////////////////////
+	@Override
+	public void notifyRefreshRateChange(double ms) {
+		mRefreshSensorsLabel.setText(Global.TWO_DECIMAL_FORMAT.format(ms) + " ms");
+	}
 }

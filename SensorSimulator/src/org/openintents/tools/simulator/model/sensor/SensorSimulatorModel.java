@@ -63,14 +63,9 @@ public class SensorSimulatorModel {
 	private int mSensorsPort;
 
 	private float mUpdate;
-	private long mRefreshCount;
-
-	@SuppressWarnings("unused")
-	private double mRefreshSensors;
 
 	// for measuring updates:
 	private int mUpdateSensorCount;
-	private long mUpdateSensorTime;
 
 	// sensors
 	private Map<SensorType, SensorModel> mSensors;
@@ -104,7 +99,6 @@ public class SensorSimulatorModel {
 
 		// Variables for timing:
 		mUpdateSensorCount = 0;
-		mUpdateSensorTime = System.currentTimeMillis();
 	}
 
 	public Map <SensorType, SensorModel> getSensors() {
@@ -123,28 +117,8 @@ public class SensorSimulatorModel {
 		return mDelay;
 	}
 
-	public int incUpdateSensorCount() {
-		return ++mUpdateSensorCount;
-	}
-
-	public long getRefreshCount() {
-		return mRefreshCount;
-	}
-
-	public long getUpdateSensorTime() {
-		return mUpdateSensorTime;
-	}
-
-	public void setUpdateSensorTime(long newVal) {
-		mUpdateSensorTime = newVal;
-	}
-
 	public void setUpdateSensorCount(int newVal) {
 		mUpdateSensorCount = newVal;
-	}
-
-	public void setRefreshSensors(double ms) {
-		mRefreshSensors = ms;
 	}
 
 	public void setDelay(int newdelay) {
