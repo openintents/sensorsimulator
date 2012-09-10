@@ -115,6 +115,17 @@ public class SensorSimulatorController implements WindowListener,
 	private AllSensorsController mSensorTabController;
 	private SensorsScenarioController mScenarioController;
 	private SensorServer mSensorServer;
+	
+	/**
+	 * Time of next update for reading user settings from widgets. The time is
+	 * compared to System.currentTimeMillis().
+	 */
+	private long mUserSettingsNextUpdate;
+	/**
+	 * Duration in milliseconds until user setting changes are read out.
+	 */
+	private long mUserSettingsDuration;
+
 
 	public SensorSimulatorController(final SensorSimulatorModel model,
 			final SensorSimulatorView view) {
@@ -194,6 +205,11 @@ public class SensorSimulatorController implements WindowListener,
 
 		mUpdateTimer.start();
 		
+		mUserSettingsDuration = 500; // Update every half second. This should be
+										// enough.
+		mUserSettingsNextUpdate = System.currentTimeMillis(); // First update is
+																// now.
+
 		// start server
 		mSensorServer = new SensorServer(this, model.getSimulationPort());
 	}
@@ -229,14 +245,13 @@ public class SensorSimulatorController implements WindowListener,
 
 				long currentTime = System.currentTimeMillis();
 				// From time to time we get the user settings:
-				if (currentTime >= mSensorSimulatorModel.getNextUpdate()) {
+				if (currentTime >= mUserSettingsNextUpdate) {
 					// Do update
-					mSensorSimulatorModel.addNextUpdate(mSensorSimulatorModel
-							.getDuration());
-					if (mSensorSimulatorModel.getNextUpdate() < currentTime) {
+					mUserSettingsNextUpdate += mUserSettingsDuration;
+					if (mUserSettingsNextUpdate < currentTime) {
 						// Skip time if we are already behind:
-						mSensorSimulatorModel.setNextUpdate(System
-								.currentTimeMillis());
+						mUserSettingsNextUpdate=System
+								.currentTimeMillis();
 					}
 					for (SensorController sensorCtrl : mSensors) {
 						sensorCtrl.updateUserSettings();
@@ -526,7 +541,7 @@ public class SensorSimulatorController implements WindowListener,
 	}
 	
 	/** 
-	 * Helper
+	 * Helper to convert String into SensorType Enum
 	 */
 	public static SensorType getSensorTypeFromString(String sensorName) {
 		if (sensorName.compareTo(SensorModel.ACCELEROMETER) == 0)

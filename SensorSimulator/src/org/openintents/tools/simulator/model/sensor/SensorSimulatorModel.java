@@ -72,17 +72,6 @@ public class SensorSimulatorModel {
 	private int mUpdateSensorCount;
 	private long mUpdateSensorTime;
 
-	/**
-	 * Duration in milliseconds until user setting changes are read out.
-	 */
-	private long mUserSettingsDuration;
-
-	/**
-	 * Time of next update for reading user settings from widgets. The time is
-	 * compared to System.currentTimeMillis().
-	 */
-	private long mUserSettingsNextUpdate;
-
 	// sensors
 	private Map<SensorType, SensorModel> mSensors;
 
@@ -112,11 +101,6 @@ public class SensorSimulatorModel {
 		mSensors.put(SensorType.GRAVITY, new GravityModel());
 		mSensors.put(SensorType.ROTATION, new RotationVectorModel());
 		mSensors.put(SensorType.GYROSCOPE, new GyroscopeModel());
-
-		mUserSettingsDuration = 500; // Update every half second. This should
-		// be enough.
-		mUserSettingsNextUpdate = System.currentTimeMillis(); // First update
-		// is now.
 
 		// Variables for timing:
 		mUpdateSensorCount = 0;
@@ -161,22 +145,6 @@ public class SensorSimulatorModel {
 
 	public void setRefreshSensors(double ms) {
 		mRefreshSensors = ms;
-	}
-
-	public long getNextUpdate() {
-		return mUserSettingsNextUpdate;
-	}
-
-	public double getDuration() {
-		return mUserSettingsDuration;
-	}
-
-	public void addNextUpdate(double duration) {
-		mUserSettingsNextUpdate += duration;
-	}
-
-	public void setNextUpdate(long ms) {
-		mUserSettingsNextUpdate = ms;
 	}
 
 	public void setDelay(int newdelay) {

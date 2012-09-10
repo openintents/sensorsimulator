@@ -44,6 +44,7 @@ public class SensorSimulator implements LoggPrintable {
 
 	public SensorsScenario scenario;
 	private SensorSimulatorMain mMain;
+	private int mSensorsPort = 8010;
 
 	public SensorSimulator(SensorSimulatorMain main) {
 		mMain = main;
@@ -68,6 +69,6 @@ public class SensorSimulator implements LoggPrintable {
 	}
 
 	public int getSimulationPort() {
-		return model.getSimulationPort();
+		return mSensorsPort;
 	}
 }
