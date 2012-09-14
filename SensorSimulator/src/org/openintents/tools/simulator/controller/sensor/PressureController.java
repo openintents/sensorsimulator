@@ -23,7 +23,6 @@ import javax.swing.event.ChangeListener;
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.PressureView;
@@ -75,7 +74,7 @@ public class PressureController extends SensorController {
 			// Add random component:
 			double random = pressureView.getRandom();
 			if (random > 0) {
-				pressureModel.addPressure(SensorModel.getRandom(random));
+				pressureModel.addPressure(getRandom(random));
 			}
 		} else {
 			setPressure(0);

@@ -16,7 +16,6 @@
 
 package org.openintents.tools.simulator.model.sensor.sensors;
 
-import java.util.Random;
 
 /**
  * SensorModel keeps the internal data model behind a Sensor, common to all
@@ -96,16 +95,11 @@ public abstract class SensorModel {
 	final static public String PLUSMINUS = "\u00b1";
 	final static public String SQUARED = "\u00b2"; // superscript two
 
-	private static Random mRandomGenerator = new Random();
-
 	/** Whether the sensor is enable or not. */
 	protected boolean mEnabled;
 
 	/** Whether to form an average at each update */
 	protected boolean mUpdateAverage;
-
-	// Random contribution
-	protected float mRandom;
 
 	/**
 	 * Duration (in milliseconds) between two updates. This is the inverse of
@@ -127,29 +121,30 @@ public abstract class SensorModel {
 	public SensorModel() {
 		mEnabled = false;
 
-		mUpdateDelay = 200;
+		mUpdateDelay = DELAY_MS_NORMAL;
 	}
 
 	/**
-	 * Returns the number of parameters of the sensor values.
-	 * 
-	 * @param out
+	 * @return the name of this sensor
 	 */
-	public abstract int getNumSensorValues();
-
-	/**
-	 * It is used in communication with the emulator, when sending sensor
-	 * values.
-	 * 
-	 * @param out
-	 */
-	public abstract String printSensorData();
+	public abstract String getName();
 
 	/**
 	 * 
 	 * @return The Standard Unit of measurement for sensors values.
 	 */
 	public abstract String getSI();
+
+	/**
+	 * Returns the number of parameters of the sensor values.
+	 */
+	public abstract int getNumSensorValues();
+
+	/**
+	 * It is used in communication with the emulator, when sending sensor
+	 * values.
+	 */
+	public abstract String printSensorData();
 
 	/**
 	 * Sets the next values for the sensor (if the time for next update was
@@ -169,28 +164,6 @@ public abstract class SensorModel {
 	 */
 	public void setEnabled(boolean enable) {
 		mEnabled = enable;
-	}
-
-	public double getRandom() {
-		return mRandom;
-	}
-
-	/**
-	 * @return the name of this sensor
-	 */
-	public abstract String getName();
-
-	/**
-	 * get a random number in the range -random to +random
-	 * 
-	 * @param random
-	 *            range of random number
-	 * @return random number
-	 */
-	public static double getRandom(double random) {
-		double val;
-		val = mRandomGenerator.nextDouble();
-		return (2 * val - 1) * random;
 	}
 
 	/**

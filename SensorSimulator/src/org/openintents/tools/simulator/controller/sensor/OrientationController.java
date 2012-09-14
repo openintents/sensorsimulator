@@ -22,7 +22,6 @@ import javax.swing.event.ChangeListener;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.DeviceView;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
@@ -83,9 +82,9 @@ public class OrientationController extends SensorController {
 			// Add random component:
 			double random = orientView.getRandom();
 			if (random > 0) {
-				orientModel.addYaw(SensorModel.getRandom(random));
-				orientModel.addPitch(SensorModel.getRandom(random));
-				orientModel.addRoll(SensorModel.getRandom(random));
+				orientModel.addYaw(getRandom(random));
+				orientModel.addPitch(getRandom(random));
+				orientModel.addRoll(getRandom(random));
 			}
 		}
 	}

@@ -330,7 +330,7 @@ public abstract class SensorView extends JScrollPane {
 				BorderFactory.createMatteBorder(2, 0, 0, 0, Color.GRAY)));
 		GridBagConstraints layout = new GridBagConstraints();
 		mRandomText = new JTextField(5);
-		mRandomText.setText("" + mModel.getRandom());
+		mRandomText.setText("" + 0);
 		layout.gridx = 0;
 		resultPanel.add(mRandomText, layout);
 

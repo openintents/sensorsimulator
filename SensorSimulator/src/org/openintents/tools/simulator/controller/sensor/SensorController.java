@@ -18,12 +18,11 @@ package org.openintents.tools.simulator.controller.sensor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.PrintWriter;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.controller.RefreshRateMeter;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
@@ -45,6 +44,9 @@ public abstract class SensorController {
 
 	protected SensorModel mSensorModel;
 	protected SensorView mSensorView;
+	
+	// for creating random sensor values
+	private static Random mRandomGenerator = new Random();
 
 	// if the connection with the emulator has started
 	private JPanel mSensorsButtons;
@@ -145,5 +147,18 @@ public abstract class SensorController {
 
 	public String getName() {
 		return mSensorModel.getName();
+	}
+	
+	/**
+	 * Helper to get a random number in the range -random to +random.
+	 * 
+	 * @param random
+	 *            range of random number
+	 * @return random number
+	 */
+	public static double getRandom(double random) {
+		double val;
+		val = mRandomGenerator.nextDouble();
+		return (2 * val - 1) * random;
 	}
 }

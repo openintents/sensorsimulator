@@ -23,7 +23,6 @@ import javax.swing.event.ChangeListener;
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.LightView;
@@ -73,7 +72,7 @@ public class LightController extends SensorController {
 			// Add random component:
 			double random = lightView.getRandom();
 			if (random > 0) {
-				lightModel.addLight(SensorModel.getRandom(random));
+				lightModel.addLight(getRandom(random));
 			}
 		} else {
 			setLight(0);

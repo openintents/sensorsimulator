@@ -19,7 +19,6 @@ package org.openintents.tools.simulator.controller.sensor;
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.ProximityModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.ProximityView;
@@ -50,7 +49,7 @@ public class ProximityController extends SensorController {
 			// Add random component:
 			double random = proximityView.getRandom();
 			if (random > 0) {
-				proximityModel.addProximity(SensorModel.getRandom(random));
+				proximityModel.addProximity(getRandom(random));
 			}
 		} else {
 			proximityModel.setProximity(0);

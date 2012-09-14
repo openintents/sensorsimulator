@@ -17,9 +17,8 @@
 package org.openintents.tools.simulator.controller.sensor;
 
 import org.openintents.tools.simulator.Global;
-import org.openintents.tools.simulator.model.sensor.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensor.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
@@ -55,9 +54,9 @@ public class RotationVectorController extends SensorController {
 			// Add random component:
 			double random = rotationView.getRandom();
 			if (random > 0) {
-				rotationModel.addRotationVector(SensorModel.getRandom(random),
-						SensorModel.getRandom(random),
-						SensorModel.getRandom(random));
+				rotationModel.addRotationVector(getRandom(random),
+						getRandom(random),
+						getRandom(random));
 			}
 		} else {
 			rotationModel.setRotationVector(0, 0, 0);

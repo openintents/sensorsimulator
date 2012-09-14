@@ -19,7 +19,6 @@ package org.openintents.tools.simulator.controller.sensor;
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
@@ -57,9 +56,9 @@ public class MagneticFieldController extends SensorController {
 			// Add random component:
 			double random = magView.getRandom();
 			if (random > 0) {
-				magneticnorth += SensorModel.getRandom(random);
-				magneticeast += SensorModel.getRandom(random);
-				magneticvertical += SensorModel.getRandom(random);
+				magneticnorth += getRandom(random);
+				magneticeast += getRandom(random);
+				magneticvertical += getRandom(random);
 			}
 			magModel.setNorth(magneticnorth);
 			magModel.setEast(magneticeast);

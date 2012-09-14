@@ -22,7 +22,6 @@ import javax.swing.event.ChangeListener;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
@@ -74,7 +73,7 @@ public class TemperatureController extends SensorController {
 			// Add random component:
 			double random = tempView.getRandom();
 			if (random > 0) {
-				tempModel.addTemp(SensorModel.getRandom(random));
+				tempModel.addTemp(getRandom(random));
 			}
 		} else {
 			setTemperature(0);

@@ -19,7 +19,6 @@ package org.openintents.tools.simulator.controller.sensor;
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensor.sensors.GravityModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
@@ -56,9 +55,9 @@ public class GravityController extends SensorController {
 			// Add random component:
 			double random = gravityView.getRandom();
 			if (random > 0) {
-				gravityModel.addGravity(SensorModel.getRandom(random),
-						SensorModel.getRandom(random),
-						SensorModel.getRandom(random));
+				gravityModel.addGravity(getRandom(random),
+						getRandom(random),
+						getRandom(random));
 			}
 		} else {
 			gravityModel.setGravity(0, 0, 0);

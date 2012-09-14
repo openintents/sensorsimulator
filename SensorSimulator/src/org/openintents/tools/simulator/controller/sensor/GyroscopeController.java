@@ -17,9 +17,8 @@
 package org.openintents.tools.simulator.controller.sensor;
 
 import org.openintents.tools.simulator.Global;
-import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.GyroscopeModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.GyroscopeView;
@@ -51,7 +50,7 @@ public class GyroscopeController extends SensorController {
 			// Add random component:
 			double random = gyroscopeView.getRandom();
 			if (random > 0) {
-				gyroscopeModel.addRandom(SensorModel.getRandom(random));
+				gyroscopeModel.addRandom(getRandom(random));
 			}
 		} else {
 			gyroscopeModel.setGyroscope(0, 0, 0);
