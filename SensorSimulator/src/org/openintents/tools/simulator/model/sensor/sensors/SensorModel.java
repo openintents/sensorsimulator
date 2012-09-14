@@ -16,11 +16,7 @@
 
 package org.openintents.tools.simulator.model.sensor.sensors;
 
-import java.awt.Color;
-import java.io.PrintWriter;
 import java.util.Random;
-
-import javax.swing.JTextField;
 
 /**
  * SensorModel keeps the internal data model behind a Sensor, common to all
@@ -106,8 +102,8 @@ public abstract class SensorModel {
 	protected boolean mEnabled;
 
 	// Simulation update
-	protected int mDefaultUpdateDelay;
-	protected int mCurrentUpdateDelay;
+	public static final int DEFAULT_UPDATE_DELAY = 200;
+//	protected int mCurrentUpdateDelay;
 	/** Whether to form an average at each update */
 	protected boolean mUpdateAverage;
 
@@ -122,7 +118,7 @@ public abstract class SensorModel {
 	 * Duration (in milliseconds) between two updates. This is the inverse of
 	 * the update rate.
 	 */
-	protected long mUpdateDuration;
+	protected long mUpdateDelay;
 	/**
 	 * Whether to form the average over the last duration when reading out
 	 * sensors. Alternative is to just take the current value.
@@ -140,7 +136,7 @@ public abstract class SensorModel {
 
 		mUpdateEmulatorCount = 0;
 		mUpdateEmulatorTime = System.currentTimeMillis();
-		setUpdateRates();
+		mUpdateDelay = 200;
 	}
 
 	/**
@@ -178,18 +174,6 @@ public abstract class SensorModel {
 		mEnabled = enable;
 	}
 
-	public int getDefaultUpdateRate() {
-		return mDefaultUpdateDelay;
-	}
-
-	public int getCurrentUpdateRate() {
-		return mCurrentUpdateDelay;
-	}
-
-	public boolean updateAverage() {
-		return mUpdateAverage;
-	}
-
 	public double getRandom() {
 		return mRandom;
 	}
@@ -215,82 +199,8 @@ public abstract class SensorModel {
 		return (2 * val - 1) * random;
 	}
 
-	public double getSafeDouble(JTextField textfield) {
-		return getSafeDouble(textfield, 0);
-	}
-
-	/**
-	 * Safely retries the double value of a text field. If the value is not a
-	 * valid number, 0 is returned, and the field is marked red.
-	 * 
-	 * @param textfield
-	 *            TextField from which the value should be read.
-	 * @param defaultValue
-	 *            default value if input field is invalid.
-	 * @return double value.
-	 */
-	public double getSafeDouble(JTextField textfield, double defaultValue) {
-		double value = defaultValue;
-
-		try {
-			value = Double.parseDouble(textfield.getText());
-			textfield.setBackground(Color.WHITE);
-		} catch (NumberFormatException e) {
-			// wrong user input in box - take default values.
-			value = defaultValue;
-			textfield.setBackground(Color.RED);
-		}
-		return value;
-	}
-
-	/**
-	 * Safely retries the a list of double values of a text field. If the list
-	 * contains errors, null is returned, and the field is marked red.
-	 * 
-	 * @param textfield
-	 *            TextField from which the value should be read.
-	 * @return list double[] with values or null.
-	 */
-	public static double[] getSafeDoubleList(JTextField textfield) {
-		double[] valuelist = null;
-		try {
-			String t = textfield.getText();
-			// Now we have to split this into pieces
-			String[] tlist = t.split(",");
-			int len = tlist.length;
-			if (len > 0) {
-				valuelist = new double[len];
-				for (int i = 0; i < len; i++) {
-					valuelist[i] = Double.parseDouble(tlist[i]);
-				}
-			} else {
-				valuelist = null;
-			}
-			textfield.setBackground(Color.WHITE);
-		} catch (NumberFormatException e) {
-			// wrong user input in box - take default values.
-			valuelist = null;
-			textfield.setBackground(Color.RED);
-		}
-		return valuelist;
-	}
-
-	public void enableSensor(PrintWriter out, boolean enable) {
-		out.println("" + isEnabled());
-		setEnabled(enable);
-	}
-
-	public void setAvgUpdate(boolean b) {
-		mUpdateAverage = b;
-	}
-
-	public void setUpdateDuration(long value) {
-		mUpdateDuration = value;
-	}
-
 	public long incUpdateEmulatorCount() {
 		return ++mUpdateEmulatorCount;
-
 	}
 
 	public long getEmulatorTime() {
@@ -305,20 +215,11 @@ public abstract class SensorModel {
 		mUpdateEmulatorCount = value;
 	}
 
-	public long getUpdateDuration() {
-		return mUpdateDuration;
-	}
-
 	public void setCurrentUpdateDelay(int updateDelay) {
-		mCurrentUpdateDelay = updateDelay;
+		mUpdateDelay = updateDelay;
 	}
 
 	public void resetCurrentUpdateDelay() {
-		mCurrentUpdateDelay = getDefaultUpdateRate();
-	}
-
-	public void setUpdateRates() {
-		mDefaultUpdateDelay = 200;
-		mCurrentUpdateDelay = 200;
+		mUpdateDelay = DEFAULT_UPDATE_DELAY;
 	}
 }

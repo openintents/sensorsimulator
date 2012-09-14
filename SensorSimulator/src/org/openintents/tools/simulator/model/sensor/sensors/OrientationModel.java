@@ -68,7 +68,7 @@ public class OrientationModel extends SensorModel {
 
 		// Update
 		if (currentTime >= mNextUpdate) {
-			mNextUpdate += mUpdateDuration;
+			mNextUpdate += mUpdateDelay;
 			if (mNextUpdate < currentTime) {
 				// Don't lag too much behind.
 				// If we are too slow, then we are too slow.

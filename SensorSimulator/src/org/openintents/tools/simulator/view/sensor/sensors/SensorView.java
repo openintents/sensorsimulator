@@ -344,20 +344,10 @@ public abstract class SensorView extends JScrollPane {
 		setEnabled(enable);
 	}
 
-	public void getSensorUpdateRate(PrintWriter out) {
-		if (isSensorEnabled()) {
-			double updatesPerSecond = mModel.getCurrentUpdateRate();
-			out.println("" + updatesPerSecond);
-		} else {
-			// This sensor is currently disabled
-			out.println("throw IllegalStateException");
-		}
-	}
-
 	public void unsetSensorUpdateRate(PrintWriter out) {
 		if (isSensorEnabled()) {
 			out.println("OK");
-			mCurrentUpdateRateText.setText("" + mModel.getDefaultUpdateRate());
+			mCurrentUpdateRateText.setText("" + SensorModel.DEFAULT_UPDATE_DELAY);
 		} else {
 			// This sensor is currently disabled
 			out.println("throw IllegalStateException");

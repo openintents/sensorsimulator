@@ -257,9 +257,6 @@ public class SensorSimulatorController implements WindowListener,
 						mUserSettingsNextUpdate=System
 								.currentTimeMillis();
 					}
-					for (SensorController sensorCtrl : mSensors) {
-						sensorCtrl.updateUserSettings();
-					}
 				}
 			}
 				break;
@@ -510,7 +507,7 @@ public class SensorSimulatorController implements WindowListener,
 			SensorController sensorCtrl = getSensorCtrlFromName(sensorName);
 
 			sensorModel.resetCurrentUpdateDelay();
-			sensorCtrl.setCurrentUpdateRate(sensorModel.getDefaultUpdateRate());
+			sensorCtrl.setCurrentUpdateRate(SensorModel.DEFAULT_UPDATE_DELAY);
 		} else {
 			throw new IllegalArgumentException();
 		}

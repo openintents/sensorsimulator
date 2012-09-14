@@ -78,16 +78,6 @@ public abstract class SensorController {
 	 */
 	protected abstract String getString();
 
-	public void updateUserSettings() {
-		mSensorModel.setAvgUpdate(mSensorView.getUpdateAvg().isSelected());
-		int rate = mSensorModel.getCurrentUpdateRate();
-		if (rate != 0) {
-			mSensorModel.setUpdateDuration(rate);
-		} else {
-			mSensorModel.setUpdateDuration(0);
-		}
-	}
-
 	public String showSensorData() {
 		if (!mSensorModel.isEnabled())
 			return "";
@@ -99,6 +89,8 @@ public abstract class SensorController {
 	}
 
 	public void updateEmulatorRefresh(long maxCount) {
+//		mSensorModel.updateEmulatorRefresh(maxCount);
+		
 		long updateEmulatorCount = mSensorModel.incUpdateEmulatorCount();
 		long updateEmulatorTime = mSensorModel.getEmulatorTime();
 
