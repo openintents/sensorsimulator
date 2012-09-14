@@ -146,8 +146,4 @@ public abstract class SensorController {
 	public String getName() {
 		return mSensorModel.getName();
 	}
-
-	public int getType() {
-		return mSensorModel.getType();
-	}
 }

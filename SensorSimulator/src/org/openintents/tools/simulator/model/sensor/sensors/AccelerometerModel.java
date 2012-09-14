@@ -395,9 +395,4 @@ public class AccelerometerModel extends SensorModel {
 		mAccelZ = newAcc[2];
 
 	}
-
-	@Override
-	public int getType() {
-		return TYPE_ACCELEROMETER;
-	}
 }

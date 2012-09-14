@@ -163,9 +163,4 @@ public class RotationVectorModel extends SensorModel {
 		mRotationYValue = newValue[1];
 		mRotationZValue = newValue[2];
 	}
-
-	@Override
-	public int getType() {
-		return TYPE_ROTATION_VECTOR;
-	}
 }

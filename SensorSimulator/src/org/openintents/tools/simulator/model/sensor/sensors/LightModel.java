@@ -105,9 +105,4 @@ public class LightModel extends SensorModel {
 	public double getReadLight() {
 		return mReadLight;
 	}
-
-	@Override
-	public int getType() {
-		return TYPE_LIGHT;
-	}
 }

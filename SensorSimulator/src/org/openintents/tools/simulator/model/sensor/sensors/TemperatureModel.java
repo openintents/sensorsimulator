@@ -111,9 +111,4 @@ public class TemperatureModel extends SensorModel {
 		// number of data following + data
 		return "1\n" + mReadTemperature;
 	}
-
-	@Override
-	public int getType() {
-		return TYPE_TEMPERATURE;
-	}
 }

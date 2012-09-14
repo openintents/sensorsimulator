@@ -50,11 +50,6 @@ public class BarcodeReaderModel extends SensorModel {
 	}
 
 	@Override
-	public String getAverageName() {
-		return null;
-	}
-
-	@Override
 	public int getNumSensorValues() {
 		return 1;
 	}
@@ -80,10 +75,5 @@ public class BarcodeReaderModel extends SensorModel {
 
 	public void setBarcode(String value) {
 		barcodeValue = value;
-	}
-
-	@Override
-	public int getType() {
-		return TYPE_BARCODE;
 	}
 }

@@ -196,9 +196,4 @@ public class OrientationModel extends SensorModel {
 		mPitch = (int) newValue[1];
 		mRoll = (int) newValue[2];
 	}
-
-	@Override
-	public int getType() {
-		return TYPE_ORIENTATION;
-	}
 }

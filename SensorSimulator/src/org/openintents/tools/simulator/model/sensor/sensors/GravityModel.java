@@ -174,9 +174,4 @@ public class GravityModel extends SensorModel {
 		mGravityY = vec[1];
 		mGravityZ = vec[2];
 	}
-
-	@Override
-	public int getType() {
-		return TYPE_GRAVITY;
-	}
 }

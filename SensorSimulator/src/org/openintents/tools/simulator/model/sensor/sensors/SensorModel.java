@@ -157,10 +157,16 @@ public abstract class SensorModel {
 	 */
 	public abstract void updateSensorReadoutValues();
 
+	/**
+	 * @return whether this particular sensor is enabled or not
+	 */
 	public boolean isEnabled() {
 		return mEnabled;
 	}
 
+	/**
+	 * Enable or disable this particular sensor.
+	 */
 	public void setEnabled(boolean enable) {
 		mEnabled = enable;
 	}
@@ -169,13 +175,10 @@ public abstract class SensorModel {
 		return mRandom;
 	}
 
+	/**
+	 * @return the name of this sensor
+	 */
 	public abstract String getName();
-
-	public abstract int getType();
-
-	public String getAverageName() {
-		return "average " + getName();
-	}
 
 	/**
 	 * get a random number in the range -random to +random

@@ -229,9 +229,4 @@ public class GyroscopeModel extends SensorModel {
 		mInstantSpeedYaw = newValue[1];
 		mInstantSpeedRoll = newValue[2];
 	}
-
-	@Override
-	public int getType() {
-		return TYPE_GYROSCOPE;
-	}
 }

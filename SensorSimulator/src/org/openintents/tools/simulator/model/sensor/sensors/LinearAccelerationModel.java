@@ -270,9 +270,4 @@ public class LinearAccelerationModel extends SensorModel {
 		mAccelY = newValue[1];
 		mAccelZ = newValue[2];
 	}
-
-	@Override
-	public int getType() {
-		return TYPE_LINEAR_ACCELERATION;
-	}
 }
