@@ -16,7 +16,6 @@
 
 package org.openintents.tools.simulator.model.sensor.sensors;
 
-import java.io.PrintWriter;
 import java.util.Random;
 
 import org.openintents.tools.simulator.model.telnet.Vector;
