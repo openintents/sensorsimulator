@@ -41,6 +41,8 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -783,16 +785,24 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 		return getSafeFloat(mPlaybackTime);
 	}
 
-	public void setRefreshRateMeter(RefreshRateMeter refreshRateMeter) {
-		mRefreshRateMeter = refreshRateMeter;
-		mRefreshRateMeter.addObserver(this);
-	}
-	
 	public void setSensorSimulatorController (SensorSimulatorController sensorSimulatorController) {
 		mSensorSimulatorController = sensorSimulatorController;
 	}
 
-	// RefreshRateObserver methods /////////////////////////
+	// RefreshRateObserver stuff /////////////////////////
+	List<RefreshRateMeter> mRefreshRateMeters = new LinkedList<RefreshRateMeter>();
+	
+	/**
+	 * Adds a RefreshRateMeter to the internal list, so that a change in the
+	 * count value will change the maxCount Value in the RefreshRateMeter.
+	 * 
+	 * @param mReadRateMeter
+	 *            the RefreshRateMeter to add
+	 */
+	public void addRefreshRateMeter(RefreshRateMeter mReadRateMeter) {
+		mRefreshRateMeters.add(mReadRateMeter);
+	}
+	
 	@Override
 	public void notifyRefreshRateChange(double ms) {
 		mRefreshSensorsLabel.setText(Global.TWO_DECIMAL_FORMAT.format(ms) + " ms");

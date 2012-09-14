@@ -25,6 +25,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.PressureView;
 
 /**
@@ -38,8 +39,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.PressureView;
  */
 public class PressureController extends SensorController {
 
-	public PressureController(PressureModel model, PressureView view) {
-		super(model, view);
+	public PressureController(PressureModel model, PressureView view, SensorSimulatorView sensorSimulatorView) {
+		super(model, view, sensorSimulatorView);
 		registerPressureSlider(view);
 	}
 

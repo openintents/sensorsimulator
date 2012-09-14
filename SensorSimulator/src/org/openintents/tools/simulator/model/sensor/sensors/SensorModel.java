@@ -101,18 +101,11 @@ public abstract class SensorModel {
 	/** Whether the sensor is enable or not. */
 	protected boolean mEnabled;
 
-	// Simulation update
-	public static final int DEFAULT_UPDATE_DELAY = 200;
-//	protected int mCurrentUpdateDelay;
 	/** Whether to form an average at each update */
 	protected boolean mUpdateAverage;
 
 	// Random contribution
 	protected float mRandom;
-
-	/** for measuring updates: */
-	protected int mUpdateEmulatorCount;
-	protected long mUpdateEmulatorTime;
 
 	/**
 	 * Duration (in milliseconds) between two updates. This is the inverse of
@@ -134,8 +127,6 @@ public abstract class SensorModel {
 	public SensorModel() {
 		mEnabled = false;
 
-		mUpdateEmulatorCount = 0;
-		mUpdateEmulatorTime = System.currentTimeMillis();
 		mUpdateDelay = 200;
 	}
 
@@ -199,27 +190,20 @@ public abstract class SensorModel {
 		return (2 * val - 1) * random;
 	}
 
-	public long incUpdateEmulatorCount() {
-		return ++mUpdateEmulatorCount;
-	}
-
-	public long getEmulatorTime() {
-		return mUpdateEmulatorTime;
-	}
-
-	public void setUpdateEmulatorTime(long newtime) {
-		mUpdateEmulatorTime = newtime;
-	}
-
-	public void setUpdateEmulatorCount(int value) {
-		mUpdateEmulatorCount = value;
-	}
-
+	/**
+	 * Sets the delay between two sensor updates.
+	 * 
+	 * @param updateDelay
+	 *            the delay between two sensor updates
+	 */
 	public void setCurrentUpdateDelay(int updateDelay) {
 		mUpdateDelay = updateDelay;
 	}
 
+	/**
+	 * Sets the sensor update delay to the DELAY_MS_NORMAL delay
+	 */
 	public void resetCurrentUpdateDelay() {
-		mUpdateDelay = DEFAULT_UPDATE_DELAY;
+		mUpdateDelay = DELAY_MS_NORMAL;
 	}
 }

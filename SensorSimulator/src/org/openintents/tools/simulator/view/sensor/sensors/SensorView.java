@@ -38,6 +38,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.Global;
+import org.openintents.tools.simulator.controller.RefreshRateObserver;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.util.HtmlTextPane;
 import org.openintents.tools.simulator.view.gui.util.SensorButton;
@@ -347,7 +348,7 @@ public abstract class SensorView extends JScrollPane {
 	public void unsetSensorUpdateRate(PrintWriter out) {
 		if (isSensorEnabled()) {
 			out.println("OK");
-			mCurrentUpdateRateText.setText("" + SensorModel.DEFAULT_UPDATE_DELAY);
+			mCurrentUpdateRateText.setText("" + SensorModel.DELAY_MS_NORMAL);
 		} else {
 			// This sensor is currently disabled
 			out.println("throw IllegalStateException");
@@ -511,5 +512,18 @@ public abstract class SensorView extends JScrollPane {
 
 	public void setButton(SensorButton sensorButton) {
 		mSensorButton = sensorButton;
+	}
+
+	// Read Rate Meter Observer //////////////////////////////
+	RefreshRateObserver mReadRateMeterObserver = new RefreshRateObserver() {
+
+		@Override
+		public void notifyRefreshRateChange(double ms) {
+			setRefreshEmulatorTime(Global.TWO_DECIMAL_FORMAT.format(ms) + " ms");
+		}
+	};
+
+	public RefreshRateObserver getReadRateMeterObserver() {
+		return mReadRateMeterObserver;
 	}
 }

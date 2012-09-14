@@ -21,6 +21,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.GyroscopeModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.GyroscopeView;
 
 /**
@@ -33,8 +34,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.GyroscopeView;
  */
 public class GyroscopeController extends SensorController {
 
-	public GyroscopeController(GyroscopeModel model, GyroscopeView view) {
-		super(model, view);
+	public GyroscopeController(GyroscopeModel model, GyroscopeView view, SensorSimulatorView sensorSimulatorView) {
+		super(model, view, sensorSimulatorView);
 	}
 
 	@Override

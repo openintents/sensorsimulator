@@ -19,6 +19,7 @@ package org.openintents.tools.simulator.controller.sensor;
 import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.BarcodeReaderView;
 
 /**
@@ -31,8 +32,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.BarcodeReaderView;
 public class BarcodeReaderController extends SensorController {
 
 	public BarcodeReaderController(BarcodeReaderModel model,
-			BarcodeReaderView view) {
-		super(model, view);
+			BarcodeReaderView view, SensorSimulatorView sensorSimulatorView) {
+		super(model, view, sensorSimulatorView);
 	}
 
 	@Override

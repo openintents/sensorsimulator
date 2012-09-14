@@ -22,6 +22,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
+import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.GravityView;
 
 /**
@@ -34,8 +35,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.GravityView;
  */
 public class GravityController extends SensorController {
 
-	public GravityController(final GravityModel model, GravityView view) {
-		super(model, view);
+	public GravityController(final GravityModel model, GravityView view, SensorSimulatorView sensorSimulatorView) {
+		super(model, view, sensorSimulatorView);
 	}
 
 	@Override

@@ -25,6 +25,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.TemperatureView;
 
 /**
@@ -37,8 +38,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.TemperatureView;
  */
 public class TemperatureController extends SensorController {
 
-	public TemperatureController(TemperatureModel model, TemperatureView view) {
-		super(model, view);
+	public TemperatureController(TemperatureModel model, TemperatureView view, SensorSimulatorView sensorSimulatorView) {
+		super(model, view, sensorSimulatorView);
 		registerTemperatureSlider(view);
 	}
 

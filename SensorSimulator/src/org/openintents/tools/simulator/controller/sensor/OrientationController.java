@@ -25,6 +25,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.DeviceView;
+import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.OrientationView;
 
 /**
@@ -38,8 +39,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.OrientationView;
 public class OrientationController extends SensorController {
 
 	public OrientationController(OrientationModel model, OrientationView view,
-			DeviceView deviceView) {
-		super(model, view);
+			DeviceView deviceView, SensorSimulatorView sensorSimulatorView) {
+		super(model, view, sensorSimulatorView);
 		registerSliders(deviceView);
 	}
 

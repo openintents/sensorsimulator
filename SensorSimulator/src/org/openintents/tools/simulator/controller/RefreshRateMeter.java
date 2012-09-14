@@ -57,5 +57,4 @@ public class RefreshRateMeter {
 	public void setMaxCount(long maxCount) {
 		mMaxCount = maxCount;
 	}
-
 }

@@ -22,6 +22,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
+import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.MagneticFieldView;
 
 /**
@@ -35,8 +36,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.MagneticFieldView;
 public class MagneticFieldController extends SensorController {
 
 	public MagneticFieldController(MagneticFieldModel model,
-			MagneticFieldView view) {
-		super(model, view);
+			MagneticFieldView view, SensorSimulatorView sensorSimulatorView) {
+		super(model, view, sensorSimulatorView);
 	}
 
 	@Override

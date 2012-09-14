@@ -25,6 +25,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.LightView;
 
 /**
@@ -35,8 +36,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.LightView;
  */
 public class LightController extends SensorController {
 
-	public LightController(LightModel model, LightView view) {
-		super(model, view);
+	public LightController(LightModel model, LightView view, SensorSimulatorView sensorSimulatorView) {
+		super(model, view, sensorSimulatorView);
 		registerLightSlider(view);
 	}
 

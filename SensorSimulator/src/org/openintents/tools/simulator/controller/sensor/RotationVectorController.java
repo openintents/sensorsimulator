@@ -22,6 +22,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
+import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.RotationVectorView;
 
 /**
@@ -34,8 +35,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.RotationVectorView;
 public class RotationVectorController extends SensorController {
 
 	public RotationVectorController(final RotationVectorModel model,
-			RotationVectorView view) {
-		super(model, view);
+			RotationVectorView view, SensorSimulatorView sensorSimulatorView) {
+		super(model, view, sensorSimulatorView);
 	}
 
 	@Override

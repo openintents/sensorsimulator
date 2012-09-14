@@ -21,6 +21,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationMo
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
+import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.LinearAccelerationView;
 
 /**
@@ -35,8 +36,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.LinearAccelerationVie
 public class LinearAccelerationController extends SensorController {
 
 	public LinearAccelerationController(final LinearAccelerationModel model,
-			LinearAccelerationView view) {
-		super(model, view);
+			LinearAccelerationView view, SensorSimulatorView sensorSimulatorView) {
+		super(model, view, sensorSimulatorView);
 	}
 
 	@Override

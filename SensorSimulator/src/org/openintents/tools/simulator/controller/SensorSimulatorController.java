@@ -132,13 +132,13 @@ public class SensorSimulatorController implements WindowListener,
 	private long mUserSettingsDuration;
 	private RefreshRateMeter mRefreshRateMeter;
 
-
 	public SensorSimulatorController(final SensorSimulatorModel model,
 			final SensorSimulatorView view, SensorsScenario scenario) {
 		mSensorSimulatorModel = model;
 		mSensorSimulatorView = view;
 		mRefreshRateMeter = new RefreshRateMeter(view.getRefreshCount());
-		view.setRefreshRateMeter(mRefreshRateMeter);
+		view.addRefreshRateMeter(mRefreshRateMeter);
+		mRefreshRateMeter.addObserver(view);
 		view.setSensorSimulatorController(this);
 		
 		mSensors = new Vector<SensorController>();
@@ -147,42 +147,43 @@ public class SensorSimulatorController implements WindowListener,
 		mDeviceController = new DeviceController(mSensors, deviceView);
 		mScenarioController = scenario.controller;
 
+		long maxCount = mSensorSimulatorView.getRefreshCount();
 		// sensors
 		mSensors.add(new AccelerometerController((AccelerometerModel) model
 				.getSensorModelFromName(SensorType.ACCELEROMETER), view
-				.getAccelerometer()));
+				.getAccelerometer(), mSensorSimulatorView));
 		mSensors.add(new MagneticFieldController((MagneticFieldModel) model
 				.getSensorModelFromName(SensorType.MAGNETIC_FIELD), view
-				.getMagneticField()));
+				.getMagneticField(), mSensorSimulatorView));
 		mSensors.add(new OrientationController((OrientationModel) model
 				.getSensorModelFromName(SensorType.ORIENTATION), view
-				.getOrientation(), deviceView));
+				.getOrientation(), deviceView, mSensorSimulatorView));
 		mSensors.add(new TemperatureController((TemperatureModel) model
 				.getSensorModelFromName(SensorType.TEMPERATURE), view
-				.getTemperature()));
+				.getTemperature(), mSensorSimulatorView));
 		mSensors.add(new BarcodeReaderController((BarcodeReaderModel) model
 				.getSensorModelFromName(SensorType.BARCODE_READER), view
-				.getBarcodeReader()));
+				.getBarcodeReader(), mSensorSimulatorView));
 		mSensors.add(new LightController((LightModel) model
-				.getSensorModelFromName(SensorType.LIGHT), view.getLight()));
+				.getSensorModelFromName(SensorType.LIGHT), view.getLight(), mSensorSimulatorView));
 		mSensors.add(new ProximityController((ProximityModel) model
 				.getSensorModelFromName(SensorType.PROXIMITY), view
-				.getProximity()));
+				.getProximity(), mSensorSimulatorView));
 		mSensors.add(new PressureController((PressureModel) model
 				.getSensorModelFromName(SensorType.PRESSURE), view
-				.getPressure()));
+				.getPressure(), mSensorSimulatorView));
 		mSensors.add(new LinearAccelerationController(
 				(LinearAccelerationModel) model
 						.getSensorModelFromName(SensorType.LINEAR_ACCELERATION),
-				view.getLinearAceleration()));
+				view.getLinearAceleration(), mSensorSimulatorView));
 		mSensors.add(new GravityController((GravityModel) model
-				.getSensorModelFromName(SensorType.GRAVITY), view.getGravity()));
+				.getSensorModelFromName(SensorType.GRAVITY), view.getGravity(), mSensorSimulatorView));
 		mSensors.add(new RotationVectorController((RotationVectorModel) model
 				.getSensorModelFromName(SensorType.ROTATION), view
-				.getRotationVector()));
+				.getRotationVector(), mSensorSimulatorView));
 		mSensors.add(new GyroscopeController((GyroscopeModel) model
 				.getSensorModelFromName(SensorType.GYROSCOPE), view
-				.getGyroscope()));
+				.getGyroscope(), mSensorSimulatorView));
 
 		mSensorTabController = new AllSensorsController(
 				view.getAllSensorsView(), mSensors);
@@ -507,7 +508,7 @@ public class SensorSimulatorController implements WindowListener,
 			SensorController sensorCtrl = getSensorCtrlFromName(sensorName);
 
 			sensorModel.resetCurrentUpdateDelay();
-			sensorCtrl.setCurrentUpdateRate(SensorModel.DEFAULT_UPDATE_DELAY);
+			sensorCtrl.setCurrentUpdateRate(SensorModel.DELAY_MS_NORMAL);
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -520,8 +521,7 @@ public class SensorSimulatorController implements WindowListener,
 		SensorModel sensorModel = mSensorSimulatorModel
 				.getSensorModelFromName(sensorType);
 		if (sensorModel.isEnabled()) {
-			getSensorCtrlFromName(sensorName).updateEmulatorRefresh(
-					mSensorSimulatorView.getRefreshCount());
+			getSensorCtrlFromName(sensorName).countSensorRead();
 			return sensorModel.printSensorData();
 		} else {
 			throw new IllegalStateException();

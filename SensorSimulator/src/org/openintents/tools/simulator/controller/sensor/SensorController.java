@@ -24,10 +24,12 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.openintents.tools.simulator.Global;
+import org.openintents.tools.simulator.controller.RefreshRateMeter;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.gui.util.SensorButton;
+import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 
 /**
@@ -47,8 +49,9 @@ public abstract class SensorController {
 	// if the connection with the emulator has started
 	private JPanel mSensorsButtons;
 	private JButton mEnableBtn;
+	private RefreshRateMeter mReadRateMeter;
 
-	public SensorController(final SensorModel model, final SensorView view) {
+	public SensorController(final SensorModel model, final SensorView view, SensorSimulatorView sensorSimulatorView) {
 		mSensorModel = model;
 		mSensorView = view;
 		JButton helpBtn = view.getHelpButton();
@@ -58,6 +61,10 @@ public abstract class SensorController {
 				view.getHelpWindow().setVisible(true);
 			}
 		});
+		
+		mReadRateMeter = new RefreshRateMeter(sensorSimulatorView.getRefreshCount());
+		mReadRateMeter.addObserver(mSensorView.getReadRateMeterObserver());
+		sensorSimulatorView.addRefreshRateMeter(mReadRateMeter);
 	}
 
 	/**
@@ -88,23 +95,8 @@ public abstract class SensorController {
 		return data.toString();
 	}
 
-	public void updateEmulatorRefresh(long maxCount) {
-//		mSensorModel.updateEmulatorRefresh(maxCount);
-		
-		long updateEmulatorCount = mSensorModel.incUpdateEmulatorCount();
-		long updateEmulatorTime = mSensorModel.getEmulatorTime();
-
-		if (maxCount >= 0 && updateEmulatorCount >= maxCount) {
-			long newtime = System.currentTimeMillis();
-			double ms = (double) (newtime - updateEmulatorTime)
-					/ ((double) maxCount);
-
-			mSensorView.setRefreshEmulatorTime(Global.TWO_DECIMAL_FORMAT
-					.format(ms) + " ms");
-
-			mSensorModel.setUpdateEmulatorCount(0);
-			mSensorModel.setUpdateEmulatorTime(newtime);
-		}
+	public void countSensorRead() {
+		mReadRateMeter.count();
 	}
 
 	public void setCurrentUpdateRate(int delay) {

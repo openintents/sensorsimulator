@@ -27,6 +27,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.view.sensor.DeviceView;
+import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
 
 /**
@@ -42,8 +43,8 @@ public class AccelerometerController extends SensorController {
 	private WiiAccelerometerController wiiAccelerometerCtrl;
 
 	public AccelerometerController(final AccelerometerModel model,
-			AccelerometerView view) {
-		super(model, view);
+			AccelerometerView view, SensorSimulatorView sensorSimulatorView) {
+		super(model, view, sensorSimulatorView);
 		wiiAccelerometerCtrl = new WiiAccelerometerController(
 				model.getRealDeviceBridgeAddon(),
 				view.getRealDeviceBridgeAddon());
