@@ -16,7 +16,6 @@
 
 package org.openintents.tools.simulator.model.sensor.sensors;
 
-import org.openintents.tools.simulator.model.telnet.Vector;
 
 /**
  * MagneticFieldModel keeps the internal data model behind MagneticField Sensor.
@@ -146,12 +145,6 @@ public class MagneticFieldModel extends SensorModel {
 
 	public void setNorth(double value) {
 		mNorth = value;
-	}
-
-	public void setCompass(Vector vec) {
-		mCompassX = vec.x;
-		mCompassY = vec.y;
-		mCompassZ = vec.z;
 	}
 
 	public void resetCompas() {

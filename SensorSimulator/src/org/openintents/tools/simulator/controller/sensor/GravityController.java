@@ -50,7 +50,7 @@ public class GravityController extends SensorController {
 			Vector gravityVec = new Vector(0, 0, g);
 			gravityVec.reverserollpitchyaw(orientation.getRoll(),
 					orientation.getPitch(), orientation.getYaw());
-			gravityModel.setGravity(gravityVec);
+			gravityModel.setGravity(new float[] {(float) gravityVec.x, (float) gravityVec.y, (float) gravityVec.z});
 
 			// Add random component:
 			double random = gravityView.getRandom();

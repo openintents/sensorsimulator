@@ -66,7 +66,7 @@ public class LinearAccelerationController extends SensorController {
 					* meterperpixel);
 			linearVec.reverserollpitchyaw(orientation.getRoll(),
 					orientation.getPitch(), orientation.getYaw());
-			linearAccelerationModel.setXYZ(linearVec);
+			linearAccelerationModel.setLinearAcceleration(new float[] { (float) linearVec.x, (float) linearVec.y, (float) linearVec.z });
 
 			// Add random component:
 			double random = linearAccelerationView.getRandom();

@@ -16,10 +16,7 @@
 
 package org.openintents.tools.simulator.model.sensor.sensors;
 
-import java.io.PrintWriter;
 import java.util.Random;
-
-import org.openintents.tools.simulator.model.telnet.Vector;
 
 /**
  * GyroscopeModel keeps the internal data model behind Gyroscope Sensor.
@@ -149,12 +146,6 @@ public class GyroscopeModel extends SensorModel {
 		mInstantSpeedPitch = 0;
 		mInstantSpeedYaw = 0;
 		mInstantSpeedRoll = 0;
-	}
-
-	public void setXYZ(Vector vec) {
-		mInstantSpeedPitch = vec.x;
-		mInstantSpeedYaw = vec.y;
-		mInstantSpeedRoll = vec.z;
 	}
 
 	public void refreshAngularSpeed(double dt, double crtPitch, double crtYaw,

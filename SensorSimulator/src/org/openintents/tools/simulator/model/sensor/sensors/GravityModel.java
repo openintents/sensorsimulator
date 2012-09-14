@@ -16,9 +16,6 @@
 
 package org.openintents.tools.simulator.model.sensor.sensors;
 
-import java.io.PrintWriter;
-
-import org.openintents.tools.simulator.model.telnet.Vector;
 
 /**
  * GravityModel keeps the internal data model behind Gravity Sensor.
@@ -153,12 +150,6 @@ public class GravityModel extends SensorModel {
 
 	public double getReadGravityZ() {
 		return mReadGravityZ;
-	}
-
-	public void setGravity(Vector vec) {
-		mGravityX = vec.x;
-		mGravityY = vec.y;
-		mGravityZ = vec.z;
 	}
 
 	public double getGravityConstant() {

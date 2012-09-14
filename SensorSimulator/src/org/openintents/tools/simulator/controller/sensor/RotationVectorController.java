@@ -49,7 +49,8 @@ public class RotationVectorController extends SensorController {
 
 			Vector rotationVec = new Vector(orientation.getPitch(),
 					orientation.getYaw(), orientation.getRoll());
-			rotationModel.setRotationVector(rotationVec);
+			rotationModel.setRotationVector(orientation.getPitch(),
+					orientation.getYaw(), orientation.getRoll());
 			rotationView.setRotationVector(rotationVec);
 			// Add random component:
 			double random = rotationView.getRandom();

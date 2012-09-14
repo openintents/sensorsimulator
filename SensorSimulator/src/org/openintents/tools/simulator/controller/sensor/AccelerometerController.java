@@ -86,9 +86,9 @@ public class AccelerometerController extends SensorController {
 		if (accModel.isEnabled()) {
 			if (realDeviceBridgeAddon.isUsed()) {
 				Vector wiiVector = realDeviceBridgeAddon.getWiiMoteVector();
-				accModel.setXYZ(wiiVector);
+				accModel.setAccelerometer(new float[] {(float) wiiVector.x, (float) wiiVector.y, (float) wiiVector.z});
 			} else {
-				accModel.setXYZ(resultVec);
+				accModel.setAccelerometer(new float[] {(float) resultVec.x, (float) resultVec.y, (float) resultVec.z});
 				// Add random component:
 				double random = accView.getRandom();
 				if (random > 0) {

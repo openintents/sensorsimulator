@@ -16,7 +16,6 @@
 
 package org.openintents.tools.simulator.model.sensor.sensors;
 
-import java.io.PrintWriter;
 
 /**
  * OrientationModel keeps the internal data model behind Orientation Sensor.

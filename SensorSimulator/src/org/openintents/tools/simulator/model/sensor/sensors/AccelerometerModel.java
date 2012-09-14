@@ -18,8 +18,6 @@ package org.openintents.tools.simulator.model.sensor.sensors;
 
 import java.util.Random;
 
-import org.openintents.tools.simulator.model.telnet.Vector;
-
 /**
  * AccelerometerModel keeps the internal data model behind Accelerometer Sensor.
  * 
@@ -126,12 +124,6 @@ public class AccelerometerModel extends SensorModel {
 		mGConstant = 9.80665; // meter per second^2
 		mAccelerometerLimit = 10;
 		mWiiAccelerometerModel = new WiiAccelerometerModel();
-	}
-
-	public void setXYZ(Vector vec) {
-		mAccelX = vec.x;
-		mAccelY = vec.y;
-		mAccelZ = vec.z;
 	}
 
 	public void addRandom(double random) {

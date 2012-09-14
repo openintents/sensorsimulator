@@ -78,7 +78,7 @@ public class MagneticFieldController extends SensorController {
 			double yawDegree = orientation.getYaw();
 			vec.reverserollpitchyaw(rollDegree, pitchDegree, yawDegree);
 
-			magModel.setCompass(vec);
+			magModel.setMagneticField(new float[] { (float) vec.x, (float) vec.y, (float) vec.z });
 		} else {
 			magModel.resetCompas();
 		}

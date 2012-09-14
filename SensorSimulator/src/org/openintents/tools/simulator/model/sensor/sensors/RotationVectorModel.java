@@ -16,9 +16,6 @@
 
 package org.openintents.tools.simulator.model.sensor.sensors;
 
-import java.io.PrintWriter;
-
-import org.openintents.tools.simulator.model.telnet.Vector;
 
 /**
  * RotationVectorModel keeps the internal data model behind RotationVector
@@ -150,12 +147,6 @@ public class RotationVectorModel extends SensorModel {
 
 	public double getReadRotationVectorZ() {
 		return Math.sin(Math.toRadians(mReadRotationZ / 2));
-	}
-
-	public void setRotationVector(Vector vec) {
-		mRotationXValue = vec.x;
-		mRotationYValue = vec.y;
-		mRotationZValue = vec.z;
 	}
 
 	public void setRotationVector(float[] newValue) {

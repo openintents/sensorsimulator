@@ -16,10 +16,7 @@
 
 package org.openintents.tools.simulator.model.sensor.sensors;
 
-import java.io.PrintWriter;
 import java.util.Random;
-
-import org.openintents.tools.simulator.model.telnet.Vector;
 
 /**
  * AccelerometerModel keeps the internal data model behind Accelerometer Sensor.
@@ -169,12 +166,6 @@ public class LinearAccelerationModel extends SensorModel {
 		mAccelX = 0;
 		mAccelY = 0;
 		mAccelZ = 0;
-	}
-
-	public void setXYZ(Vector vec) {
-		mAccelX = vec.x;
-		mAccelY = vec.y;
-		mAccelZ = vec.z;
 	}
 
 	public double getAz() {

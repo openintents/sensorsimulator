@@ -16,7 +16,6 @@
 
 package org.openintents.tools.simulator.model.sensor.sensors;
 
-import java.io.PrintWriter;
 
 /**
  * AccelerometerModel keeps the internal data model behind Accelerometer Sensor.
