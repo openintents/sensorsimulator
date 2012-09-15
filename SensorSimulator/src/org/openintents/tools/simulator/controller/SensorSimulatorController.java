@@ -38,7 +38,6 @@ import javax.swing.Timer;
 
 import org.openintents.tools.simulator.SensorsScenario;
 import org.openintents.tools.simulator.comm.SensorServer;
-import org.openintents.tools.simulator.comm.SensorServerThreadListener;
 import org.openintents.tools.simulator.controller.sensor.AccelerometerController;
 import org.openintents.tools.simulator.controller.sensor.BarcodeReaderController;
 import org.openintents.tools.simulator.controller.sensor.GravityController;
@@ -88,8 +87,7 @@ import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
  * @author ilarele
  */
 
-public class SensorSimulatorController implements WindowListener,
-		SensorServerThreadListener {
+public class SensorSimulatorController implements WindowListener {
 
 	public static final int NORMAL = 0;
 	public static final int RECORD = 1;
@@ -193,8 +191,7 @@ public class SensorSimulatorController implements WindowListener,
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				mSensorServer.stop();
-				mSensorServer = new SensorServer(SensorSimulatorController.this,
-						getSimulationPort());
+				mSensorServer = new SensorServer(mSensorSimulatorModel, mSensorsPort);
 			}
 		});
 
@@ -221,7 +218,7 @@ public class SensorSimulatorController implements WindowListener,
 																// now.
 
 		// start server
-		mSensorServer = new SensorServer(this, getSimulationPort());
+		mSensorServer = new SensorServer(mSensorSimulatorModel, mSensorsPort);
 	}
 
 	private void doTimer() {
@@ -426,10 +423,6 @@ public class SensorSimulatorController implements WindowListener,
 		return mSensors;
 	}
 	
-	public int getSimulationPort() {
-		return mSensorsPort;
-	}
-
 	/**
 	 * Returns the controller component of a sensor by name.
 	 * 
@@ -470,52 +463,5 @@ public class SensorSimulatorController implements WindowListener,
 		else if (sensorName.compareTo(SensorModel.GYROSCOPE) == 0)
 			return (GyroscopeController) mSensors.get(SensorModel.POZ_GYROSCOPE);
 		return null;
-	}
-	
-	// ////////////////////////////////////////////////////
-	// SensorServerThreadListener methods
-	// ////////////////////////////////////////////////////
-	@Override
-	public String[] getSupportedSensors() {
-		return mSensorSimulatorModel.getSupportedSensors();
-	}
-
-	@Override
-	public int getNumSensorValues(SensorType sensorType) {
-		return mSensorSimulatorModel.getSensorModelFromName(sensorType)
-				.getNumSensorValues();
-	}
-
-	@Override
-	public void setSensorUpdateDelay(SensorType sensorType, int updateDelay)
-			throws IllegalArgumentException {
-		SensorModel sensorModel = mSensorSimulatorModel.getSensorModelFromName(sensorType);
-		if (sensorModel.isEnabled())
-			sensorModel.setCurrentUpdateDelay(updateDelay);
-		else
-			throw new IllegalArgumentException();
-	}
-
-	@Override
-	public void unsetSensorUpdateRate(SensorType sensorType)
-			throws IllegalStateException {
-		SensorModel sensorModel = mSensorSimulatorModel
-				.getSensorModelFromName(sensorType);
-		if (sensorModel.isEnabled()) {
-			sensorModel.setCurrentUpdateDelay(SensorModel.DELAY_MS_NORMAL);
-		} else {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	@Override
-	public String readSensor(SensorType sensorType) {
-		SensorModel sensorModel = mSensorSimulatorModel
-				.getSensorModelFromName(sensorType);
-		if (sensorModel.isEnabled()) {
-			return sensorModel.printData();
-		} else {
-			throw new IllegalStateException();
-		}
 	}
 }

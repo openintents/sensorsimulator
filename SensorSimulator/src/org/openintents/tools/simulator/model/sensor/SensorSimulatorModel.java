@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openintents.tools.simulator.comm.SensorServerThreadListener;
 import org.openintents.tools.simulator.model.StateModel;
 import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
@@ -56,7 +57,7 @@ import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
  * @author Peli
  * @author Josip Balic
  */
-public class SensorSimulatorModel {
+public class SensorSimulatorModel implements SensorServerThreadListener {
 
 	// sensors
 	private Map<SensorType, SensorModel> mSensors;
@@ -134,11 +135,10 @@ public class SensorSimulatorModel {
 		return mSensors.get(sensorType);
 	}
 
-	/**
-	 * Method used to get currently String[] of currently supported sensors.
-	 * 
-	 * @return String[] filled with names of currently supported sensors.
-	 */
+	// ////////////////////////////////////////////////////
+	// SensorServerThreadListener methods
+	// ////////////////////////////////////////////////////
+	@Override
 	public String[] getSupportedSensors() {
 		ArrayList<String> resultArray = new ArrayList<String>();
 		for (Map.Entry<SensorType, SensorModel> sensorEntry : mSensors.entrySet()) {
@@ -147,5 +147,39 @@ public class SensorSimulatorModel {
 			}
 		}
 		return resultArray.toArray(new String[resultArray.size()]);
+	}
+
+	@Override
+	public int getNumSensorValues(SensorType sensorType) {
+		return getSensorModelFromName(sensorType).getNumSensorValues();
+	}
+
+	@Override
+	public void setSensorUpdateDelay(SensorType sensorType, int updateDelay) throws IllegalArgumentException {
+		SensorModel sensorModel = getSensorModelFromName(sensorType);
+		if (sensorModel.isEnabled())
+			sensorModel.setCurrentUpdateDelay(updateDelay);
+		else
+			throw new IllegalArgumentException();		
+	}
+
+	@Override
+	public void unsetSensorUpdateRate(SensorType sensorType) throws IllegalStateException {
+		SensorModel sensorModel = getSensorModelFromName(sensorType);
+		if (sensorModel.isEnabled()) {
+			sensorModel.setCurrentUpdateDelay(SensorModel.DELAY_MS_NORMAL);
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	@Override
+	public String readSensor(SensorType sensorType) {
+		SensorModel sensorModel = getSensorModelFromName(sensorType);
+		if (sensorModel.isEnabled()) {
+			return sensorModel.printData();
+		} else {
+			throw new IllegalStateException();
+		}
 	}
 }
