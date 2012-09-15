@@ -27,10 +27,10 @@ import javax.swing.JRadioButton;
 
 import org.openintents.tools.simulator.controller.sensor.OrientationController;
 import org.openintents.tools.simulator.controller.sensor.SensorController;
-import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
-import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensors.AccelerometerModel;
+import org.openintents.tools.simulator.model.sensors.LinearAccelerationModel;
+import org.openintents.tools.simulator.model.sensors.OrientationModel;
+import org.openintents.tools.simulator.model.sensors.SensorModel;
 import org.openintents.tools.simulator.view.sensor.DeviceView;
 
 /**

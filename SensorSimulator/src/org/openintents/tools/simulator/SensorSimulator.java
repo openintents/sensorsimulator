@@ -20,7 +20,7 @@ import org.openintents.tools.simulator.controller.SensorSimulatorController;
 import org.openintents.tools.simulator.logging.Logg;
 import org.openintents.tools.simulator.logging.LoggPrintable;
 import org.openintents.tools.simulator.main.SensorSimulatorMain;
-import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
+import org.openintents.tools.simulator.model.SensorSimulatorModel;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 
 /**

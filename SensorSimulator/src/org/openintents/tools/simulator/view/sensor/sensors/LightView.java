@@ -29,7 +29,7 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
+import org.openintents.tools.simulator.model.sensors.LightModel;
 
 /**
  * LightView keeps the GUI of the Light sensor.

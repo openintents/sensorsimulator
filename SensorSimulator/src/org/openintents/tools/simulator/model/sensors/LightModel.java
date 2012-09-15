@@ -14,34 +14,34 @@
  * limitations under the License.
  */
 
-package org.openintents.tools.simulator.model.sensor.sensors;
+package org.openintents.tools.simulator.model.sensors;
 
 
 /**
- * PressureModel keeps the internal data model behind Pressure Sensor.
+ * LightModel keeps the internal data model behind Light Sensor.
  * 
  * @author ilarele
  * 
  */
-public class PressureModel extends SensorModel {
+public class LightModel extends SensorModel {
 
-	// pressure
-	private double mPressureValue;
-	/** Current read-out value of pressure. */
-	private double mReadPressure;
+	// light
+	private double mLightValue;
+	/** Current read-out value of light. */
+	private double mReadLight;
 
-	/** Partial read-out value of pressure. */
-	private float mPartialPressure;
-	/** Number of summands in partial sum for pressure. */
-	private int mPartialPressureN;
+	/** Partial read-out value of light. */
+	private float mPartialLight;
+	/** Number of summands in partial sum for light. */
+	private int mPartialLightN;
 
-	public PressureModel() {
-		mPressureValue = 0.5;
+	public LightModel() {
+		mReadLight = mLightValue = 400;
 	}
 
 	@Override
 	public String getName() {
-		return SensorModel.PRESSURE;
+		return SensorModel.LIGHT;
 	}
 
 	@Override
@@ -49,8 +49,8 @@ public class PressureModel extends SensorModel {
 		long currentTime = System.currentTimeMillis();
 		// Form the average
 		if (mAverage) {
-			mPartialPressure += mPressureValue;
-			mPartialPressureN++;
+			mPartialLight += mLightValue;
+			mPartialLightN++;
 		}
 
 		// Update
@@ -64,15 +64,15 @@ public class PressureModel extends SensorModel {
 
 			if (mAverage) {
 				// form average
-				mReadPressure = mPartialPressure / mPartialPressureN;
+				mReadLight = mPartialLight / mPartialLightN;
 
 				// reset average
-				mPartialPressure = 0;
-				mPartialPressureN = 0;
+				mPartialLight = 0;
+				mPartialLightN = 0;
 
 			} else {
 				// Only take current value
-				mReadPressure = mPressureValue;
+				mReadLight = mLightValue;
 			}
 		}
 	}
@@ -85,33 +85,23 @@ public class PressureModel extends SensorModel {
 	@Override
 	public String printSensorData() {
 		// number of data following + data
-		return "1\n" + mReadPressure;
-	}
-
-	public double getPressure() {
-		return mPressureValue;
+		return "1\n" + mReadLight;
 	}
 
 	@Override
 	public String getSI() {
-		return "";
+		return "lux";
 	}
 
-	public double getReadPressure() {
-		return mReadPressure;
+	public void setLight(double value) {
+		mLightValue = value;
 	}
 
-	public void setPressure(double value) {
-		if (value > 1) {
-			mPressureValue = 1;
-		} else if (value < 0) {
-			mPressureValue = 0;
-		} else {
-			mPressureValue = value;
-		}
+	public void addLight(double value) {
+		mLightValue += value;
 	}
 
-	public void addPressure(double value) {
-		setPressure(mPressureValue + value);
+	public double getReadLight() {
+		return mReadLight;
 	}
 }

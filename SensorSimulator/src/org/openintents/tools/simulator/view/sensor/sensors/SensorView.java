@@ -39,8 +39,8 @@ import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.controller.RefreshRateObserver;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
-import org.openintents.tools.simulator.model.sensor.sensors.UpdateDelayObserver;
+import org.openintents.tools.simulator.model.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensors.UpdateDelayObserver;
 import org.openintents.tools.simulator.util.HtmlTextPane;
 import org.openintents.tools.simulator.view.gui.util.SensorButton;
 import org.openintents.tools.simulator.view.help.HelpWindow;

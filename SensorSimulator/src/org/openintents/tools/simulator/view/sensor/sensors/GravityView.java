@@ -26,8 +26,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.openintents.tools.simulator.model.sensor.sensors.GravityModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensors.GravityModel;
+import org.openintents.tools.simulator.model.sensors.SensorModel;
 
 /**
  * GravityView keeps the GUI of the Gravity sensor.

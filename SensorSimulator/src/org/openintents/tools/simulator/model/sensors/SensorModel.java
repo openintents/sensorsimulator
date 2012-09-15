@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.openintents.tools.simulator.model.sensor.sensors;
+package org.openintents.tools.simulator.model.sensors;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -17,9 +17,9 @@
 package org.openintents.tools.simulator.controller.sensor;
 
 import org.openintents.tools.simulator.Global;
-import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.ProximityModel;
-import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.model.sensors.OrientationModel;
+import org.openintents.tools.simulator.model.sensors.ProximityModel;
+import org.openintents.tools.simulator.model.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.ProximityView;
 

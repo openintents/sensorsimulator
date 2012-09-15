@@ -25,8 +25,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.openintents.tools.simulator.model.sensor.sensors.GyroscopeModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensors.GyroscopeModel;
+import org.openintents.tools.simulator.model.sensors.SensorModel;
 
 /**
  * GyroscopeView keeps the GUI of the Gyroscope sensor.

@@ -30,7 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 
 import org.openintents.tools.simulator.Global;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensors.SensorModel;
 import org.openintents.tools.simulator.util.PhoneSensors;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 

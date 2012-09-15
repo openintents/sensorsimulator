@@ -19,7 +19,6 @@ package org.openintents.tools.simulator.model;
 import java.util.Vector;
 
 import org.openintents.tools.simulator.SensorsScenario;
-import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.util.SynchronizedInteger;
 
 /**

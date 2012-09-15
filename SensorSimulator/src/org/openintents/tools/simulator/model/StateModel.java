@@ -20,21 +20,19 @@ import java.util.Hashtable;
 import java.util.Map.Entry;
 
 import org.openintents.tools.simulator.Global;
-import org.openintents.tools.simulator.controller.sensor.TemperatureController;
-import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
-import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
-import org.openintents.tools.simulator.model.sensor.sensors.GravityModel;
-import org.openintents.tools.simulator.model.sensor.sensors.GyroscopeModel;
-import org.openintents.tools.simulator.model.sensor.sensors.LightModel;
-import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
-import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
-import org.openintents.tools.simulator.model.sensor.sensors.ProximityModel;
-import org.openintents.tools.simulator.model.sensor.sensors.RotationVectorModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorType;
-import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
+import org.openintents.tools.simulator.model.sensors.AccelerometerModel;
+import org.openintents.tools.simulator.model.sensors.GravityModel;
+import org.openintents.tools.simulator.model.sensors.GyroscopeModel;
+import org.openintents.tools.simulator.model.sensors.LightModel;
+import org.openintents.tools.simulator.model.sensors.LinearAccelerationModel;
+import org.openintents.tools.simulator.model.sensors.MagneticFieldModel;
+import org.openintents.tools.simulator.model.sensors.OrientationModel;
+import org.openintents.tools.simulator.model.sensors.PressureModel;
+import org.openintents.tools.simulator.model.sensors.ProximityModel;
+import org.openintents.tools.simulator.model.sensors.RotationVectorModel;
+import org.openintents.tools.simulator.model.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensors.TemperatureModel;
 import org.openintents.tools.simulator.util.Interpolate;
 
 /**

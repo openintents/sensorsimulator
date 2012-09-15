@@ -29,7 +29,7 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.openintents.tools.simulator.model.sensor.sensors.PressureModel;
+import org.openintents.tools.simulator.model.sensors.PressureModel;
 
 /**
  * PressureView keeps the GUI of the Pressure sensor.

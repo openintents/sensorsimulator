@@ -28,8 +28,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensors.AccelerometerModel;
+import org.openintents.tools.simulator.model.sensors.SensorModel;
 
 /**
  * AccelerometerView keeps the GUI of the Accelerometer sensor.

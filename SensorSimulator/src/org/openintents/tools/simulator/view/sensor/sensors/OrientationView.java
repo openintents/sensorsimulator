@@ -29,8 +29,8 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 
-import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
-import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
+import org.openintents.tools.simulator.model.SensorSimulatorModel;
+import org.openintents.tools.simulator.model.sensors.OrientationModel;
 
 /**
  * OrientationView keeps the GUI of the Orientation sensor.

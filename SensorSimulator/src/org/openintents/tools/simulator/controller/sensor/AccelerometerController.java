@@ -22,9 +22,9 @@ import java.awt.event.ItemListener;
 import javax.swing.JCheckBox;
 
 import org.openintents.tools.simulator.Global;
-import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
-import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.model.sensors.AccelerometerModel;
+import org.openintents.tools.simulator.model.sensors.OrientationModel;
+import org.openintents.tools.simulator.model.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
 import org.openintents.tools.simulator.view.sensor.DeviceView;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;

@@ -26,8 +26,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.openintents.tools.simulator.model.sensor.sensors.LinearAccelerationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensors.LinearAccelerationModel;
+import org.openintents.tools.simulator.model.sensors.SensorModel;
 
 /**
  * LinearAccelerationView keeps the GUI of the LinearAcceleration sensor.

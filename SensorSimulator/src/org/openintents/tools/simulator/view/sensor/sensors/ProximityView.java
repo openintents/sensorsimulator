@@ -34,8 +34,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.openintents.tools.simulator.model.sensor.sensors.ProximityModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensors.ProximityModel;
+import org.openintents.tools.simulator.model.sensors.SensorModel;
 
 /**
  * ProximityView keeps the GUI of the Proximity sensor.

@@ -28,7 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.openintents.tools.simulator.model.sensor.sensors.RotationVectorModel;
+import org.openintents.tools.simulator.model.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
 
 /**

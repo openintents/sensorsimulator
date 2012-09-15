@@ -25,8 +25,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.openintents.tools.simulator.model.sensor.sensors.BarcodeReaderModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensors.BarcodeReaderModel;
+import org.openintents.tools.simulator.model.sensors.SensorModel;
 import org.openintents.tools.simulator.util.JTextFieldLimit;
 
 /**

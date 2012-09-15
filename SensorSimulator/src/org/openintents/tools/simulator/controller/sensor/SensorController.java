@@ -24,9 +24,9 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.openintents.tools.simulator.controller.RefreshRateMeter;
-import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
-import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
+import org.openintents.tools.simulator.model.sensors.OrientationModel;
+import org.openintents.tools.simulator.model.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensors.WiiAccelerometerModel;
 import org.openintents.tools.simulator.view.gui.util.SensorButton;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;

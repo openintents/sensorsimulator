@@ -40,11 +40,11 @@ import javax.swing.JRadioButton;
 import javax.swing.SpringLayout;
 
 import org.openintents.tools.simulator.Global;
-import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
-import org.openintents.tools.simulator.model.sensor.sensors.AccelerometerModel;
-import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorType;
+import org.openintents.tools.simulator.model.sensors.AccelerometerModel;
+import org.openintents.tools.simulator.model.sensors.OrientationModel;
+import org.openintents.tools.simulator.model.sensors.SensorModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
 
 /**

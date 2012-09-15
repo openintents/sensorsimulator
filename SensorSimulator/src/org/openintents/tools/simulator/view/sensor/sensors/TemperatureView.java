@@ -29,8 +29,8 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
-import org.openintents.tools.simulator.model.sensor.sensors.TemperatureModel;
+import org.openintents.tools.simulator.model.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensors.TemperatureModel;
 
 /**
  * TemperatureView keeps the GUI of the Temperature sensor.

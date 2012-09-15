@@ -28,7 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.openintents.tools.simulator.model.sensor.sensors.MagneticFieldModel;
+import org.openintents.tools.simulator.model.sensors.MagneticFieldModel;
 
 /**
  * MagneticFieldView keeps the GUI of the MagneticField sensor.
