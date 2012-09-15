@@ -40,6 +40,7 @@ import javax.swing.SwingConstants;
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.controller.RefreshRateObserver;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensor.sensors.UpdateDelayObserver;
 import org.openintents.tools.simulator.util.HtmlTextPane;
 import org.openintents.tools.simulator.view.gui.util.SensorButton;
 import org.openintents.tools.simulator.view.help.HelpWindow;
@@ -79,6 +80,7 @@ public abstract class SensorView extends JScrollPane {
 
 	public SensorView(SensorModel model) {
 		mModel = model;
+		mModel.addUpdateDelayObserver(mUpdateDelayObserver);
 		setPreferredSize(new Dimension(
 				(int) (Global.W_FRAME * Global.SENSOR_SPLIT_RIGHT),
 				Global.H_CONTENT));
@@ -482,26 +484,6 @@ public abstract class SensorView extends JScrollPane {
 		return button;
 	}
 
-	public void setCurrentUpdateRate(int updatesPerSecond) {
-		switch (updatesPerSecond) {
-		case SensorModel.DELAY_MS_FASTEST:
-			mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_FASTEST);
-			break;
-		case SensorModel.DELAY_MS_GAME:
-			mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_GAME);
-			break;
-		case SensorModel.DELAY_MS_NORMAL:
-			mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_NORMAL);
-			break;
-		case SensorModel.DELAY_MS_UI:
-			mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_UI);
-			break;
-		default:
-			mCurrentUpdateRateText.setText("Wrong update rate!");
-			break;
-		}
-	}
-
 	public void setQuickSettingsPanel(JPanel result) {
 		mQuickSettingsParent = result;
 	}
@@ -513,9 +495,38 @@ public abstract class SensorView extends JScrollPane {
 	public void setButton(SensorButton sensorButton) {
 		mSensorButton = sensorButton;
 	}
-
-	// Read Rate Meter Observer //////////////////////////////
-	RefreshRateObserver mReadRateMeterObserver = new RefreshRateObserver() {
+	
+	// ///////////////////////////////////////////////////////
+	// Update Delay Observer
+	// ///////////////////////////////////////////////////////
+	private UpdateDelayObserver mUpdateDelayObserver = new UpdateDelayObserver() {
+		
+		@Override
+		public void notifyUpdateDelayChange(long ms) {
+			switch ((int) ms) {
+			case SensorModel.DELAY_MS_FASTEST:
+				mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_FASTEST);
+				break;
+			case SensorModel.DELAY_MS_GAME:
+				mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_GAME);
+				break;
+			case SensorModel.DELAY_MS_NORMAL:
+				mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_NORMAL);
+				break;
+			case SensorModel.DELAY_MS_UI:
+				mCurrentUpdateRateText.setText(SensorModel.SENSOR_DELAY_UI);
+				break;
+			default:
+				mCurrentUpdateRateText.setText("Wrong update rate!");
+				break;
+			}			
+		}
+	};
+	
+	// ///////////////////////////////////////////////////////
+	// Read Rate Meter Observer
+	// ///////////////////////////////////////////////////////
+	private RefreshRateObserver mReadRateMeterObserver = new RefreshRateObserver() {
 
 		@Override
 		public void notifyRefreshRateChange(double ms) {

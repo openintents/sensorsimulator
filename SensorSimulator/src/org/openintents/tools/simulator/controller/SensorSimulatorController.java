@@ -491,9 +491,9 @@ public class SensorSimulatorController implements WindowListener,
 	public void setSensorUpdateDelay(String sensorName, int updateDelay)
 			throws IllegalArgumentException {
 		SensorType sensorType = getSensorTypeFromString(sensorName);
-		if (mSensorSimulatorModel.getSensorModelFromName(sensorType)
-				.isEnabled())
-			getSensorCtrlFromName(sensorName).setCurrentUpdateRate(updateDelay);
+		SensorModel sensorModel = mSensorSimulatorModel.getSensorModelFromName(sensorType);
+		if (sensorModel.isEnabled())
+			sensorModel.setCurrentUpdateDelay(updateDelay);
 		else
 			throw new IllegalArgumentException();
 	}
@@ -505,10 +505,7 @@ public class SensorSimulatorController implements WindowListener,
 		SensorModel sensorModel = mSensorSimulatorModel
 				.getSensorModelFromName(sensorType);
 		if (sensorModel.isEnabled()) {
-			SensorController sensorCtrl = getSensorCtrlFromName(sensorName);
-
-			sensorModel.resetCurrentUpdateDelay();
-			sensorCtrl.setCurrentUpdateRate(SensorModel.DELAY_MS_NORMAL);
+			sensorModel.setCurrentUpdateDelay(SensorModel.DELAY_MS_NORMAL);
 		} else {
 			throw new IllegalArgumentException();
 		}

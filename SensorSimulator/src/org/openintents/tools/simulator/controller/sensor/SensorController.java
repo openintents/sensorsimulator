@@ -101,20 +101,6 @@ public abstract class SensorController {
 		mReadRateMeter.count();
 	}
 
-	public void setCurrentUpdateRate(int delay) {
-		switch (delay) {
-		case SensorModel.DELAY_MS_FASTEST:
-		case SensorModel.DELAY_MS_GAME:
-		case SensorModel.DELAY_MS_NORMAL:
-		case SensorModel.DELAY_MS_UI:
-			mSensorModel.setCurrentUpdateDelay(delay);
-			mSensorView.setCurrentUpdateRate(delay);
-			break;
-		default:
-			break;
-		}
-	}
-
 	public SensorModel getModel() {
 		return mSensorModel;
 	}

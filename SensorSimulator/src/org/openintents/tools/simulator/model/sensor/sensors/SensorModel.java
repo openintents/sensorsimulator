@@ -16,6 +16,9 @@
 
 package org.openintents.tools.simulator.model.sensor.sensors;
 
+import java.util.LinkedList;
+import java.util.List;
+
 
 /**
  * SensorModel keeps the internal data model behind a Sensor, common to all
@@ -111,6 +114,12 @@ public abstract class SensorModel {
 	 * sensors. Alternative is to just take the current value.
 	 */
 	protected boolean mAverage;
+	
+	/**
+	 * List of observers of the update rate.
+	 * TODO: check if observers can be generalised to SensorModelObservers
+	 */
+	protected List<UpdateDelayObserver> mUpdateDelayObservers;
 
 	/**
 	 * Time of next update required. The time is compared to
@@ -122,6 +131,8 @@ public abstract class SensorModel {
 		mEnabled = false;
 
 		mUpdateDelay = DELAY_MS_NORMAL;
+		
+		mUpdateDelayObservers = new LinkedList<UpdateDelayObserver>();
 	}
 
 	/**
@@ -165,6 +176,16 @@ public abstract class SensorModel {
 	public void setEnabled(boolean enable) {
 		mEnabled = enable;
 	}
+	
+	/**
+	 * Adds an observer to the list of UpdateDelayObservers.
+	 * 
+	 * @param updateDelayObserver
+	 *            the observer to add
+	 */
+	public void addUpdateDelayObserver(UpdateDelayObserver updateDelayObserver) {
+		mUpdateDelayObservers.add(updateDelayObserver);
+	}
 
 	/**
 	 * Sets the delay between two sensor updates.
@@ -173,13 +194,20 @@ public abstract class SensorModel {
 	 *            the delay between two sensor updates
 	 */
 	public void setCurrentUpdateDelay(int updateDelay) {
-		mUpdateDelay = updateDelay;
-	}
+		switch (updateDelay) {
+		case SensorModel.DELAY_MS_FASTEST:
+		case SensorModel.DELAY_MS_GAME:
+		case SensorModel.DELAY_MS_NORMAL:
+		case SensorModel.DELAY_MS_UI:
+			mUpdateDelay = updateDelay;
 
-	/**
-	 * Sets the sensor update delay to the DELAY_MS_NORMAL delay
-	 */
-	public void resetCurrentUpdateDelay() {
-		mUpdateDelay = DELAY_MS_NORMAL;
+			// tell observers
+			for (UpdateDelayObserver observer : mUpdateDelayObservers)
+				observer.notifyUpdateDelayChange(mUpdateDelay);
+
+			break;
+		default:
+			break;
+		}
 	}
 }
