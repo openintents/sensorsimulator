@@ -348,17 +348,23 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 			
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				mRefreshRateMeter.setMaxCount(getRefreshCount());
+				for (RefreshRateMeter refreshRateMeter: mRefreshRateMeters) {
+					refreshRateMeter.setMaxCount(getRefreshCount());
+				}
 			}
 			
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				mRefreshRateMeter.setMaxCount(getRefreshCount());
+				for (RefreshRateMeter refreshRateMeter: mRefreshRateMeters) {
+					refreshRateMeter.setMaxCount(getRefreshCount());
+				}
 			}
 			
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				mRefreshRateMeter.setMaxCount(getRefreshCount());
+				for (RefreshRateMeter refreshRateMeter: mRefreshRateMeters) {
+					refreshRateMeter.setMaxCount(getRefreshCount());
+				}
 			}
 		});
 
