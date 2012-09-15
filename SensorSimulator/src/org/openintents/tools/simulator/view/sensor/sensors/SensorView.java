@@ -38,7 +38,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.Global;
-import org.openintents.tools.simulator.controller.RefreshRateObserver;
+import org.openintents.tools.simulator.model.RefreshRateObserver;
 import org.openintents.tools.simulator.model.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensors.UpdateDelayObserver;
 import org.openintents.tools.simulator.util.HtmlTextPane;

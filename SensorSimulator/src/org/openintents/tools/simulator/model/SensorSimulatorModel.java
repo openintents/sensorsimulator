@@ -86,7 +86,7 @@ public class SensorSimulatorModel implements SensorServerThreadListener {
 	 * @param state
 	 *            the state to load
 	 */
-	public void loadState(StateModel state) {
+	public void loadState(SensorState state) {
 		// simple
 		TemperatureModel temperatureModel = (TemperatureModel) getSensorModelFromName(SensorType.TEMPERATURE);
 		temperatureModel.setTemp(state.getTemperature());

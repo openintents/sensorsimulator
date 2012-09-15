@@ -19,7 +19,7 @@ package org.openintents.tools.simulator.model.sensors;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openintents.tools.simulator.controller.RefreshRateMeter;
+import org.openintents.tools.simulator.model.RefreshRateMeter;
 
 
 /**

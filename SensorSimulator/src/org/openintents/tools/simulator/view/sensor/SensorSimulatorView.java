@@ -62,9 +62,9 @@ import javax.swing.event.DocumentListener;
 
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.SensorsScenario;
-import org.openintents.tools.simulator.controller.RefreshRateMeter;
-import org.openintents.tools.simulator.controller.RefreshRateObserver;
 import org.openintents.tools.simulator.controller.SensorSimulatorController;
+import org.openintents.tools.simulator.model.RefreshRateMeter;
+import org.openintents.tools.simulator.model.RefreshRateObserver;
 import org.openintents.tools.simulator.model.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorType;
 import org.openintents.tools.simulator.model.sensors.AccelerometerModel;

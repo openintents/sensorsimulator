@@ -45,7 +45,7 @@ import org.openintents.tools.simulator.util.Interpolate;
  * @author ilarele
  *
  */
-public class StateModel {
+public class StateModel implements SensorState {
 
 	// sensors supported for interpolation
 	private float mTemperature;

@@ -1,4 +1,4 @@
-package org.openintents.tools.simulator.controller;
+package org.openintents.tools.simulator.model;
 
 public interface RefreshRateObserver {
 

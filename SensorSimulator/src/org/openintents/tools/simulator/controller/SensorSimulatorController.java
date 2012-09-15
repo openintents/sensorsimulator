@@ -51,6 +51,7 @@ import org.openintents.tools.simulator.controller.sensor.ProximityController;
 import org.openintents.tools.simulator.controller.sensor.RotationVectorController;
 import org.openintents.tools.simulator.controller.sensor.SensorController;
 import org.openintents.tools.simulator.controller.sensor.TemperatureController;
+import org.openintents.tools.simulator.model.RefreshRateMeter;
 import org.openintents.tools.simulator.model.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.StateModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorType;
