@@ -481,16 +481,14 @@ public class SensorSimulatorController implements WindowListener,
 	}
 
 	@Override
-	public int getNumSensorValues(String sensorName) {
-		SensorType sensorType = getSensorTypeFromString(sensorName);
+	public int getNumSensorValues(SensorType sensorType) {
 		return mSensorSimulatorModel.getSensorModelFromName(sensorType)
 				.getNumSensorValues();
 	}
 
 	@Override
-	public void setSensorUpdateDelay(String sensorName, int updateDelay)
+	public void setSensorUpdateDelay(SensorType sensorType, int updateDelay)
 			throws IllegalArgumentException {
-		SensorType sensorType = getSensorTypeFromString(sensorName);
 		SensorModel sensorModel = mSensorSimulatorModel.getSensorModelFromName(sensorType);
 		if (sensorModel.isEnabled())
 			sensorModel.setCurrentUpdateDelay(updateDelay);
@@ -499,9 +497,8 @@ public class SensorSimulatorController implements WindowListener,
 	}
 
 	@Override
-	public void unsetSensorUpdateRate(String sensorName)
+	public void unsetSensorUpdateRate(SensorType sensorType)
 			throws IllegalStateException {
-		SensorType sensorType = getSensorTypeFromString(sensorName);
 		SensorModel sensorModel = mSensorSimulatorModel
 				.getSensorModelFromName(sensorType);
 		if (sensorModel.isEnabled()) {
@@ -512,48 +509,13 @@ public class SensorSimulatorController implements WindowListener,
 	}
 
 	@Override
-	public String readSensor(String sensorName) {
-		SensorType sensorType = getSensorTypeFromString(sensorName);
-		
+	public String readSensor(SensorType sensorType) {
 		SensorModel sensorModel = mSensorSimulatorModel
 				.getSensorModelFromName(sensorType);
 		if (sensorModel.isEnabled()) {
-			getSensorCtrlFromName(sensorName).countSensorRead();
-			return sensorModel.printSensorData();
+			return sensorModel.printData();
 		} else {
 			throw new IllegalStateException();
 		}
-	}
-	
-	/** 
-	 * Helper to convert String into SensorType Enum
-	 */
-	public static SensorType getSensorTypeFromString(String sensorName) {
-		if (sensorName.compareTo(SensorModel.ACCELEROMETER) == 0)
-			return SensorType.ACCELEROMETER;
-		else if (sensorName.compareTo(SensorModel.MAGNETIC_FIELD) == 0)
-			return SensorType.MAGNETIC_FIELD;
-		else if (sensorName.compareTo(SensorModel.ORIENTATION) == 0)
-			return SensorType.ORIENTATION;
-		else if (sensorName.compareTo(SensorModel.TEMPERATURE) == 0)
-			return SensorType.TEMPERATURE;
-		else if (sensorName.compareTo(SensorModel.BARCODE_READER) == 0)
-			return SensorType.BARCODE_READER;
-		else if (sensorName.compareTo(SensorModel.LIGHT) == 0)
-			return SensorType.LIGHT;
-		else if (sensorName.compareTo(SensorModel.PROXIMITY) == 0)
-			return SensorType.PROXIMITY;
-		else if (sensorName.compareTo(SensorModel.PRESSURE) == 0)
-			return SensorType.PRESSURE;
-		else if (sensorName.compareTo(SensorModel.LINEAR_ACCELERATION) == 0)
-			return SensorType.LINEAR_ACCELERATION;
-		else if (sensorName.compareTo(SensorModel.GRAVITY) == 0)
-			return SensorType.GRAVITY;
-		else if (sensorName.compareTo(SensorModel.ROTATION_VECTOR) == 0)
-			return SensorType.ROTATION;
-		else if (sensorName.compareTo(SensorModel.GYROSCOPE) == 0)
-			return SensorType.GYROSCOPE;
-		else
-			return null;
 	}
 }

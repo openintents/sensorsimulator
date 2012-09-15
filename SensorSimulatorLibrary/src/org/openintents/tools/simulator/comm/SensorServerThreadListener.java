@@ -1,14 +1,16 @@
 package org.openintents.tools.simulator.comm;
 
+import org.openintents.tools.simulator.model.sensor.sensors.SensorType;
+
 public interface SensorServerThreadListener {
 
 	public String[] getSupportedSensors();
 
-	public int getNumSensorValues(String sensorName);
+	public int getNumSensorValues(SensorType sensorType);
 
-	public void setSensorUpdateDelay(String sensorName, int updateDelay) throws IllegalArgumentException;
+	public void setSensorUpdateDelay(SensorType sensorType, int updateDelay) throws IllegalArgumentException;
 
-	public void unsetSensorUpdateRate(String sensorName) throws IllegalStateException;
+	public void unsetSensorUpdateRate(SensorType sensorType) throws IllegalStateException;
 
-	public String readSensor(String sensorName);
+	public String readSensor(SensorType sensorType);
 }

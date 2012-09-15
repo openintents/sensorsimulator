@@ -126,7 +126,6 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 	private JTextField mRefreshCountText;
 	private JLabel mRefreshSensorsLabel;
 
-	private final SensorSimulatorModel mModel;
 	private final ArrayList<SensorView> mSensors;
 
 	private JTabbedPane mSensorsTabbedPane;
@@ -144,13 +143,11 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 	private JTextField mSaveTime;
 	private JTextField mPlaybackTime;
 	
-	private RefreshRateMeter mRefreshRateMeter;
 	private SensorSimulatorController mSensorSimulatorController;
 
 	private SensorsScenario mScenario;
 
 	public SensorSimulatorView(SensorSimulatorModel model, SensorsScenario scenario) {
-		mModel = model;
 		mScenario = scenario;
 		setLayout(new BorderLayout());
 

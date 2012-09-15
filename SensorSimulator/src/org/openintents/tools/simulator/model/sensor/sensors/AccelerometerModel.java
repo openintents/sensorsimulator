@@ -272,7 +272,7 @@ public class AccelerometerModel extends SensorModel {
 	}
 
 	@Override
-	public String printSensorData() {
+	protected String printSensorData() {
 		// number of data following + data
 		return "3\n" + mReadAccelx + "\n" + mReadAccely + "\n"
 				+ mReadAccelz;

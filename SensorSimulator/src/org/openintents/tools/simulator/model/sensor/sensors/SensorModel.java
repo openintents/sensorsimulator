@@ -19,6 +19,8 @@ package org.openintents.tools.simulator.model.sensor.sensors;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.openintents.tools.simulator.controller.RefreshRateMeter;
+
 
 /**
  * SensorModel keeps the internal data model behind a Sensor, common to all
@@ -126,6 +128,12 @@ public abstract class SensorModel {
 	 * System.currentTimeMillis().
 	 */
 	protected long mNextUpdate;
+	
+	
+	/**
+	 * the RefreshRateMeter responsible for computing the average read rate
+	 */
+	protected RefreshRateMeter mReadRateMeter;
 
 	public SensorModel() {
 		mEnabled = false;
@@ -133,6 +141,7 @@ public abstract class SensorModel {
 		mUpdateDelay = DELAY_MS_NORMAL;
 		
 		mUpdateDelayObservers = new LinkedList<UpdateDelayObserver>();
+		mReadRateMeter = new RefreshRateMeter(10);
 	}
 
 	/**
@@ -155,7 +164,7 @@ public abstract class SensorModel {
 	 * It is used in communication with the emulator, when sending sensor
 	 * values.
 	 */
-	public abstract String printSensorData();
+	protected abstract String printSensorData();
 
 	/**
 	 * Sets the next values for the sensor (if the time for next update was
@@ -209,5 +218,25 @@ public abstract class SensorModel {
 		default:
 			break;
 		}
+	}
+
+	/**
+	 * Returns the ReadRateMeter, which counts the times this sensor is read and
+	 * computes the average read rate.
+	 * 
+	 * @return the ReadRateMeter object
+	 */
+	public RefreshRateMeter getReadRateMeter() {
+		return mReadRateMeter;
+	}
+
+	/**
+	 * Counts the read access and gets the sensor's data.
+	 * 
+	 * @return the current sensor data values
+	 */
+	public String printData() {
+		mReadRateMeter.count();
+		return printSensorData();
 	}
 }

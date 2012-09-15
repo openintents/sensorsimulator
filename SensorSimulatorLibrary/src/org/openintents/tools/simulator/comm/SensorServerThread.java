@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import org.openintents.tools.simulator.logging.Logg;
+import org.openintents.tools.simulator.model.sensor.sensors.SensorType;
 
 /**
  * Handles the communication with the SensorClient from the Android phone or
@@ -165,28 +166,29 @@ public class SensorServerThread implements Runnable {
 		} else {
 			try {
 				String sensorName = in.readLine();
+				SensorType sensorType = getSensorTypeFromString(sensorName);
 
 				// get number of components of sensor data value
 				if (cmd.compareTo("getNumSensorValues()") == 0) {
 					// out.println(sensorModel.getNumSensorValues());
-					out.println(mServerThreadListener.getNumSensorValues(sensorName));
+					out.println(mServerThreadListener.getNumSensorValues(sensorType));
 				}
 				// get sensor update delay
 				else if (cmd.compareTo("setSensorUpdateDelay()") == 0) {
 					String args = in.readLine();
 					int updateDelay = Integer.parseInt(args);
 
-					mServerThreadListener.setSensorUpdateDelay(sensorName, updateDelay);
+					mServerThreadListener.setSensorUpdateDelay(sensorType, updateDelay);
 					out.println("OK");
 				}
 				// unset sensor update rate
 				else if (cmd.compareTo("unsetSensorUpdateRate()") == 0) {
-					mServerThreadListener.unsetSensorUpdateRate(sensorName);
+					mServerThreadListener.unsetSensorUpdateRate(sensorType);
 					out.println("OK");
 				}
 				// read sensor
 				else if (cmd.compareTo("readSensor()") == 0) {
-					out.println(mServerThreadListener.readSensor(sensorName));
+					out.println(mServerThreadListener.readSensor(sensorType));
 				}
 				// unknown command
 				else {
@@ -223,5 +225,37 @@ public class SensorServerThread implements Runnable {
 
 	public SensorServerThread getNextThread() {
 		return mNextThread;
+	}
+	
+	/** 
+	 * Helper to convert String into SensorType Enum
+	 */
+	public static SensorType getSensorTypeFromString(String sensorName) {
+		if (sensorName.compareTo("accelerometer") == 0)
+			return SensorType.ACCELEROMETER;
+		else if (sensorName.compareTo("magnetic field") == 0)
+			return SensorType.MAGNETIC_FIELD;
+		else if (sensorName.compareTo("orientation") == 0)
+			return SensorType.ORIENTATION;
+		else if (sensorName.compareTo("temperature") == 0)
+			return SensorType.TEMPERATURE;
+		else if (sensorName.compareTo("barcode reader") == 0)
+			return SensorType.BARCODE_READER;
+		else if (sensorName.compareTo("light") == 0)
+			return SensorType.LIGHT;
+		else if (sensorName.compareTo("proximity") == 0)
+			return SensorType.PROXIMITY;
+		else if (sensorName.compareTo("pressure") == 0)
+			return SensorType.PRESSURE;
+		else if (sensorName.compareTo("linear acceleration") == 0)
+			return SensorType.LINEAR_ACCELERATION;
+		else if (sensorName.compareTo("gravity") == 0)
+			return SensorType.GRAVITY;
+		else if (sensorName.compareTo("rotation vector") == 0)
+			return SensorType.ROTATION;
+		else if (sensorName.compareTo("gyroscope") == 0)
+			return SensorType.GYROSCOPE;
+		else
+			return null;
 	}
 }

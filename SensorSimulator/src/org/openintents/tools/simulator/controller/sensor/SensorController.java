@@ -51,7 +51,6 @@ public abstract class SensorController {
 	// if the connection with the emulator has started
 	private JPanel mSensorsButtons;
 	private JButton mEnableBtn;
-	private RefreshRateMeter mReadRateMeter;
 
 	public SensorController(final SensorModel model, final SensorView view, SensorSimulatorView sensorSimulatorView) {
 		mSensorModel = model;
@@ -64,9 +63,11 @@ public abstract class SensorController {
 			}
 		});
 		
-		mReadRateMeter = new RefreshRateMeter(sensorSimulatorView.getRefreshCount());
-		mReadRateMeter.addObserver(mSensorView.getReadRateMeterObserver());
-		sensorSimulatorView.addRefreshRateMeter(mReadRateMeter);
+		// get ReadRateMeter and introduce it to its view
+		RefreshRateMeter readRateMeter = model.getReadRateMeter();
+		readRateMeter.setMaxCount(sensorSimulatorView.getRefreshCount());
+		readRateMeter.addObserver(mSensorView.getReadRateMeterObserver());
+		sensorSimulatorView.addRefreshRateMeter(readRateMeter);
 	}
 
 	/**
@@ -95,10 +96,6 @@ public abstract class SensorController {
 		data.append(getString());
 		data.append("\n");
 		return data.toString();
-	}
-
-	public void countSensorRead() {
-		mReadRateMeter.count();
 	}
 
 	public SensorModel getModel() {
