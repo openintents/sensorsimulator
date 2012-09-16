@@ -19,7 +19,6 @@ package org.openintents.tools.simulator.model.telnet.addons;
 import java.io.File;
 
 import org.openintents.tools.simulator.model.telnet.TelnetServer;
-import org.openintents.tools.simulator.view.telnet.addons.BatteryAddonView;
 
 /**
  * BatteryAddonModel keeps the internal data model behind Battery Add-on.
@@ -58,7 +57,7 @@ public class BatteryAddonModel {
 		mTelnetServer.changeHealth(health);
 	}
 
-	public void slowEmulation(BatteryAddonView view) {
+	public void slowEmulation() {
 		mTelnetServer.slowEmulation();
 	}
 

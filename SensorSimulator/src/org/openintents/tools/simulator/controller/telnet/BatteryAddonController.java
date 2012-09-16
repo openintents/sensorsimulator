@@ -133,7 +133,7 @@ public class BatteryAddonController {
 		batteryEmulation.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				model.slowEmulation(view);
+				model.slowEmulation();
 			}
 		});
 	}
