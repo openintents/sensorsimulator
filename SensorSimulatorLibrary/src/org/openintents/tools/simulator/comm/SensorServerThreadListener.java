@@ -1,6 +1,6 @@
 package org.openintents.tools.simulator.comm;
 
-import org.openintents.tools.simulator.model.sensor.sensors.SensorType;
+import org.openintents.tools.simulator.model.sensors.SensorType;
 
 public interface SensorServerThreadListener {
 

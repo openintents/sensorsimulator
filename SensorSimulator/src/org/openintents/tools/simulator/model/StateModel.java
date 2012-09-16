@@ -20,7 +20,6 @@ import java.util.Hashtable;
 import java.util.Map.Entry;
 
 import org.openintents.tools.simulator.Global;
-import org.openintents.tools.simulator.model.sensor.sensors.SensorType;
 import org.openintents.tools.simulator.model.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensors.GravityModel;
 import org.openintents.tools.simulator.model.sensors.GyroscopeModel;
@@ -32,6 +31,7 @@ import org.openintents.tools.simulator.model.sensors.PressureModel;
 import org.openintents.tools.simulator.model.sensors.ProximityModel;
 import org.openintents.tools.simulator.model.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.sensors.SensorModel;
+import org.openintents.tools.simulator.model.sensors.SensorType;
 import org.openintents.tools.simulator.model.sensors.TemperatureModel;
 import org.openintents.tools.simulator.util.Interpolate;
 
