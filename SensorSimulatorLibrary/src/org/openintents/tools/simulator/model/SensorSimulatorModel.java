@@ -47,11 +47,13 @@ import org.openintents.tools.simulator.model.sensors.SensorType;
 import org.openintents.tools.simulator.model.sensors.TemperatureModel;
 
 /**
- * SensorSimulatorModel keeps the internal data model behind SensorSimulator.
- * 
- * SensorSimulator simulates various sensors. An Android application can connect
- * through TCP/IP with the settings shown to the SensorSimulator to simulate
- * accelerometer, compass, orientation sensor, and thermometer.
+ * {@code SensorSimulatorModel} keeps the internal data model behind
+ * SensorSimulator. It keeps a set of sensor models, which can be accessed
+ * individually. It also provides the ability to load an entire sensor state,
+ * which is a set of concrete values for each sensor.
+ * <p>
+ * The {@code SensorServerThreadListener} interface is implemented, so that
+ * queries from Clients can be directly delegated to the data model.
  * 
  * @author Peli
  * @author Josip Balic
@@ -88,38 +90,38 @@ public class SensorSimulatorModel implements SensorServerThreadListener {
 	 */
 	public void loadState(SensorState state) {
 		// simple
-		TemperatureModel temperatureModel = (TemperatureModel) getSensorModelFromName(SensorType.TEMPERATURE);
+		TemperatureModel temperatureModel = (TemperatureModel) getSensorModel(SensorType.TEMPERATURE);
 		temperatureModel.setTemp(state.getTemperature());
 
-		LightModel lightModel = (LightModel) getSensorModelFromName(SensorType.LIGHT);
+		LightModel lightModel = (LightModel) getSensorModel(SensorType.LIGHT);
 		lightModel.setLight(state.getLight());
 
-		ProximityModel proximityModel = (ProximityModel) getSensorModelFromName(SensorType.PROXIMITY);
+		ProximityModel proximityModel = (ProximityModel) getSensorModel(SensorType.PROXIMITY);
 		proximityModel.setProximity(state.getProximity());
 
-		PressureModel pressureModel = (PressureModel) getSensorModelFromName(SensorType.PRESSURE);
+		PressureModel pressureModel = (PressureModel) getSensorModel(SensorType.PRESSURE);
 		pressureModel.setPressure(state.getPressure());
 
 		// complex
-		GravityModel gravityModel = (GravityModel) getSensorModelFromName(SensorType.GRAVITY);
+		GravityModel gravityModel = (GravityModel) getSensorModel(SensorType.GRAVITY);
 		gravityModel.setGravity(state.getGravity());
 
-		LinearAccelerationModel linearAccModel = (LinearAccelerationModel) getSensorModelFromName(SensorType.LINEAR_ACCELERATION);
+		LinearAccelerationModel linearAccModel = (LinearAccelerationModel) getSensorModel(SensorType.LINEAR_ACCELERATION);
 		linearAccModel.setLinearAcceleration(state.getLinearAcceleration());
 
-		OrientationModel orientationModel = (OrientationModel) getSensorModelFromName(SensorType.ORIENTATION);
+		OrientationModel orientationModel = (OrientationModel) getSensorModel(SensorType.ORIENTATION);
 		orientationModel.setOrientation(state.getOrientation());
 
-		AccelerometerModel accelerometerModel = (AccelerometerModel) getSensorModelFromName(SensorType.ACCELEROMETER);
+		AccelerometerModel accelerometerModel = (AccelerometerModel) getSensorModel(SensorType.ACCELEROMETER);
 		accelerometerModel.setAccelerometer(state.getAccelerometer());
 
-		MagneticFieldModel magneticFieldModel = (MagneticFieldModel) getSensorModelFromName(SensorType.MAGNETIC_FIELD);
+		MagneticFieldModel magneticFieldModel = (MagneticFieldModel) getSensorModel(SensorType.MAGNETIC_FIELD);
 		magneticFieldModel.setMagneticField(state.getMagneticField());
 
-		RotationVectorModel rotationVectorModel = (RotationVectorModel) getSensorModelFromName(SensorType.ROTATION);
+		RotationVectorModel rotationVectorModel = (RotationVectorModel) getSensorModel(SensorType.ROTATION);
 		rotationVectorModel.setRotationVector(state.getRotationVector());
 
-		GyroscopeModel gyroscopeModel = (GyroscopeModel) getSensorModelFromName(SensorType.GYROSCOPE);
+		GyroscopeModel gyroscopeModel = (GyroscopeModel) getSensorModel(SensorType.GYROSCOPE);
 		gyroscopeModel.setGyroscope(state.getGyroscope());
 	}
 
@@ -130,7 +132,7 @@ public class SensorSimulatorModel implements SensorServerThreadListener {
 	 *            name of the model component to be returned
 	 * @return model component of the specified sensor
 	 */
-	public SensorModel getSensorModelFromName(SensorType sensorType) {
+	public SensorModel getSensorModel(SensorType sensorType) {
 		return mSensors.get(sensorType);
 	}
 
@@ -150,12 +152,12 @@ public class SensorSimulatorModel implements SensorServerThreadListener {
 
 	@Override
 	public int getNumSensorValues(SensorType sensorType) {
-		return getSensorModelFromName(sensorType).getNumSensorValues();
+		return getSensorModel(sensorType).getNumSensorValues();
 	}
 
 	@Override
 	public void setSensorUpdateDelay(SensorType sensorType, int updateDelay) throws IllegalArgumentException {
-		SensorModel sensorModel = getSensorModelFromName(sensorType);
+		SensorModel sensorModel = getSensorModel(sensorType);
 		if (sensorModel.isEnabled())
 			sensorModel.setCurrentUpdateDelay(updateDelay);
 		else
@@ -164,7 +166,7 @@ public class SensorSimulatorModel implements SensorServerThreadListener {
 
 	@Override
 	public void unsetSensorUpdateRate(SensorType sensorType) throws IllegalStateException {
-		SensorModel sensorModel = getSensorModelFromName(sensorType);
+		SensorModel sensorModel = getSensorModel(sensorType);
 		if (sensorModel.isEnabled()) {
 			sensorModel.setCurrentUpdateDelay(SensorModel.DELAY_MS_NORMAL);
 		} else {
@@ -174,7 +176,7 @@ public class SensorSimulatorModel implements SensorServerThreadListener {
 
 	@Override
 	public String readSensor(SensorType sensorType) {
-		SensorModel sensorModel = getSensorModelFromName(sensorType);
+		SensorModel sensorModel = getSensorModel(sensorType);
 		if (sensorModel.isEnabled()) {
 			return sensorModel.printData();
 		} else {

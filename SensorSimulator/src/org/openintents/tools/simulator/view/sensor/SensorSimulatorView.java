@@ -153,18 +153,18 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 
 		// sensors
 		mSensors = new ArrayList<SensorView>();
-		mSensors.add(new AccelerometerView((AccelerometerModel) model.getSensorModelFromName(SensorType.ACCELEROMETER)));
-		mSensors.add(new MagneticFieldView((MagneticFieldModel) model.getSensorModelFromName(SensorType.MAGNETIC_FIELD)));
-		mSensors.add(new OrientationView((OrientationModel) model.getSensorModelFromName(SensorType.ORIENTATION), model));
-		mSensors.add(new TemperatureView((TemperatureModel) model.getSensorModelFromName(SensorType.TEMPERATURE)));
-		mSensors.add(new BarcodeReaderView((BarcodeReaderModel) model.getSensorModelFromName(SensorType.BARCODE_READER)));
-		mSensors.add(new LightView((LightModel) model.getSensorModelFromName(SensorType.LIGHT)));
-		mSensors.add(new ProximityView((ProximityModel) model.getSensorModelFromName(SensorType.PROXIMITY)));
-		mSensors.add(new PressureView((PressureModel) model.getSensorModelFromName(SensorType.PRESSURE)));
-		mSensors.add(new LinearAccelerationView((LinearAccelerationModel) model.getSensorModelFromName(SensorType.LINEAR_ACCELERATION)));
-		mSensors.add(new GravityView((GravityModel) model.getSensorModelFromName(SensorType.GRAVITY)));
-		mSensors.add(new RotationVectorView((RotationVectorModel) model.getSensorModelFromName(SensorType.ROTATION)));
-		mSensors.add(new GyroscopeView((GyroscopeModel) model.getSensorModelFromName(SensorType.GYROSCOPE)));
+		mSensors.add(new AccelerometerView((AccelerometerModel) model.getSensorModel(SensorType.ACCELEROMETER)));
+		mSensors.add(new MagneticFieldView((MagneticFieldModel) model.getSensorModel(SensorType.MAGNETIC_FIELD)));
+		mSensors.add(new OrientationView((OrientationModel) model.getSensorModel(SensorType.ORIENTATION), model));
+		mSensors.add(new TemperatureView((TemperatureModel) model.getSensorModel(SensorType.TEMPERATURE)));
+		mSensors.add(new BarcodeReaderView((BarcodeReaderModel) model.getSensorModel(SensorType.BARCODE_READER)));
+		mSensors.add(new LightView((LightModel) model.getSensorModel(SensorType.LIGHT)));
+		mSensors.add(new ProximityView((ProximityModel) model.getSensorModel(SensorType.PROXIMITY)));
+		mSensors.add(new PressureView((PressureModel) model.getSensorModel(SensorType.PRESSURE)));
+		mSensors.add(new LinearAccelerationView((LinearAccelerationModel) model.getSensorModel(SensorType.LINEAR_ACCELERATION)));
+		mSensors.add(new GravityView((GravityModel) model.getSensorModel(SensorType.GRAVITY)));
+		mSensors.add(new RotationVectorView((RotationVectorModel) model.getSensorModel(SensorType.ROTATION)));
+		mSensors.add(new GyroscopeView((GyroscopeModel) model.getSensorModel(SensorType.GYROSCOPE)));
 
 		mMobile = new DeviceView(model);
 

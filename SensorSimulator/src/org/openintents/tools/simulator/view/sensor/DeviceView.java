@@ -183,8 +183,8 @@ public class DeviceView extends JPanel {
 	@Override
 	protected void paintComponent(Graphics graphics) {
 		super.paintComponent(graphics);
-		OrientationModel orientation = (OrientationModel) mSensorSimulatorModel.getSensorModelFromName(SensorType.ORIENTATION);
-		AccelerometerModel accelerometer = (AccelerometerModel) mSensorSimulatorModel.getSensorModelFromName(SensorType.ACCELEROMETER);
+		OrientationModel orientation = (OrientationModel) mSensorSimulatorModel.getSensorModel(SensorType.ORIENTATION);
+		AccelerometerModel accelerometer = (AccelerometerModel) mSensorSimulatorModel.getSensorModel(SensorType.ACCELEROMETER);
 		Graphics2D g2 = (Graphics2D) graphics;
 		g2.setStroke(mStroke);
 		// draw Line2D.Double

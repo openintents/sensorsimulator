@@ -146,42 +146,41 @@ public class SensorSimulatorController implements WindowListener {
 		mDeviceController = new DeviceController(mSensors, deviceView);
 		mScenarioController = scenario.controller;
 
-		long maxCount = mSensorSimulatorView.getRefreshCount();
 		// sensors
 		mSensors.add(new AccelerometerController((AccelerometerModel) model
-				.getSensorModelFromName(SensorType.ACCELEROMETER), view
+				.getSensorModel(SensorType.ACCELEROMETER), view
 				.getAccelerometer(), mSensorSimulatorView));
 		mSensors.add(new MagneticFieldController((MagneticFieldModel) model
-				.getSensorModelFromName(SensorType.MAGNETIC_FIELD), view
+				.getSensorModel(SensorType.MAGNETIC_FIELD), view
 				.getMagneticField(), mSensorSimulatorView));
 		mSensors.add(new OrientationController((OrientationModel) model
-				.getSensorModelFromName(SensorType.ORIENTATION), view
+				.getSensorModel(SensorType.ORIENTATION), view
 				.getOrientation(), deviceView, mSensorSimulatorView));
 		mSensors.add(new TemperatureController((TemperatureModel) model
-				.getSensorModelFromName(SensorType.TEMPERATURE), view
+				.getSensorModel(SensorType.TEMPERATURE), view
 				.getTemperature(), mSensorSimulatorView));
 		mSensors.add(new BarcodeReaderController((BarcodeReaderModel) model
-				.getSensorModelFromName(SensorType.BARCODE_READER), view
+				.getSensorModel(SensorType.BARCODE_READER), view
 				.getBarcodeReader(), mSensorSimulatorView));
 		mSensors.add(new LightController((LightModel) model
-				.getSensorModelFromName(SensorType.LIGHT), view.getLight(), mSensorSimulatorView));
+				.getSensorModel(SensorType.LIGHT), view.getLight(), mSensorSimulatorView));
 		mSensors.add(new ProximityController((ProximityModel) model
-				.getSensorModelFromName(SensorType.PROXIMITY), view
+				.getSensorModel(SensorType.PROXIMITY), view
 				.getProximity(), mSensorSimulatorView));
 		mSensors.add(new PressureController((PressureModel) model
-				.getSensorModelFromName(SensorType.PRESSURE), view
+				.getSensorModel(SensorType.PRESSURE), view
 				.getPressure(), mSensorSimulatorView));
 		mSensors.add(new LinearAccelerationController(
 				(LinearAccelerationModel) model
-						.getSensorModelFromName(SensorType.LINEAR_ACCELERATION),
+						.getSensorModel(SensorType.LINEAR_ACCELERATION),
 				view.getLinearAceleration(), mSensorSimulatorView));
 		mSensors.add(new GravityController((GravityModel) model
-				.getSensorModelFromName(SensorType.GRAVITY), view.getGravity(), mSensorSimulatorView));
+				.getSensorModel(SensorType.GRAVITY), view.getGravity(), mSensorSimulatorView));
 		mSensors.add(new RotationVectorController((RotationVectorModel) model
-				.getSensorModelFromName(SensorType.ROTATION), view
+				.getSensorModel(SensorType.ROTATION), view
 				.getRotationVector(), mSensorSimulatorView));
 		mSensors.add(new GyroscopeController((GyroscopeModel) model
-				.getSensorModelFromName(SensorType.GYROSCOPE), view
+				.getSensorModel(SensorType.GYROSCOPE), view
 				.getGyroscope(), mSensorSimulatorView));
 
 		mSensorTabController = new AllSensorsController(
@@ -385,37 +384,37 @@ public class SensorSimulatorController implements WindowListener {
 	public void enableSensor(int sensorType) {
 		switch (sensorType) {
 		case SensorModel.TYPE_ACCELEROMETER:
-			mSensorSimulatorModel.getSensorModelFromName(SensorType.ACCELEROMETER).setEnabled(true);
+			mSensorSimulatorModel.getSensorModel(SensorType.ACCELEROMETER).setEnabled(true);
 			break;
 		case SensorModel.TYPE_GRAVITY:
-			mSensorSimulatorModel.getSensorModelFromName(SensorType.GRAVITY).setEnabled(true);
+			mSensorSimulatorModel.getSensorModel(SensorType.GRAVITY).setEnabled(true);
 			break;
 		case SensorModel.TYPE_GYROSCOPE:
-			mSensorSimulatorModel.getSensorModelFromName(SensorType.GYROSCOPE).setEnabled(true);
+			mSensorSimulatorModel.getSensorModel(SensorType.GYROSCOPE).setEnabled(true);
 			break;
 		case SensorModel.TYPE_LIGHT:
-			mSensorSimulatorModel.getSensorModelFromName(SensorType.LIGHT).setEnabled(true);
+			mSensorSimulatorModel.getSensorModel(SensorType.LIGHT).setEnabled(true);
 			break;
 		case SensorModel.TYPE_LINEAR_ACCELERATION:
-			mSensorSimulatorModel.getSensorModelFromName(SensorType.LINEAR_ACCELERATION).setEnabled(true);
+			mSensorSimulatorModel.getSensorModel(SensorType.LINEAR_ACCELERATION).setEnabled(true);
 			break;
 		case SensorModel.TYPE_MAGNETIC_FIELD:
-			mSensorSimulatorModel.getSensorModelFromName(SensorType.MAGNETIC_FIELD).setEnabled(true);
+			mSensorSimulatorModel.getSensorModel(SensorType.MAGNETIC_FIELD).setEnabled(true);
 			break;
 		case SensorModel.TYPE_ORIENTATION:
-			mSensorSimulatorModel.getSensorModelFromName(SensorType.ORIENTATION).setEnabled(true);
+			mSensorSimulatorModel.getSensorModel(SensorType.ORIENTATION).setEnabled(true);
 			break;
 		case SensorModel.TYPE_PRESSURE:
-			mSensorSimulatorModel.getSensorModelFromName(SensorType.PRESSURE).setEnabled(true);
+			mSensorSimulatorModel.getSensorModel(SensorType.PRESSURE).setEnabled(true);
 			break;
 		case SensorModel.TYPE_PROXIMITY:
-			mSensorSimulatorModel.getSensorModelFromName(SensorType.PROXIMITY).setEnabled(true);
+			mSensorSimulatorModel.getSensorModel(SensorType.PROXIMITY).setEnabled(true);
 			break;
 		case SensorModel.TYPE_ROTATION_VECTOR:
-			mSensorSimulatorModel.getSensorModelFromName(SensorType.ROTATION).setEnabled(true);
+			mSensorSimulatorModel.getSensorModel(SensorType.ROTATION).setEnabled(true);
 			break;
 		case SensorModel.TYPE_TEMPERATURE:
-			mSensorSimulatorModel.getSensorModelFromName(SensorType.TEMPERATURE).setEnabled(true);
+			mSensorSimulatorModel.getSensorModel(SensorType.TEMPERATURE).setEnabled(true);
 			break;
 		}
 	}
