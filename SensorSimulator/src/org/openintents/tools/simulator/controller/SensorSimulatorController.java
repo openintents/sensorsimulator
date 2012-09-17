@@ -285,15 +285,6 @@ public class SensorSimulatorController implements WindowListener {
 	}
 
 	public void loadStateIntoTheModel(StateModel state) {
-		loadStateIntoTheModel(state, -1, false);
-	}
-
-	public void loadStateIntoTheModel(StateModel state, int position) {
-		loadStateIntoTheModel(state, position, true);
-	}
-
-	private void loadStateIntoTheModel(StateModel state, int position,
-			boolean isMainState) {
 		mSensorSimulatorModel.loadState(state);
 		mSensorSimulatorView.invalidateDevice();
 	}

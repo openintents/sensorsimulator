@@ -55,6 +55,11 @@ public abstract class SensorController {
 	public SensorController(final SensorModel model, final SensorView view, SensorSimulatorView sensorSimulatorView) {
 		mSensorModel = model;
 		mSensorView = view;
+		
+		// introduce observer and observable
+		model.addObserver(view);
+		
+		// make help button
 		JButton helpBtn = view.getHelpButton();
 		helpBtn.addActionListener(new ActionListener() {
 			@Override

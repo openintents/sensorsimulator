@@ -99,7 +99,7 @@ public class StateModel implements SensorState {
 	 * Saves in the StateModel format all sesnsors data (a lighter format).
 	 */
 	public void copyState(SensorSimulatorModel simulatorModel) {
-		mTemperature = (float) ((TemperatureModel) simulatorModel.getSensorModel(SensorType.TEMPERATURE)).getReadTemp();
+		mTemperature = (float) ((TemperatureModel) simulatorModel.getSensorModel(SensorType.TEMPERATURE)).getTemperature();
 		mLight = (float) ((LightModel) simulatorModel.getSensorModel(SensorType.LIGHT)).getReadLight();
 		mProximity = (float) ((ProximityModel) simulatorModel.getSensorModel(SensorType.PROXIMITY)).getReadProximity();
 		mPressure = (float) ((PressureModel) simulatorModel.getSensorModel(SensorType.PRESSURE)).getReadPressure();

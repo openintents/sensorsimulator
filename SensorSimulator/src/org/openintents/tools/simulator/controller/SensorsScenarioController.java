@@ -563,8 +563,7 @@ public class SensorsScenarioController {
 				StateModel crtState = mModel.getState(crtPosition);
 				if (crtState != null) {
 					// load the next state in the model
-					mSensorSimulatorController.loadStateIntoTheModel(crtState,
-							crtPosition);
+					mSensorSimulatorController.loadStateIntoTheModel(crtState);
 					mView.refresh();
 				}
 

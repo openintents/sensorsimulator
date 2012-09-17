@@ -18,6 +18,7 @@ package org.openintents.tools.simulator.model.sensors;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
 
 import org.openintents.tools.simulator.model.RefreshRateMeter;
 
@@ -30,7 +31,7 @@ import org.openintents.tools.simulator.model.RefreshRateMeter;
  * @author ilarele
  * 
  */
-public abstract class SensorModel {
+public abstract class SensorModel extends Observable {
 	public static final int POZ_ACCELEROMETER = 0;
 	public static final int POZ_MAGNETIC_FIELD = 1;
 	public static final int POZ_ORIENTATION = 2;
