@@ -20,6 +20,9 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Observable;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -28,8 +31,14 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.openintents.tools.simulator.model.sensors.LightModel;
+import org.openintents.tools.simulator.model.sensors.TemperatureModel;
 
 /**
  * LightView keeps the GUI of the Light sensor.
@@ -45,8 +54,15 @@ public class LightView extends SensorView {
 	private JPanel mSensorQuickPane;
 	private JSlider mLightSlider;
 
+	// the view's light value, used for both slider and text field
+	private double mLight;
+	
+	// data model
+	private LightModel mLightModel;
+
 	public LightView(LightModel model) {
 		super(model);
+		mLightModel = model;
 		setSensorQuickSettingsPanel();
 	}
 
@@ -68,6 +84,24 @@ public class LightView extends SensorView {
 		mLightSlider.setMinorTickSpacing(100);
 		mLightSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 		mSensorQuickPane.add(mLightSlider);
+		
+		// set listener
+		mLightSlider.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+//				int value = mLightSlider.getValue();
+//				setLight(value);
+				
+				int temp = (int) Math.round(mLight);
+				int value = mLightSlider.getValue();
+
+				if (value != temp) {
+					mLight = value;
+					mLightModel.setLight(mLight);
+				}
+			}
+		});
 	}
 
 	@Override
@@ -96,10 +130,15 @@ public class LightView extends SensorView {
 		lightFieldPane.add(label, c3);
 
 		mLightText = new JTextField(5);
-		mLightText.setText("" + lightModel.getReadLight());
+		mLightText.setText("" + lightModel.getLight());
 		c3.gridx = 1;
 		lightFieldPane.add(mLightText, c3);
+		
+		// set light text listener
+		mLightText.getDocument().addDocumentListener(
+				new LightTextListener(lightModel));
 
+		// unit label
 		label = new JLabel(" lux", SwingConstants.LEFT);
 		c3.gridx = 2;
 		lightFieldPane.add(label, c3);
@@ -162,5 +201,52 @@ public class LightView extends SensorView {
 
 	public JSlider getLightSlider() {
 		return mLightSlider;
+	}
+	
+	@Override
+	public void update(Observable o, Object arg) {
+		mLight = mLightModel.getLight();
+		int tempInteger = (int) Math.round(mLight);
+		mLightText.setText("" + mLight);
+		mLightSlider.setValue(tempInteger);				
+	}
+	
+	// /////////////////////////////////////////////////////////////////
+	// Input Listeners (the model)
+	// /////////////////////////////////////////////////////////////////
+	class LightTextListener implements DocumentListener {
+		
+		private LightModel mSensorModel;
+		
+		// timer
+		Timer mTimer = new Timer(1000, new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mLight = getSafeDouble(mLightText);
+				mSensorModel.setLight(mLight);
+			}
+		});
+		
+		public LightTextListener (LightModel sensorModel) {
+			mSensorModel = sensorModel;
+			mTimer.setRepeats(false);
+			mTimer.setCoalesce(true);
+		}
+
+		@Override
+		public void insertUpdate(DocumentEvent e) {
+			mTimer.restart();
+		}
+
+		@Override
+		public void removeUpdate(DocumentEvent e) {
+			mTimer.restart();
+		}
+
+		@Override
+		public void changedUpdate(DocumentEvent e) {
+			mTimer.restart();
+		}
 	}
 }

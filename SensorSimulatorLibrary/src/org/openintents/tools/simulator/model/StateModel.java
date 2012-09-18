@@ -100,7 +100,7 @@ public class StateModel implements SensorState {
 	 */
 	public void copyState(SensorSimulatorModel simulatorModel) {
 		mTemperature = (float) ((TemperatureModel) simulatorModel.getSensorModel(SensorType.TEMPERATURE)).getTemperature();
-		mLight = (float) ((LightModel) simulatorModel.getSensorModel(SensorType.LIGHT)).getReadLight();
+		mLight = (float) ((LightModel) simulatorModel.getSensorModel(SensorType.LIGHT)).getLight();
 		mProximity = (float) ((ProximityModel) simulatorModel.getSensorModel(SensorType.PROXIMITY)).getReadProximity();
 		mPressure = (float) ((PressureModel) simulatorModel.getSensorModel(SensorType.PRESSURE)).getReadPressure();
 
