@@ -60,7 +60,7 @@ public class TemperatureView extends SensorView {
 
 	// listeners
 	private ChangeListener mTemperatureSliderListener;
-	private TemperatureTextListener mTemperatureTextListener;
+	private SensorDocumentListener mTemperatureTextListener;
 	
 	// the view's temperature value, used for both slider and text
 	private double mTemperature;
@@ -138,7 +138,17 @@ public class TemperatureView extends SensorView {
 		mTemperatureText.setText("" + tempModel.getTemperature());
 		c3.gridx = 1;
 		temperatureFieldPane.add(mTemperatureText, c3);
-		mTemperatureTextListener = new TemperatureTextListener(tempModel);
+		
+		// listen to text field
+		mTemperatureTextListener = new SensorDocumentListener(
+				new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						mTemperature = getSafeDouble(mTemperatureText);
+						mTemperatureModel.setTemp(mTemperature);
+					}
+				});
 		mTemperatureText.getDocument().addDocumentListener(
 				mTemperatureTextListener);
 
@@ -185,44 +195,5 @@ public class TemperatureView extends SensorView {
 		int tempInteger = (int) Math.round(mTemperature);
 		mTemperatureText.setText("" + mTemperature);
 		mTemperatureSlider.setValue(tempInteger);				
-	}
-	
-	// /////////////////////////////////////////////////////////////////
-	// Input Listeners (the model)
-	// /////////////////////////////////////////////////////////////////
-	class TemperatureTextListener implements DocumentListener {
-		
-		private TemperatureModel mSensorModel;
-		
-		// timer
-		Timer mTimer = new Timer(1000, new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				mTemperature = getSafeDouble(mTemperatureText);
-				mSensorModel.setTemp(mTemperature);
-			}
-		});
-		
-		public TemperatureTextListener (TemperatureModel sensorModel) {
-			mSensorModel = sensorModel;
-			mTimer.setRepeats(false);
-			mTimer.setCoalesce(true);
-		}
-
-		@Override
-		public void insertUpdate(DocumentEvent e) {
-			mTimer.restart();
-		}
-
-		@Override
-		public void removeUpdate(DocumentEvent e) {
-			mTimer.restart();
-		}
-
-		@Override
-		public void changedUpdate(DocumentEvent e) {
-			mTimer.restart();
-		}
 	}
 }

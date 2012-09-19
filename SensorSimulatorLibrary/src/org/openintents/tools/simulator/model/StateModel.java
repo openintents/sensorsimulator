@@ -102,7 +102,7 @@ public class StateModel implements SensorState {
 		mTemperature = (float) ((TemperatureModel) simulatorModel.getSensorModel(SensorType.TEMPERATURE)).getTemperature();
 		mLight = (float) ((LightModel) simulatorModel.getSensorModel(SensorType.LIGHT)).getLight();
 		mProximity = (float) ((ProximityModel) simulatorModel.getSensorModel(SensorType.PROXIMITY)).getReadProximity();
-		mPressure = (float) ((PressureModel) simulatorModel.getSensorModel(SensorType.PRESSURE)).getReadPressure();
+		mPressure = (float) ((PressureModel) simulatorModel.getSensorModel(SensorType.PRESSURE)).getPressure();
 
 		LinearAccelerationModel linearAcceleration = (LinearAccelerationModel) simulatorModel
 				.getSensorModel(SensorType.LINEAR_ACCELERATION);

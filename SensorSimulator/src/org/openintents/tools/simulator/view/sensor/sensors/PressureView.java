@@ -20,6 +20,9 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Observable;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -28,6 +31,8 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.openintents.tools.simulator.model.sensors.PressureModel;
 
@@ -42,8 +47,15 @@ public class PressureView extends SensorView {
 
 	private JSlider mPressureSlider;
 
+	// data model
+	private PressureModel mPressureModel;
+
+	// data value used for both slider and text field
+	private double mPressure;
+	
 	public PressureView(PressureModel model) {
 		super(model);
+		mPressureModel = model;
 		setSensorQuickSettingsPanel();
 	}
 
@@ -65,6 +77,18 @@ public class PressureView extends SensorView {
 		mPressureSlider.setMinorTickSpacing(10);
 		mPressureSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 		mSensorQuickPane.add(mPressureSlider);
+		
+		mPressureSlider.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				double value = (double) mPressureSlider.getValue() / 100;
+				if (value != mPressure) {
+					mPressureModel.setPressure(value);
+				}
+			}
+		});
+
 	}
 
 	// Pressure
@@ -100,6 +124,15 @@ public class PressureView extends SensorView {
 		mPressureText.setText("" + pressureModel.getPressure());
 		c3.gridx = 1;
 		pressureFieldPane.add(mPressureText, c3);
+		mPressureText.getDocument().addDocumentListener(
+				new SensorDocumentListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						mPressure = getSafeDouble(mPressureText);
+						mPressureModel.setPressure(mPressure);
+					}
+				}));
 
 		label = new JLabel(mModel.getSI(), SwingConstants.LEFT);
 		c3.gridx = 2;
@@ -157,5 +190,12 @@ public class PressureView extends SensorView {
 
 	public JSlider getPressureSlider() {
 		return mPressureSlider;
+	}
+	
+	@Override
+	public void update(Observable o, Object arg) {
+		mPressure = mPressureModel.getPressure();
+		mPressureText.setText("" + mPressure);
+		mPressureSlider.setValue((int) (mPressure * 100));				
 	}
 }

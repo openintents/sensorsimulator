@@ -46,35 +46,35 @@ public class PressureModel extends SensorModel {
 
 	@Override
 	public void updateSensorReadoutValues() {
-		long currentTime = System.currentTimeMillis();
-		// Form the average
-		if (mAverage) {
-			mPartialPressure += mPressureValue;
-			mPartialPressureN++;
-		}
-
-		// Update
-		if (currentTime >= mNextUpdate) {
-			mNextUpdate += mUpdateDelay;
-			if (mNextUpdate < currentTime) {
-				// Don't lag too much behind.
-				// If we are too slow, then we are too slow.
-				mNextUpdate = currentTime;
-			}
-
-			if (mAverage) {
-				// form average
-				mReadPressure = mPartialPressure / mPartialPressureN;
-
-				// reset average
-				mPartialPressure = 0;
-				mPartialPressureN = 0;
-
-			} else {
-				// Only take current value
-				mReadPressure = mPressureValue;
-			}
-		}
+//		long currentTime = System.currentTimeMillis();
+//		// Form the average
+//		if (mAverage) {
+//			mPartialPressure += mPressureValue;
+//			mPartialPressureN++;
+//		}
+//
+//		// Update
+//		if (currentTime >= mNextUpdate) {
+//			mNextUpdate += mUpdateDelay;
+//			if (mNextUpdate < currentTime) {
+//				// Don't lag too much behind.
+//				// If we are too slow, then we are too slow.
+//				mNextUpdate = currentTime;
+//			}
+//
+//			if (mAverage) {
+//				// form average
+//				mReadPressure = mPartialPressure / mPartialPressureN;
+//
+//				// reset average
+//				mPartialPressure = 0;
+//				mPartialPressureN = 0;
+//
+//			} else {
+//				// Only take current value
+//				mReadPressure = mPressureValue;
+//			}
+//		}
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class PressureModel extends SensorModel {
 	@Override
 	public String printSensorData() {
 		// number of data following + data
-		return "1\n" + mReadPressure;
+		return "1\n" + mPressureValue;
 	}
 
 	public double getPressure() {
@@ -97,17 +97,17 @@ public class PressureModel extends SensorModel {
 		return "";
 	}
 
-	public double getReadPressure() {
-		return mReadPressure;
-	}
-
 	public void setPressure(double value) {
-		if (value > 1) {
-			mPressureValue = 1;
-		} else if (value < 0) {
-			mPressureValue = 0;
-		} else {
-			mPressureValue = value;
+		if (value != mPressureValue) {
+			if (value > 1) {
+				mPressureValue = 1;
+			} else if (value < 0) {
+				mPressureValue = 0;
+			} else {
+				mPressureValue = value;
+			}
+			setChanged();
+			notifyObservers();
 		}
 	}
 

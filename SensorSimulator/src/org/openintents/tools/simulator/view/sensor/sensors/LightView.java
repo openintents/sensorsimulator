@@ -90,9 +90,6 @@ public class LightView extends SensorView {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-//				int value = mLightSlider.getValue();
-//				setLight(value);
-				
 				int temp = (int) Math.round(mLight);
 				int value = mLightSlider.getValue();
 
@@ -133,10 +130,17 @@ public class LightView extends SensorView {
 		mLightText.setText("" + lightModel.getLight());
 		c3.gridx = 1;
 		lightFieldPane.add(mLightText, c3);
-		
+
 		// set light text listener
 		mLightText.getDocument().addDocumentListener(
-				new LightTextListener(lightModel));
+				new SensorDocumentListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						mLight = getSafeDouble(mLightText);
+						mLightModel.setLight(mLight);
+					}
+				}));
 
 		// unit label
 		label = new JLabel(" lux", SwingConstants.LEFT);
@@ -151,10 +155,6 @@ public class LightView extends SensorView {
 		c2.gridy++;
 		resultPanel.add(lightFieldPane, c2);
 		return resultPanel;
-	}
-
-	public double getLight() {
-		return getSafeDouble(mLightText);
 	}
 
 	@Override
@@ -198,10 +198,6 @@ public class LightView extends SensorView {
 		mLightText.setText("" + value);
 		mLightSlider.setValue((int) value);
 	}
-
-	public JSlider getLightSlider() {
-		return mLightSlider;
-	}
 	
 	@Override
 	public void update(Observable o, Object arg) {
@@ -209,44 +205,5 @@ public class LightView extends SensorView {
 		int tempInteger = (int) Math.round(mLight);
 		mLightText.setText("" + mLight);
 		mLightSlider.setValue(tempInteger);				
-	}
-	
-	// /////////////////////////////////////////////////////////////////
-	// Input Listeners (the model)
-	// /////////////////////////////////////////////////////////////////
-	class LightTextListener implements DocumentListener {
-		
-		private LightModel mSensorModel;
-		
-		// timer
-		Timer mTimer = new Timer(1000, new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				mLight = getSafeDouble(mLightText);
-				mSensorModel.setLight(mLight);
-			}
-		});
-		
-		public LightTextListener (LightModel sensorModel) {
-			mSensorModel = sensorModel;
-			mTimer.setRepeats(false);
-			mTimer.setCoalesce(true);
-		}
-
-		@Override
-		public void insertUpdate(DocumentEvent e) {
-			mTimer.restart();
-		}
-
-		@Override
-		public void removeUpdate(DocumentEvent e) {
-			mTimer.restart();
-		}
-
-		@Override
-		public void changedUpdate(DocumentEvent e) {
-			mTimer.restart();
-		}
 	}
 }

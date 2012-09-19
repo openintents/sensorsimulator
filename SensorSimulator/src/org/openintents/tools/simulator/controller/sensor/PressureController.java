@@ -16,10 +16,6 @@
 
 package org.openintents.tools.simulator.controller.sensor;
 
-import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensors.PressureModel;
@@ -40,52 +36,32 @@ public class PressureController extends SensorController {
 
 	public PressureController(PressureModel model, PressureView view, SensorSimulatorView sensorSimulatorView) {
 		super(model, view, sensorSimulatorView);
-		registerPressureSlider(view);
-	}
-
-	private void registerPressureSlider(final PressureView view) {
-		final JSlider pressureSlider = view.getPressureSlider();
-		pressureSlider.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				setPressure((double) pressureSlider.getValue() / 100);
-			}
-		});
-	}
-
-	protected void setPressure(double value) {
-		final PressureModel model = (PressureModel) mSensorModel;
-		final PressureView view = (PressureView) mSensorView;
-		if (model.getReadPressure() != value) {
-			model.setPressure(value);
-			view.setPressure(value);
-		}
 	}
 
 	@Override
 	public void updateSensorPhysics(OrientationModel orientation,
 			WiiAccelerometerModel realDeviceBridgeAddon, int delay) {
-		PressureModel pressureModel = (PressureModel) mSensorModel;
-		PressureView pressureView = (PressureView) mSensorView;
-		// Pressure
-		if (pressureModel.isEnabled()) {
-			setPressure(pressureView.getPressure());
-
-			// Add random component:
-			double random = pressureView.getRandom();
-			if (random > 0) {
-				pressureModel.addPressure(getRandom(random));
-			}
-		} else {
-			setPressure(0);
-		}
+//		PressureModel pressureModel = (PressureModel) mSensorModel;
+//		PressureView pressureView = (PressureView) mSensorView;
+//		// Pressure
+//		if (pressureModel.isEnabled()) {
+//			setPressure(pressureView.getPressure());
+//
+//			// Add random component: TODO: get random
+//			double random = pressureView.getRandom();
+//			if (random > 0) {
+//				pressureModel.addPressure(getRandom(random));
+//			}
+//		} else {
+//			setPressure(0);
+//		}
 	}
 
 	@Override
 	public String getString() {
 		PressureModel pressureModel = (PressureModel) mSensorModel;
 		return Global.TWO_DECIMAL_FORMAT
-				.format(pressureModel.getReadPressure());
+				.format(pressureModel.getPressure());
 	}
 
 }
