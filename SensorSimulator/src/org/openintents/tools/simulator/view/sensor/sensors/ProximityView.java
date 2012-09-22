@@ -20,6 +20,7 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.util.Observable;
 import java.util.Random;
 
 import javax.swing.BorderFactory;
@@ -45,9 +46,12 @@ import org.openintents.tools.simulator.model.sensors.SensorModel;
  */
 public class ProximityView extends SensorView {
 	private static final long serialVersionUID = -13895826746028866L;
+	private ProximityModel mProximityModel;
 
 	public ProximityView(ProximityModel model) {
 		super(model);
+		
+		mProximityModel = model;
 		setSensorQuickSettingsPanel();
 	}
 
@@ -136,20 +140,19 @@ public class ProximityView extends SensorView {
 
 					public void updateProximityText() {
 						if (mProximityFar.isSelected()) {
-							mProximityText.setText(mProximityRangeText
-									.getText());
+							mProximityModel.setProximity(getProximity());
 						} else {
 							Random r = new Random();
-							int currentMaximumRange = Integer
-									.parseInt(mProximityRangeText.getText());
+							int currentMaximumRange = (int) (Math.round(Double
+									.parseDouble(mProximityRangeText.getText())));
+							if (currentMaximumRange <= 0)
+								currentMaximumRange = 1;
 							int reduction = r.nextInt(currentMaximumRange);
 							int randomNearProximity = currentMaximumRange
 									- reduction;
-							mProximityText.setText(Integer
-									.toString(randomNearProximity));
+							mProximityModel.setProximity(randomNearProximity);
 						}
 					}
-
 				});
 
 		c3.gridx = 1;
@@ -194,7 +197,7 @@ public class ProximityView extends SensorView {
 	}
 
 	public double getProximity() {
-		return getSafeDouble(mProximityText);
+		return getSafeDouble(mProximityRangeText);
 	}
 
 	@Override
@@ -219,5 +222,10 @@ public class ProximityView extends SensorView {
 	@Override
 	public JPanel getQuickSettingsPanel() {
 		return mSensorQuickPane;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		mProximityText.setText("" + mProximityModel.getProximity());
 	}
 }
