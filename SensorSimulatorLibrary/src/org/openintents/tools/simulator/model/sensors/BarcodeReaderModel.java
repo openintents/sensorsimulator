@@ -73,6 +73,12 @@ public class BarcodeReaderModel extends SensorModel {
 	}
 
 	public void setBarcode(String value) {
-		barcodeValue = value;
+		if (!value.equals(barcodeValue)) {
+			barcodeValue = value;
+
+			// inform observers
+			setChanged();
+			notifyObservers();
+		}
 	}
 }
