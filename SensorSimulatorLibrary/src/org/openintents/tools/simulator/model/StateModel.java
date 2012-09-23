@@ -120,9 +120,9 @@ public class StateModel implements SensorState {
 		mGravity[2] = (float) gravity.getGravityZ();
 
 		OrientationModel orientation = (OrientationModel) simulatorModel.getSensorModel(SensorType.ORIENTATION);
-		mOrientation[0] = (float) orientation.getReadYaw();
-		mOrientation[1] = (float) orientation.getReadPitch();
-		mOrientation[2] = (float) orientation.getReadRoll();
+		mOrientation[0] = (float) (double) orientation.getYaw();
+		mOrientation[1] = (float) (double) orientation.getPitch();
+		mOrientation[2] = (float) (double) orientation.getRoll();
 
 		AccelerometerModel accelerometer = (AccelerometerModel) simulatorModel.getSensorModel(SensorType.ACCELEROMETER);
 		mAccelerometer[0] = (float) accelerometer.getReadAccelerometerX();

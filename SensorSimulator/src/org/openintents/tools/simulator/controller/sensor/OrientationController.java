@@ -16,10 +16,6 @@
 
 package org.openintents.tools.simulator.controller.sensor;
 
-import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensors.WiiAccelerometerModel;
@@ -40,83 +36,79 @@ public class OrientationController extends SensorController {
 	public OrientationController(OrientationModel model, OrientationView view,
 			DeviceView deviceView, SensorSimulatorView sensorSimulatorView) {
 		super(model, view, sensorSimulatorView);
-		registerSliders(deviceView);
-	}
+//		final OrientationModel orientModel = (OrientationModel) mSensorModel;
+//		final OrientationView orientView = (OrientationView) mSensorView;
+//		final JSlider yawSlider = orientView.getYawSlider();
+//		final JSlider rollSlider = orientView.getRollSlider();
+//		final JSlider pitchSlider = orientView.getPitchSlider();
 
-	private void registerSliders(final DeviceView deviceView) {
-		final OrientationModel orientModel = (OrientationModel) mSensorModel;
-		final OrientationView orientView = (OrientationView) mSensorView;
-		final JSlider yawSlider = orientView.getYawSlider();
-		final JSlider rollSlider = orientView.getRollSlider();
-		final JSlider pitchSlider = orientView.getPitchSlider();
-
-		ChangeListener changeListener = new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				JSlider source = (JSlider) e.getSource();
-				if (source == yawSlider) {
-					orientModel.setYaw(source.getValue());
-				} else if (source == pitchSlider) {
-					orientModel.setPitch(source.getValue());
-				} else if (source == rollSlider) {
-					orientModel.setRoll(source.getValue());
-				}
-				deviceView.doRepaint();
-			}
-		};
-		yawSlider.addChangeListener(changeListener);
-		pitchSlider.addChangeListener(changeListener);
-		rollSlider.addChangeListener(changeListener);
-
-		orientModel.setYaw(yawSlider.getValue());
-		orientModel.setPitch(pitchSlider.getValue());
-		orientModel.setRoll(rollSlider.getValue());
+//		ChangeListener changeListener = new ChangeListener() {
+//			@Override
+//			public void stateChanged(ChangeEvent e) {
+//				JSlider source = (JSlider) e.getSource();
+//				if (source == yawSlider) {
+//					orientModel.setYaw(source.getValue());
+//				} else if (source == pitchSlider) {
+//					orientModel.setPitch(source.getValue());
+//				} else if (source == rollSlider) {
+//					orientModel.setRoll(source.getValue());
+//				}
+//				// deviceView.doRepaint();
+//			}
+//		};
+//		yawSlider.addChangeListener(changeListener);
+//		pitchSlider.addChangeListener(changeListener);
+//		rollSlider.addChangeListener(changeListener);
+//
+//		orientModel.setYaw(yawSlider.getValue());
+//		orientModel.setPitch(pitchSlider.getValue());
+//		orientModel.setRoll(rollSlider.getValue());
 	}
 
 	@Override
 	public void updateSensorPhysics(OrientationModel orientation,
 			WiiAccelerometerModel realDeviceBridgeAddon, int delay) {
-		OrientationModel orientModel = (OrientationModel) mSensorModel;
-		OrientationView orientView = (OrientationView) mSensorView;
-		if (orientModel.isEnabled()) {
-			// Add random component:
-			double random = orientView.getRandom();
-			if (random > 0) {
-				orientModel.addYaw(getRandom(random));
-				orientModel.addPitch(getRandom(random));
-				orientModel.addRoll(getRandom(random));
-			}
-		}
+//		OrientationModel orientModel = (OrientationModel) mSensorModel;
+//		OrientationView orientView = (OrientationView) mSensorView;
+//		if (orientModel.isEnabled()) {
+//			// Add random component:
+//			double random = orientView.getRandom();
+//			if (random > 0) {
+//				orientModel.addYaw(getRandom(random));
+//				orientModel.addPitch(getRandom(random));
+//				orientModel.addRoll(getRandom(random));
+//			}
+//		}
 	}
 
 	@Override
 	public String getString() {
 		OrientationModel orientModel = (OrientationModel) mSensorModel;
-		return Global.TWO_DECIMAL_FORMAT.format(orientModel.getReadYaw())
+		return Global.TWO_DECIMAL_FORMAT.format((double) orientModel.getYaw())
 				+ ", "
-				+ Global.TWO_DECIMAL_FORMAT.format(orientModel.getReadPitch())
+				+ Global.TWO_DECIMAL_FORMAT.format((double) orientModel.getPitch())
 				+ ", "
-				+ Global.TWO_DECIMAL_FORMAT.format(orientModel.getReadRoll());
+				+ Global.TWO_DECIMAL_FORMAT.format((double) orientModel.getRoll());
 	}
 
 	public void setPitch(int newPitch) {
 		OrientationModel orientModel = (OrientationModel) mSensorModel;
-		OrientationView orientView = (OrientationView) mSensorView;
+		// OrientationView orientView = (OrientationView) mSensorView;
 		orientModel.setPitch(newPitch);
-		orientView.setPitchSlider(newPitch);
+		// orientView.setPitchSlider(newPitch);
 	}
 
 	public void setYaw(int value) {
 		OrientationModel orientModel = (OrientationModel) mSensorModel;
-		OrientationView orientView = (OrientationView) mSensorView;
+		// OrientationView orientView = (OrientationView) mSensorView;
 		orientModel.setYaw(value);
-		orientView.setYawSlider(value);
+		// orientView.setYawSlider(value);
 	}
 
 	public void setRoll(int value) {
 		OrientationModel orientModel = (OrientationModel) mSensorModel;
-		OrientationView orientView = (OrientationView) mSensorView;
+		// OrientationView orientView = (OrientationView) mSensorView;
 		orientModel.setRoll(value);
-		orientView.setRollSlider(value);
+		// orientView.setRollSlider(value);
 	}
 }

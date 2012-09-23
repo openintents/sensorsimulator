@@ -204,6 +204,10 @@ public class GyroscopeModel extends SensorModel {
 		mInstantSpeedPitch += (2 * val - 1) * random;
 	}
 
+	/*
+	 * TODO: why is this setter updating mOldPitch and the other
+	 * mInstantSpeedPitch?
+	 */
 	public void setGyroscope(int pitch, int yaw, int roll) {
 		mOldPitch = pitch;
 		mOldYaw = yaw;

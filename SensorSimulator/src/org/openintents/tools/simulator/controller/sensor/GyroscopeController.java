@@ -45,8 +45,8 @@ public class GyroscopeController extends SensorController {
 		// Gyroscope
 		if (gyroscopeModel.isEnabled()) {
 			gyroscopeModel.refreshAngularSpeed(delay,
-					orientation.getReadPitch(), orientation.getReadYaw(),
-					orientation.getReadRoll());
+					orientation.getPitch(), orientation.getYaw(),
+					orientation.getRoll());
 			// Add random component:
 			double random = gyroscopeView.getRandom();
 			if (random > 0) {
