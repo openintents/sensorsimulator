@@ -130,9 +130,9 @@ public class StateModel implements SensorState {
 		mAccelerometer[2] = (float) accelerometer.getReadAccelerometerZ();
 
 		MagneticFieldModel magneticField = (MagneticFieldModel) simulatorModel.getSensorModel(SensorType.MAGNETIC_FIELD);
-		mMagneticField[0] = (float) magneticField.getReadCompassX();
-		mMagneticField[1] = (float) magneticField.getReadCompassY();
-		mMagneticField[2] = (float) magneticField.getReadCompassZ();
+		mMagneticField[0] = (float) magneticField.getCompassX();
+		mMagneticField[1] = (float) magneticField.getCompassY();
+		mMagneticField[2] = (float) magneticField.getCompassZ();
 
 		RotationVectorModel rotationVector = (RotationVectorModel) simulatorModel
 				.getSensorModel(SensorType.ROTATION);

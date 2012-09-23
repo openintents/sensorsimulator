@@ -126,8 +126,8 @@ public class MagneticFieldModel extends SensorModel {
 	@Override
 	public String printSensorData() {
 		// number of data following + data
-		return "3\n" + mReadCompassX + "\n" + mReadCompassY + "\n"
-				+ mReadCompassZ;
+		return "3\n" + mCompassX + "\n" + mCompassY + "\n"
+				+ mCompassZ;
 	}
 
 	@Override
@@ -136,38 +136,54 @@ public class MagneticFieldModel extends SensorModel {
 	}
 
 	public void setVertical(double value) {
-		mVertical = value;
+		if (mVertical != value) {
+			mVertical = value;
+
+			// inform observers
+			setChanged();
+			notifyObservers();
+		}
 	}
 
 	public void setEast(double value) {
-		mEast = value;
+		if (mEast != value) {
+			mEast = value;
+
+			// inform observers
+			setChanged();
+			notifyObservers();
+		}
 	}
 
 	public void setNorth(double value) {
-		mNorth = value;
+		if (mNorth != value) {
+			mNorth = value;
+
+			// inform observers
+			setChanged();
+			notifyObservers();
+		}
 	}
 
-	public void resetCompas() {
-		mCompassX = 0;
-		mCompassY = 0;
-		mCompassZ = 0;
+	public double getCompassX() {
+		return mCompassX;
 	}
 
-	public double getReadCompassX() {
-		return mReadCompassX;
+	public double getCompassY() {
+		return mCompassY;
 	}
 
-	public double getReadCompassY() {
-		return mReadCompassY;
-	}
-
-	public double getReadCompassZ() {
-		return mReadCompassZ;
+	public double getCompassZ() {
+		return mCompassZ;
 	}
 
 	public void setMagneticField(float[] newValue) {
 		mCompassX = newValue[0];
 		mCompassY = newValue[1];
 		mCompassZ = newValue[2];
+		
+		// inform observers
+		setChanged();
+		notifyObservers();
 	}
 }

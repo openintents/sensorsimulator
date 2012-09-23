@@ -20,6 +20,9 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Observable;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -44,9 +47,11 @@ public class MagneticFieldView extends SensorView {
 	private JTextField mEastText;
 	private JTextField mVerticalText;
 	private JPanel mSensorQuickPane;
+	private MagneticFieldModel mMagneticFieldModel;
 
 	public MagneticFieldView(MagneticFieldModel model) {
 		super(model);
+		mMagneticFieldModel = model;
 		setSensorQuickSettingsPanel();
 	}
 
@@ -98,6 +103,14 @@ public class MagneticFieldView extends SensorView {
 		mNorthText.setText("" + magModel.getNorth());
 		c3.gridx = 1;
 		magneticFieldPane.add(mNorthText, c3);
+		mNorthText.getDocument().addDocumentListener(
+				new SensorDocumentListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						mMagneticFieldModel.setNorth(getSafeDouble(mNorthText));
+					}
+				}));
 
 		JLabel nanoTeslaLabel = new JLabel(" nT", SwingConstants.LEFT);
 		c3.gridx = 2;
@@ -114,6 +127,14 @@ public class MagneticFieldView extends SensorView {
 		mEastText.setText("" + magModel.getEast());
 		c3.gridx = 1;
 		magneticFieldPane.add(mEastText, c3);
+		mEastText.getDocument().addDocumentListener(
+				new SensorDocumentListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						mMagneticFieldModel.setEast(getSafeDouble(mEastText));
+					}
+				}));
 
 		nanoTeslaLabel = new JLabel(" nT", SwingConstants.LEFT);
 		c3.gridx = 2;
@@ -130,6 +151,15 @@ public class MagneticFieldView extends SensorView {
 		mVerticalText.setText("" + magModel.getVertical());
 		c3.gridx = 1;
 		magneticFieldPane.add(mVerticalText, c3);
+		mVerticalText.getDocument().addDocumentListener(
+				new SensorDocumentListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						mMagneticFieldModel
+								.setVertical(getSafeDouble(mVerticalText));
+					}
+				}));
 
 		JLabel label = new JLabel(" nT", SwingConstants.LEFT);
 		c3.gridx = 2;
@@ -175,5 +205,12 @@ public class MagneticFieldView extends SensorView {
 	@Override
 	public JPanel getQuickSettingsPanel() {
 		return mSensorQuickPane;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		mNorthText.setText(mMagneticFieldModel.getNorth() + "");
+		mEastText.setText(mMagneticFieldModel.getEast() + "");
+		mVerticalText.setText(mMagneticFieldModel.getVertical() + "");
 	}
 }
