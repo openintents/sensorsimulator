@@ -20,6 +20,7 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.util.Observable;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -43,10 +44,13 @@ public class RotationVectorView extends SensorView {
 	private JTextField mRotationVectorTextY;
 	private JTextField mRotationVectorTextZ;
 	private JPanel mSensorQuickPane;
+	private RotationVectorModel mRotationVectorModel;
 
 	public RotationVectorView(RotationVectorModel model) {
 		super(model);
 		setSensorQuickSettingsPanel();
+		
+		mRotationVectorModel = model;
 	}
 
 	private void setSensorQuickSettingsPanel() {
@@ -149,14 +153,15 @@ public class RotationVectorView extends SensorView {
 		return panel;
 	}
 
-	public void setRotationVector(Vector v) {
-		mRotationVectorTextX.setText("" + v.x);
-		mRotationVectorTextY.setText("" + v.y);
-		mRotationVectorTextZ.setText("" + v.z);
-	}
-
 	@Override
 	public JPanel getQuickSettingsPanel() {
 		return mSensorQuickPane;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		mRotationVectorTextX.setText("" + (float) mRotationVectorModel.getRotationVectorX());
+		mRotationVectorTextY.setText("" + (float) mRotationVectorModel.getRotationVectorY());
+		mRotationVectorTextZ.setText("" + (float) mRotationVectorModel.getRotationVectorZ());
 	}
 }

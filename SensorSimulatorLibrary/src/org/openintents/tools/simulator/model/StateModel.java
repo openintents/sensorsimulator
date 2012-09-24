@@ -136,9 +136,9 @@ public class StateModel implements SensorState {
 
 		RotationVectorModel rotationVector = (RotationVectorModel) simulatorModel
 				.getSensorModel(SensorType.ROTATION);
-		mRotationVector[0] = (float) rotationVector.getReadRotationVectorX();
-		mRotationVector[1] = (float) rotationVector.getReadRotationVectorY();
-		mRotationVector[2] = (float) rotationVector.getReadRotationVectorZ();
+		mRotationVector[0] = (float) rotationVector.getRotationVectorX();
+		mRotationVector[1] = (float) rotationVector.getRotationVectorY();
+		mRotationVector[2] = (float) rotationVector.getRotationVectorZ();
 
 		GyroscopeModel gyroscope = (GyroscopeModel) simulatorModel.getSensorModel(SensorType.GYROSCOPE);
 		mGyroscope[0] = (float) gyroscope.getReadGyroscopePitch();
