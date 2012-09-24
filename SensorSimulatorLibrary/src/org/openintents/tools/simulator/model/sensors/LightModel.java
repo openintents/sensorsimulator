@@ -85,7 +85,7 @@ public class LightModel extends SensorModel {
 	@Override
 	public String printSensorData() {
 		// number of data following + data
-		return "1\n" + mLightValue;
+		return "1\n" + mReadLight;
 	}
 
 	@Override
@@ -94,18 +94,14 @@ public class LightModel extends SensorModel {
 	}
 
 	public void setLight(double value) {
-		if (value != mLightValue) {
-			mLightValue = value;
-			setChanged();
-			notifyObservers();
-		}
+		mLightValue = value;
 	}
 
 	public void addLight(double value) {
-		setLight(mLightValue + value);
+		mLightValue += value;
 	}
 
-	public double getLight() {
-		return mLightValue;
+	public double getReadLight() {
+		return mReadLight;
 	}
 }

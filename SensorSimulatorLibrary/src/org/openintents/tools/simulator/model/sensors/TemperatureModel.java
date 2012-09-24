@@ -16,8 +16,6 @@
 
 package org.openintents.tools.simulator.model.sensors;
 
-import java.util.Observer;
-
 
 /**
  * TemperatureModel keeps the internal data model behind Temperature Sensor.
@@ -96,20 +94,20 @@ public class TemperatureModel extends SensorModel {
 	}
 
 	public void setTemp(double value) {
-		if (value != temperatureValue) {
-			temperatureValue = value;
-			setChanged();
-			notifyObservers();
-		}
+		temperatureValue = value;
 	}
 
 	public void addTemp(double value) {
-		setTemp(temperatureValue + value);
+		temperatureValue += value;
+	}
+
+	public double getReadTemp() {
+		return mReadTemperature;
 	}
 
 	@Override
 	public String printSensorData() {
 		// number of data following + data
-		return "1\n" + temperatureValue;
+		return "1\n" + mReadTemperature;
 	}
 }

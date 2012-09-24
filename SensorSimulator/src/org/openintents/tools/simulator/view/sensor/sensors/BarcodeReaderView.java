@@ -18,9 +18,6 @@ package org.openintents.tools.simulator.view.sensor.sensors;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Observable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -41,11 +38,9 @@ import org.openintents.tools.simulator.util.JTextFieldLimit;
 public class BarcodeReaderView extends SensorView {
 
 	private static final long serialVersionUID = 2384391181800708327L;
-	private BarcodeReaderModel mBarcodeReaderModel;
 
-	public BarcodeReaderView(BarcodeReaderModel model) {
+	public BarcodeReaderView(SensorModel model) {
 		super(model);
-		mBarcodeReaderModel = model;
 		setSensorQuickSettingsPanel();
 	}
 
@@ -80,17 +75,12 @@ public class BarcodeReaderView extends SensorView {
 		layout.gridx = 1;
 		resultPanel.add(mBarcodeReaderText, layout);
 
-		mBarcodeReaderText.getDocument().addDocumentListener(
-				new SensorDocumentListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						mBarcodeReaderModel.setBarcode(mBarcodeReaderText.getText());
-					}
-				}));
-
 		resultPanel.add(label, layout);
 		return resultPanel;
+	}
+
+	public String getBarcode() {
+		return mBarcodeReaderText.getText();
 	}
 
 	@Override
@@ -106,10 +96,5 @@ public class BarcodeReaderView extends SensorView {
 	@Override
 	public JPanel getQuickSettingsPanel() {
 		return mSensorQuickPane;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		mBarcodeReaderText.setText(mBarcodeReaderModel.getBarcode());
 	}
 }

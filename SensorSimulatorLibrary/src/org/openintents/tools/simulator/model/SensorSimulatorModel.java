@@ -76,8 +76,8 @@ public class SensorSimulatorModel implements SensorServerThreadListener {
 		mSensors.put(SensorType.PROXIMITY, new ProximityModel());
 		mSensors.put(SensorType.PRESSURE, new PressureModel());
 		mSensors.put(SensorType.LINEAR_ACCELERATION, new LinearAccelerationModel());
-		mSensors.put(SensorType.GRAVITY, new GravityModel((OrientationModel) mSensors.get(SensorType.ORIENTATION)));
-		mSensors.put(SensorType.ROTATION, new RotationVectorModel((OrientationModel) mSensors.get(SensorType.ORIENTATION)));
+		mSensors.put(SensorType.GRAVITY, new GravityModel());
+		mSensors.put(SensorType.ROTATION, new RotationVectorModel());
 		mSensors.put(SensorType.GYROSCOPE, new GyroscopeModel());
 	}
 

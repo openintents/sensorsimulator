@@ -18,9 +18,6 @@ package org.openintents.tools.simulator.view.sensor.sensors;
 
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Observable;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -31,7 +28,6 @@ import javax.swing.SwingConstants;
 
 import org.openintents.tools.simulator.model.sensors.GravityModel;
 import org.openintents.tools.simulator.model.sensors.SensorModel;
-import org.openintents.tools.simulator.model.telnet.Vector;
 
 /**
  * GravityView keeps the GUI of the Gravity sensor.
@@ -39,7 +35,6 @@ import org.openintents.tools.simulator.model.telnet.Vector;
  * @author ilarele
  */
 public class GravityView extends SensorView {
-
 	private static final long serialVersionUID = -6006181483029485632L;
 
 	// Gravity
@@ -48,11 +43,8 @@ public class GravityView extends SensorView {
 
 	private JPanel mSensorQuickPane;
 
-	private GravityModel mGravityModel;
-
 	public GravityView(GravityModel model) {
 		super(model);
-		mGravityModel = model;
 		setSensorQuickSettingsPanel();
 	}
 
@@ -80,14 +72,6 @@ public class GravityView extends SensorView {
 		mGravityConstantText = new JTextField(5);
 		mGravityConstantText.setText("" + gravityModel.getGravityConstant());
 		gravityFieldPane.add(mGravityConstantText);
-		mGravityConstantText.getDocument().addDocumentListener(
-				new SensorDocumentListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						mGravityModel.setGravityConstant(getGravityConstant());
-					}
-				}));
 
 		label = new JLabel(" m/s" + SensorModel.SQUARED, SwingConstants.LEFT);
 		gravityFieldPane.add(label);
@@ -144,9 +128,4 @@ public class GravityView extends SensorView {
 	public JPanel getQuickSettingsPanel() {
 		return mSensorQuickPane;
 	}
-	
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO: how to translate gravity sensor changes to a new grav constant?
-	}	
 }

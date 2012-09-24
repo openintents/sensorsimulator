@@ -16,6 +16,10 @@
 
 package org.openintents.tools.simulator.controller.sensor;
 
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensors.LightModel;
 import org.openintents.tools.simulator.model.sensors.OrientationModel;
@@ -33,12 +37,24 @@ public class LightController extends SensorController {
 
 	public LightController(LightModel model, LightView view, SensorSimulatorView sensorSimulatorView) {
 		super(model, view, sensorSimulatorView);
+		registerLightSlider(view);
+	}
+
+	private void registerLightSlider(final LightView view) {
+		final JSlider lightSlider = view.getLightSlider();
+		lightSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				int value = lightSlider.getValue();
+				setLight(value);
+			}
+		});
 	}
 
 	protected void setLight(double value) {
 		final LightModel model = (LightModel) mSensorModel;
 		final LightView view = (LightView) mSensorView;
-		if (model.getLight() != value) {
+		if (model.getReadLight() != value) {
 			model.setLight(value);
 			view.setLight(value);
 		}
@@ -47,27 +63,26 @@ public class LightController extends SensorController {
 	@Override
 	public void updateSensorPhysics(OrientationModel orientation,
 			WiiAccelerometerModel realDeviceBridgeAddon, int delay) {
-		// LightModel lightModel = (LightModel) mSensorModel;
-		// LightView lightView = (LightView) mSensorView;
-		// // Light
-		// if (lightModel.isEnabled()) {
-		// setLight(lightView.getLight());
-		//
-		// TODO: get Random stuff
-		// // Add random component:
-		// double random = lightView.getRandom();
-		// if (random > 0) {
-		// lightModel.addLight(getRandom(random));
-		// }
-		// } else {
-		// setLight(0);
-		// }
+		LightModel lightModel = (LightModel) mSensorModel;
+		LightView lightView = (LightView) mSensorView;
+		// Light
+		if (lightModel.isEnabled()) {
+			setLight(lightView.getLight());
+
+			// Add random component:
+			double random = lightView.getRandom();
+			if (random > 0) {
+				lightModel.addLight(getRandom(random));
+			}
+		} else {
+			setLight(0);
+		}
 	}
 
 	@Override
 	public String getString() {
 		LightModel lightModel = (LightModel) mSensorModel;
-		return Global.TWO_DECIMAL_FORMAT.format(lightModel.getLight());
+		return Global.TWO_DECIMAL_FORMAT.format(lightModel.getReadLight());
 	}
 
 }

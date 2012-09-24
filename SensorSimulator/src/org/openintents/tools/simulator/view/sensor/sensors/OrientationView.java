@@ -21,7 +21,6 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.util.Observable;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -29,8 +28,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.openintents.tools.simulator.model.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensors.OrientationModel;
@@ -51,12 +48,10 @@ public class OrientationView extends SensorView {
 	private JSlider mYawSlider;
 	private JSlider mPitchSlider;
 	private JSlider mRollSlider;
-	private OrientationModel mOrientModel;
 
 	public OrientationView(OrientationModel model,
 			SensorSimulatorModel sensorSimulatorModel) {
 		super(model);
-		mOrientModel = model;
 		mEnabled.setSelected(true);
 		setSensorQuickSettingsPanel();
 	}
@@ -87,29 +82,6 @@ public class OrientationView extends SensorView {
 		mRollSlider.setPaintTicks(true);
 		mRollSlider.setPaintLabels(true);
 		mRollSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-		
-		// set listeners
-		ChangeListener changeListener = new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				JSlider source = (JSlider) e.getSource();
-				if (source == mYawSlider) {
-					mOrientModel.setYaw(source.getValue());
-				} else if (source == mPitchSlider) {
-					mOrientModel.setPitch(source.getValue());
-				} else if (source == mRollSlider) {
-					mOrientModel.setRoll(source.getValue());
-				}
-			}
-		};
-		mYawSlider.addChangeListener(changeListener);
-		mPitchSlider.addChangeListener(changeListener);
-		mRollSlider.addChangeListener(changeListener);
-		
-		// set initial value
-		mOrientModel.setYaw(mYawSlider.getValue());
-		mOrientModel.setPitch(mPitchSlider.getValue());
-		mOrientModel.setRoll(mRollSlider.getValue());
 
 		// sliders
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -201,10 +173,4 @@ public class OrientationView extends SensorView {
 		return mPitchSlider.getValue();
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		setRollSlider(mOrientModel.getRoll());
-		setYawSlider(mOrientModel.getYaw());
-		setPitchSlider(mOrientModel.getPitch());
-	}
 }

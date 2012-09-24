@@ -16,6 +16,10 @@
 
 package org.openintents.tools.simulator.controller.sensor;
 
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensors.TemperatureModel;
@@ -35,37 +39,50 @@ public class TemperatureController extends SensorController {
 
 	public TemperatureController(TemperatureModel model, TemperatureView view, SensorSimulatorView sensorSimulatorView) {
 		super(model, view, sensorSimulatorView);
+		registerTemperatureSlider(view);
+	}
+
+	private void registerTemperatureSlider(final TemperatureView view) {
+		final JSlider temperatureSlider = view.getTemperatureSlider();
+		temperatureSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				int value = temperatureSlider.getValue();
+				setTemperature(value);
+			}
+		});
 	}
 
 	protected void setTemperature(double value) {
 		final TemperatureModel model = (TemperatureModel) mSensorModel;
-		if (model.getTemperature() != value) {
+		final TemperatureView view = (TemperatureView) mSensorView;
+		if (model.getReadTemp() != value) {
 			model.setTemp(value);
+			view.setTemp(value);
 		}
 	}
 
 	@Override
 	public void updateSensorPhysics(OrientationModel orientation,
 			WiiAccelerometerModel realDeviceBridgeAddon, int delay) {
-		// TemperatureModel tempModel = (TemperatureModel) mSensorModel;
-		// TemperatureView tempView = (TemperatureView) mSensorView;
-		// if (tempModel.isEnabled()) {
-		// setTemperature(tempView.getTemperature());
-		//
-		// // Add random component:
-		// double random = tempView.getRandom();
-		// if (random > 0) {
-		// // TODO: extract random logic and put somewhere else
-		// tempModel.addTemp(getRandom(random));
-		// }
-		// } else {
-		// setTemperature(0);
-		// }
+		TemperatureModel tempModel = (TemperatureModel) mSensorModel;
+		TemperatureView tempView = (TemperatureView) mSensorView;
+		if (tempModel.isEnabled()) {
+			setTemperature(tempView.getTemperature());
+
+			// Add random component:
+			double random = tempView.getRandom();
+			if (random > 0) {
+				tempModel.addTemp(getRandom(random));
+			}
+		} else {
+			setTemperature(0);
+		}
 	}
 
 	@Override
 	public String getString() {
 		TemperatureModel tempModel = (TemperatureModel) mSensorModel;
-		return Global.TWO_DECIMAL_FORMAT.format(tempModel.getTemperature());
+		return Global.TWO_DECIMAL_FORMAT.format(tempModel.getReadTemp());
 	}
 }

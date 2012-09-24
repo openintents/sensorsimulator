@@ -16,9 +16,6 @@
 
 package org.openintents.tools.simulator.model.sensors;
 
-import java.util.Observable;
-import java.util.Observer;
-
 
 /**
  * RotationVectorModel keeps the internal data model behind RotationVector
@@ -27,7 +24,7 @@ import java.util.Observer;
  * @author ilarele
  * 
  */
-public class RotationVectorModel extends SensorModel implements Observer {
+public class RotationVectorModel extends SensorModel {
 	/** rotation angle in degree */
 	private double mRotationXValue;
 	private double mRotationYValue;
@@ -45,14 +42,9 @@ public class RotationVectorModel extends SensorModel implements Observer {
 
 	/** Number of summands in partial sum for rotation. */
 	private int mPartialRotationN;
-	private OrientationModel mOrientationModel;
 
-	public RotationVectorModel(OrientationModel orientationModel) {
+	public RotationVectorModel() {
 		super();
-		
-		mOrientationModel = orientationModel;
-		orientationModel.addObserver(this);
-		
 		mReadRotationX = mRotationXValue = 0;
 		mReadRotationY = mRotationYValue = 0;
 		mReadRotationZ = mRotationZValue = 0;
@@ -110,22 +102,22 @@ public class RotationVectorModel extends SensorModel implements Observer {
 	@Override
 	public String printSensorData() {
 		// number of data following + data
-		return "3\n" + Math.sin(Math.toRadians(mRotationXValue / 2)) + "\n"
-				+ Math.sin(Math.toRadians(mRotationYValue / 2)) + "\n"
-				+ Math.sin(Math.toRadians(mRotationZValue / 2));
+		return "3\n" + Math.sin(Math.toRadians(mReadRotationX / 2)) + "\n"
+				+ Math.sin(Math.toRadians(mReadRotationY / 2)) + "\n"
+				+ Math.sin(Math.toRadians(mReadRotationZ / 2));
 
 	}
 
 	public double getRotationVectorX() {
-		return Math.sin(Math.toRadians(mRotationXValue / 2));
+		return Math.sin(Math.toRadians(mReadRotationX / 2));
 	}
 
 	public double getRotationVectorY() {
-		return Math.sin(Math.toRadians(mRotationYValue / 2));
+		return Math.sin(Math.toRadians(mReadRotationY / 2));
 	}
 
 	public double getRotationVectorZ() {
-		return Math.sin(Math.toRadians(mRotationZValue / 2));
+		return Math.sin(Math.toRadians(mReadRotationZ / 2));
 	}
 
 	@Override
@@ -133,24 +125,33 @@ public class RotationVectorModel extends SensorModel implements Observer {
 		return SensorModel.DEGREES;
 	}
 
+	public void setRotationVector(double x, double y, double z) {
+		mRotationXValue = x;
+		mRotationYValue = y;
+		mRotationZValue = z;
+	}
+
+	public void addRotationVector(double addX, double addY, double addZ) {
+		mRotationXValue += addX;
+		mRotationYValue += addY;
+		mRotationZValue += addZ;
+	}
+
+	public double getReadRotationVectorX() {
+		return Math.sin(Math.toRadians(mReadRotationX / 2));
+	}
+
+	public double getReadRotationVectorY() {
+		return Math.sin(Math.toRadians(mReadRotationY / 2));
+	}
+
+	public double getReadRotationVectorZ() {
+		return Math.sin(Math.toRadians(mReadRotationZ / 2));
+	}
+
 	public void setRotationVector(float[] newValue) {
 		mRotationXValue = newValue[0];
 		mRotationYValue = newValue[1];
 		mRotationZValue = newValue[2];
-		
-		// inform observers
-		setChanged();
-		notifyObservers();
-	}
-	
-	@Override
-	public void update(Observable o, Object arg) {
-		mRotationXValue = mOrientationModel.getPitch();
-		mRotationYValue = mOrientationModel.getYaw();
-		mRotationZValue = mOrientationModel.getRoll();
-		
-		// inform observers
-		setChanged();
-		notifyObservers();
 	}
 }

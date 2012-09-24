@@ -40,25 +40,26 @@ public class ProximityController extends SensorController {
 	@Override
 	public void updateSensorPhysics(OrientationModel orientation,
 			WiiAccelerometerModel realDeviceBridgeAddon, int delay) {
-//		ProximityModel proximityModel = (ProximityModel) mSensorModel;
-//		ProximityView proximityView = (ProximityView) mSensorView;
-//		// Proximity
-//		if (proximityModel.isEnabled()) {
-//			proximityModel.setProximity(proximityView.getProximity());
-//
-//			// Add random component:
-//			double random = proximityView.getRandom();
-//			if (random > 0) {
-//				proximityModel.addProximity(getRandom(random));
-//			}
-//		} else {
-//			proximityModel.setProximity(0);
-//		}
+		ProximityModel proximityModel = (ProximityModel) mSensorModel;
+		ProximityView proximityView = (ProximityView) mSensorView;
+		// Proximity
+		if (proximityModel.isEnabled()) {
+			proximityModel.setProximity(proximityView.getProximity());
+
+			// Add random component:
+			double random = proximityView.getRandom();
+			if (random > 0) {
+				proximityModel.addProximity(getRandom(random));
+			}
+		} else {
+			proximityModel.setProximity(0);
+		}
 	}
 
 	@Override
 	public String getString() {
 		ProximityModel proximityModel = (ProximityModel) mSensorModel;
-		return Global.TWO_DECIMAL_FORMAT.format(proximityModel.getProximity());
+		return Global.TWO_DECIMAL_FORMAT.format(proximityModel
+				.getReadProximity());
 	}
 }

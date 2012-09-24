@@ -41,37 +41,39 @@ public class RotationVectorController extends SensorController {
 	@Override
 	public void updateSensorPhysics(OrientationModel orientation,
 			WiiAccelerometerModel realDeviceBridgeAddon, int delay) {
-		// RotationVectorModel rotationModel = (RotationVectorModel)
-		// mSensorModel;
-		// RotationVectorView rotationView = (RotationVectorView) mSensorView;
-		//
-		// // RotationVector
-		// if (rotationModel.isEnabled()) {
-		//
-		// Vector rotationVec = new Vector(orientation.getPitch(),
-		// orientation.getYaw(), orientation.getRoll());
-		// rotationModel.setRotationVector(orientation.getPitch(),
-		// orientation.getYaw(), orientation.getRoll());
-		// rotationView.setRotationVector(rotationVec);
-		// // Add random component:
-		// double random = rotationView.getRandom();
-		// if (random > 0) {
-		// rotationModel.addRotationVector(getRandom(random),
-		// getRandom(random),
-		// getRandom(random));
-		// }
-		// } else {
-		// rotationModel.setRotationVector(0, 0, 0);
-		// }
+		RotationVectorModel rotationModel = (RotationVectorModel) mSensorModel;
+		RotationVectorView rotationView = (RotationVectorView) mSensorView;
+
+		// RotationVector
+		if (rotationModel.isEnabled()) {
+
+			Vector rotationVec = new Vector(orientation.getPitch(),
+					orientation.getYaw(), orientation.getRoll());
+			rotationModel.setRotationVector(orientation.getPitch(),
+					orientation.getYaw(), orientation.getRoll());
+			rotationView.setRotationVector(rotationVec);
+			// Add random component:
+			double random = rotationView.getRandom();
+			if (random > 0) {
+				rotationModel.addRotationVector(getRandom(random),
+						getRandom(random),
+						getRandom(random));
+			}
+		} else {
+			rotationModel.setRotationVector(0, 0, 0);
+		}
 	}
 
 	@Override
 	public String getString() {
 		RotationVectorModel rotationModel = (RotationVectorModel) mSensorModel;
-		return Global.TWO_DECIMAL_FORMAT.format(rotationModel.getRotationVectorX())
+		return Global.TWO_DECIMAL_FORMAT.format(rotationModel
+				.getReadRotationVectorX())
 				+ ", "
-				+ Global.TWO_DECIMAL_FORMAT.format(rotationModel.getRotationVectorY())
+				+ Global.TWO_DECIMAL_FORMAT.format(rotationModel
+						.getReadRotationVectorY())
 				+ ", "
-				+ Global.TWO_DECIMAL_FORMAT.format(rotationModel.getRotationVectorZ());
+				+ Global.TWO_DECIMAL_FORMAT.format(rotationModel
+						.getReadRotationVectorZ());
 	}
 }

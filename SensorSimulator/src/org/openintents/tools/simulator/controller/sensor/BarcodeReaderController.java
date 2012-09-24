@@ -39,12 +39,12 @@ public class BarcodeReaderController extends SensorController {
 	@Override
 	public void updateSensorPhysics(OrientationModel orientation,
 			WiiAccelerometerModel realDeviceBridgeAddon, int delay) {
-		// BarcodeReaderModel barModel = (BarcodeReaderModel) mSensorModel;
-		// BarcodeReaderView barView = (BarcodeReaderView) mSensorView;
-		// // Barcode
-		// if (barModel.isEnabled()) {
-		// barModel.setBarcode(barView.getBarcode());
-		// }
+		BarcodeReaderModel barModel = (BarcodeReaderModel) mSensorModel;
+		BarcodeReaderView barView = (BarcodeReaderView) mSensorView;
+		// Barcode
+		if (barModel.isEnabled()) {
+			barModel.setBarcode(barView.getBarcode());
+		}
 	}
 
 	@Override

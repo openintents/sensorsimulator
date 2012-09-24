@@ -42,57 +42,56 @@ public class MagneticFieldController extends SensorController {
 	@Override
 	public void updateSensorPhysics(OrientationModel orientation,
 			WiiAccelerometerModel realDeviceBridgeAddon, int delay) {
-		// double magneticnorth;
-		// double magneticeast;
-		// double magneticvertical;
-		// MagneticFieldModel magModel = (MagneticFieldModel) mSensorModel;
-		// MagneticFieldView magView = (MagneticFieldView) mSensorView;
-		//
-		// if (magModel.isEnabled()) {
-		// magneticnorth = magView.getNorth();
-		// magneticeast = magView.getEast();
-		// magneticvertical = magView.getVertical();
-		//
-		// // Add random component:
-		// double random = magView.getRandom();
-		// if (random > 0) {
-		// magneticnorth += getRandom(random);
-		// magneticeast += getRandom(random);
-		// magneticvertical += getRandom(random);
-		// }
-		// magModel.setNorth(magneticnorth);
-		// magModel.setEast(magneticeast);
-		// magModel.setVertical(magneticvertical);
-		//
-		// // Magnetic vector in phone coordinates:
-		// Vector vec = new Vector(magneticeast, magneticnorth,
-		// -magneticvertical);
-		// vec.scale(0.001); // convert from nT (nano-Tesla) to �T
-		// // (micro-Tesla)
-		//
-		// // we reverse roll, pitch, and yawDegree,
-		// // as this is how the mobile phone sees the coordinate system.
-		//
-		// double rollDegree = orientation.getRoll();
-		// double pitchDegree = orientation.getPitch();
-		// double yawDegree = orientation.getYaw();
-		// vec.reverserollpitchyaw(rollDegree, pitchDegree, yawDegree);
-		//
-		// magModel.setMagneticField(new float[] { (float) vec.x, (float) vec.y,
-		// (float) vec.z });
-		// } else {
-		// magModel.setMagneticField(new float[] { 0, 0, 0 });
-		// }
+		double magneticnorth;
+		double magneticeast;
+		double magneticvertical;
+		MagneticFieldModel magModel = (MagneticFieldModel) mSensorModel;
+		MagneticFieldView magView = (MagneticFieldView) mSensorView;
+
+		if (magModel.isEnabled()) {
+			magneticnorth = magView.getNorth();
+			magneticeast = magView.getEast();
+			magneticvertical = magView.getVertical();
+
+			// Add random component:
+			double random = magView.getRandom();
+			if (random > 0) {
+				magneticnorth += getRandom(random);
+				magneticeast += getRandom(random);
+				magneticvertical += getRandom(random);
+			}
+			magModel.setNorth(magneticnorth);
+			magModel.setEast(magneticeast);
+			magModel.setVertical(magneticvertical);
+
+			// Magnetic vector in phone coordinates:
+			Vector vec = new Vector(magneticeast, magneticnorth,
+					-magneticvertical);
+			vec.scale(0.001); // convert from nT (nano-Tesla) to �T
+								// (micro-Tesla)
+
+			// we reverse roll, pitch, and yawDegree,
+			// as this is how the mobile phone sees the coordinate system.
+
+			double rollDegree = orientation.getRoll();
+			double pitchDegree = orientation.getPitch();
+			double yawDegree = orientation.getYaw();
+			vec.reverserollpitchyaw(rollDegree, pitchDegree, yawDegree);
+
+			magModel.setMagneticField(new float[] { (float) vec.x, (float) vec.y, (float) vec.z });
+		} else {
+			magModel.resetCompas();
+		}
 	}
 
 	@Override
 	public String getString() {
 		MagneticFieldModel magModel = (MagneticFieldModel) mSensorModel;
-		return Global.TWO_DECIMAL_FORMAT.format(magModel.getCompassX())
+		return Global.TWO_DECIMAL_FORMAT.format(magModel.getReadCompassX())
 				+ ", "
-				+ Global.TWO_DECIMAL_FORMAT.format(magModel.getCompassY())
+				+ Global.TWO_DECIMAL_FORMAT.format(magModel.getReadCompassY())
 				+ ", "
-				+ Global.TWO_DECIMAL_FORMAT.format(magModel.getCompassZ());
+				+ Global.TWO_DECIMAL_FORMAT.format(magModel.getReadCompassZ());
 	}
 
 }

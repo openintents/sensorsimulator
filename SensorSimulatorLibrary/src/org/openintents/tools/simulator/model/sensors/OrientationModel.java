@@ -121,6 +121,18 @@ public class OrientationModel extends SensorModel {
 		}
 	}
 
+	public double getReadPitch() {
+		return mReadPitch;
+	}
+
+	public double getReadYaw() {
+		return mReadYaw;
+	}
+
+	public double getReadRoll() {
+		return mReadRoll;
+	}
+
 	@Override
 	public int getNumSensorValues() {
 		return 3;
@@ -129,7 +141,7 @@ public class OrientationModel extends SensorModel {
 	@Override
 	public String printSensorData() {
 		// number of data following + data
-		return "3\n" + mYaw + "\n" + mPitch + "\n" + mRoll;
+		return "3\n" + mReadYaw + "\n" + mReadPitch + "\n" + mReadRoll;
 	}
 
 	@Override
@@ -151,26 +163,26 @@ public class OrientationModel extends SensorModel {
 
 	public void setYaw(int value) {
 		mYaw = value;
-		
-		// inform observers
-		setChanged();
-		notifyObservers();
 	}
 
 	public void setPitch(int value) {
 		mPitch = value;
-		
-		// inform observers
-		setChanged();
-		notifyObservers();
 	}
 
 	public void setRoll(int value) {
 		mRoll = value;
-		
-		// inform observers
-		setChanged();
-		notifyObservers();
+	}
+
+	public void addYaw(double value) {
+		mYaw += value;
+	}
+
+	public void addPitch(double value) {
+		mPitch += value;
+	}
+
+	public void addRoll(double value) {
+		mRoll += value;
 	}
 
 	@Override
@@ -182,9 +194,5 @@ public class OrientationModel extends SensorModel {
 		mYaw = (int) newValue[0];
 		mPitch = (int) newValue[1];
 		mRoll = (int) newValue[2];
-		
-		// inform observers
-		setChanged();
-		notifyObservers();
 	}
 }

@@ -20,9 +20,6 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Observable;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -31,8 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.openintents.tools.simulator.model.sensors.LightModel;
 
@@ -50,15 +45,8 @@ public class LightView extends SensorView {
 	private JPanel mSensorQuickPane;
 	private JSlider mLightSlider;
 
-	// the view's light value, used for both slider and text field
-	private double mLight;
-	
-	// data model
-	private LightModel mLightModel;
-
 	public LightView(LightModel model) {
 		super(model);
-		mLightModel = model;
 		setSensorQuickSettingsPanel();
 	}
 
@@ -80,21 +68,6 @@ public class LightView extends SensorView {
 		mLightSlider.setMinorTickSpacing(100);
 		mLightSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 		mSensorQuickPane.add(mLightSlider);
-		
-		// set listener
-		mLightSlider.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				int temp = (int) Math.round(mLight);
-				int value = mLightSlider.getValue();
-
-				if (value != temp) {
-					mLight = value;
-					mLightModel.setLight(mLight);
-				}
-			}
-		});
 	}
 
 	@Override
@@ -123,22 +96,10 @@ public class LightView extends SensorView {
 		lightFieldPane.add(label, c3);
 
 		mLightText = new JTextField(5);
-		mLightText.setText("" + lightModel.getLight());
+		mLightText.setText("" + lightModel.getReadLight());
 		c3.gridx = 1;
 		lightFieldPane.add(mLightText, c3);
 
-		// set light text listener
-		mLightText.getDocument().addDocumentListener(
-				new SensorDocumentListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						mLight = getSafeDouble(mLightText);
-						mLightModel.setLight(mLight);
-					}
-				}));
-
-		// unit label
 		label = new JLabel(" lux", SwingConstants.LEFT);
 		c3.gridx = 2;
 		lightFieldPane.add(label, c3);
@@ -151,6 +112,10 @@ public class LightView extends SensorView {
 		c2.gridy++;
 		resultPanel.add(lightFieldPane, c2);
 		return resultPanel;
+	}
+
+	public double getLight() {
+		return getSafeDouble(mLightText);
 	}
 
 	@Override
@@ -194,12 +159,8 @@ public class LightView extends SensorView {
 		mLightText.setText("" + value);
 		mLightSlider.setValue((int) value);
 	}
-	
-	@Override
-	public void update(Observable o, Object arg) {
-		mLight = mLightModel.getLight();
-		int tempInteger = (int) Math.round(mLight);
-		mLightText.setText("" + mLight);
-		mLightSlider.setValue(tempInteger);				
+
+	public JSlider getLightSlider() {
+		return mLightSlider;
 	}
 }

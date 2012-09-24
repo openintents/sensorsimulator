@@ -91,7 +91,7 @@ public class ProximityModel extends SensorModel {
 	@Override
 	public String printSensorData() {
 		// number of data following + data
-		return "1\n" + mProximityValue;
+		return "1\n" + mReadProximity;
 	}
 
 	public double getProximity() {
@@ -117,9 +117,13 @@ public class ProximityModel extends SensorModel {
 
 	public void setProximity(double value) {
 		mProximityValue = value;
+	}
 
-		// inform observers
-		setChanged();
-		notifyObservers();
+	public void addProximity(double value) {
+		mProximityValue += value;
+	}
+
+	public double getReadProximity() {
+		return mReadProximity;
 	}
 }

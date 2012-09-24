@@ -16,7 +16,6 @@
 
 package org.openintents.tools.simulator.model.sensors;
 
-import org.openintents.tools.simulator.model.telnet.Vector;
 
 /**
  * GravityModel keeps the internal data model behind Gravity Sensor.
@@ -24,7 +23,7 @@ import org.openintents.tools.simulator.model.telnet.Vector;
  * @author ilarele
  */
 public class GravityModel extends SensorModel {
-
+	
 	// gravity
 	private double mGravityX;
 	private double mGravityY;
@@ -45,16 +44,8 @@ public class GravityModel extends SensorModel {
 	// Gravity
 	private double mGConstant;
 	private double mGravityLimit;
-	private OrientationModel mOrientationModel;
 
-	/**
-	 * Gravity sensor needs orientation sensor data to compute own data.
-	 * 
-	 * @param orientationModel
-	 *            the orientation sensor model
-	 */
-	public GravityModel(OrientationModel orientationModel) {
-		mOrientationModel = orientationModel;
+	public GravityModel() {
 		mReadGravityX = mGravityX = 0;
 		mReadGravityY = mGravityY = 0;
 		mReadGravityZ = mGravityZ = -9.8;
@@ -115,25 +106,50 @@ public class GravityModel extends SensorModel {
 	@Override
 	public String printSensorData() {
 		// number of data following + data
-		return "3\n" + mGravityX + "\n" + mGravityY + "\n" + mGravityZ;
+		return "3\n" + mReadGravityX + "\n" + mReadGravityY + "\n"
+				+ mReadGravityZ;
 
 	}
 
 	public double getGravityX() {
-		return mGravityX;
+		return mReadGravityX;
 	}
 
 	public double getGravityY() {
-		return mGravityY;
+		return mReadGravityY;
 	}
 
 	public double getGravityZ() {
-		return mGravityZ;
+		return mReadGravityZ;
 	}
 
 	@Override
 	public String getSI() {
 		return "m/s" + SensorModel.SQUARED;
+	}
+
+	public void setGravity(double x, double y, double z) {
+		mGravityX = x;
+		mGravityY = y;
+		mGravityZ = z;
+	}
+
+	public void addGravity(double addX, double addY, double addZ) {
+		mGravityX += addX;
+		mGravityY += addY;
+		mGravityZ += addZ;
+	}
+
+	public double getReadGravityX() {
+		return mReadGravityX;
+	}
+
+	public double getReadGravityY() {
+		return mReadGravityY;
+	}
+
+	public double getReadGravityZ() {
+		return mReadGravityZ;
 	}
 
 	public double getGravityConstant() {
@@ -148,17 +164,5 @@ public class GravityModel extends SensorModel {
 		mGravityX = vec[0];
 		mGravityY = vec[1];
 		mGravityZ = vec[2];
-		
-		// inform observers
-		setChanged();
-		notifyObservers();
-	}
-
-	public void setGravityConstant(double gravityConstant) {
-		Vector gravityVec = new Vector(0, 0, gravityConstant);
-		gravityVec.reverserollpitchyaw(mOrientationModel.getRoll(),
-				mOrientationModel.getPitch(), mOrientationModel.getYaw());
-		setGravity(new float[] { (float) gravityVec.x, (float) gravityVec.y,
-				(float) gravityVec.z });
 	}
 }

@@ -166,10 +166,7 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 		mSensors.add(new RotationVectorView((RotationVectorModel) model.getSensorModel(SensorType.ROTATION)));
 		mSensors.add(new GyroscopeView((GyroscopeModel) model.getSensorModel(SensorType.GYROSCOPE)));
 
-		mMobile = new DeviceView(
-				(OrientationModel) model.getSensorModel(SensorType.ORIENTATION),
-				(AccelerometerModel) model
-						.getSensorModel(SensorType.ACCELEROMETER));
+		mMobile = new DeviceView(model);
 
 		// up/down & split
 		mSettingsPanel = fillSettingsPanel();

@@ -20,9 +20,6 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Observable;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -31,11 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import org.openintents.tools.simulator.model.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensors.TemperatureModel;
@@ -49,25 +41,14 @@ import org.openintents.tools.simulator.model.sensors.TemperatureModel;
  */
 public class TemperatureView extends SensorView {
 	private static final long serialVersionUID = 1000179101533155817L;
-	private JPanel mSensorQuickPane;
-
-	// Temperature views
+	// Temperature
 	private JTextField mTemperatureText;
-	private JSlider mTemperatureSlider;
-	
-	// model
-	private TemperatureModel mTemperatureModel;
 
-	// listeners
-	private ChangeListener mTemperatureSliderListener;
-	private SensorDocumentListener mTemperatureTextListener;
-	
-	// the view's temperature value, used for both slider and text
-	private double mTemperature;
+	private JPanel mSensorQuickPane;
+	private JSlider mTemperatureSlider;
 
 	public TemperatureView(TemperatureModel model) {
 		super(model);
-		mTemperatureModel = (TemperatureModel) model;
 		setSensorQuickSettingsPanel();
 	}
 
@@ -90,21 +71,6 @@ public class TemperatureView extends SensorView {
 		mTemperatureSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10,
 				0));
 		mSensorQuickPane.add(mTemperatureSlider);
-		
-		// set slider listener
-		mTemperatureSliderListener = new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				int temp = (int) Math.round(mTemperature);
-				int value = mTemperatureSlider.getValue();
-
-				if (value != temp) {
-					mTemperature = value;
-					mTemperatureModel.setTemp(mTemperature);
-				}
-			}
-		};
-		mTemperatureSlider.addChangeListener(mTemperatureSliderListener);
 	}
 
 	@Override
@@ -133,24 +99,10 @@ public class TemperatureView extends SensorView {
 		c3.gridy++;
 		temperatureFieldPane.add(label, c3);
 
-		// temperature text field
 		mTemperatureText = new JTextField(5);
 		mTemperatureText.setText("" + tempModel.getTemperature());
 		c3.gridx = 1;
 		temperatureFieldPane.add(mTemperatureText, c3);
-		
-		// listen to text field
-		mTemperatureTextListener = new SensorDocumentListener(
-				new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						mTemperature = getSafeDouble(mTemperatureText);
-						mTemperatureModel.setTemp(mTemperature);
-					}
-				});
-		mTemperatureText.getDocument().addDocumentListener(
-				mTemperatureTextListener);
 
 		label = new JLabel(" " + SensorModel.DEGREES + "C", SwingConstants.LEFT);
 		c3.gridx = 2;
@@ -162,6 +114,10 @@ public class TemperatureView extends SensorView {
 		c2.gridy++;
 		resultPanel.add(temperatureFieldPane, c2);
 		return resultPanel;
+	}
+
+	public double getTemperature() {
+		return getSafeDouble(mTemperatureText);
 	}
 
 	@Override
@@ -189,11 +145,8 @@ public class TemperatureView extends SensorView {
 		return mTemperatureSlider;
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		mTemperature = mTemperatureModel.getTemperature();
-		int tempInteger = (int) Math.round(mTemperature);
-		mTemperatureText.setText("" + mTemperature);
-		mTemperatureSlider.setValue(tempInteger);				
+	public void setTemp(double value) {
+		mTemperatureText.setText("" + value);
+		mTemperatureSlider.setValue((int) value);
 	}
 }

@@ -33,8 +33,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Line2D;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
@@ -55,7 +53,7 @@ import org.openintents.tools.simulator.model.telnet.Vector;
  * @author Peli
  * @author Josip Balic
  */
-public class DeviceView extends JPanel implements Observer {
+public class DeviceView extends JPanel {
 
 	private static final long serialVersionUID = -112203026209081563L;
 
@@ -64,6 +62,11 @@ public class DeviceView extends JPanel implements Observer {
 	public static final int MOUSE_MODE_MOVE = 3;
 
 	private int mMouseMode;
+
+	/**
+	 * Reference to SensorSimulator for accessing widgets.
+	 */
+	private SensorSimulatorModel mSensorSimulatorModel;
 
 	/*
 	 * http://code.google.com/android/reference/android/hardware/Sensors.html
@@ -114,9 +117,6 @@ public class DeviceView extends JPanel implements Observer {
 
 	private Stroke mStroke;
 
-	private OrientationModel mOrientationModel;
-	private AccelerometerModel mAccelerometerModel;
-
 	// File usage
 
 	/**
@@ -125,12 +125,8 @@ public class DeviceView extends JPanel implements Observer {
 	 * @param model
 	 *            , SensorSimulator that needs MobilePanel in it's frame.
 	 */
-	public DeviceView(OrientationModel orientationModel,
-			AccelerometerModel accelerometerModel) {
-		mOrientationModel = orientationModel;
-		mAccelerometerModel = accelerometerModel;
-		mOrientationModel.addObserver(this);
-		mAccelerometerModel.addObserver(this);
+	public DeviceView(SensorSimulatorModel model) {
+		mSensorSimulatorModel = model;
 
 		SpringLayout layout = new SpringLayout();
 		setLayout(layout);
@@ -187,6 +183,8 @@ public class DeviceView extends JPanel implements Observer {
 	@Override
 	protected void paintComponent(Graphics graphics) {
 		super.paintComponent(graphics);
+		OrientationModel orientation = (OrientationModel) mSensorSimulatorModel.getSensorModel(SensorType.ORIENTATION);
+		AccelerometerModel accelerometer = (AccelerometerModel) mSensorSimulatorModel.getSensorModel(SensorType.ACCELEROMETER);
 		Graphics2D g2 = (Graphics2D) graphics;
 		g2.setStroke(mStroke);
 		// draw Line2D.Double
@@ -203,41 +201,41 @@ public class DeviceView extends JPanel implements Observer {
 
 			Vector v1 = new Vector(phone[i]);
 			Vector v2 = new Vector(phone[i + 1]);
-			v1.rollpitchyaw(mOrientationModel.getRoll(), mOrientationModel.getPitch(),
-					mOrientationModel.getYaw());
-			v2.rollpitchyaw(mOrientationModel.getRoll(), mOrientationModel.getPitch(),
-					mOrientationModel.getYaw());
+			v1.rollpitchyaw(orientation.getRoll(), orientation.getPitch(),
+					orientation.getYaw());
+			v2.rollpitchyaw(orientation.getRoll(), orientation.getPitch(),
+					orientation.getYaw());
 			g2.draw(new Line2D.Double(centerx
-					+ (v1.x + mAccelerometerModel.getMoveX()) * centerz
+					+ (v1.x + accelerometer.getMoveX()) * centerz
 					/ (centerz - v1.y), centery
-					- (v1.z + mAccelerometerModel.getMoveZ()) * centerz
+					- (v1.z + accelerometer.getMoveZ()) * centerz
 					/ (centerz - v1.y), centerx
-					+ (v2.x + mAccelerometerModel.getMoveX()) * centerz
+					+ (v2.x + accelerometer.getMoveX()) * centerz
 					/ (centerz - v2.y), centery
-					- (v2.z + mAccelerometerModel.getMoveZ()) * centerz
+					- (v2.z + accelerometer.getMoveZ()) * centerz
 					/ (centerz - v2.y)));
 
 		}
-		if (mAccelerometerModel.isShown()) {
+		if (accelerometer.isShown()) {
 			// Now we also draw the acceleration:
 			g2.setColor(Color.GREEN);
 			Vector v1 = new Vector(0, 0, 0);
-			Vector v2 = new Vector(mAccelerometerModel.getAccelx(),
-					mAccelerometerModel.getAccely(), mAccelerometerModel.getAccelz());
-			v2.scale(20 * mAccelerometerModel.getGInverse());
+			Vector v2 = new Vector(accelerometer.getAccelx(),
+					accelerometer.getAccely(), accelerometer.getAccelz());
+			v2.scale(20 * accelerometer.getGInverse());
 			// Vector v2 = new Vector(1, 0, 0);
-			v1.rollpitchyaw(mOrientationModel.getRoll(), mOrientationModel.getPitch(),
-					mOrientationModel.getYaw());
-			v2.rollpitchyaw(mOrientationModel.getRoll(), mOrientationModel.getPitch(),
-					mOrientationModel.getYaw());
+			v1.rollpitchyaw(orientation.getRoll(), orientation.getPitch(),
+					orientation.getYaw());
+			v2.rollpitchyaw(orientation.getRoll(), orientation.getPitch(),
+					orientation.getYaw());
 			g2.draw(new Line2D.Double(centerx
-					+ (v1.x + mAccelerometerModel.getMoveX()) * centerz
+					+ (v1.x + accelerometer.getMoveX()) * centerz
 					/ (centerz - v1.y), centery
-					- (v1.z + mAccelerometerModel.getMoveZ()) * centerz
+					- (v1.z + accelerometer.getMoveZ()) * centerz
 					/ (centerz - v1.y), centerx
-					+ (v2.x + mAccelerometerModel.getMoveX()) * centerz
+					+ (v2.x + accelerometer.getMoveX()) * centerz
 					/ (centerz - v2.y), centery
-					- (v2.z + mAccelerometerModel.getMoveZ()) * centerz
+					- (v2.z + accelerometer.getMoveZ()) * centerz
 					/ (centerz - v2.y)));
 		}
 	}
@@ -269,10 +267,5 @@ public class DeviceView extends JPanel implements Observer {
 
 	public void changeMouseMode(int mode) {
 		mMouseMode = mode;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		doRepaint();
 	}
 }

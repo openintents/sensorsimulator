@@ -24,8 +24,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.PrintWriter;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Random;
 
 import javax.swing.BorderFactory;
@@ -54,7 +52,7 @@ import org.openintents.tools.simulator.view.help.HelpWindow;
  * @author ilarele
  * 
  */
-public abstract class SensorView extends JScrollPane implements Observer {
+public abstract class SensorView extends JScrollPane {
 	private static final long serialVersionUID = 6732292499469735861L;
 	private static final String EMPTY_LABEL = "                 -                ";
 	private static Random rand = new Random();
@@ -538,10 +536,5 @@ public abstract class SensorView extends JScrollPane implements Observer {
 
 	public RefreshRateObserver getReadRateMeterObserver() {
 		return mReadRateMeterObserver;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO: remove this stub and implement it in all subclasses
 	}
 }
