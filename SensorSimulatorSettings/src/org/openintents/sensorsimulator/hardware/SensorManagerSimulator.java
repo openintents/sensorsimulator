@@ -51,7 +51,7 @@ public class SensorManagerSimulator {
 	/**
 	 * Client that communicates with the SensorSimulator application.
 	 */
-	private static SensorSimulatorClient mClient;
+	private static SensorDataReceiver mSensorDataReceiver;
 
 	private SensorManager mSensorManager = null;
 	private Context mContext;
@@ -78,7 +78,7 @@ public class SensorManagerSimulator {
 			SensorManager systemsensormanager) {
 		mContext = context;
 		mSensorManager = systemsensormanager;
-		mClient = new SensorSimulatorClient(mContext, this);
+		mSensorDataReceiver = new SensorSimulatorClient(mContext);
 	}
 
 	/**
@@ -130,8 +130,8 @@ public class SensorManagerSimulator {
 	 * @return available sensors as ArrayList<Integer>
 	 */
 	public ArrayList<Integer> getSensors() {
-		if (mClient.connected) {
-			return mClient.getSensors();
+		if (mSensorDataReceiver.isConnected()) {
+			return mSensorDataReceiver.getSensors();
 		} else {
 			if (mSensorManager != null) {
 				return null;
@@ -169,11 +169,10 @@ public class SensorManagerSimulator {
 	 *            Usually events are received faster
 	 * @return boolean, true or false if registering was successful or not
 	 */
-
 	public boolean registerListener(SensorEventListener listener,
 			Sensor sensor, int rate) {
-		if (mClient.connected) {
-			mClient.registerListener(listener, sensor, rate);
+		if (mSensorDataReceiver.isConnected()) {
+			mSensorDataReceiver.registerListener(listener, sensor, rate);
 			return true;
 		} else {
 			if (mSensorManager == null) {
@@ -193,8 +192,8 @@ public class SensorManagerSimulator {
 	 */
 
 	public void unregisterListener(SensorEventListener listener, Sensor sensor) {
-		if (mClient.connected) {
-			mClient.unregisterListener(listener, sensor);
+		if (mSensorDataReceiver.isConnected()) {
+			mSensorDataReceiver.unregisterListener(listener, sensor);
 		}
 	}
 
@@ -206,8 +205,8 @@ public class SensorManagerSimulator {
 	 */
 
 	public void unregisterListener(SensorEventListener listener) {
-		if (mClient.connected) {
-			mClient.unregisterListener(listener);
+		if (mSensorDataReceiver.isConnected()) {
+			mSensorDataReceiver.unregisterListener(listener);
 		}
 	}
 
@@ -217,21 +216,21 @@ public class SensorManagerSimulator {
 	 * already.)
 	 */
 	public void connectSimulator() {
-		mClient.connect();
+		mSensorDataReceiver.connect();
 	};
 
 	/**
 	 * Disconnect from the Sensor Simulator.
 	 */
 	public void disconnectSimulator() {
-		mClient.disconnect();
+		mSensorDataReceiver.disconnect();
 	}
 
 	/**
 	 * Returns whether the Sensor Simulator is currently connected.
 	 */
 	public boolean isConnectedSimulator() {
-		return mClient.connected;
+		return mSensorDataReceiver.isConnected();
 	}
 
 	/**

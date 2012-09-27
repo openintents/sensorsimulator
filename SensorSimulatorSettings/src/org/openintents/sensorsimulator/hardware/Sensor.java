@@ -56,11 +56,6 @@ public class Sensor {
 	public int sensorToRemove = 0;
 
 	private ArrayList<Integer> currentSensors = new ArrayList<Integer>();
-	/**
-	 * Client that communicates with the SensorSimulator application.
-	 */
-	@SuppressWarnings("unused")
-	private SensorSimulatorClient mClient;
 
 	@SuppressWarnings("unused")
 	private Context mContext;

@@ -50,7 +50,7 @@ import android.util.Log;
  * @author Peli
  * @author Josip Balic
  */
-final class SensorSimulatorClient {
+final class SensorSimulatorClient implements SensorDataReceiver {
 
 	/**
 	 * TAG for logging.
@@ -66,16 +66,13 @@ final class SensorSimulatorClient {
 	private Context mContext;
 	private SensorSimulatorConvenience mSensorSimulatorConvenience;
 
-	protected boolean connected;
+	private boolean connected;
 
 	Socket mSocket;
 	PrintWriter mOut;
 	BufferedReader mIn;
 
 	private ArrayList<Listener> mListeners = new ArrayList<Listener>();
-
-	@SuppressWarnings("unused")
-	private SensorManagerSimulator mSensorManager;
 
 	/**
 	 * Constructor for our SensorSimulatorClient.
@@ -85,18 +82,14 @@ final class SensorSimulatorClient {
 	 * @param sensorManager
 	 *            , SensorManagerSimulator that created this client
 	 */
-	protected SensorSimulatorClient(Context context,
-			SensorManagerSimulator sensorManager) {
-		connected = false;
+	protected SensorSimulatorClient(Context context) {
+		this.connected = false;
 		mContext = context;
-		mSensorManager = sensorManager;
 		mSensorSimulatorConvenience = new SensorSimulatorConvenience(mContext);
 	}
 
-	/**
-	 * Method used to connect our application with SensorSimulator GUI.
-	 */
-	protected synchronized void connect() {
+	@Override
+	public synchronized void connect() {
 
 		// networking operations are no longer permitted to run on the main
 		// thread as of Honeycomb (API level 11)
@@ -156,7 +149,7 @@ final class SensorSimulatorClient {
 				Log.i(TAG, "Received: " + fromServer);
 
 				if (fromServer.equals("SensorSimulator")) {
-					connected = true;
+					SensorSimulatorClient.this.connected = true;
 					Log.i(TAG, "Connected");
 				} else {
 					Log.i(TAG, "Problem connecting: Wrong string sent.");
@@ -178,11 +171,9 @@ final class SensorSimulatorClient {
 		}
 	}
 
-	/**
-	 * Method used to disconnect our application and SensorSimulator GUI.
-	 */
-	protected void disconnect() {
-		if (connected) {
+	@Override
+	public void disconnect() {
+		if (isConnected()) {
 			Log.i(TAG, "Disconnect()");
 
 			try {
@@ -195,18 +186,19 @@ final class SensorSimulatorClient {
 				System.exit(1);
 			}
 
-			connected = false;
+			this.connected = false;
 		} else {
 			// already disconnected, nothing to do.
 		}
 	}
 
-	/**
-	 * Method used to get supported sensors from SensorSimulator GUI.
-	 * 
-	 * @return sensors, ArrayList<Integer> of supported sensors.
-	 */
-	protected ArrayList<Integer> getSensors() {
+	@Override
+	public boolean isConnected() {
+		return connected;
+	}
+
+	@Override
+	public ArrayList<Integer> getSensors() {
 		// Get String array of supported sensors from SensorSimulator GUI.
 		String[] sensornames = getSupportedSensors();
 		// Convert that array to ArrayList of integers.
@@ -221,20 +213,8 @@ final class SensorSimulatorClient {
 	private int DELAY_MS_UI = 60;
 	private int DELAY_MS_NORMAL = 200;
 
-	/**
-	 * Method that registers listener for specific sensor. All sensors can't be
-	 * registered through this method like they can on real device, so
-	 * registration of each sensor must be done.
-	 * 
-	 * @param listener
-	 *            , SensorEventListener for the sensor we are registering
-	 * @param sensor
-	 *            , Sensor we are registering
-	 * @param rate
-	 *            , integer rate of updates
-	 * @return boolean, true of false if registration was successful
-	 */
-	protected boolean registerListener(SensorEventListener listener,
+	@Override
+	public boolean registerListener(SensorEventListener listener,
 			Sensor sensor, int rate) {
 		int delay = -1;
 		// here we check the sensor rate that is going to be applied to listener
@@ -297,15 +277,8 @@ final class SensorSimulatorClient {
 		return result;
 	}
 
-	/**
-	 * Called to unregister specific sensor.
-	 * 
-	 * @param listener
-	 *            , SensorEventListener of the sensor
-	 * @param sensor
-	 *            , Sensor we want to unregister
-	 */
-	protected void unregisterListener(SensorEventListener listener,
+	@Override
+	public void unregisterListener(SensorEventListener listener,
 			Sensor sensor) {
 		synchronized (mListeners) {
 			Iterator<Listener> itr = mListeners.iterator();
@@ -338,14 +311,8 @@ final class SensorSimulatorClient {
 		}
 	}
 
-	/**
-	 * Called when we want to unregister listener and all of it's sensors.
-	 * 
-	 * @param listener
-	 *            , SensorEventListener of listener and it's sensors we want to
-	 *            unregister
-	 */
-	protected void unregisterListener(SensorEventListener listener) {
+	@Override
+	public void unregisterListener(SensorEventListener listener) {
 
 		if (mListeners.size() != 0) {
 
@@ -838,5 +805,4 @@ final class SensorSimulatorClient {
 			e.printStackTrace();
 		}
 	}
-
 }
