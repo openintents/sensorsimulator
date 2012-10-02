@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * @author Don Ho
  */
 public interface SensorDataReceiver {
-
+	
 	/**
 	 * Connect to the sensor data provider, e.g. the SensorSimulator
 	 * desktop application.

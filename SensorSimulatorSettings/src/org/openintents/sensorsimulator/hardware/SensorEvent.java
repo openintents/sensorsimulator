@@ -94,4 +94,19 @@ public class SensorEvent extends Object {
 		type = sensorType;
 	}
 
+	/**
+	 * Creates a Sensor Event with the specified settings. A timestamp is
+	 * generated automatically using <code>System.nanoTime()</code>.
+	 * 
+	 * @param values
+	 *            sensor values
+	 * @param sensorType
+	 *            sensor type
+	 */
+	public SensorEvent(float[] values, int sensorType) {
+		this.values = values;
+		this.type = sensorType;
+		this.timestamp = System.nanoTime();
+	}
+
 }

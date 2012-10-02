@@ -78,7 +78,8 @@ public class SensorManagerSimulator {
 			SensorManager systemsensormanager) {
 		mContext = context;
 		mSensorManager = systemsensormanager;
-		mSensorDataReceiver = new SensorSimulatorClient(mContext);
+		// mSensorDataReceiver = new SensorSimulatorClient(mContext);
+		mSensorDataReceiver = new DataReceiver(mContext);
 	}
 
 	/**

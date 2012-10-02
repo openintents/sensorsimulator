@@ -31,6 +31,7 @@ import org.openintents.sensorsimulator.hardware.SensorEvent;
 import org.openintents.sensorsimulator.hardware.SensorEventListener;
 import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
 import org.openintents.sensorsimulator.hardware.SensorNames;
+import org.openintents.sensorsimulator.hardware.TimestampDispatcher;
 
 import android.app.Activity;
 import android.content.Context;
@@ -40,6 +41,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -487,6 +489,10 @@ public class SensorSimulatorSettingsActivity extends Activity {
 	 */
 	private SensorEventListener listener = new SensorEventListener() {
 
+		private int accCounter;
+		private int measuresPerInterval = 50;
+		private long lastAccTime;
+
 		/**
 		 * onAccuracyChanged must be added, but it doesn't need any editing.
 		 */
@@ -499,39 +505,60 @@ public class SensorSimulatorSettingsActivity extends Activity {
 		 * in our application.
 		 */
 		@Override
-		public void onSensorChanged(SensorEvent event) {
-			int sensor = event.type;
-			float[] values = event.values;
-			for (int i = 0; i < mNumSensors; i++) {
-				if ((mSingleSensorView[i].mSensorBit == sensor) && sensor != 9) {
-					// Update this view
-					String data = "";
-					int num = SensorNames.getNumSensorValues(sensor);
+		public void onSensorChanged(final SensorEvent event) {
+			
+			runOnUiThread(new Runnable() {
 
-					for (int j = 0; j < num; j++) {
-						data += mDecimalFormat.format(values[j]);
-						if (j < num - 1) {
-							data += ", ";
+				@Override
+				public void run() {
+					if (accCounter == 0 || accCounter == measuresPerInterval) {
+						String s = String.valueOf("Frequency: " + measuresPerInterval
+								/ ((SystemClock.uptimeMillis() - lastAccTime) / 1000.0) + "Hz");
+						lastAccTime = SystemClock.uptimeMillis();
+						Log.i(TAG, s);
+						accCounter = 0;
+					}
+					accCounter++;
+					
+					int sensor = event.type;
+					float[] values = event.values;
+					for (int i = 0; i < mNumSensors; i++) {
+						if ((mSingleSensorView[i].mSensorBit == sensor)
+								&& sensor != 9) {
+							// Update this view
+							String data = "";
+							int num = SensorNames.getNumSensorValues(sensor);
+
+							for (int j = 0; j < num; j++) {
+								data += mDecimalFormat.format(values[j]);
+								if (j < num - 1) {
+									data += ", ";
+								}
+							}
+
+							mSingleSensorView[i].mSensorDataTextView
+									.setText(data);
+							break;
 						}
 					}
 
-					mSingleSensorView[i].mSensorDataTextView.setText(data);
-					break;
-				}
-			}
+					// If Barcode is enabled, this method is used only for
+					// Barcode
+					// output
+					for (int i = 0; i < mNumSensors; i++) {
+						if ((mSingleSensorView[i].mSensorBit == sensor)
+								&& sensor == 9) {
+							// Update this view
+							String data = "";
+							data = event.barcode;
 
-			// If Barcode is enabled, this method is used only for Barcode
-			// output
-			for (int i = 0; i < mNumSensors; i++) {
-				if ((mSingleSensorView[i].mSensorBit == sensor) && sensor == 9) {
-					// Update this view
-					String data = "";
-					data = event.barcode;
-
-					mSingleSensorView[i].mSensorDataTextView.setText(data);
-					break;
+							mSingleSensorView[i].mSensorDataTextView
+									.setText(data);
+							break;
+						}
+					}
 				}
-			}
+			});
 		}
 
 	};
@@ -632,7 +659,7 @@ public class SensorSimulatorSettingsActivity extends Activity {
 
 			mSensorManager.registerListener(listener,
 					mSensorManager.getDefaultSensor(mSensorBit),
-					SensorManager.SENSOR_DELAY_FASTEST); // TODO
+					SensorManager.SENSOR_DELAY_UI); // TODO
 		}
 	}
 }
