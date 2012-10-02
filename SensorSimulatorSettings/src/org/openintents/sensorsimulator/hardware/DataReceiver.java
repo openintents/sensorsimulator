@@ -1,14 +1,12 @@
 package org.openintents.sensorsimulator.hardware;
 
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
 
 import android.content.Context;
-import android.hardware.SensorManager;
-import android.os.SystemClock;
-import android.util.Log;
 
 /**
  * Client-side receiver which receives sensor events from sensor data provider
@@ -34,7 +32,7 @@ public class DataReceiver implements SensorDataReceiver {
 	@Override
 	public void connect() {
 		mConnected = true;
-		new Thread(fakeData).start();
+		new Thread(mReceiving).start();
 	}
 
 	@Override
@@ -53,7 +51,7 @@ public class DataReceiver implements SensorDataReceiver {
 	public ArrayList<Integer> getSensors() {
 		// TODO Auto-generated method stub
 
-		String[] sensornames = new String[] { "temperature" };
+		String[] sensornames = new String[] { "accelerometer" };
 		// Convert that array to ArrayList of integers.
 		ArrayList<Integer> sensors = SensorNames
 				.getSensorsFromNames(sensornames);
@@ -85,7 +83,7 @@ public class DataReceiver implements SensorDataReceiver {
 		}
 
 		// check sensor type and add to correct dispatcher
-		if (sensor.sensorToRegister == Sensor.TYPE_TEMPERATURE) {
+		if (sensor.sensorToRegister == Sensor.TYPE_ACCELEROMETER) {
 			mTemperatureDispatcher.addListener(listener, interval);
 
 			return true;
@@ -105,31 +103,38 @@ public class DataReceiver implements SensorDataReceiver {
 
 	}
 
-	// TODO remove after testing
-	private Runnable fakeData = new Runnable() {
+	private Runnable mReceiving = new Runnable() {
 
 		@Override
 		public void run() {
-			List<SensorEvent> events = new LinkedList<SensorEvent>();
-			float[] values = new float[3];
-			values[1] = 0f;
-			values[2] = 0f;
+			try {
+				mTemperatureDispatcher.start();
 
-			Random random = new Random(System.currentTimeMillis());
+				Socket connection = new Socket("192.168.2.199", 8010);
+				DataInputStream in = new DataInputStream(
+						connection.getInputStream());
 
-			for (int i = 0; i < 200; i++) {
-				try {
-					values[0] = random.nextFloat();
-					events.add(new SensorEvent(values.clone(),
-							Sensor.TYPE_TEMPERATURE));
-					Thread.sleep(10);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+				while (true) {
+					// read sensor event
+					int type = in.readInt();
+					int accuracy = in.readInt();
+					long timestamp = in.readLong();
+					int valLength = in.readInt();
+					float[] values = new float[valLength];
+					for (int i = 0; i < valLength; i++) {
+						values[i] = in.readFloat();
+					}
+
+					mTemperatureDispatcher.putEvent(new SensorEvent(values,
+							type));
 				}
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-
-			mTemperatureDispatcher.putEvents(events);
-			mTemperatureDispatcher.start();
 		}
 	};
 }

@@ -75,26 +75,23 @@ public class SensorRecordService extends Service {
 			mHandler = new Handler(new Callback() {
 				@Override
 				public boolean handleMessage(Message msg) {
-//					synchronized (SensorRecordService.this) {
-						// event captured by a listener
-						// send event values to the server (sockets)
-						try {
-							SensorEventContainer event = (SensorEventContainer) msg.obj;
+					// event captured by a listener
+					// send event values to the server (sockets)
+					try {
+						SensorEventContainer event = (SensorEventContainer) msg.obj;
 
-							mOutStream.writeInt(event.type);
-							mOutStream.writeInt(event.accuracy);
-							mOutStream.writeLong(event.timestamp);
-							mOutStream.writeInt(event.values.length);
-							for (float value : event.values) {
-								mOutStream.writeFloat(value);
-							}
-
-						} catch (IOException e) {
-							Log.e(TAG, "Connection closed!");
-							clearAll(false);
+						mOutStream.writeInt(event.type);
+						mOutStream.writeInt(event.accuracy);
+						mOutStream.writeLong(event.timestamp);
+						mOutStream.writeInt(event.values.length);
+						for (float value : event.values) {
+							mOutStream.writeFloat(value);
 						}
 
-//					}
+					} catch (IOException e) {
+						Log.e(TAG, "Connection closed!");
+						clearAll(false);
+					}
 					return true;
 				}
 			});

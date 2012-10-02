@@ -51,6 +51,16 @@ public class TimestampDispatcher implements Dispatcher {
 	}
 
 	@Override
+	public void putEvent(SensorEvent event) {
+		try {
+			mQueue.put(event);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
 	public void putEvents(Collection<SensorEvent> events) {
 		mQueue.addAll(events);
 	}
@@ -85,6 +95,7 @@ public class TimestampDispatcher implements Dispatcher {
 
 					// dispatch to all listeners which are ready
 					for (ListenerWrapper wrapper : mListeners) {
+						System.out.println("Dispatchingasdiafjösodijfaoösjdöflaksjdölfkjaösldkjfaölskdjfölaksjdfölkajsdölkf");
 						if (now > wrapper.nextTime) {
 							wrapper.eventListener.onSensorChanged(event);
 							wrapper.updateNextTime(now);

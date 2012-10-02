@@ -33,6 +33,14 @@ public interface Dispatcher {
 	public void stop();
 
 	/**
+	 * Put a single <code>SensorEvent</code> in the queue.
+	 * 
+	 * @param event
+	 *            a collection of events to put
+	 */
+	void putEvent(SensorEvent event);
+
+	/**
 	 * Put a new chunk of <code>SensorEvent</code>s in the queue.
 	 * 
 	 * @param events
