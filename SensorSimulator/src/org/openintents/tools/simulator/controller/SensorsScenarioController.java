@@ -22,6 +22,8 @@ import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -70,7 +72,7 @@ public class SensorsScenarioController {
 	private SensorSimulatorController mSensorSimulatorController;
 
 	private ServerSocket mServerSocket;
-	private ObjectInputStream mInStream;
+	private DataInputStream mInStream;
 
 	private Hashtable<Integer, float[]> mRecordedSensors;
 	private JButton mRecordBtn;
@@ -479,24 +481,30 @@ public class SensorsScenarioController {
 							// switch to recording view
 							switchRecord(false);
 							mView.clearScenario();
-							mInStream = new ObjectInputStream(connection
+							mInStream = new DataInputStream(connection
 									.getInputStream());
 							while (true) {
-								Integer sensorType = (Integer) mInStream
-										.readObject();
-								float[] values = (float[]) mInStream
-										.readObject();
+								// accuracy and timestamp are ignored for now
+								// (it was not sent in previous versions). i
+								// needed them to store a complete sequence of
+								// sensor events with the same sampling rate as
+								// it was recorded (and not with the possibly
+								// lower sampling rate implemented here)
+								// - Qui Don Ho, 02 Oct 2012
+								int type = mInStream.readInt();
+								int accuracy = mInStream.readInt();
+								long timestamp = mInStream.readLong();
+								int valLength = mInStream.readInt();
+								float[] values = new float[valLength];
+								for (int i = 0; i < valLength; i++) {
+									values[i] = mInStream.readFloat();
+								}
 
-								// System.out.println("received:" + sensorType
-								// + ":" + values[0] + " " + values[1]
-								// + " " + values[2]);
-								mRecordedSensors.put(sensorType, values);
+								mRecordedSensors.put(type, values);
 							}
 						} catch (IOException e) {
 							System.out.println("Connection closed!");
 							switchRecord(true);
-						} catch (ClassNotFoundException e) {
-							e.printStackTrace();
 						} finally {
 							closeRecordingConnection();
 						}

@@ -1,7 +1,9 @@
 package org.openintents.sensorsimulator.record;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import android.app.Notification;
@@ -35,7 +37,7 @@ public class SensorRecordService extends Service {
 
 	// communication
 	private Socket mRequestSocket;
-	private ObjectOutputStream mOutStream;
+	private DataOutputStream mOutStream;
 
 	// sensors
 	private ArrayList<SensorEventListener> mListenersArray;
@@ -68,29 +70,31 @@ public class SensorRecordService extends Service {
 		try {
 			mRequestSocket = new Socket(ipAddress, Global.PORT);
 			Log.d(TAG, "created socket for ip address:" + ipAddress);
-			mOutStream = new ObjectOutputStream(
+			mOutStream = new DataOutputStream(
 					mRequestSocket.getOutputStream());
 			mHandler = new Handler(new Callback() {
 				@Override
 				public boolean handleMessage(Message msg) {
-					// event captured by a listener
-					// send event values to the server (sockets)
-					try {
-						// sensorType
-						mOutStream.writeObject(msg.arg1);
-						// float[] - sensor values
-						mOutStream.writeObject(msg.obj);
+//					synchronized (SensorRecordService.this) {
+						// event captured by a listener
+						// send event values to the server (sockets)
+						try {
+							SensorEventContainer event = (SensorEventContainer) msg.obj;
 
-						// Log.d(TAG, "send message:" + ((float[]) msg.obj)[0] +
-						// " "
-						// + ((float[]) msg.obj)[1] + " " + ((float[])
-						// msg.obj)[2]);
-						//
-					} catch (IOException e) {
-						Log.e(TAG, "Connection closed!");
-						clearAll(false);
-					}
+							mOutStream.writeInt(event.type);
+							mOutStream.writeInt(event.accuracy);
+							mOutStream.writeLong(event.timestamp);
+							mOutStream.writeInt(event.values.length);
+							for (float value : event.values) {
+								mOutStream.writeFloat(value);
+							}
 
+						} catch (IOException e) {
+							Log.e(TAG, "Connection closed!");
+							clearAll(false);
+						}
+
+//					}
 					return true;
 				}
 			});
@@ -119,8 +123,9 @@ public class SensorRecordService extends Service {
 			@Override
 			public void onSensorChanged(SensorEvent event) {
 				Message msg = new Message();
-				msg.obj = event.values.clone();
-				msg.arg1 = sensorType;
+				msg.obj = new SensorEventContainer(
+						sensorType, event.accuracy, event.timestamp,
+						event.values.clone());
 				mHandler.sendMessage(msg);
 			}
 
@@ -180,5 +185,29 @@ public class SensorRecordService extends Service {
 
 		// Send the notification.
 		mNotificationManager.notify(NOTIFICATION, notification);
+	}
+
+	/**
+	 * Simple Container Class to wrap sensor data and put them in the queue for
+	 * the network handler. Not necessary, when handler would just process the
+	 * sensor event, but I did not have the time to check the "sensor - id"
+	 * mapping at the time.
+	 * 
+	 * @author Qui Don Ho
+	 * 
+	 */
+	private class SensorEventContainer {
+		public int type;
+		public int accuracy;
+		public long timestamp;
+		public float[] values;
+
+		public SensorEventContainer(int type, int accuracy, long timestamp,
+				float[] values) {
+			this.type = type;
+			this.accuracy = accuracy;
+			this.timestamp = timestamp;
+			this.values = values;
+		}
 	}
 }
