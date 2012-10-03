@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
+import android.util.SparseArray;
 
 /**
  * Client-side receiver which receives sensor events from sensor data provider
@@ -26,14 +27,15 @@ public class DataReceiver implements SensorDataReceiver {
 
 	// sensor dispatchers
 	// private Dispatcher mAccelerometerDispatcher;
-	private Map<Integer, Dispatcher> mDispatchers;
+	private SparseArray<Dispatcher> mDispatchers;
 	private boolean mConnected;
 	private Thread mReceivingThread;
 	private String mIpAdress;
 	private int mPort;
 
 	public DataReceiver(String ipAdress, int port) {
-		mDispatchers = new HashMap<Integer, Dispatcher>();
+		mDispatchers = // new HashMap<Integer, Dispatcher>();
+		new SparseArray<Dispatcher>(12);
 		mDispatchers.put(Sensor.TYPE_ACCELEROMETER, new TimestampDispatcher());
 		mDispatchers.put(Sensor.TYPE_GYROSCOPE, new TimestampDispatcher());
 		mDispatchers.put(Sensor.TYPE_LIGHT, new TimestampDispatcher());
@@ -61,8 +63,8 @@ public class DataReceiver implements SensorDataReceiver {
 		// immediately after calling connect()
 		// TODO should be MVC (Observer) instead
 		mConnected = true;
-		for (Dispatcher dispatcher : mDispatchers.values())
-			dispatcher.start();
+		for (int i = 0; i < mDispatchers.size(); i++)
+			mDispatchers.valueAt(i).start();
 		mReceivingThread = new Thread(mReceiving);
 		mReceivingThread.start();
 	}
@@ -71,8 +73,8 @@ public class DataReceiver implements SensorDataReceiver {
 	public void disconnect() {
 		// explained in connect()
 		mConnected = false;
-		for (Dispatcher dispatcher : mDispatchers.values())
-			dispatcher.start();
+		for (int i = 0; i < mDispatchers.size(); i++)
+			mDispatchers.valueAt(i).stop();
 		mReceivingThread.interrupt();
 	}
 
@@ -178,13 +180,13 @@ public class DataReceiver implements SensorDataReceiver {
 				out.writeInt(1);
 			} catch (UnknownHostException e) {
 				// wrong ip or port or server not started
-				for (Dispatcher dispatcher : mDispatchers.values())
-					dispatcher.stop();
+				for (int i = 0; i < mDispatchers.size(); i++)
+					mDispatchers.valueAt(i).stop();
 				mConnected = false;
 			} catch (EOFException e) {
 				// server shut down connection
-				for (Dispatcher dispatcher : mDispatchers.values())
-					dispatcher.stop();
+				for (int i = 0; i < mDispatchers.size(); i++)
+					mDispatchers.valueAt(i).stop();
 				mConnected = false;
 			} catch (IOException e) {
 				// some other crap happened
