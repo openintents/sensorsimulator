@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.Context;
 
@@ -23,14 +25,30 @@ import android.content.Context;
 public class DataReceiver implements SensorDataReceiver {
 
 	// sensor dispatchers
-	private Dispatcher mAccelerometerDispatcher;
+	// private Dispatcher mAccelerometerDispatcher;
+	private Map<Integer, Dispatcher> mDispatchers;
 	private boolean mConnected;
 	private Thread mReceivingThread;
 	private String mIpAdress;
 	private int mPort;
 
 	public DataReceiver(String ipAdress, int port) {
-		mAccelerometerDispatcher = new TimestampDispatcher();
+		mDispatchers = new HashMap<Integer, Dispatcher>();
+		mDispatchers.put(Sensor.TYPE_ACCELEROMETER, new TimestampDispatcher());
+		mDispatchers.put(Sensor.TYPE_GYROSCOPE, new TimestampDispatcher());
+		mDispatchers.put(Sensor.TYPE_LIGHT, new TimestampDispatcher());
+		mDispatchers.put(Sensor.TYPE_MAGNETIC_FIELD, new TimestampDispatcher());
+		mDispatchers.put(Sensor.TYPE_ORIENTATION, new TimestampDispatcher());
+		mDispatchers.put(Sensor.TYPE_PRESSURE, new TimestampDispatcher());
+		mDispatchers.put(Sensor.TYPE_PROXIMITY, new TimestampDispatcher());
+		mDispatchers.put(Sensor.TYPE_TEMPERATURE, new TimestampDispatcher());
+		mDispatchers.put(Sensor.TYPE_BARCODE_READER, new TimestampDispatcher());
+		mDispatchers.put(Sensor.TYPE_LINEAR_ACCELERATION,
+				new TimestampDispatcher());
+		mDispatchers.put(Sensor.TYPE_GRAVITY, new TimestampDispatcher());
+		mDispatchers
+				.put(Sensor.TYPE_ROTATION_VECTOR, new TimestampDispatcher());
+
 		mIpAdress = ipAdress;
 		mPort = port;
 
@@ -43,7 +61,8 @@ public class DataReceiver implements SensorDataReceiver {
 		// immediately after calling connect()
 		// TODO should be MVC (Observer) instead
 		mConnected = true;
-		mAccelerometerDispatcher.start();
+		for (Dispatcher dispatcher : mDispatchers.values())
+			dispatcher.start();
 		mReceivingThread = new Thread(mReceiving);
 		mReceivingThread.start();
 	}
@@ -52,7 +71,8 @@ public class DataReceiver implements SensorDataReceiver {
 	public void disconnect() {
 		// explained in connect()
 		mConnected = false;
-		mAccelerometerDispatcher.stop();
+		for (Dispatcher dispatcher : mDispatchers.values())
+			dispatcher.start();
 		mReceivingThread.interrupt();
 	}
 
@@ -95,8 +115,9 @@ public class DataReceiver implements SensorDataReceiver {
 		}
 
 		// check sensor type and add to correct dispatcher
-		if (sensor.sensorToRegister == Sensor.TYPE_ACCELEROMETER) {
-			mAccelerometerDispatcher.addListener(listener, interval);
+		Dispatcher dispatcher = mDispatchers.get(sensor.sensorToRegister);
+		if (dispatcher != null) {
+			dispatcher.addListener(listener, interval);
 
 			return true;
 		}
@@ -127,6 +148,7 @@ public class DataReceiver implements SensorDataReceiver {
 				connection = new Socket(mIpAdress, mPort);
 				// only block for some time so we can check interrupts
 				connection.setSoTimeout(100);
+				// TODO check if Bufferedstream would be faster
 				in = new DataInputStream(connection.getInputStream());
 				out = new DataOutputStream(connection.getOutputStream());
 
@@ -144,8 +166,9 @@ public class DataReceiver implements SensorDataReceiver {
 							values[i] = in.readFloat();
 						}
 
-						mAccelerometerDispatcher.putEvent(new SensorEvent(type,
-								accuracy, timestamp, values));
+						mDispatchers.get(type).putEvent(
+								new SensorEvent(type, accuracy, timestamp,
+										values));
 					} catch (SocketTimeoutException e) {
 						// just try again
 					}
@@ -155,11 +178,13 @@ public class DataReceiver implements SensorDataReceiver {
 				out.writeInt(1);
 			} catch (UnknownHostException e) {
 				// wrong ip or port or server not started
-				mAccelerometerDispatcher.stop();
+				for (Dispatcher dispatcher : mDispatchers.values())
+					dispatcher.stop();
 				mConnected = false;
 			} catch (EOFException e) {
 				// server shut down connection
-				mAccelerometerDispatcher.stop();
+				for (Dispatcher dispatcher : mDispatchers.values())
+					dispatcher.stop();
 				mConnected = false;
 			} catch (IOException e) {
 				// some other crap happened
