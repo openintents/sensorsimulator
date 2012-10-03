@@ -11,13 +11,13 @@ import java.util.ArrayList;
  * A class implementing SensorDataReceiver should encapsulate the act of sensor
  * data receiving and sending them to the respected SensorEventListeners.
  * 
- * @author Don Ho
+ * @author Qui Don Ho
  */
 public interface SensorDataReceiver {
-	
+
 	/**
-	 * Connect to the sensor data provider, e.g. the SensorSimulator
-	 * desktop application.
+	 * Connect to the sensor data provider, e.g. the SensorSimulator desktop
+	 * application.
 	 */
 	public void connect();
 
@@ -52,7 +52,8 @@ public interface SensorDataReceiver {
 	 *            , integer rate of updates
 	 * @return boolean, true of false if registration was successful
 	 */
-	public boolean registerListener(SensorEventListener listener, Sensor sensor, int rate);
+	public boolean registerListener(SensorEventListener listener,
+			Sensor sensor, int rate);
 
 	/**
 	 * Called to unregister from specific sensor.
@@ -72,4 +73,14 @@ public interface SensorDataReceiver {
 	 *            unregister
 	 */
 	public void unregisterListener(SensorEventListener listener);
+
+	/**
+	 * Set server ip and port number.
+	 * 
+	 * @param ipAdress
+	 *            the new ip adress
+	 * @param port
+	 *            the new port number
+	 */
+	public void setServerAdress(String ipAdress, int port);
 }

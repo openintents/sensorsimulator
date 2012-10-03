@@ -23,6 +23,9 @@ package org.openintents.sensorsimulator.hardware;
 
 import java.util.ArrayList;
 
+import org.openintents.sensorsimulator.db.SensorSimulator;
+import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
+
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Build;
@@ -78,8 +81,19 @@ public class SensorManagerSimulator {
 			SensorManager systemsensormanager) {
 		mContext = context;
 		mSensorManager = systemsensormanager;
+
+		// old way
 		// mSensorDataReceiver = new SensorSimulatorClient(mContext);
-		mSensorDataReceiver = new DataReceiver(mContext);
+
+		// new way
+		SensorSimulatorConvenience prefs = new SensorSimulatorConvenience(
+				context);
+		// get Info from ContentProvider
+		String ipaddress = prefs.getPreference(SensorSimulator.KEY_IPADDRESS);
+		int port = Integer.parseInt(prefs
+				.getPreference(SensorSimulator.KEY_SOCKET));
+
+		mSensorDataReceiver = new DataReceiver(ipaddress, port);
 	}
 
 	/**
@@ -259,5 +273,9 @@ public class SensorManagerSimulator {
 			sensors.removeSensor(type);
 			return sensors;
 		}
+	}
+
+	public void setServerAdress(String newIP, int newSocket) {
+		mSensorDataReceiver.setServerAdress(newIP, newSocket);
 	}
 }

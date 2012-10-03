@@ -4,7 +4,7 @@ package org.openintents.tools.simulator.model;
  * Defines an API for a specific sensor state. A state consists of a set of
  * values of all sensors.
  * 
- * @author donat3llo
+ * @author Qui Don Ho
  * 
  */
 public interface SensorState {

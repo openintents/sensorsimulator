@@ -11,7 +11,7 @@ import java.util.List;
  * <br><br>
  * Observers can be added to display the refreshment rate.  
  * 
- * @author donat3llo
+ * @author Qui Don Ho
  * 
  */
 public class RefreshRateMeter {

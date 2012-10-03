@@ -39,7 +39,7 @@ import org.openintents.tools.simulator.model.sensors.SensorType;
  * @author Peli
  * @author Josip Balic
  * @author ilarele
- * @author donat3llo
+ * @author Qui Don Ho
  */
 public class SensorServerThread implements Runnable {
 

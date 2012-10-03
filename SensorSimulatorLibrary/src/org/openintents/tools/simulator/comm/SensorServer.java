@@ -28,7 +28,7 @@ import org.openintents.tools.simulator.logging.Logg;
  * Connections are then passed to the {@link SensorServerThread}.
  * 
  * @author Peli
- * @author donat3llo
+ * @author Qui Don Ho
  * 
  */
 public class SensorServer implements Runnable {

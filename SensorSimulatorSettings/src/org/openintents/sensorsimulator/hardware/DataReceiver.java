@@ -1,8 +1,11 @@
 package org.openintents.sensorsimulator.hardware;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -20,26 +23,37 @@ import android.content.Context;
 public class DataReceiver implements SensorDataReceiver {
 
 	// sensor dispatchers
-	private Dispatcher mTemperatureDispatcher;
+	private Dispatcher mAccelerometerDispatcher;
 	private boolean mConnected;
+	private Thread mReceivingThread;
+	private String mIpAdress;
+	private int mPort;
 
-	public DataReceiver(Context context) {
-		mTemperatureDispatcher = new TimestampDispatcher(context);
+	public DataReceiver(String ipAdress, int port) {
+		mAccelerometerDispatcher = new TimestampDispatcher();
+		mIpAdress = ipAdress;
+		mPort = port;
 
 		mConnected = false;
 	}
 
 	@Override
 	public void connect() {
+		// because SensorSimulatorSettingsActivity checks connected state
+		// immediately after calling connect()
+		// TODO should be MVC (Observer) instead
 		mConnected = true;
-		new Thread(mReceiving).start();
+		mAccelerometerDispatcher.start();
+		mReceivingThread = new Thread(mReceiving);
+		mReceivingThread.start();
 	}
 
 	@Override
 	public void disconnect() {
-		// TODO Auto-generated method stub
-		mTemperatureDispatcher.stop();
+		// explained in connect()
 		mConnected = false;
+		mAccelerometerDispatcher.stop();
+		mReceivingThread.interrupt();
 	}
 
 	@Override
@@ -49,8 +63,6 @@ public class DataReceiver implements SensorDataReceiver {
 
 	@Override
 	public ArrayList<Integer> getSensors() {
-		// TODO Auto-generated method stub
-
 		String[] sensornames = new String[] { "accelerometer" };
 		// Convert that array to ArrayList of integers.
 		ArrayList<Integer> sensors = SensorNames
@@ -84,7 +96,7 @@ public class DataReceiver implements SensorDataReceiver {
 
 		// check sensor type and add to correct dispatcher
 		if (sensor.sensorToRegister == Sensor.TYPE_ACCELEROMETER) {
-			mTemperatureDispatcher.addListener(listener, interval);
+			mAccelerometerDispatcher.addListener(listener, interval);
 
 			return true;
 		}
@@ -107,34 +119,70 @@ public class DataReceiver implements SensorDataReceiver {
 
 		@Override
 		public void run() {
+			Socket connection = null;
+			DataInputStream in = null;
+			DataOutputStream out = null;
+
 			try {
-				mTemperatureDispatcher.start();
+				connection = new Socket(mIpAdress, mPort);
+				// only block for some time so we can check interrupts
+				connection.setSoTimeout(100);
+				in = new DataInputStream(connection.getInputStream());
+				out = new DataOutputStream(connection.getOutputStream());
 
-				Socket connection = new Socket("192.168.2.199", 8010);
-				DataInputStream in = new DataInputStream(
-						connection.getInputStream());
+				mConnected = true;
 
-				while (true) {
-					// read sensor event
-					int type = in.readInt();
-					int accuracy = in.readInt();
-					long timestamp = in.readLong();
-					int valLength = in.readInt();
-					float[] values = new float[valLength];
-					for (int i = 0; i < valLength; i++) {
-						values[i] = in.readFloat();
+				// read sensor events
+				while (!Thread.interrupted()) {
+					try {
+						int type = in.readInt();
+						int accuracy = in.readInt();
+						long timestamp = in.readLong();
+						int valLength = in.readInt();
+						float[] values = new float[valLength];
+						for (int i = 0; i < valLength; i++) {
+							values[i] = in.readFloat();
+						}
+
+						mAccelerometerDispatcher.putEvent(new SensorEvent(type,
+								accuracy, timestamp, values));
+					} catch (SocketTimeoutException e) {
+						// just try again
 					}
-
-					mTemperatureDispatcher.putEvent(new SensorEvent(values,
-							type));
 				}
+
+				// say goodbye to server
+				out.writeInt(1);
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// wrong ip or port or server not started
+				mAccelerometerDispatcher.stop();
+				mConnected = false;
+			} catch (EOFException e) {
+				// server shut down connection
+				mAccelerometerDispatcher.stop();
+				mConnected = false;
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				// some other crap happened
 				e.printStackTrace();
+			} finally {
+				// cleanup
+				try {
+					if (out != null)
+						out.close();
+					if (in != null)
+						in.close();
+					if (connection != null)
+						connection.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	};
+
+	@Override
+	public void setServerAdress(String ipAdress, int port) {
+		mIpAdress = ipAdress;
+		mPort = port;
+	}
 }

@@ -805,4 +805,10 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public void setServerAdress(String ipAdress, int port) {
+		// ignore this (this was not implemented in earlier versions, ip adress
+		// and port are read directly from android preferences)
+	}
 }

@@ -1,15 +1,13 @@
 package org.openintents.sensorsimulator.hardware;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.SystemClock;
-import android.util.Log;
 
 /**
  * Dispatches received events based on their timestamp, ignoring the sensor rate
@@ -24,7 +22,7 @@ public class TimestampDispatcher implements Dispatcher {
 	private BlockingQueue<SensorEvent> mQueue;
 	private Thread mThread;
 
-	public TimestampDispatcher(Context context) {
+	public TimestampDispatcher() {
 		// create a blocking queue for sensor events
 		mQueue = new LinkedBlockingQueue<SensorEvent>();
 		mListeners = new ArrayList<ListenerWrapper>();
@@ -69,33 +67,38 @@ public class TimestampDispatcher implements Dispatcher {
 
 		@Override
 		public void run() {
+			// init stuff
 			long lastTimeStamp = 0;
 			long now = 0;
-			// events should just be dispatched the first time
-			long lastTimeDispatched = -System.nanoTime();
 			long timePassedScheduled = 0;
+			long lastTimeDispatched = 0;
 			long timePassed = 0;
 			SensorEvent event;
+			boolean firstTime = true;
 
 			try {
 				while (true) {
-					now = System.nanoTime();
-
 					// take new event
 					event = mQueue.take();
 
-					// check if it is time for that event
-					timePassedScheduled = event.timestamp - lastTimeStamp;
-					timePassed = now - lastTimeDispatched;
-					if (timePassed < timePassedScheduled) {
-						// convert to ms
-						Thread.sleep((timePassedScheduled - timePassed) / 1000000);
-						now = System.nanoTime();
+					now = System.nanoTime();
+
+					// check if it is time for that event, starting at
+					// second run
+					if (!firstTime) {
+						timePassedScheduled = event.timestamp - lastTimeStamp;
+						timePassed = now - lastTimeDispatched;
+						if (timePassed < timePassedScheduled) {
+							// convert to ms
+							Thread.sleep((timePassedScheduled - timePassed) / 1000000);
+							now = System.nanoTime();
+						}
+					} else {
+						firstTime = false;
 					}
 
 					// dispatch to all listeners which are ready
 					for (ListenerWrapper wrapper : mListeners) {
-						System.out.println("Dispatchingasdiafjösodijfaoösjdöflaksjdölfkjaösldkjfaölskdjfölaksjdfölkajsdölkf");
 						if (now > wrapper.nextTime) {
 							wrapper.eventListener.onSensorChanged(event);
 							wrapper.updateNextTime(now);
@@ -107,8 +110,8 @@ public class TimestampDispatcher implements Dispatcher {
 					lastTimeDispatched = now;
 				}
 			} catch (InterruptedException e) {
-				// TODO clean queue up or something
-				// if dispatcher is stopped, should the queue be cleaned?
+				// clean up
+				mQueue.clear();
 			}
 		}
 	};

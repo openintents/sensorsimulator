@@ -402,6 +402,9 @@ public class SensorSimulatorSettingsActivity extends Activity {
 			mSensorManager.unregisterListener(listener);
 			mSensorManager.disconnectSimulator();
 
+			// update ip and adress directly
+			mSensorManager.setServerAdress(newIP, Integer.parseInt(newSocket));
+
 			// Save the values
 			mSensorSimulatorConvenience.setPreference(
 					SensorSimulator.KEY_IPADDRESS, newIP);

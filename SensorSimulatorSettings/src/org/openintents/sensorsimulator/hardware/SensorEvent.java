@@ -108,5 +108,21 @@ public class SensorEvent extends Object {
 		this.type = sensorType;
 		this.timestamp = System.nanoTime();
 	}
+	
+	/**
+	 * Creates a new <code>SensorEvent</code>.
+	 * 
+	 * @param sensorType
+	 * @param accuracy
+	 * @param timestamp
+	 * @param values
+	 */
+	public SensorEvent(int sensorType, int accuracy, long timestamp,
+			float[] values) {
+		this.type = sensorType;
+		this.accuracy = accuracy;
+		this.timestamp = timestamp;
+		this.values = values;
+	}
 
 }
