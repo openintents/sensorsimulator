@@ -47,4 +47,12 @@ public interface Dispatcher {
 	 *            a collection of events to put
 	 */
 	void putEvents(Collection<SensorEvent> events);
+
+	/**
+	 * Notifies listener that there are no more events to dispatch.
+	 * 
+	 * @param emptyListener
+	 *            the listener
+	 */
+	void setOnEmptyListener(DispatcherEmptyListener emptyListener);
 }

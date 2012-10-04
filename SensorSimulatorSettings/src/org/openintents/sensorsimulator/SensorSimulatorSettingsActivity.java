@@ -493,6 +493,7 @@ public class SensorSimulatorSettingsActivity extends Activity {
 	private SensorEventListener listener = new SensorEventListener() {
 
 		private int accCounter;
+		private int counter = 0;
 		private int measuresPerInterval = 50;
 		private long lastAccTime;
 
@@ -522,6 +523,8 @@ public class SensorSimulatorSettingsActivity extends Activity {
 						accCounter = 0;
 					}
 					accCounter++;
+					counter++;
+//					Log.i(TAG, "counter: " + counter);
 					
 					int sensor = event.type;
 					float[] values = event.values;
@@ -662,7 +665,7 @@ public class SensorSimulatorSettingsActivity extends Activity {
 
 			mSensorManager.registerListener(listener,
 					mSensorManager.getDefaultSensor(mSensorBit),
-					SensorManager.SENSOR_DELAY_UI); // TODO
+					SensorManager.SENSOR_DELAY_FASTEST); // TODO
 		}
 	}
 }

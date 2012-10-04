@@ -8,10 +8,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-import android.content.Context;
+import android.util.Log;
 import android.util.SparseArray;
 
 /**
@@ -23,8 +21,10 @@ import android.util.SparseArray;
  * @author Qui Don Ho
  * 
  */
-public class DataReceiver implements SensorDataReceiver {
+public class DataReceiver implements SensorDataReceiver,
+		DispatcherEmptyListener {
 
+	private static final String TAG = "DataReceiver";
 	// sensor dispatchers
 	// private Dispatcher mAccelerometerDispatcher;
 	private SparseArray<Dispatcher> mDispatchers;
@@ -36,20 +36,22 @@ public class DataReceiver implements SensorDataReceiver {
 	public DataReceiver(String ipAdress, int port) {
 		mDispatchers = // new HashMap<Integer, Dispatcher>();
 		new SparseArray<Dispatcher>(12);
-		mDispatchers.put(Sensor.TYPE_ACCELEROMETER, new TimestampDispatcher());
-		mDispatchers.put(Sensor.TYPE_GYROSCOPE, new TimestampDispatcher());
-		mDispatchers.put(Sensor.TYPE_LIGHT, new TimestampDispatcher());
-		mDispatchers.put(Sensor.TYPE_MAGNETIC_FIELD, new TimestampDispatcher());
-		mDispatchers.put(Sensor.TYPE_ORIENTATION, new TimestampDispatcher());
-		mDispatchers.put(Sensor.TYPE_PRESSURE, new TimestampDispatcher());
-		mDispatchers.put(Sensor.TYPE_PROXIMITY, new TimestampDispatcher());
-		mDispatchers.put(Sensor.TYPE_TEMPERATURE, new TimestampDispatcher());
-		mDispatchers.put(Sensor.TYPE_BARCODE_READER, new TimestampDispatcher());
+		mDispatchers.put(Sensor.TYPE_ACCELEROMETER, new SequenceDispatcher());
+		mDispatchers.put(Sensor.TYPE_GYROSCOPE, new SequenceDispatcher());
+		mDispatchers.put(Sensor.TYPE_LIGHT, new SequenceDispatcher());
+		mDispatchers.put(Sensor.TYPE_MAGNETIC_FIELD, new SequenceDispatcher());
+		mDispatchers.put(Sensor.TYPE_ORIENTATION, new SequenceDispatcher());
+		mDispatchers.put(Sensor.TYPE_PRESSURE, new SequenceDispatcher());
+		mDispatchers.put(Sensor.TYPE_PROXIMITY, new SequenceDispatcher());
+		mDispatchers.put(Sensor.TYPE_TEMPERATURE, new SequenceDispatcher());
+		mDispatchers.put(Sensor.TYPE_BARCODE_READER, new SequenceDispatcher());
 		mDispatchers.put(Sensor.TYPE_LINEAR_ACCELERATION,
-				new TimestampDispatcher());
-		mDispatchers.put(Sensor.TYPE_GRAVITY, new TimestampDispatcher());
-		mDispatchers
-				.put(Sensor.TYPE_ROTATION_VECTOR, new TimestampDispatcher());
+				new SequenceDispatcher());
+		mDispatchers.put(Sensor.TYPE_GRAVITY, new SequenceDispatcher());
+		mDispatchers.put(Sensor.TYPE_ROTATION_VECTOR, new SequenceDispatcher());
+
+		for (int i = 0; i < mDispatchers.size(); i++)
+			mDispatchers.valueAt(i).setOnEmptyListener(this);
 
 		mIpAdress = ipAdress;
 		mPort = port;
@@ -67,6 +69,7 @@ public class DataReceiver implements SensorDataReceiver {
 			mDispatchers.valueAt(i).start();
 		mReceivingThread = new Thread(mReceiving);
 		mReceivingThread.start();
+		Log.i(TAG, "Receiving thread started.");
 	}
 
 	@Override
@@ -120,7 +123,8 @@ public class DataReceiver implements SensorDataReceiver {
 		Dispatcher dispatcher = mDispatchers.get(sensor.sensorToRegister);
 		if (dispatcher != null) {
 			dispatcher.addListener(listener, interval);
-
+			Log.i(TAG, "Sensor <" + sensor.sensorToRegister
+					+ "> Listener added.");
 			return true;
 		}
 		return false;
@@ -148,34 +152,56 @@ public class DataReceiver implements SensorDataReceiver {
 
 			try {
 				connection = new Socket(mIpAdress, mPort);
-				// only block for some time so we can check interrupts
-				connection.setSoTimeout(100);
 				// TODO check if Bufferedstream would be faster
 				in = new DataInputStream(connection.getInputStream());
 				out = new DataOutputStream(connection.getOutputStream());
 
 				mConnected = true;
 
-				// read sensor events
-				while (!Thread.interrupted()) {
-					try {
-						int type = in.readInt();
-						int accuracy = in.readInt();
-						long timestamp = in.readLong();
-						int valLength = in.readInt();
-						float[] values = new float[valLength];
-						for (int i = 0; i < valLength; i++) {
-							values[i] = in.readFloat();
+				// block until command comes
+				connection.setSoTimeout(0);
+
+				int command = in.readInt();
+
+				// play sequence
+				if (command == 0) {
+
+					// TODO change behavior of dispatchers
+
+					int eventCount = in.readInt();
+
+					// only block for some time so we can check interrupts
+					connection.setSoTimeout(100);
+
+					// read sensor events
+					// while (!Thread.interrupted() || eventCount-- > 0) {
+					Log.i(TAG, "before for");
+					for (int j = 0; j < eventCount && !Thread.interrupted(); j++) {
+						try {
+							Log.i(TAG, "for");
+							int type = in.readInt();
+							int accuracy = in.readInt();
+							long timestamp = in.readLong();
+							int valLength = in.readInt();
+							float[] values = new float[valLength];
+							for (int i = 0; i < valLength; i++) {
+								values[i] = in.readFloat();
+							}
+
+							mDispatchers.get(type).putEvent(
+									new SensorEvent(type, accuracy, timestamp,
+											values));
+						} catch (SocketTimeoutException e) {
+							// just try again
 						}
-
-						mDispatchers.get(type).putEvent(
-								new SensorEvent(type, accuracy, timestamp,
-										values));
-					} catch (SocketTimeoutException e) {
-						// just try again
 					}
-				}
 
+					Log.i(TAG, "sequence finished");
+
+					// start dispatching
+					for (int i = 0; i < mDispatchers.size(); i++)
+						((SequenceDispatcher) mDispatchers.valueAt(i)).play();
+				}
 				// say goodbye to server
 				out.writeInt(1);
 			} catch (UnknownHostException e) {
@@ -211,5 +237,10 @@ public class DataReceiver implements SensorDataReceiver {
 	public void setServerAdress(String ipAdress, int port) {
 		mIpAdress = ipAdress;
 		mPort = port;
+	}
+
+	@Override
+	public void onDispatcherEmpty() {
+		Log.i(TAG, "Dispatcher is empty, i should shove some new events...");
 	}
 }

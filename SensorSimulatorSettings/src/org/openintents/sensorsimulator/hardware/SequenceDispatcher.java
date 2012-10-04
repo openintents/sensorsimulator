@@ -1,41 +1,46 @@
 package org.openintents.sensorsimulator.hardware;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import android.content.Context;
 import android.util.Log;
 
 /**
- * Dispatches received events based on their timestamp and the listeners update
- * rate.
- * <p>
- * Do not use this class.
+ * Dispatches a sequence of events in the same time interval it was recorded
+ * (based on their timestamps). Should be used if you want to test how an app
+ * reacts to a prerecorded event sequence (e.g. shake):
+ * <ul>
+ * <li>record a sequence using the SensorRecordFromDevice app
+ * <li>take that sequence and put it into this dispatcher
+ * <li>the dispatcher will try to dispatch events exactly in the same time
+ * interval as it was recorded
+ * <li>it will ignore the listeners update rate
+ * <li>it will then notify the DispatcherEmptyListener if there is one
+ * </ul>
  * 
  * @author Qui Don Ho
  * 
  */
-public class TimestampDispatcher implements Dispatcher {
+public class SequenceDispatcher implements Dispatcher {
 
 	protected static final String TAG = "TimestampDispatcher";
-	private List<ListenerWrapper> mListeners;
+	private List<SensorEventListener> mListeners;
 	private BlockingQueue<SensorEvent> mQueue;
 	private Thread mThread;
 	private DispatcherEmptyListener mEmptyListener;
 
-	public TimestampDispatcher() {
+	public SequenceDispatcher() {
 		mQueue = new LinkedBlockingQueue<SensorEvent>();
-		mListeners = new ArrayList<ListenerWrapper>();
+		mListeners = new ArrayList<SensorEventListener>();
 	}
 
 	@Override
 	public void addListener(SensorEventListener listener, int interval) {
 		Log.i(TAG, "Adding Listener, interval: " + interval);
-		mListeners.add(new ListenerWrapper(listener, interval));
+		mListeners.add(listener);
 	}
 
 	@Override
@@ -45,7 +50,6 @@ public class TimestampDispatcher implements Dispatcher {
 		}
 
 		mThread = new Thread(mDispatching);
-		mThread.start();
 	}
 
 	@Override
@@ -73,13 +77,23 @@ public class TimestampDispatcher implements Dispatcher {
 		mEmptyListener = emptyListener;
 	}
 
+	/**
+	 * Call this method when you have put a sequence of events into the
+	 * dispatcher and want it to start dispatching.
+	 */
+	public void play() {
+		mThread.start();
+	}
+
+	/**
+	 * Should dispatch events as close as possible to the original time
+	 * intervals when it was recorded.
+	 */
 	private Runnable mDispatching = new Runnable() {
 
 		@Override
 		public void run() {
 			// init stuff
-			long lastTimeSent = 0;
-			int sentCounter = 0;
 			int eventCounter = 0;
 			long lastTimeStamp = 0;
 			long now = 0;
@@ -106,7 +120,6 @@ public class TimestampDispatcher implements Dispatcher {
 							timePassed = now - lastTimeDispatched;
 
 							// Log time
-							// Log.i(TAG, "now: " + now);
 							Log.i(TAG, "timePassed: " + timePassed / 1000000f);
 							Log.i(TAG, "timePassedScheduled: "
 									+ timePassedScheduled / 1000000f);
@@ -124,24 +137,9 @@ public class TimestampDispatcher implements Dispatcher {
 							firstTime = false;
 						}
 
-						// dispatch to all listeners which are ready
-						for (ListenerWrapper wrapper : mListeners) {
-							if (now > wrapper.nextTime) {
-								wrapper.eventListener.onSensorChanged(event);
-								wrapper.updateNextTime(now);
-								Log.i(TAG, "sending, last time was "
-										+ (now - lastTimeSent) / 1000000f
-										+ "ms ago");
-								lastTimeSent = now;
-								Log.i(TAG, "sent events: " + ++sentCounter
-										+ ", " + mListeners.size()
-										+ " Listeners");
-							} else {
-								Log.i(TAG, "not sending, next time is in "
-										+ (wrapper.nextTime - now) / 1000000f
-										+ "ms");
-							}
-						}
+						// dispatch to all listeners
+						for (SensorEventListener listener : mListeners)
+							listener.onSensorChanged(event);
 
 						Log.i(TAG, "events: " + ++eventCounter);
 
@@ -160,27 +158,4 @@ public class TimestampDispatcher implements Dispatcher {
 			}
 		}
 	};
-
-	/**
-	 * Wrapper to store sensor update rate and next time to update.
-	 */
-	private class ListenerWrapper {
-
-		public SensorEventListener eventListener;
-		public long interval;
-		public long nextTime;
-
-		public ListenerWrapper(SensorEventListener listener, int interval) {
-			this.eventListener = listener;
-			this.nextTime = 0;
-			this.interval = interval * 1000000; // convert to nanoseconds
-		}
-
-		public void updateNextTime(long now) {
-			// Log.i(TAG, "time to next update: " + (now + interval -
-			// nextTime));
-			// Log.i(TAG, "nextTime " + nextTime);
-			nextTime = now + interval;
-		}
-	}
 }
