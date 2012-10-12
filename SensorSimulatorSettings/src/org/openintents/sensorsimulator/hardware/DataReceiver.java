@@ -74,11 +74,15 @@ public class DataReceiver implements SensorDataReceiver,
 
 	@Override
 	public void disconnect() {
-		// explained in connect()
-		mConnected = false;
-		for (int i = 0; i < mDispatchers.size(); i++)
-			mDispatchers.valueAt(i).stop();
-		mReceivingThread.interrupt();
+
+		// ignore call if not yet started
+		if (mConnected) {
+			// explained in connect()
+			mConnected = false;
+			for (int i = 0; i < mDispatchers.size(); i++)
+				mDispatchers.valueAt(i).stop();
+			mReceivingThread.interrupt();
+		}
 	}
 
 	@Override
@@ -201,9 +205,27 @@ public class DataReceiver implements SensorDataReceiver,
 					// start dispatching
 					for (int i = 0; i < mDispatchers.size(); i++)
 						((SequenceDispatcher) mDispatchers.valueAt(i)).play();
+
+					// wait till all dispatchers finish
+					synchronized (DataReceiver.this) {
+						DataReceiver.this.wait();
+					}
+
+					// tell server that its done
+					out.writeInt(2);
 				}
 				// say goodbye to server
 				out.writeInt(1);
+			} catch (InterruptedException e) {
+				// interrupted while dispatching
+
+				// say goodbye to server
+				try {
+					out.writeInt(1);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			} catch (UnknownHostException e) {
 				// wrong ip or port or server not started
 				for (int i = 0; i < mDispatchers.size(); i++)
@@ -239,8 +261,15 @@ public class DataReceiver implements SensorDataReceiver,
 		mPort = port;
 	}
 
+	int mDispatcherCount = 0;
+
 	@Override
-	public void onDispatcherEmpty() {
-		Log.i(TAG, "Dispatcher is empty, i should shove some new events...");
+	public synchronized void onDispatcherEmpty() {
+		mDispatcherCount++;
+		if (mDispatcherCount == mDispatchers.size()) {
+			Log.i(TAG, "All dispatchers finished!!");
+
+			this.notify();
+		}
 	}
 }

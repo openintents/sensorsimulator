@@ -54,7 +54,8 @@ public class SequenceDispatcher implements Dispatcher {
 
 	@Override
 	public void stop() {
-		mThread.interrupt();
+		if (mThread != null)
+			mThread.interrupt();
 	}
 
 	@Override

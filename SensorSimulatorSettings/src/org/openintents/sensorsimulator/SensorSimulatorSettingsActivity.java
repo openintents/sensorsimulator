@@ -496,6 +496,9 @@ public class SensorSimulatorSettingsActivity extends Activity {
 		private int counter = 0;
 		private int measuresPerInterval = 50;
 		private long lastAccTime;
+		private long now;
+		private long lastTime;
+		private long now2;
 
 		/**
 		 * onAccuracyChanged must be added, but it doesn't need any editing.
@@ -515,17 +518,22 @@ public class SensorSimulatorSettingsActivity extends Activity {
 
 				@Override
 				public void run() {
+					
+					lastTime = now2;
+					now2 = SystemClock.uptimeMillis();
+					Log.i(TAG, "timediff = " + (now2 - lastTime));
 					if (accCounter == 0 || accCounter == measuresPerInterval) {
+						now = SystemClock.uptimeMillis();
 						String s = String.valueOf("Frequency: " + measuresPerInterval
-								/ ((SystemClock.uptimeMillis() - lastAccTime) / 1000.0) + "Hz");
-						lastAccTime = SystemClock.uptimeMillis();
+								/ ((now - lastAccTime) / 1000.0) + "Hz");
+						lastAccTime = now;
 						Log.i(TAG, s);
 						accCounter = 0;
 					}
 					accCounter++;
 					counter++;
-//					Log.i(TAG, "counter: " + counter);
-					
+					// Log.i(TAG, "counter: " + counter);
+
 					int sensor = event.type;
 					float[] values = event.values;
 					for (int i = 0; i < mNumSensors; i++) {
