@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.content.Context;
-import android.util.Log;
 
 /**
  * This class simulates SENSOR object used in android's sensor methods. In

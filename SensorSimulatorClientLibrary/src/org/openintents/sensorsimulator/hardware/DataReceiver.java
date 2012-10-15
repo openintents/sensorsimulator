@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 import android.util.Log;
 import android.util.SparseArray;
@@ -21,8 +23,7 @@ import android.util.SparseArray;
  * @author Qui Don Ho
  * 
  */
-public class DataReceiver implements SensorDataReceiver,
-		DispatcherEmptyListener {
+public class DataReceiver implements SensorDataReceiver, Observer {
 
 	private static final String TAG = "DataReceiver";
 	// sensor dispatchers
@@ -50,8 +51,9 @@ public class DataReceiver implements SensorDataReceiver,
 		mDispatchers.put(Sensor.TYPE_GRAVITY, new SequenceDispatcher());
 		mDispatchers.put(Sensor.TYPE_ROTATION_VECTOR, new SequenceDispatcher());
 
-		for (int i = 0; i < mDispatchers.size(); i++)
-			mDispatchers.valueAt(i).setOnEmptyListener(this);
+		for (int i = 0; i < mDispatchers.size(); i++) {
+			((SequenceDispatcher) mDispatchers.valueAt(i)).addObserver(this);
+		}
 
 		mIpAdress = ipAdress;
 		mPort = port;
@@ -214,8 +216,8 @@ public class DataReceiver implements SensorDataReceiver,
 					// tell server that its done
 					out.writeInt(2);
 				}
-				// say goodbye to server
-				out.writeInt(1);
+				// // say goodbye to server
+				// out.writeInt(1);
 			} catch (InterruptedException e) {
 				// interrupted while dispatching
 
@@ -264,7 +266,7 @@ public class DataReceiver implements SensorDataReceiver,
 	int mDispatcherCount = 0;
 
 	@Override
-	public synchronized void onDispatcherEmpty() {
+	public synchronized void update(Observable observable, Object data) {
 		mDispatcherCount++;
 		if (mDispatcherCount == mDispatchers.size()) {
 			Log.i(TAG, "All dispatchers finished!!");
