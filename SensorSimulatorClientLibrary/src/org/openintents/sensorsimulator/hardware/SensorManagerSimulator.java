@@ -90,8 +90,14 @@ public class SensorManagerSimulator {
 				context);
 		// get Info from ContentProvider
 		String ipaddress = prefs.getPreference(SensorSimulator.KEY_IPADDRESS);
-		int port = Integer.parseInt(prefs
-				.getPreference(SensorSimulator.KEY_SOCKET));
+		int port;
+		try {
+			port = Integer.parseInt(prefs
+					.getPreference(SensorSimulator.KEY_SOCKET));
+		} catch (NumberFormatException e) {
+			// TODO define DEFAULT PORT somewhere
+			port = 8010;
+		}
 
 		mSensorDataReceiver = new DataReceiver(ipaddress, port);
 	}
@@ -231,7 +237,8 @@ public class SensorManagerSimulator {
 	 * already.)
 	 */
 	public void connectSimulator() {
-		mSensorDataReceiver.connect();
+		if (!mSensorDataReceiver.isConnected())
+			mSensorDataReceiver.connect();
 	};
 
 	/**

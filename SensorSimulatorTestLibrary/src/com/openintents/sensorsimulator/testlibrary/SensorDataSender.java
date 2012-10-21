@@ -69,6 +69,7 @@ public class SensorDataSender extends Observable {
 	 *            the events to send
 	 */
 	public boolean sendSensorEvents(Collection<SensorEventContainer> events) {
+		System.out.println("sendSensorEvents()");
 		mSensorEvents.addAll(events);
 		try {
 			// command for sequence
@@ -111,6 +112,8 @@ public class SensorDataSender extends Observable {
 
 		@Override
 		public void run() {
+			
+			System.out.println("run started");
 
 			try {
 				// open server socket

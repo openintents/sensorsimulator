@@ -173,4 +173,10 @@ public class TimestampDispatcher implements Dispatcher {
 			nextTime = now + interval;
 		}
 	}
+
+	@Override
+	public boolean hasStarted() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

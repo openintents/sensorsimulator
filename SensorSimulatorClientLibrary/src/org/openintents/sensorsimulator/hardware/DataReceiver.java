@@ -67,8 +67,10 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 		// immediately after calling connect()
 		// TODO should be MVC (Observer) instead
 		mConnected = true;
-		for (int i = 0; i < mDispatchers.size(); i++)
-			mDispatchers.valueAt(i).start();
+		for (int i = 0; i < mDispatchers.size(); i++) {
+			if (!mDispatchers.valueAt(i).hasStarted())
+				mDispatchers.valueAt(i).start();
+		}
 		mReceivingThread = new Thread(mReceiving);
 		mReceivingThread.start();
 		Log.i(TAG, "Receiving thread started.");
@@ -166,7 +168,6 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 
 				// block until command comes
 				connection.setSoTimeout(0);
-
 				int command = in.readInt();
 
 				// play sequence
@@ -181,10 +182,8 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 
 					// read sensor events
 					// while (!Thread.interrupted() || eventCount-- > 0) {
-					Log.i(TAG, "before for");
 					for (int j = 0; j < eventCount && !Thread.interrupted(); j++) {
 						try {
-							Log.i(TAG, "for");
 							int type = in.readInt();
 							int accuracy = in.readInt();
 							long timestamp = in.readLong();
@@ -202,8 +201,6 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 						}
 					}
 
-					Log.i(TAG, "sequence finished");
-
 					// start dispatching
 					for (int i = 0; i < mDispatchers.size(); i++)
 						((SequenceDispatcher) mDispatchers.valueAt(i)).play();
@@ -211,6 +208,8 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 					// wait till all dispatchers finish
 					synchronized (DataReceiver.this) {
 						DataReceiver.this.wait();
+						// reset
+						mDispatcherCount = 0;
 					}
 
 					// tell server that its done
@@ -253,6 +252,8 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+
+				mConnected = false;
 			}
 		}
 	};

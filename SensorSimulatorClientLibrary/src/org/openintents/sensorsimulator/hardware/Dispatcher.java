@@ -47,4 +47,11 @@ public interface Dispatcher {
 	 *            a collection of events to put
 	 */
 	void putEvents(Collection<SensorEvent> events);
+
+	/**
+	 * Has Dispatcher started?
+	 * 
+	 * @return true or false
+	 */
+	public boolean hasStarted();
 }

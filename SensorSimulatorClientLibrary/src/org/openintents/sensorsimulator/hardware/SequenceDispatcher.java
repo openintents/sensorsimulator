@@ -29,7 +29,7 @@ import android.util.Log;
  */
 public class SequenceDispatcher extends Observable implements Dispatcher {
 
-	protected static final String TAG = "TimestampDispatcher";
+	protected static final String TAG = "SequenceDispatcher";
 	private List<SensorEventListener> mListeners;
 	private BlockingQueue<SensorEvent> mQueue;
 	private Thread mThread;
@@ -161,6 +161,13 @@ public class SequenceDispatcher extends Observable implements Dispatcher {
 				// clean up
 				mQueue.clear();
 			}
+
+			mThread = null;
 		}
 	};
+
+	@Override
+	public boolean hasStarted() {
+		return mThread != null && mThread.isAlive();
+	}
 }
