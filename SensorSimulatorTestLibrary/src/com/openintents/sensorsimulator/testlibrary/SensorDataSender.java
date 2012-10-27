@@ -12,6 +12,8 @@ import java.util.Observable;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import android.util.Log;
+
 /**
  * Server which can take a sequence of sensor events and send them to a client.
  * Manages an internal blocking queue which can be filled with events.
@@ -53,6 +55,9 @@ public class SensorDataSender extends Observable {
 	 */
 	public void stop() {
 		try {
+			// say goodbye to device
+			clientOut.writeInt(-1);
+			clientOut.flush();
 			clientOut.close();
 			client.close();
 			mServerSocket.close();
@@ -69,7 +74,7 @@ public class SensorDataSender extends Observable {
 	 *            the events to send
 	 */
 	public boolean sendSensorEvents(Collection<SensorEventContainer> events) {
-		System.out.println("sendSensorEvents()");
+		Log.v("SimpleTest", "sendSensorEvents()");
 		mSensorEvents.addAll(events);
 		try {
 			// command for sequence
@@ -94,6 +99,7 @@ public class SensorDataSender extends Observable {
 			}
 			clientOut.flush();
 			int ok = clientIn.readInt();
+			Log.v("SimpleTest", ok == 2 ? "ok" : "not ok");
 			if (ok == 2)
 				return true;
 		} catch (InterruptedException e) {
@@ -112,7 +118,7 @@ public class SensorDataSender extends Observable {
 
 		@Override
 		public void run() {
-			
+
 			System.out.println("run started");
 
 			try {

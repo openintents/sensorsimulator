@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -131,8 +130,6 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 		Dispatcher dispatcher = mDispatchers.get(sensor.sensorToRegister);
 		if (dispatcher != null) {
 			dispatcher.addListener(listener, interval);
-			Log.i(TAG, "Sensor <" + sensor.sensorToRegister
-					+ "> Listener added.");
 			return true;
 		}
 		return false;
@@ -140,14 +137,33 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 
 	@Override
 	public void unregisterListener(SensorEventListener listener, Sensor sensor) {
-		// TODO Auto-generated method stub
-
+		Dispatcher dispatcher = mDispatchers.get(sensor.sensorToRegister);
+		if (dispatcher != null) {
+			dispatcher.removeListener(listener);
+		}
 	}
 
 	@Override
 	public void unregisterListener(SensorEventListener listener) {
-		// TODO Auto-generated method stub
+		for (int i = 0; i < mDispatchers.size(); i++) {
+			mDispatchers.valueAt(i).removeListener(listener);
+		}
+	}
 
+	@Override
+	public void setServerAdress(String ipAdress, int port) {
+		mIpAdress = ipAdress;
+		mPort = port;
+	}
+
+	int mDispatcherCount = 0;
+
+	@Override
+	public synchronized void update(Observable observable, Object data) {
+		mDispatcherCount++;
+		if (mDispatcherCount == mDispatchers.size()) {
+			this.notify();
+		}
 	}
 
 	private Runnable mReceiving = new Runnable() {
@@ -168,22 +184,23 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 
 				// block until command comes
 				connection.setSoTimeout(0);
-				int command = in.readInt();
 
-				// play sequence
-				if (command == 0) {
+				boolean quit = false;
 
-					// TODO change behavior of dispatchers
+				while (!quit) {
 
-					int eventCount = in.readInt();
+					int command = in.readInt();
 
-					// only block for some time so we can check interrupts
-					connection.setSoTimeout(100);
+					// play sequence
+					if (command == 0) {
 
-					// read sensor events
-					// while (!Thread.interrupted() || eventCount-- > 0) {
-					for (int j = 0; j < eventCount && !Thread.interrupted(); j++) {
-						try {
+						// TODO change behavior of dispatchers
+
+						int eventCount = in.readInt();
+
+						// read sensor events
+						// while (!Thread.interrupted() || eventCount-- > 0) {
+						for (int j = 0; j < eventCount && !Thread.interrupted(); j++) {
 							int type = in.readInt();
 							int accuracy = in.readInt();
 							long timestamp = in.readLong();
@@ -196,43 +213,40 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 							mDispatchers.get(type).putEvent(
 									new SensorEvent(type, accuracy, timestamp,
 											values));
-						} catch (SocketTimeoutException e) {
-							// just try again
 						}
+
+						// start dispatching
+						for (int i = 0; i < mDispatchers.size(); i++)
+							((SequenceDispatcher) mDispatchers.valueAt(i))
+									.play();
+
+						// wait till all dispatchers finish
+						synchronized (DataReceiver.this) {
+							DataReceiver.this.wait();
+							// reset
+							mDispatcherCount = 0;
+						}
+
+						// tell server that its done
+						out.writeInt(2);
+					} else if (command == -1) {
+						quit = true;
 					}
-
-					// start dispatching
-					for (int i = 0; i < mDispatchers.size(); i++)
-						((SequenceDispatcher) mDispatchers.valueAt(i)).play();
-
-					// wait till all dispatchers finish
-					synchronized (DataReceiver.this) {
-						DataReceiver.this.wait();
-						// reset
-						mDispatcherCount = 0;
-					}
-
-					// tell server that its done
-					out.writeInt(2);
 				}
-				// // say goodbye to server
-				// out.writeInt(1);
 			} catch (InterruptedException e) {
 				// interrupted while dispatching
+				e.printStackTrace();
 
-				// say goodbye to server
-				try {
-					out.writeInt(1);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 			} catch (UnknownHostException e) {
+				e.printStackTrace();
+
 				// wrong ip or port or server not started
 				for (int i = 0; i < mDispatchers.size(); i++)
 					mDispatchers.valueAt(i).stop();
 				mConnected = false;
 			} catch (EOFException e) {
+				e.printStackTrace();
+
 				// server shut down connection
 				for (int i = 0; i < mDispatchers.size(); i++)
 					mDispatchers.valueAt(i).stop();
@@ -257,22 +271,4 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 			}
 		}
 	};
-
-	@Override
-	public void setServerAdress(String ipAdress, int port) {
-		mIpAdress = ipAdress;
-		mPort = port;
-	}
-
-	int mDispatcherCount = 0;
-
-	@Override
-	public synchronized void update(Observable observable, Object data) {
-		mDispatcherCount++;
-		if (mDispatcherCount == mDispatchers.size()) {
-			Log.i(TAG, "All dispatchers finished!!");
-
-			this.notify();
-		}
-	}
 }

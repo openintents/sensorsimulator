@@ -179,4 +179,10 @@ public class TimestampDispatcher implements Dispatcher {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public void removeListener(SensorEventListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
 }

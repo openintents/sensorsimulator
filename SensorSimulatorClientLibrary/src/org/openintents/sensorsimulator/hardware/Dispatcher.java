@@ -23,6 +23,14 @@ public interface Dispatcher {
 	public void addListener(SensorEventListener listener, int interval);
 
 	/**
+	 * Remove <code>SensorEventListener</code>.
+	 * 
+	 * @param listener
+	 *            the listener to remove
+	 */
+	public void removeListener(SensorEventListener listener);
+
+	/**
 	 * Start dispatching (presumably in internal thread).
 	 */
 	public void start();

@@ -43,8 +43,14 @@ public class SequenceDispatcher extends Observable implements Dispatcher {
 
 	@Override
 	public void addListener(SensorEventListener listener, int interval) {
-		Log.i(TAG, "Adding Listener, interval: " + interval);
-		mListeners.add(listener);
+		if (!mListeners.contains(listener))
+			mListeners.add(listener);
+	}
+
+	@Override
+	public void removeListener(SensorEventListener listener) {
+		if (mListeners.contains(listener))
+			mListeners.remove(listener);
 	}
 
 	@Override
@@ -108,12 +114,12 @@ public class SequenceDispatcher extends Observable implements Dispatcher {
 
 				// nothing to do
 				if (size == 0) {
-					// TODO add attribute which indicates that
-					// app has onSensorChanged has returned
 					setChanged();
 					notifyObservers();
 					return;
 				}
+
+				Log.v("DataReceiver", "Listeners: " + mListeners.size());
 
 				for (int i = 0; i < size; i++) {
 					// take new event

@@ -29,6 +29,7 @@ import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Build;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -115,6 +116,7 @@ public class SensorManagerSimulator {
 	public static SensorManagerSimulator getSystemService(Context context,
 			String sensorManager) {
 		if (instance == null) {
+
 			if (sensorManager.equals(Context.SENSOR_SERVICE)) {
 				if (SensorManagerSimulator.isRealSensorsAvailable()) {
 					instance = new SensorManagerSimulator(context,
@@ -213,9 +215,7 @@ public class SensorManagerSimulator {
 	 */
 
 	public void unregisterListener(SensorEventListener listener, Sensor sensor) {
-		if (mSensorDataReceiver.isConnected()) {
-			mSensorDataReceiver.unregisterListener(listener, sensor);
-		}
+		mSensorDataReceiver.unregisterListener(listener, sensor);
 	}
 
 	/**
@@ -226,9 +226,7 @@ public class SensorManagerSimulator {
 	 */
 
 	public void unregisterListener(SensorEventListener listener) {
-		if (mSensorDataReceiver.isConnected()) {
-			mSensorDataReceiver.unregisterListener(listener);
-		}
+		mSensorDataReceiver.unregisterListener(listener);
 	}
 
 	// Member function extensions:
