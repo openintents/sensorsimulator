@@ -29,7 +29,7 @@ package org.openintents.sensorsimulator.hardware;
  * @author Josip Balic
  * 
  */
-public interface SensorEventListener {
+public abstract class SensorEventListener {
 
 	/**
 	 * Method that represents onAccuracyChanged, this method is currently not
@@ -51,4 +51,30 @@ public interface SensorEventListener {
 	 */
 	public abstract void onSensorChanged(SensorEvent event);
 
+	// /////////////////////////////////////
+	// Using this to forward calls from the real API
+	// /////////////////////////////////////
+	android.hardware.SensorEventListener androidListener = new android.hardware.SensorEventListener() {
+
+		@Override
+		public void onSensorChanged(android.hardware.SensorEvent event) {
+			// TODO convert SensorEvent to our SensorEvent and forward it
+		}
+
+		@Override
+		public void onAccuracyChanged(android.hardware.Sensor sensor,
+				int accuracy) {
+			// TODO Auto-generated method stub
+		}
+	};
+
+	/**
+	 * <code>SensorEventListener</code> encapsulates an object from the real
+	 * Android Sensor API. Use this method to get it.
+	 * 
+	 * @return the corresponding android.hardware.SensorEventListener
+	 */
+	public android.hardware.SensorEventListener getAndroidSensorEventListener() {
+		return androidListener;
+	}
 }

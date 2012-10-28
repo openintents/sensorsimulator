@@ -238,19 +238,17 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 				e.printStackTrace();
 
 			} catch (UnknownHostException e) {
-				e.printStackTrace();
-
 				// wrong ip or port or server not started
-				for (int i = 0; i < mDispatchers.size(); i++)
-					mDispatchers.valueAt(i).stop();
-				mConnected = false;
-			} catch (EOFException e) {
 				e.printStackTrace();
 
-				// server shut down connection
 				for (int i = 0; i < mDispatchers.size(); i++)
 					mDispatchers.valueAt(i).stop();
-				mConnected = false;
+			} catch (EOFException e) {
+				// server shut down connection
+				e.printStackTrace();
+
+				for (int i = 0; i < mDispatchers.size(); i++)
+					mDispatchers.valueAt(i).stop();
 			} catch (IOException e) {
 				// some other crap happened
 				e.printStackTrace();
