@@ -94,7 +94,7 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 		// networking operations are no longer permitted to run on the main
 		// thread as of Honeycomb (API level 11)
 		Thread t = new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				mSocket = null;
@@ -115,20 +115,23 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 					mSocket = new Socket(ipaddress, Integer.parseInt(socket));
 
 					mOut = new PrintWriter(mSocket.getOutputStream(), true);
-					mIn = new BufferedReader(new InputStreamReader(
-							mSocket.getInputStream()));
+					mIn = new BufferedReader(new InputStreamReader(mSocket
+							.getInputStream()));
 				} catch (UnknownHostException e) {
-					Log.e(TAG, "Don't know about host: " + ipaddress + " : " + socket);
+					Log.e(TAG, "Don't know about host: " + ipaddress + " : "
+							+ socket);
 					return;
 				} catch (SocketTimeoutException e) {
-					Log.e(TAG, "Connection time out: " + ipaddress + " : " + socket);
+					Log.e(TAG, "Connection time out: " + ipaddress + " : "
+							+ socket);
 					return;
 				} catch (IOException e) {
-					Log.e(TAG, "Couldn't get I/O for the connection to: " + ipaddress
-							+ " : " + socket);
+					Log.e(TAG, "Couldn't get I/O for the connection to: "
+							+ ipaddress + " : " + socket);
 					Log.e(TAG,
 							"---------------------------------------------------------------");
-					Log.e(TAG, "Do you have the following permission in your manifest?");
+					Log.e(TAG,
+							"Do you have the following permission in your manifest?");
 					Log.e(TAG,
 							"<uses-permission android:name=\"android.permission.INTERNET\"/>");
 					Log.e(TAG,
@@ -155,7 +158,7 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 					Log.i(TAG, "Problem connecting: Wrong string sent.");
 					disconnect();
 				}
-				
+
 				// wake up main thread
 				synchronized (SensorSimulatorClient.this) {
 					SensorSimulatorClient.this.notifyAll();
@@ -278,8 +281,7 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 	}
 
 	@Override
-	public void unregisterListener(SensorEventListener listener,
-			Sensor sensor) {
+	public void unregisterListener(SensorEventListener listener, Sensor sensor) {
 		synchronized (mListeners) {
 			Iterator<Listener> itr = mListeners.iterator();
 			do {
@@ -572,22 +574,23 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 	// DEPRECATED FUNCTIONS FOLLOW
 
 	String[] sensors;
+
 	protected synchronized String[] getSupportedSensors() {
-		sensors = new String [] { "" };
-		
+		sensors = new String[] { "" };
+
 		// networking operations are no longer permitted to run on the main
 		// thread as of Honeycomb (API level 11)
 		Thread t = new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				mOut.println("getSupportedSensors()");
 				int num = 0;
-				
+
 				try {
 					String numstr = mIn.readLine();
 					num = Integer.parseInt(numstr);
-					
+
 					sensors = new String[num];
 					for (int i = 0; i < num; i++) {
 						sensors[i] = mIn.readLine();
@@ -596,7 +599,7 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 					System.err
 							.println("Couldn't get I/O for the connection to: x.x.x.x.");
 					// TODO: give user feedback (e.g. toast) and return to app
-					System.exit(1); 
+					System.exit(1);
 				} finally {
 					synchronized (SensorSimulatorClient.this) {
 						SensorSimulatorClient.this.notifyAll();
@@ -604,7 +607,7 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 				}
 			}
 		});
-		
+
 		t.start();
 		try {
 			wait();
@@ -649,19 +652,20 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 
 	float[] sensorValuesTemp;
 	String barcode2Temp;
-	protected synchronized void readSensor(final String sensor, float[] sensorValues,
-			String barcode2) {
+
+	protected synchronized void readSensor(final String sensor,
+			float[] sensorValues, String barcode2) {
 		if (sensorValues == null)
 			throw new NullPointerException("readSensor for '" + sensor
 					+ "' called with sensorValues == null.");
 		if (LOG_PROTOCOL) {
 			Log.i(TAG, "Send: getNumSensorValues()");
 		}
-		
+
 		// copy values so network thread can work with them
 		sensorValuesTemp = sensorValues;
 		barcode2Temp = barcode2;
-		
+
 		// networking operations are no longer permitted to run on the main
 		// thread as of Honeycomb (API level 11)
 		Thread t = new Thread(new Runnable() {
@@ -718,20 +722,21 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 				}
 			}
 		});
-		
+
 		t.start();
 		try {
 			wait();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
-		// copy values got from network thread 
-		sensorValues =  sensorValuesTemp;
+
+		// copy values got from network thread
+		sensorValues = sensorValuesTemp;
 		barcode2 = barcode2Temp;
 	}
 
-	protected synchronized void setSensorUpdateDelay(final String sensor, final int updateDelay) {
+	protected synchronized void setSensorUpdateDelay(final String sensor,
+			final int updateDelay) {
 		if (updateDelay == -1) {
 			unsetSensorUpdateRate(sensor);
 			return;
@@ -740,13 +745,13 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 		// networking operations are no longer permitted to run on the main
 		// thread as of Honeycomb (API level 11)
 		Thread t = new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				mOut.println("setSensorUpdateDelay()");
 				mOut.println(sensor);
 				mOut.println("" + updateDelay);
-				
+
 				try {
 					String numstr = mIn.readLine();
 					if (numstr.compareTo("throw IllegalArgumentException") == 0)
@@ -754,7 +759,7 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 								+ "' is not supported.");
 				} catch (IOException e) {
 					System.err
-					.println("Couldn't get I/O for the connection to: x.x.x.x.");
+							.println("Couldn't get I/O for the connection to: x.x.x.x.");
 					System.exit(1);
 				} finally {
 					synchronized (SensorSimulatorClient.this) {
@@ -763,7 +768,7 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 				}
 			}
 		});
-		
+
 		t.start();
 		try {
 			wait();
@@ -797,18 +802,12 @@ final class SensorSimulatorClient implements SensorDataReceiver {
 				}
 			}
 		});
-		
+
 		t.start();
 		try {
 			wait();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void setServerAdress(String ipAdress, int port) {
-		// ignore this (this was not implemented in earlier versions, ip adress
-		// and port are read directly from android preferences)
 	}
 }

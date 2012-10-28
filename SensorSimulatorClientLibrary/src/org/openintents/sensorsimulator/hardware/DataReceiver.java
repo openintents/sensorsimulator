@@ -28,17 +28,12 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 
 	private static final String TAG = "DataReceiver";
 	protected static final int PORT = 8111;
-	// sensor dispatchers
-	// private Dispatcher mAccelerometerDispatcher;
 	private SparseArray<Dispatcher> mDispatchers;
 	private boolean mConnected;
 	private Thread mReceivingThread;
-	private String mIpAdress;
-	private int mPort;
 
-	public DataReceiver(String ipAdress, int port) {
-		mDispatchers = // new HashMap<Integer, Dispatcher>();
-		new SparseArray<Dispatcher>(12);
+	public DataReceiver() {
+		mDispatchers = new SparseArray<Dispatcher>(12);
 		mDispatchers.put(Sensor.TYPE_ACCELEROMETER, new SequenceDispatcher());
 		mDispatchers.put(Sensor.TYPE_GYROSCOPE, new SequenceDispatcher());
 		mDispatchers.put(Sensor.TYPE_LIGHT, new SequenceDispatcher());
@@ -57,9 +52,6 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 			((SequenceDispatcher) mDispatchers.valueAt(i)).addObserver(this);
 		}
 
-		mIpAdress = ipAdress;
-		mPort = port;
-
 		mConnected = false;
 	}
 
@@ -75,7 +67,6 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 		}
 		mReceivingThread = new Thread(mReceiving);
 		mReceivingThread.start();
-		Log.i(TAG, "Receiving thread started.");
 	}
 
 	@Override
@@ -87,7 +78,6 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 			mConnected = false;
 			for (int i = 0; i < mDispatchers.size(); i++)
 				mDispatchers.valueAt(i).stop();
-			Log.d(TAG, "interrupting thread");
 			mReceivingThread.interrupt();
 		}
 	}
@@ -154,12 +144,6 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 		}
 	}
 
-	@Override
-	public void setServerAdress(String ipAdress, int port) {
-		mIpAdress = ipAdress;
-		mPort = port;
-	}
-
 	int mDispatcherCount = 0;
 
 	@Override
@@ -183,12 +167,11 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 				serverSocket = new ServerSocket(PORT);
 				serverSocket.setSoTimeout(100);
 
+				// wait for clients to connect and start sending events
 				while (!Thread.interrupted()) {
 
 					try {
-						Log.d(TAG, "Waiting for client...");
 						connection = serverSocket.accept();
-						Log.d(TAG, "Client connected.");
 						connection.setSoTimeout(100);
 
 						mConnected = true;
@@ -198,6 +181,7 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 
 						boolean quit = false;
 
+						// read commands from client and execute them
 						while (!quit && !Thread.interrupted()) {
 
 							try {
@@ -248,8 +232,6 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 							}
 						}
 
-						Log.d(TAG, "Closing client connection...");
-
 						// clean up client
 						if (out != null)
 							out.close();
@@ -266,13 +248,11 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 				// clean up
 				for (int i = 0; i < mDispatchers.size(); i++)
 					mDispatchers.valueAt(i).stop();
-				
+
 				if (serverSocket != null)
 					serverSocket.close();
 
 				mConnected = false;
-				
-				Log.d(TAG, "Server closed.");
 			} catch (InterruptedException e) {
 				// interrupted while dispatching
 				e.printStackTrace();

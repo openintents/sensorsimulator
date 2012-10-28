@@ -73,14 +73,4 @@ public interface SensorDataReceiver {
 	 *            unregister
 	 */
 	public void unregisterListener(SensorEventListener listener);
-
-	/**
-	 * Set server ip and port number.
-	 * 
-	 * @param ipAdress
-	 *            the new ip adress
-	 * @param port
-	 *            the new port number
-	 */
-	public void setServerAdress(String ipAdress, int port);
 }

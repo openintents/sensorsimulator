@@ -31,7 +31,6 @@ import org.openintents.sensorsimulator.hardware.SensorEvent;
 import org.openintents.sensorsimulator.hardware.SensorEventListener;
 import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
 import org.openintents.sensorsimulator.hardware.SensorNames;
-import org.openintents.sensorsimulator.hardware.TimestampDispatcher;
 
 import android.app.Activity;
 import android.content.Context;
@@ -403,7 +402,8 @@ public class SensorSimulatorSettingsActivity extends Activity {
 			mSensorManager.disconnectSimulator();
 
 			// update ip and adress directly
-			mSensorManager.setServerAdress(newIP, Integer.parseInt(newSocket));
+			// mSensorManager.setServerAdress(newIP,
+			// Integer.parseInt(newSocket));
 
 			// Save the values
 			mSensorSimulatorConvenience.setPreference(
@@ -513,18 +513,19 @@ public class SensorSimulatorSettingsActivity extends Activity {
 		 */
 		@Override
 		public void onSensorChanged(final SensorEvent event) {
-			
+
 			runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
-					
+
 					lastTime = now2;
 					now2 = SystemClock.uptimeMillis();
 					Log.i(TAG, "timediff = " + (now2 - lastTime));
 					if (accCounter == 0 || accCounter == measuresPerInterval) {
 						now = SystemClock.uptimeMillis();
-						String s = String.valueOf("Frequency: " + measuresPerInterval
+						String s = String.valueOf("Frequency: "
+								+ measuresPerInterval
 								/ ((now - lastAccTime) / 1000.0) + "Hz");
 						lastAccTime = now;
 						Log.i(TAG, s);
