@@ -1,6 +1,8 @@
 package org.openintents.sensorsimulator.hardware;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * SensorDataReceiver defines the methods for a client-side message broker,
@@ -13,31 +15,31 @@ import java.util.ArrayList;
  * 
  * @author Qui Don Ho
  */
-public interface SensorDataReceiver {
+public abstract class SensorDataReceiver extends Observable {
 
 	/**
 	 * Connect to the sensor data provider, e.g. the SensorSimulator desktop
 	 * application.
 	 */
-	public void connect();
+	public abstract void connect();
 
 	/**
 	 * Disconnect from the sensor data provider, e.g. the SensorSimulator
 	 * desktop application.
 	 */
-	public void disconnect();
+	public abstract void disconnect();
 
 	/**
 	 * Is there a connection to the sensor data provider?
 	 */
-	public boolean isConnected();
+	public abstract boolean isConnected();
 
 	/**
 	 * Method used to get supported sensors from sensor provider.
 	 * 
 	 * @return sensors, ArrayList<Integer> of supported sensors.
 	 */
-	public ArrayList<Integer> getSensors();
+	public abstract ArrayList<Integer> getSensors();
 
 	/**
 	 * Method that registers listener for specific sensor. All sensors can't be
@@ -52,7 +54,7 @@ public interface SensorDataReceiver {
 	 *            , integer rate of updates
 	 * @return boolean, true of false if registration was successful
 	 */
-	public boolean registerListener(SensorEventListener listener,
+	public abstract boolean registerListener(SensorEventListener listener,
 			Sensor sensor, int rate);
 
 	/**
@@ -63,7 +65,8 @@ public interface SensorDataReceiver {
 	 * @param sensor
 	 *            , Sensor we want to unregister
 	 */
-	public void unregisterListener(SensorEventListener listener, Sensor sensor);
+	public abstract void unregisterListener(SensorEventListener listener,
+			Sensor sensor);
 
 	/**
 	 * Called when we want to unregister listener and all of it's sensors.
@@ -72,5 +75,5 @@ public interface SensorDataReceiver {
 	 *            , SensorEventListener of listener and it's sensors we want to
 	 *            unregister
 	 */
-	public void unregisterListener(SensorEventListener listener);
+	public abstract void unregisterListener(SensorEventListener listener);
 }

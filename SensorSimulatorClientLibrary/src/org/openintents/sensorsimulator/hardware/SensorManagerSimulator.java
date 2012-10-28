@@ -22,8 +22,13 @@
 package org.openintents.sensorsimulator.hardware;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Observable;
+import java.util.Observer;
 
-import org.openintents.sensorsimulator.db.SensorSimulator;
 import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
 
 import android.content.Context;
@@ -42,7 +47,7 @@ import android.widget.Toast;
  * @author Josip Balic
  */
 
-public class SensorManagerSimulator {
+public class SensorManagerSimulator implements Observer {
 
 	private static SensorManagerSimulator instance;
 
@@ -67,6 +72,8 @@ public class SensorManagerSimulator {
 
 	private static Sensor sensors;
 
+	private Map<SensorEventListener, SensorEventListenerWrapper> mWrapperMap;
+
 	/**
 	 * Constructor.
 	 * 
@@ -87,7 +94,11 @@ public class SensorManagerSimulator {
 		SensorSimulatorConvenience prefs = new SensorSimulatorConvenience(
 				context);
 
+		Log.d(TAG, "Create MAP");
+		mWrapperMap = new HashMap<SensorEventListener, SensorEventListenerWrapper>();
+
 		mSensorDataReceiver = new DataReceiver();
+		mSensorDataReceiver.addObserver(this);
 	}
 
 	/**
@@ -181,15 +192,19 @@ public class SensorManagerSimulator {
 	 */
 	public boolean registerListener(SensorEventListener listener,
 			Sensor sensor, int rate) {
-		if (mSensorDataReceiver.isConnected()) {
-			mSensorDataReceiver.registerListener(listener, sensor, rate);
-			return true;
-		} else {
-			if (mSensorManager == null) {
-				return false;
-			}
-			return false;
+		// TODO test if sensor is supported and can be enabled
+		mSensorDataReceiver.registerListener(listener, sensor, rate);
+		// register with wrapper
+		Log.d(TAG, "checking if key exists...");
+		if (!mWrapperMap.containsKey(listener)) {
+			Log.d(TAG, "it does not...");
+			SensorEventListenerWrapper wrapper = new SensorEventListenerWrapper(
+					listener, mSensorManager);
+			wrapper.registerListener(sensor, rate);
+			mWrapperMap.put(listener, wrapper);
+			Log.d(TAG, "map has now " + mWrapperMap.size() + " entries");
 		}
+		return true;
 	}
 
 	/**
@@ -200,9 +215,16 @@ public class SensorManagerSimulator {
 	 * @param sensors
 	 *            , Sensor object that represent sensor we want to unregister
 	 */
-
 	public void unregisterListener(SensorEventListener listener, Sensor sensor) {
+		Log.d(TAG, "unregistering listener, map has " + mWrapperMap.size()
+				+ " entries");
+
 		mSensorDataReceiver.unregisterListener(listener, sensor);
+		if (mWrapperMap.containsKey(listener)) {
+			Log.d(TAG, "unregistering wrapper...");
+			mWrapperMap.get(listener).unregisterListener(sensor);
+			// TODO check if wrapper has to be deleted from map
+		}
 	}
 
 	/**
@@ -211,9 +233,15 @@ public class SensorManagerSimulator {
 	 * @param listener
 	 *            a SensorListener object
 	 */
-
 	public void unregisterListener(SensorEventListener listener) {
+		Log.d(TAG, "unregistering listener, map has " + mWrapperMap.size()
+				+ " entries");
 		mSensorDataReceiver.unregisterListener(listener);
+		if (mWrapperMap.containsKey(listener)) {
+			Log.d(TAG, "unregistering wrapper...");
+			mWrapperMap.get(listener).unregisterListener();
+			mWrapperMap.remove(listener);
+		}
 	}
 
 	// Member function extensions:
@@ -264,6 +292,31 @@ public class SensorManagerSimulator {
 		} else {
 			sensors.removeSensor(type);
 			return sensors;
+		}
+	}
+
+	/*
+	 * DataReceiver notifies, when a fake sensor data provider has connected.
+	 * Use this to switch between SensorSimulator and real API.
+	 */
+	@Override
+	public void update(Observable observable, Object data) {
+		if (mSensorDataReceiver.isConnected()) {
+			Iterator<Entry<SensorEventListener, SensorEventListenerWrapper>> it = mWrapperMap
+					.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<SensorEventListener, SensorEventListenerWrapper> pair = (Map.Entry<SensorEventListener, SensorEventListenerWrapper>) it
+						.next();
+				pair.getValue().fakeAPI();
+			}
+		} else {
+			Iterator<Entry<SensorEventListener, SensorEventListenerWrapper>> it = mWrapperMap
+					.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<SensorEventListener, SensorEventListenerWrapper> pair = (Map.Entry<SensorEventListener, SensorEventListenerWrapper>) it
+						.next();
+				pair.getValue().realAPI();
+			}
 		}
 	}
 }

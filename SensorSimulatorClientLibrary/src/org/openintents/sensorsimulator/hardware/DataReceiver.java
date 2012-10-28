@@ -24,7 +24,7 @@ import android.util.SparseArray;
  * @author Qui Don Ho
  * 
  */
-public class DataReceiver implements SensorDataReceiver, Observer {
+public class DataReceiver extends SensorDataReceiver implements Observer {
 
 	private static final String TAG = "DataReceiver";
 	protected static final int PORT = 8111;
@@ -57,10 +57,6 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 
 	@Override
 	public void connect() {
-		// because SensorSimulatorSettingsActivity checks connected state
-		// immediately after calling connect()
-		// TODO should be MVC (Observer) instead
-		mConnected = true;
 		for (int i = 0; i < mDispatchers.size(); i++) {
 			if (!mDispatchers.valueAt(i).hasStarted())
 				mDispatchers.valueAt(i).start();
@@ -71,11 +67,8 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 
 	@Override
 	public void disconnect() {
-
 		// ignore call if not yet started
 		if (mConnected) {
-			// explained in connect()
-			mConnected = false;
 			for (int i = 0; i < mDispatchers.size(); i++)
 				mDispatchers.valueAt(i).stop();
 			mReceivingThread.interrupt();
@@ -175,6 +168,8 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 						connection.setSoTimeout(100);
 
 						mConnected = true;
+						setChanged();
+						notifyObservers();
 
 						in = new DataInputStream(connection.getInputStream());
 						out = new DataOutputStream(connection.getOutputStream());
@@ -239,6 +234,10 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 							in.close();
 						if (connection != null)
 							connection.close();
+
+						mConnected = false;
+						setChanged();
+						notifyObservers();
 					} catch (SocketTimeoutException e) {
 						// just check if thread was interrupted in while
 						// condition
@@ -252,7 +251,6 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 				if (serverSocket != null)
 					serverSocket.close();
 
-				mConnected = false;
 			} catch (InterruptedException e) {
 				// interrupted while dispatching
 				e.printStackTrace();

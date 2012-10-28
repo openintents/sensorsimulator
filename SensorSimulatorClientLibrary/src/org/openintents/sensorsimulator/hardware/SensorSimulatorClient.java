@@ -50,7 +50,7 @@ import android.util.Log;
  * @author Peli
  * @author Josip Balic
  */
-final class SensorSimulatorClient implements SensorDataReceiver {
+final class SensorSimulatorClient extends SensorDataReceiver {
 
 	/**
 	 * TAG for logging.
