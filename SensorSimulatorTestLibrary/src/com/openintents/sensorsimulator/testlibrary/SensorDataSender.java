@@ -5,7 +5,6 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collection;
 import java.util.Observable;
@@ -23,7 +22,8 @@ import android.util.Log;
  */
 public class SensorDataSender extends Observable {
 
-	private static final int PORT = 8010;
+	private static final int PORT = 8111;
+	protected static final String TAG = "SensorDataSender";
 	private EmptyListener mEmptyListener;
 	private Thread mSendingThread;
 	private BlockingQueue<SensorEventContainer> mSensorEvents;
@@ -31,7 +31,6 @@ public class SensorDataSender extends Observable {
 	private boolean mClientConnected = false;
 
 	// network stuff
-	private ServerSocket mServerSocket = null;
 	private Socket client;
 	private DataOutputStream clientOut = null;
 	private DataInputStream clientIn = null;
@@ -60,7 +59,6 @@ public class SensorDataSender extends Observable {
 			clientOut.flush();
 			clientOut.close();
 			client.close();
-			mServerSocket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,7 +72,6 @@ public class SensorDataSender extends Observable {
 	 *            the events to send
 	 */
 	public boolean sendSensorEvents(Collection<SensorEventContainer> events) {
-		Log.v("SimpleTest", "sendSensorEvents()");
 		mSensorEvents.addAll(events);
 		try {
 			// command for sequence
@@ -99,7 +96,6 @@ public class SensorDataSender extends Observable {
 			}
 			clientOut.flush();
 			int ok = clientIn.readInt();
-			Log.v("SimpleTest", ok == 2 ? "ok" : "not ok");
 			if (ok == 2)
 				return true;
 		} catch (InterruptedException e) {
@@ -119,18 +115,17 @@ public class SensorDataSender extends Observable {
 		@Override
 		public void run() {
 
-			System.out.println("run started");
-
 			try {
 				// open server socket
-				mServerSocket = new ServerSocket(PORT);
+				// mServerSocket = new ServerSocket(PORT);
 
 				// for testing
 				if (mEmptyListener != null)
 					mEmptyListener.notifyEmpty();
 
-				// wait for clients
-				client = mServerSocket.accept();
+				Log.d(TAG, "Trying to connect to server...");
+				// connect to app under test
+				client = new Socket("127.0.0.1", PORT);
 
 				mClientConnected = true;
 				clientOut = new DataOutputStream(new BufferedOutputStream(

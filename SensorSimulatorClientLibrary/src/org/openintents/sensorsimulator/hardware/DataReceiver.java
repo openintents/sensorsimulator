@@ -4,7 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -25,6 +27,7 @@ import android.util.SparseArray;
 public class DataReceiver implements SensorDataReceiver, Observer {
 
 	private static final String TAG = "DataReceiver";
+	protected static final int PORT = 8111;
 	// sensor dispatchers
 	// private Dispatcher mAccelerometerDispatcher;
 	private SparseArray<Dispatcher> mDispatchers;
@@ -84,6 +87,7 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 			mConnected = false;
 			for (int i = 0; i < mDispatchers.size(); i++)
 				mDispatchers.valueAt(i).stop();
+			Log.d(TAG, "interrupting thread");
 			mReceivingThread.interrupt();
 		}
 	}
@@ -170,102 +174,112 @@ public class DataReceiver implements SensorDataReceiver, Observer {
 
 		@Override
 		public void run() {
+			ServerSocket serverSocket = null;
 			Socket connection = null;
 			DataInputStream in = null;
 			DataOutputStream out = null;
 
 			try {
-				connection = new Socket(mIpAdress, mPort);
-				// TODO check if Bufferedstream would be faster
-				in = new DataInputStream(connection.getInputStream());
-				out = new DataOutputStream(connection.getOutputStream());
+				serverSocket = new ServerSocket(PORT);
+				serverSocket.setSoTimeout(100);
 
-				mConnected = true;
+				while (!Thread.interrupted()) {
 
-				// block until command comes
-				connection.setSoTimeout(0);
+					try {
+						Log.d(TAG, "Waiting for client...");
+						connection = serverSocket.accept();
+						Log.d(TAG, "Client connected.");
+						connection.setSoTimeout(100);
 
-				boolean quit = false;
+						mConnected = true;
 
-				while (!quit) {
+						in = new DataInputStream(connection.getInputStream());
+						out = new DataOutputStream(connection.getOutputStream());
 
-					int command = in.readInt();
+						boolean quit = false;
 
-					// play sequence
-					if (command == 0) {
+						while (!quit && !Thread.interrupted()) {
 
-						// TODO change behavior of dispatchers
+							try {
+								int command = in.readInt();
 
-						int eventCount = in.readInt();
+								// play sequence
+								if (command == 0) {
 
-						// read sensor events
-						// while (!Thread.interrupted() || eventCount-- > 0) {
-						for (int j = 0; j < eventCount && !Thread.interrupted(); j++) {
-							int type = in.readInt();
-							int accuracy = in.readInt();
-							long timestamp = in.readLong();
-							int valLength = in.readInt();
-							float[] values = new float[valLength];
-							for (int i = 0; i < valLength; i++) {
-								values[i] = in.readFloat();
+									int eventCount = in.readInt();
+
+									// read sensor events
+									for (int j = 0; j < eventCount
+											&& !Thread.interrupted(); j++) {
+										int type = in.readInt();
+										int accuracy = in.readInt();
+										long timestamp = in.readLong();
+										int valLength = in.readInt();
+										float[] values = new float[valLength];
+										for (int i = 0; i < valLength; i++) {
+											values[i] = in.readFloat();
+										}
+
+										mDispatchers.get(type).putEvent(
+												new SensorEvent(type, accuracy,
+														timestamp, values));
+									}
+
+									// start dispatching
+									for (int i = 0; i < mDispatchers.size(); i++)
+										((SequenceDispatcher) mDispatchers
+												.valueAt(i)).play();
+
+									// wait till all dispatchers finish
+									synchronized (DataReceiver.this) {
+										DataReceiver.this.wait();
+										// reset
+										mDispatcherCount = 0;
+									}
+
+									// tell server that its done
+									out.writeInt(2);
+								} else if (command == -1) {
+									quit = true;
+								}
+							} catch (SocketTimeoutException e) {
+								// just check if thread was interrupted in while
+								// condition
 							}
-
-							mDispatchers.get(type).putEvent(
-									new SensorEvent(type, accuracy, timestamp,
-											values));
 						}
 
-						// start dispatching
-						for (int i = 0; i < mDispatchers.size(); i++)
-							((SequenceDispatcher) mDispatchers.valueAt(i))
-									.play();
+						Log.d(TAG, "Closing client connection...");
 
-						// wait till all dispatchers finish
-						synchronized (DataReceiver.this) {
-							DataReceiver.this.wait();
-							// reset
-							mDispatcherCount = 0;
-						}
-
-						// tell server that its done
-						out.writeInt(2);
-					} else if (command == -1) {
-						quit = true;
+						// clean up client
+						if (out != null)
+							out.close();
+						if (in != null)
+							in.close();
+						if (connection != null)
+							connection.close();
+					} catch (SocketTimeoutException e) {
+						// just check if thread was interrupted in while
+						// condition
 					}
 				}
+
+				// clean up
+				for (int i = 0; i < mDispatchers.size(); i++)
+					mDispatchers.valueAt(i).stop();
+				
+				if (serverSocket != null)
+					serverSocket.close();
+
+				mConnected = false;
+				
+				Log.d(TAG, "Server closed.");
 			} catch (InterruptedException e) {
 				// interrupted while dispatching
 				e.printStackTrace();
 
-			} catch (UnknownHostException e) {
-				// wrong ip or port or server not started
-				e.printStackTrace();
-
-				for (int i = 0; i < mDispatchers.size(); i++)
-					mDispatchers.valueAt(i).stop();
-			} catch (EOFException e) {
-				// server shut down connection
-				e.printStackTrace();
-
-				for (int i = 0; i < mDispatchers.size(); i++)
-					mDispatchers.valueAt(i).stop();
 			} catch (IOException e) {
 				// some other crap happened
 				e.printStackTrace();
-			} finally {
-				// cleanup
-				try {
-					if (out != null)
-						out.close();
-					if (in != null)
-						in.close();
-					if (connection != null)
-						connection.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
-				mConnected = false;
 			}
 		}
 	};
