@@ -20,12 +20,10 @@ import android.util.Log;
  * @author Qui Don Ho
  * 
  */
-public class SensorDataSender extends Observable {
+public class SensorDataSender {
 
 	private static final int PORT = 8111;
 	protected static final String TAG = "SensorDataSender";
-	private EmptyListener mEmptyListener;
-	private Thread mSendingThread;
 	private BlockingQueue<SensorEventContainer> mSensorEvents;
 
 	private boolean mClientConnected = false;
@@ -37,14 +35,26 @@ public class SensorDataSender extends Observable {
 
 	public SensorDataSender() {
 		mSensorEvents = new LinkedBlockingQueue<SensorEventContainer>();
-		mSendingThread = new Thread(mSending);
 	}
 
 	/**
-	 * Start internal thread.
+	 * Connect to app-under-test
 	 */
-	public void start() {
-		mSendingThread.start();
+	public void connect() {
+		try {
+			Log.d(TAG, "Trying to connect to server...");
+			// connect to app under test
+			client = new Socket("127.0.0.1", PORT);
+
+			mClientConnected = true;
+			clientOut = new DataOutputStream(new BufferedOutputStream(
+					client.getOutputStream()));
+			clientIn = new DataInputStream(new BufferedInputStream(
+					client.getInputStream()));
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -52,7 +62,7 @@ public class SensorDataSender extends Observable {
 	 * 
 	 * TODO internal state machine so this cannot be called in wrong state
 	 */
-	public void stop() {
+	public void disconnect() {
 		try {
 			// say goodbye to device
 			clientOut.writeInt(-1);
@@ -108,47 +118,6 @@ public class SensorDataSender extends Observable {
 		}
 
 		return false;
-	}
-
-	private Runnable mSending = new Runnable() {
-
-		@Override
-		public void run() {
-
-			try {
-				// open server socket
-				// mServerSocket = new ServerSocket(PORT);
-
-				// for testing
-				if (mEmptyListener != null)
-					mEmptyListener.notifyEmpty();
-
-				Log.d(TAG, "Trying to connect to server...");
-				// connect to app under test
-				client = new Socket("127.0.0.1", PORT);
-
-				mClientConnected = true;
-				clientOut = new DataOutputStream(new BufferedOutputStream(
-						client.getOutputStream()));
-				clientIn = new DataInputStream(new BufferedInputStream(
-						client.getInputStream()));
-
-				// tell everybody
-				setChanged();
-				notifyObservers();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	};
-
-	/**
-	 * Notify that queue is empty
-	 * 
-	 * @param recordTester
-	 */
-	public void setEmptyListener(EmptyListener recordTester) {
-		mEmptyListener = recordTester;
 	}
 
 	public boolean isClientConnected() {

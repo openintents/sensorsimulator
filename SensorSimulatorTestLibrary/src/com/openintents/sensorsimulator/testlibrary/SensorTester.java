@@ -1,8 +1,6 @@
 package com.openintents.sensorsimulator.testlibrary;
 
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * <code>SensorTester</code> provides a Test Project with the ability to send
@@ -11,8 +9,7 @@ import java.util.Observer;
  * <p>
  * Usage:
  * <ol>
- * <li>initialize
- * <li>wait for callback (connection established)
+ * <li>connect
  * <li>send events
  * </ol>
  * <p>
@@ -20,40 +17,25 @@ import java.util.Observer;
  * @author Qui Don Ho
  * 
  */
-public class SensorTester implements Observer {
+public class SensorTester {
 
 	private SensorDataSender mDataSender;
-	private boolean connected;
 	private SequenceLoader mSequenceLoader;
+
+	public SensorTester() {
+		mDataSender = new SensorDataSender();
+		mSequenceLoader = new SequenceLoader();
+	}
 
 	/**
 	 * Start internal server and do some initializing work.
 	 */
-	public void start() {
-		mDataSender = new SensorDataSender();
-		mDataSender.addObserver(this);
-		mSequenceLoader = new SequenceLoader();
-		mDataSender.start();
+	public void connect() {
+		mDataSender.connect();
 	}
 
-	public void stop() {
-		mDataSender.stop();
-	}
-
-	/**
-	 * Wait for client to connect.
-	 */
-	public void waitUntilConnected() {
-		synchronized (this) {
-			try {
-				while (!connected) {
-					this.wait();
-				}
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+	public void disconnect() {
+		mDataSender.disconnect();
 	}
 
 	/**
@@ -69,13 +51,5 @@ public class SensorTester implements Observer {
 			return true;
 
 		return false;
-	}
-
-	@Override
-	public synchronized void update(Observable observable, Object data) {
-		if (observable == mDataSender) {
-			connected = true;
-			this.notifyAll();
-		}
 	}
 }
