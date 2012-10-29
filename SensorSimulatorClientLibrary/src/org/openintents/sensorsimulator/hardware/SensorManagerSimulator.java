@@ -23,7 +23,6 @@ package org.openintents.sensorsimulator.hardware;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observable;
@@ -35,6 +34,7 @@ import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.util.Log;
+import android.util.SparseArray;
 import android.widget.Toast;
 
 /**
@@ -54,7 +54,6 @@ public class SensorManagerSimulator implements Observer {
 	/**
 	 * TAG for logging.
 	 */
-	@SuppressWarnings("unused")
 	private static final String TAG = "SensorManagerSimulator";
 
 	/**
@@ -63,14 +62,13 @@ public class SensorManagerSimulator implements Observer {
 	private static SensorDataReceiver mSensorDataReceiver;
 
 	private SensorManager mSensorManager = null;
-	private Context mContext;
 
 	public static final int SENSOR_DELAY_FASTEST = 0;
 	public static final int SENSOR_DELAY_GAME = 1;
 	public static final int SENSOR_DELAY_NORMAL = 3;
 	public static final int SENSOR_DELAY_UI = 2;
 
-	private static Sensor sensors;
+	private static SparseArray<Sensor> defaultSensors;
 
 	private Map<SensorEventListener, SensorEventListenerWrapper> mWrapperMap;
 
@@ -85,16 +83,36 @@ public class SensorManagerSimulator implements Observer {
 	 * @param context
 	 *            Context of the activity.
 	 */
-	private SensorManagerSimulator(Context context,
-			SensorManager systemsensormanager) {
-		mContext = context;
+	private SensorManagerSimulator(SensorManager systemsensormanager) {
 		mSensorManager = systemsensormanager;
 
-		// new way
-		SensorSimulatorConvenience prefs = new SensorSimulatorConvenience(
-				context);
+		// create default sensor map
+		defaultSensors = new SparseArray<Sensor>();
+		defaultSensors.put(Sensor.TYPE_ACCELEROMETER, new Sensor(
+				Sensor.TYPE_ACCELEROMETER));
+		defaultSensors.put(Sensor.TYPE_GYROSCOPE, new Sensor(
+				Sensor.TYPE_GYROSCOPE));
+		defaultSensors.put(Sensor.TYPE_LIGHT, new Sensor(Sensor.TYPE_LIGHT));
+		defaultSensors.put(Sensor.TYPE_MAGNETIC_FIELD, new Sensor(
+				Sensor.TYPE_MAGNETIC_FIELD));
+		defaultSensors.put(Sensor.TYPE_ORIENTATION, new Sensor(
+				Sensor.TYPE_ORIENTATION));
+		defaultSensors.put(Sensor.TYPE_PRESSURE, new Sensor(
+				Sensor.TYPE_PRESSURE));
+		defaultSensors.put(Sensor.TYPE_PROXIMITY, new Sensor(
+				Sensor.TYPE_PROXIMITY));
+		defaultSensors.put(Sensor.TYPE_TEMPERATURE, new Sensor(
+				Sensor.TYPE_TEMPERATURE));
+		defaultSensors.put(Sensor.TYPE_BARCODE_READER, new Sensor(
+				Sensor.TYPE_BARCODE_READER));
+		defaultSensors.put(Sensor.TYPE_LINEAR_ACCELERATION, new Sensor(
+				Sensor.TYPE_LINEAR_ACCELERATION));
+		defaultSensors
+				.put(Sensor.TYPE_GRAVITY, new Sensor(Sensor.TYPE_GRAVITY));
+		defaultSensors.put(Sensor.TYPE_ROTATION_VECTOR, new Sensor(
+				Sensor.TYPE_ROTATION_VECTOR));
+		defaultSensors.put(Sensor.TYPE_ALL, new Sensor(Sensor.TYPE_ALL));
 
-		Log.d(TAG, "Create MAP");
 		mWrapperMap = new HashMap<SensorEventListener, SensorEventListenerWrapper>();
 
 		mSensorDataReceiver = new DataReceiver();
@@ -117,11 +135,11 @@ public class SensorManagerSimulator implements Observer {
 
 			if (sensorManager.equals(Context.SENSOR_SERVICE)) {
 				if (SensorManagerSimulator.isRealSensorsAvailable()) {
-					instance = new SensorManagerSimulator(context,
+					instance = new SensorManagerSimulator(
 							(SensorManager) context
 									.getSystemService(sensorManager));
 				} else {
-					instance = new SensorManagerSimulator(context, null);
+					instance = new SensorManagerSimulator(null);
 					Toast.makeText(
 							context,
 							"Android SensorManager disabled, 1.5 SDK emulator crashes when using it... Make sure to connect SensorSimulator",
@@ -195,14 +213,11 @@ public class SensorManagerSimulator implements Observer {
 		// TODO test if sensor is supported and can be enabled
 		mSensorDataReceiver.registerListener(listener, sensor, rate);
 		// register with wrapper
-		Log.d(TAG, "checking if key exists...");
 		if (!mWrapperMap.containsKey(listener)) {
-			Log.d(TAG, "it does not...");
 			SensorEventListenerWrapper wrapper = new SensorEventListenerWrapper(
-					listener, mSensorManager);
+					listener, mSensorManager, this);
 			wrapper.registerListener(sensor, rate);
 			mWrapperMap.put(listener, wrapper);
-			Log.d(TAG, "map has now " + mWrapperMap.size() + " entries");
 		}
 		return true;
 	}
@@ -212,7 +227,7 @@ public class SensorManagerSimulator implements Observer {
 	 * 
 	 * @param listener
 	 *            , a SensorEventListener object
-	 * @param sensors
+	 * @param defaultSensors
 	 *            , Sensor object that represent sensor we want to unregister
 	 */
 	public void unregisterListener(SensorEventListener listener, Sensor sensor) {
@@ -283,16 +298,22 @@ public class SensorManagerSimulator implements Observer {
 	 * @return sensors, Sensor object that is used in our methods.
 	 */
 	public Sensor getDefaultSensor(int type) {
-		if (sensors == null) {
-			sensors = new Sensor(mContext, type);
-			return sensors;
-		} else if (sensors.checkList(type)) {
-			sensors.addSensor(type);
-			return sensors;
-		} else {
-			sensors.removeSensor(type);
-			return sensors;
-		}
+		// if (sensors == null) {
+		// sensors = new Sensor(mContext, type);
+		// return sensors;
+		// } else if (sensors.checkList(type)) {
+		// sensors.addSensor(type);
+		// return sensors;
+		// } else {
+		// sensors.removeSensor(type);
+		// return sensors;
+		// }
+
+		Sensor defaultSensor = defaultSensors.get(type);
+		if (defaultSensors != null)
+			return defaultSensor;
+		else
+			throw new UnsupportedOperationException("No such sensor: " + type);
 	}
 
 	/*
@@ -302,20 +323,33 @@ public class SensorManagerSimulator implements Observer {
 	@Override
 	public void update(Observable observable, Object data) {
 		if (mSensorDataReceiver.isConnected()) {
-			Iterator<Entry<SensorEventListener, SensorEventListenerWrapper>> it = mWrapperMap
-					.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry<SensorEventListener, SensorEventListenerWrapper> pair = (Map.Entry<SensorEventListener, SensorEventListenerWrapper>) it
-						.next();
-				pair.getValue().fakeAPI();
+			// Iterator<Entry<SensorEventListener, SensorEventListenerWrapper>>
+			// it = mWrapperMap
+			// .entrySet().iterator();
+			// while (it.hasNext()) {
+			// Map.Entry<SensorEventListener, SensorEventListenerWrapper> pair =
+			// (Map.Entry<SensorEventListener, SensorEventListenerWrapper>) it
+			// .next();
+			// pair.getValue().fakeAPI();
+			// }
+
+			for (Entry<SensorEventListener, SensorEventListenerWrapper> entry : mWrapperMap
+					.entrySet()) {
+				entry.getValue().fakeAPI();
 			}
 		} else {
-			Iterator<Entry<SensorEventListener, SensorEventListenerWrapper>> it = mWrapperMap
-					.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry<SensorEventListener, SensorEventListenerWrapper> pair = (Map.Entry<SensorEventListener, SensorEventListenerWrapper>) it
-						.next();
-				pair.getValue().realAPI();
+			// Iterator<Entry<SensorEventListener, SensorEventListenerWrapper>>
+			// it = mWrapperMap
+			// .entrySet().iterator();
+			// while (it.hasNext()) {
+			// Map.Entry<SensorEventListener, SensorEventListenerWrapper> pair =
+			// (Map.Entry<SensorEventListener, SensorEventListenerWrapper>) it
+			// .next();
+			// pair.getValue().realAPI();
+			// }
+			for (Entry<SensorEventListener, SensorEventListenerWrapper> entry : mWrapperMap
+					.entrySet()) {
+				entry.getValue().realAPI();
 			}
 		}
 	}

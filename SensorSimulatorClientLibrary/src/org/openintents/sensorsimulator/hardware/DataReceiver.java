@@ -2,17 +2,14 @@ package org.openintents.sensorsimulator.hardware;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import android.util.Log;
 import android.util.SparseArray;
 
 /**
@@ -114,7 +111,7 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 		}
 
 		// check sensor type and add to correct dispatcher
-		Dispatcher dispatcher = mDispatchers.get(sensor.sensorToRegister);
+		Dispatcher dispatcher = mDispatchers.get(sensor.getType());
 		if (dispatcher != null) {
 			dispatcher.addListener(listener, interval);
 			return true;
@@ -124,7 +121,7 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 
 	@Override
 	public void unregisterListener(SensorEventListener listener, Sensor sensor) {
-		Dispatcher dispatcher = mDispatchers.get(sensor.sensorToRegister);
+		Dispatcher dispatcher = mDispatchers.get(sensor.getType());
 		if (dispatcher != null) {
 			dispatcher.removeListener(listener);
 		}

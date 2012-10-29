@@ -42,9 +42,29 @@ public class SensorDataSender {
 	 */
 	public void connect() {
 		try {
-			Log.d(TAG, "Trying to connect to server...");
+			// Log.d(TAG, "Trying to connect to server...");
 			// connect to app under test
 			client = new Socket("127.0.0.1", PORT);
+
+			mClientConnected = true;
+			clientOut = new DataOutputStream(new BufferedOutputStream(
+					client.getOutputStream()));
+			clientIn = new DataInputStream(new BufferedInputStream(
+					client.getInputStream()));
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Connect to app-under-test
+	 */
+	public void connect(String ipAddress) {
+		try {
+			// Log.d(TAG, "Trying to connect to server...");
+			// connect to app under test
+			client = new Socket(ipAddress, PORT);
 
 			mClientConnected = true;
 			clientOut = new DataOutputStream(new BufferedOutputStream(
@@ -84,6 +104,8 @@ public class SensorDataSender {
 	public boolean sendSensorEvents(Collection<SensorEventContainer> events) {
 		mSensorEvents.addAll(events);
 		try {
+			
+			System.out.println("writing to server");
 			// command for sequence
 			clientOut.writeInt(0);
 

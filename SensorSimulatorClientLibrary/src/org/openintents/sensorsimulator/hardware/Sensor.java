@@ -21,11 +21,6 @@
 
 package org.openintents.sensorsimulator.hardware;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import android.content.Context;
-
 /**
  * This class simulates SENSOR object used in android's sensor methods. In
  * android's methods, sensor object is generated for each sensor. This class is
@@ -38,6 +33,7 @@ import android.content.Context;
 
 public class Sensor {
 
+	// TODO add Level 14 sensors
 	public static final int TYPE_ACCELEROMETER = 1;
 	public static final int TYPE_ALL = -1;
 	public static final int TYPE_GYROSCOPE = 4;
@@ -51,13 +47,13 @@ public class Sensor {
 	public static final int TYPE_LINEAR_ACCELERATION = 10;
 	public static final int TYPE_GRAVITY = 11;
 	public static final int TYPE_ROTATION_VECTOR = 12;
-	public int sensorToRegister = 0;
-	public int sensorToRemove = 0;
 
-	private ArrayList<Integer> currentSensors = new ArrayList<Integer>();
+	private int type;
 
-	@SuppressWarnings("unused")
-	private Context mContext;
+	// public int sensorToRegister = 0;
+	// public int sensorToRemove = 0;
+
+	// private ArrayList<Integer> currentSensors = new ArrayList<Integer>();
 
 	/**
 	 * Constructor for Sensor object, it's called first time when we are
@@ -68,90 +64,128 @@ public class Sensor {
 	 * @param type
 	 *            , integer number of sensor we want to register.
 	 */
-	protected Sensor(Context context, int type) {
-		super();
-		mContext = context;
-		sensorToRegister = type;
+	protected Sensor(int type) {
+		this.type = type;
 	}
 
-	/**
-	 * This method adds integer number of sensor we want to enable.
-	 * 
-	 * @param type
-	 *            , integer number of sensor to be enabled.
-	 */
-	protected void addSensor(int type) {
-		sensorToRegister = type;
+	// //////////////////////////////////////////////////////////////////////////////
+	// Android API mock methods - just stubs for now
+	// //////////////////////////////////////////////////////////////////////////////
+
+	public float getMaximumRange() {
+		throw new UnsupportedOperationException();
 	}
 
-	/**
-	 * This method adds integer number of sensor we want to remove.
-	 * 
-	 * @param type
-	 *            , integer number of sensor to be removed.
-	 */
-	protected void removeSensor(int type) {
-		sensorToRemove = type;
+	public int getMinDelay() {
+		throw new UnsupportedOperationException();
 	}
 
-	/**
-	 * Method that checks list of enabled sensors. Returns true if sensor is
-	 * enabled, or false if it isn't yet enabled.
-	 * 
-	 * @param type
-	 *            , integer number of sensor we want to check.
-	 * @return boolean true or false, returns true if sensor is enabled or false
-	 *         if it isn't yet enabled.
-	 */
-	protected boolean checkList(int type) {
-		Iterator<Integer> iter = currentSensors.iterator();
-		while (iter.hasNext()) {
-			if (iter.next() == type) {
-				return false;
-			}
-		}
-		return true;
+	public String getName() {
+		throw new UnsupportedOperationException();
 	}
 
-	/**
-	 * Once sensor is enabled, this method is called to add sensor to list of
-	 * currently enabled ones.
-	 * 
-	 * @param type
-	 *            , integer number of enabled sensor.
-	 */
-	protected void addSensorToList(int type) {
-		currentSensors.add(type);
+	public float getPower() {
+		throw new UnsupportedOperationException();
 	}
 
-	/**
-	 * Once sensor is disabled, this method is called to remove sensor from the
-	 * list. If sensor we want to remove is the only sensor in list, than we
-	 * create a new empty arrayList. This must be done to avoid list and memory
-	 * problems in program.
-	 * 
-	 * @param type
-	 *            , integer number of sensor to be removed from list.
-	 */
-	protected void removeSensorFromList(int type) {
-		if (currentSensors.size() == 1) {
-			currentSensors = new ArrayList<Integer>();
-		} else {
-			for (int i = 0; i < currentSensors.size(); i++) {
-				if (currentSensors.get(i) == type) {
-					currentSensors.remove(i);
-				}
-			}
-		}
-
+	public float getResolution() {
+		throw new UnsupportedOperationException();
 	}
 
-	/**
-	 * Method that returns the list that contains currently enabled sensors.
-	 * 
-	 * @return currentSensors, ArrayList<Integer> of currently enabled sensors.
-	 */
-	protected ArrayList<Integer> getList() {
-		return currentSensors;
+	public int getType() {
+		return type;
 	}
+
+	public String getVendor() {
+		throw new UnsupportedOperationException();
+	}
+
+	public int getVersion() {
+		throw new UnsupportedOperationException();
+	}
+
+	// /**
+	// * This method adds integer number of sensor we want to enable.
+	// *
+	// * @param type
+	// * , integer number of sensor to be enabled.
+	// */
+	// protected void addSensor(int type) {
+	// sensorToRegister = type;
+	// }
+	//
+	// /**
+	// * This method adds integer number of sensor we want to remove.
+	// *
+	// * @param type
+	// * , integer number of sensor to be removed.
+	// */
+	// protected void removeSensor(int type) {
+	// sensorToRemove = type;
+	// }
+	//
+	// /**
+	// * Method that checks list of enabled sensors. Returns true if sensor is
+	// * enabled, or false if it isn't yet enabled.
+	// *
+	// * @param type
+	// * , integer number of sensor we want to check.
+	// * @return boolean true or false, returns true if sensor is enabled or
+	// false
+	// * if it isn't yet enabled.
+	// */
+	// protected boolean checkList(int type) {
+	// Iterator<Integer> iter = currentSensors.iterator();
+	// while (iter.hasNext()) {
+	// if (iter.next() == type) {
+	// return false;
+	// }
+	// }
+	// return true;
+	// }
+	//
+	// /**
+	// * Once sensor is enabled, this method is called to add sensor to list of
+	// * currently enabled ones.
+	// *
+	// * @param type
+	// * , integer number of enabled sensor.
+	// */
+	// protected void addSensorToList(int type) {
+	// currentSensors.add(type);
+	// }
+	//
+	// /**
+	// * Once sensor is disabled, this method is called to remove sensor from
+	// the
+	// * list. If sensor we want to remove is the only sensor in list, than we
+	// * create a new empty arrayList. This must be done to avoid list and
+	// memory
+	// * problems in program.
+	// *
+	// * @param type
+	// * , integer number of sensor to be removed from list.
+	// */
+	// protected void removeSensorFromList(int type) {
+	// if (currentSensors.size() == 1) {
+	// currentSensors = new ArrayList<Integer>();
+	// } else {
+	// for (int i = 0; i < currentSensors.size(); i++) {
+	// if (currentSensors.get(i) == type) {
+	// currentSensors.remove(i);
+	// }
+	// }
+	// }
+	//
+	// }
+	//
+	// /**
+	// * Method that returns the list that contains currently enabled sensors.
+	// *
+	// * @return currentSensors, ArrayList<Integer> of currently enabled
+	// sensors.
+	// */
+	// protected ArrayList<Integer> getList() {
+	// return currentSensors;
+	// }
 }
