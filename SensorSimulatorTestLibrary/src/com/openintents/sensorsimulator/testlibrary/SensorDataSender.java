@@ -42,7 +42,7 @@ public class SensorDataSender {
 	 */
 	public void connect() {
 		try {
-			// Log.d(TAG, "Trying to connect to server...");
+			 Log.d(TAG, "sensimtest  Trying to connect to server...");
 			// connect to app under test
 			client = new Socket("127.0.0.1", PORT);
 
@@ -104,8 +104,6 @@ public class SensorDataSender {
 	public boolean sendSensorEvents(Collection<SensorEventContainer> events) {
 		mSensorEvents.addAll(events);
 		try {
-			
-			System.out.println("writing to server");
 			// command for sequence
 			clientOut.writeInt(0);
 

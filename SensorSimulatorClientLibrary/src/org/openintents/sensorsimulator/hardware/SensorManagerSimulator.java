@@ -33,6 +33,8 @@ import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -60,6 +62,7 @@ public class SensorManagerSimulator implements Observer {
 	 * Client that communicates with the SensorSimulator application.
 	 */
 	private static SensorDataReceiver mSensorDataReceiver;
+	private static Context mContext;
 
 	private SensorManager mSensorManager = null;
 
@@ -147,6 +150,8 @@ public class SensorManagerSimulator implements Observer {
 				}
 			}
 		}
+
+		mContext = context;
 		return instance;
 	}
 
@@ -265,6 +270,7 @@ public class SensorManagerSimulator implements Observer {
 	 * already.)
 	 */
 	public void connectSimulator() {
+		Log.d(TAG, "sensimtest connectSimulator()");
 		if (!mSensorDataReceiver.isConnected())
 			mSensorDataReceiver.connect();
 	};
@@ -323,34 +329,34 @@ public class SensorManagerSimulator implements Observer {
 	@Override
 	public void update(Observable observable, Object data) {
 		if (mSensorDataReceiver.isConnected()) {
-			// Iterator<Entry<SensorEventListener, SensorEventListenerWrapper>>
-			// it = mWrapperMap
-			// .entrySet().iterator();
-			// while (it.hasNext()) {
-			// Map.Entry<SensorEventListener, SensorEventListenerWrapper> pair =
-			// (Map.Entry<SensorEventListener, SensorEventListenerWrapper>) it
-			// .next();
-			// pair.getValue().fakeAPI();
-			// }
-
 			for (Entry<SensorEventListener, SensorEventListenerWrapper> entry : mWrapperMap
 					.entrySet()) {
 				entry.getValue().fakeAPI();
 			}
+
+			Handler handler = new Handler(Looper.getMainLooper());
+			handler.post(new Runnable() {
+
+				@Override
+				public void run() {
+					Toast.makeText(mContext, "fake sensor data",
+							Toast.LENGTH_SHORT).show();
+				}
+			});
 		} else {
-			// Iterator<Entry<SensorEventListener, SensorEventListenerWrapper>>
-			// it = mWrapperMap
-			// .entrySet().iterator();
-			// while (it.hasNext()) {
-			// Map.Entry<SensorEventListener, SensorEventListenerWrapper> pair =
-			// (Map.Entry<SensorEventListener, SensorEventListenerWrapper>) it
-			// .next();
-			// pair.getValue().realAPI();
-			// }
 			for (Entry<SensorEventListener, SensorEventListenerWrapper> entry : mWrapperMap
 					.entrySet()) {
 				entry.getValue().realAPI();
 			}
+			Handler handler = new Handler(Looper.getMainLooper());
+			handler.post(new Runnable() {
+
+				@Override
+				public void run() {
+					Toast.makeText(mContext, "real sensor data",
+							Toast.LENGTH_SHORT).show();
+				}
+			});
 		}
 	}
 }

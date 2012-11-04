@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import android.util.Log;
 import android.util.SparseArray;
 
 /**
@@ -161,6 +162,7 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 				while (!Thread.interrupted()) {
 
 					try {
+						Log.d(TAG, "sensimtest accepting now...");
 						connection = serverSocket.accept();
 						connection.setSoTimeout(100);
 
@@ -179,9 +181,10 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 							try {
 								int command = in.readInt();
 
-								// play sequence
+								// play sequence ///////////////////////////
 								if (command == 0) {
 
+									// read sensor event count
 									int eventCount = in.readInt();
 
 									// read sensor events
@@ -215,12 +218,24 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 
 									// tell server that its done
 									out.writeInt(2);
-								} else if (command == -1) {
+								}
+								// read continuous data ////////////////////
+								else if (command == 1) {
+									// open udp receiving socket
+									// send information about registered listeners and rates
+									// send udp socket
+									// open new thread
+								}
+								// quit ////////////////////////////////////
+								else if (command == -1) {
 									quit = true;
 								}
 							} catch (SocketTimeoutException e) {
-								// just check if thread was interrupted in while
+								// TODO: just check if thread was interrupted in while
 								// condition
+								
+								// Check if registered listeners changed (which
+								// ones, rates...)
 							}
 						}
 

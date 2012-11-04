@@ -52,4 +52,19 @@ public class SensorTester {
 
 		return false;
 	}
+	
+	/**
+	 * Send a shake event, consisting of a sequence of sensor events, which were
+	 * recorded during shaking a real device.
+	 */
+	public boolean loadSequenceFromFile(String fileName) {
+		// read shake sensor data from somewhere
+		List<SensorEventContainer> sequence = mSequenceLoader
+				.loadFromFile(fileName);
+		// send to client
+		if (mDataSender.sendSensorEvents(sequence))
+			return true;
+
+		return false;
+	}
 }
