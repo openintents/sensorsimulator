@@ -217,13 +217,17 @@ public class SensorManagerSimulator implements Observer {
 			Sensor sensor, int rate) {
 		// TODO test if sensor is supported and can be enabled
 		mSensorDataReceiver.registerListener(listener, sensor, rate);
-		// register with wrapper
-		if (!mWrapperMap.containsKey(listener)) {
-			SensorEventListenerWrapper wrapper = new SensorEventListenerWrapper(
-					listener, mSensorManager, this);
-			wrapper.registerListener(sensor, rate);
+		SensorEventListenerWrapper wrapper = mWrapperMap.get(listener);
+
+		if (wrapper == null) {
+			wrapper = new SensorEventListenerWrapper(listener, mSensorManager,
+					this);
 			mWrapperMap.put(listener, wrapper);
 		}
+
+		// register with wrapper
+		wrapper.registerListener(sensor, rate);
+
 		return true;
 	}
 

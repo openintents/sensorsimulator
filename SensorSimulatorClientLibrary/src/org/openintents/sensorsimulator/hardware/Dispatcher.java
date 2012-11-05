@@ -20,7 +20,7 @@ public interface Dispatcher {
 	 * @param listener
 	 *            the listener to add
 	 */
-	public void addListener(SensorEventListener listener, int interval);
+	public void addListener(SensorEventListener listener, int rate);
 
 	/**
 	 * Remove <code>SensorEventListener</code>.

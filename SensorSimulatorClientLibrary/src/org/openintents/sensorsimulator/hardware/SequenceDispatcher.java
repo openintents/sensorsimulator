@@ -41,7 +41,7 @@ public class SequenceDispatcher extends Observable implements Dispatcher {
 	}
 
 	@Override
-	public void addListener(SensorEventListener listener, int interval) {
+	public void addListener(SensorEventListener listener, int rate) {
 		if (!mListeners.contains(listener))
 			mListeners.add(listener);
 	}

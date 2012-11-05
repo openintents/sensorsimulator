@@ -1,12 +1,18 @@
 package org.openintents.sensorsimulator.hardware;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -26,11 +32,23 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 
 	private static final String TAG = "DataReceiver";
 	protected static final int PORT = 8111;
+
 	private SparseArray<Dispatcher> mDispatchers;
+	private Map<SensorEventListener, Map<Sensor, Integer>> mListenerMap;
+
 	private boolean mConnected;
 	private Thread mReceivingThread;
 
 	public DataReceiver() {
+		// setupSequenceDispatchers();
+
+		// map for listeners
+		mListenerMap = new HashMap<SensorEventListener, Map<Sensor, Integer>>();
+
+		mConnected = false;
+	}
+
+	private void setupSequenceDispatchers() {
 		mDispatchers = new SparseArray<Dispatcher>(12);
 		mDispatchers.put(Sensor.TYPE_ACCELEROMETER, new SequenceDispatcher());
 		mDispatchers.put(Sensor.TYPE_GYROSCOPE, new SequenceDispatcher());
@@ -49,16 +67,60 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 		for (int i = 0; i < mDispatchers.size(); i++) {
 			((SequenceDispatcher) mDispatchers.valueAt(i)).addObserver(this);
 		}
+	}
 
-		mConnected = false;
+	private void setupContinuousDispatchers() {
+		mDispatchers = new SparseArray<Dispatcher>(12);
+		mDispatchers.put(Sensor.TYPE_ACCELEROMETER, new ContinuousDispatcher(
+				500, 0));
+		mDispatchers.put(Sensor.TYPE_GYROSCOPE,
+				new ContinuousDispatcher(500, 0));
+		mDispatchers.put(Sensor.TYPE_LIGHT, new ContinuousDispatcher(500, 0));
+		mDispatchers.put(Sensor.TYPE_MAGNETIC_FIELD, new ContinuousDispatcher(
+				500, 0));
+		mDispatchers.put(Sensor.TYPE_ORIENTATION, new ContinuousDispatcher(500,
+				0));
+		mDispatchers
+				.put(Sensor.TYPE_PRESSURE, new ContinuousDispatcher(500, 0));
+		mDispatchers.put(Sensor.TYPE_PROXIMITY,
+				new ContinuousDispatcher(500, 0));
+		mDispatchers.put(Sensor.TYPE_TEMPERATURE, new ContinuousDispatcher(500,
+				0));
+		mDispatchers.put(Sensor.TYPE_BARCODE_READER, new ContinuousDispatcher(
+				500, 0));
+		mDispatchers.put(Sensor.TYPE_LINEAR_ACCELERATION,
+				new ContinuousDispatcher(500, 0));
+		mDispatchers.put(Sensor.TYPE_GRAVITY, new ContinuousDispatcher(500, 0));
+		mDispatchers.put(Sensor.TYPE_ROTATION_VECTOR, new ContinuousDispatcher(
+				500, 0));
+
+		for (int i = 0; i < mDispatchers.size(); i++) {
+			ContinuousDispatcher disp = (ContinuousDispatcher) mDispatchers
+					.valueAt(i);
+			disp.addObserver(this);
+			disp.start();
+		}
+	}
+
+	private void addAllListeners() {
+
+		for (Entry<SensorEventListener, Map<Sensor, Integer>> listenerMapping : mListenerMap
+				.entrySet()) {
+			for (Entry<Sensor, Integer> sensorRateMapping : listenerMapping
+					.getValue().entrySet()) {
+				Dispatcher dispatcher = mDispatchers.get(sensorRateMapping
+						.getKey().getType());
+				if (dispatcher != null) {
+					dispatcher.addListener(listenerMapping.getKey(),
+							sensorRateMapping.getValue());
+				}
+			}
+		}
+
 	}
 
 	@Override
 	public void connect() {
-		for (int i = 0; i < mDispatchers.size(); i++) {
-			if (!mDispatchers.valueAt(i).hasStarted())
-				mDispatchers.valueAt(i).start();
-		}
 		mReceivingThread = new Thread(mReceiving);
 		mReceivingThread.start();
 	}
@@ -67,8 +129,8 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 	public void disconnect() {
 		// ignore call if not yet started
 		if (mConnected) {
-			for (int i = 0; i < mDispatchers.size(); i++)
-				mDispatchers.valueAt(i).stop();
+			// for (int i = 0; i < mDispatchers.size(); i++)
+			// mDispatchers.valueAt(i).stop();
 			mReceivingThread.interrupt();
 		}
 	}
@@ -91,47 +153,69 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 	@Override
 	public boolean registerListener(SensorEventListener listener,
 			Sensor sensor, int rate) {
-		int interval; // in ms
 
-		// TODO define intervals as constants somewhere else
-		switch (rate) {
-		case SensorManagerSimulator.SENSOR_DELAY_FASTEST:
-			interval = 10;
-			break;
-		case SensorManagerSimulator.SENSOR_DELAY_GAME:
-			interval = 20;
-			break;
-		case SensorManagerSimulator.SENSOR_DELAY_NORMAL:
-			interval = 40;
-			break;
-		case SensorManagerSimulator.SENSOR_DELAY_UI:
-			interval = 80;
-			break;
-		default:
-			interval = rate; // as per Android Spec
+		// put in map
+		if (mListenerMap.containsKey(listener)) {
+			mListenerMap.get(listener).put(sensor, rate);
+		} else {
+			Map<Sensor, Integer> sensorRateMap = new HashMap<Sensor, Integer>();
+			sensorRateMap.put(sensor, rate);
+			mListenerMap.put(listener, sensorRateMap);
 		}
+
+		// int interval; // in ms
+		//
+		// // TODO define intervals as constants somewhere else
+		// switch (rate) {
+		// case SensorManagerSimulator.SENSOR_DELAY_FASTEST:
+		// interval = 10;
+		// break;
+		// case SensorManagerSimulator.SENSOR_DELAY_GAME:
+		// interval = 20;
+		// break;
+		// case SensorManagerSimulator.SENSOR_DELAY_NORMAL:
+		// interval = 40;
+		// break;
+		// case SensorManagerSimulator.SENSOR_DELAY_UI:
+		// interval = 80;
+		// break;
+		// default:
+		// interval = rate; // as per Android Spec
+		// }
 
 		// check sensor type and add to correct dispatcher
-		Dispatcher dispatcher = mDispatchers.get(sensor.getType());
-		if (dispatcher != null) {
-			dispatcher.addListener(listener, interval);
-			return true;
-		}
-		return false;
+		// Dispatcher dispatcher = mDispatchers.get(sensor.getType());
+		// if (dispatcher != null) {
+		// dispatcher.addListener(listener, rate);
+		// return true;
+		// }
+		// return false;
+		return true;
 	}
 
 	@Override
 	public void unregisterListener(SensorEventListener listener, Sensor sensor) {
-		Dispatcher dispatcher = mDispatchers.get(sensor.getType());
-		if (dispatcher != null) {
-			dispatcher.removeListener(listener);
+		// remove from map
+		if (mListenerMap.containsKey(listener))
+			mListenerMap.get(listener).remove(sensor);
+
+		if (mDispatchers != null) {
+			Dispatcher dispatcher = mDispatchers.get(sensor.getType());
+			if (dispatcher != null) {
+				dispatcher.removeListener(listener);
+			}
 		}
 	}
 
 	@Override
 	public void unregisterListener(SensorEventListener listener) {
-		for (int i = 0; i < mDispatchers.size(); i++) {
-			mDispatchers.valueAt(i).removeListener(listener);
+		// remove from map
+		mListenerMap.remove(listener);
+
+		if (mDispatchers != null) {
+			for (int i = 0; i < mDispatchers.size(); i++) {
+				mDispatchers.valueAt(i).removeListener(listener);
+			}
 		}
 	}
 
@@ -146,6 +230,8 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 	}
 
 	private Runnable mReceiving = new Runnable() {
+
+		private Thread mContinuousThread = null;
 
 		@Override
 		public void run() {
@@ -162,7 +248,6 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 				while (!Thread.interrupted()) {
 
 					try {
-						Log.d(TAG, "sensimtest accepting now...");
 						connection = serverSocket.accept();
 						connection.setSoTimeout(100);
 
@@ -183,6 +268,14 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 
 								// play sequence ///////////////////////////
 								if (command == 0) {
+									// switch to sequence dispatchers
+									setupSequenceDispatchers();
+									addAllListeners();
+									for (int i = 0; i < mDispatchers.size(); i++) {
+										if (!mDispatchers.valueAt(i)
+												.hasStarted())
+											mDispatchers.valueAt(i).start();
+									}
 
 									// read sensor event count
 									int eventCount = in.readInt();
@@ -221,19 +314,78 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 								}
 								// read continuous data ////////////////////
 								else if (command == 1) {
+									setupContinuousDispatchers();
+									addAllListeners();
+
+									// get fastest registered rates for each
+									// sensor
+									Map<Integer, Integer> fastestRegistration = new HashMap<Integer, Integer>();
+									for (Entry<SensorEventListener, Map<Sensor, Integer>> entry : mListenerMap
+											.entrySet()) {
+										for (Entry<Sensor, Integer> sensorRateMapping : entry
+												.getValue().entrySet()) {
+											Sensor sensor = sensorRateMapping
+													.getKey();
+											Integer rate = sensorRateMapping
+													.getValue();
+											if (fastestRegistration
+													.containsKey(sensor
+															.getType())) {
+												if (fastestRegistration
+														.get(sensor.getType()) > rate)
+													fastestRegistration.put(
+															sensor.getType(),
+															rate);
+											} else {
+												fastestRegistration.put(
+														sensor.getType(), rate);
+											}
+										}
+									}
+
+									// write sensor registration count
+									out.writeInt(fastestRegistration.size());
+									// write sensor registrations
+									for (Entry<Integer, Integer> entry : fastestRegistration
+											.entrySet()) {
+										out.writeInt(entry.getKey());
+										out.writeInt(entry.getValue()
+												.intValue());
+									}
+
+									// read and set event delivering speed
+									for (int i = 0; i < fastestRegistration
+											.size(); i++) {
+										int sensorType = in.readInt();
+										ContinuousDispatcher disp = (ContinuousDispatcher) mDispatchers
+												.get(sensorType);
+										disp.configProducer(in.readInt(),
+												fastestRegistration
+														.get(sensorType));
+									}
+
 									// open udp receiving socket
-									// send information about registered listeners and rates
+									mContinuousDataSocket = new DatagramSocket(
+											8112);
+
 									// send udp socket
-									// open new thread
+									out.writeInt(8112);
+									mContinuousThread = new Thread(
+											mContinuousReceiving);
+									mContinuousThread.start();
+
+									// configure listeners and rates
 								}
 								// quit ////////////////////////////////////
 								else if (command == -1) {
 									quit = true;
+									if (mContinuousThread != null)
+										mContinuousThread.interrupt();
 								}
 							} catch (SocketTimeoutException e) {
-								// TODO: just check if thread was interrupted in while
-								// condition
-								
+								// TODO: just check if thread was interrupted in
+								// while condition
+
 								// Check if registered listeners changed (which
 								// ones, rates...)
 							}
@@ -272,5 +424,53 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 				e.printStackTrace();
 			}
 		}
+
+		private DatagramSocket mContinuousDataSocket;
+		private Runnable mContinuousReceiving = new Runnable() {
+
+			private static final int READ_TIMEOUT = 100;
+			private static final int DATAGRAM_BUFFER_SIZE = 512;
+
+			@Override
+			public void run() {
+				try {
+					mContinuousDataSocket.setSoTimeout(READ_TIMEOUT);
+					byte[] buf = new byte[DATAGRAM_BUFFER_SIZE];
+					DatagramPacket packet = new DatagramPacket(buf, buf.length);
+
+					while (!Thread.interrupted()) {
+
+						// receive data
+						try {
+							mContinuousDataSocket.receive(packet);
+							byte[] payload = packet.getData();
+							DataInputStream input = new DataInputStream(
+									new ByteArrayInputStream(payload));
+
+							// parse sensor data
+							int type = input.readInt();
+							int accuracy = input.readInt();
+							int valLength = input.readInt();
+							float[] values = new float[valLength];
+							for (int j = 0; j < valLength; j++) {
+								values[j] = input.readFloat();
+							}
+
+							// put into dispatcher
+							mDispatchers.get(type).putEvent(
+									new SensorEvent(type, accuracy, System
+											.nanoTime(), values));
+						} catch (SocketTimeoutException e) {
+							// just check for interrupt and try again
+						}
+					}
+
+					mContinuousDataSocket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		};
 	};
+
 }
