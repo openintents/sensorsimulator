@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Observable;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -12,7 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-public class ContinuousDispatcher extends Observable implements Dispatcher {
+public class ContinuousDispatcher implements Dispatcher {
 
 	protected static final String TAG = ContinuousDispatcher.class.getName();
 	private Map<SensorEventListener, Integer> mListeners;

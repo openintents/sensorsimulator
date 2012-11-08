@@ -13,10 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Observable;
-import java.util.Observer;
 
-import android.util.Log;
 import android.util.SparseArray;
 
 /**
@@ -28,7 +25,7 @@ import android.util.SparseArray;
  * @author Qui Don Ho
  * 
  */
-public class DataReceiver extends SensorDataReceiver implements Observer {
+public class DataReceiver extends SensorDataReceiver {
 
 	private static final String TAG = "DataReceiver";
 	protected static final int PORT = 8111;
@@ -40,7 +37,6 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 	private Thread mReceivingThread;
 
 	public DataReceiver() {
-		// setupSequenceDispatchers();
 
 		// map for listeners
 		mListenerMap = new HashMap<SensorEventListener, Map<Sensor, Integer>>();
@@ -63,10 +59,6 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 				new SequenceDispatcher());
 		mDispatchers.put(Sensor.TYPE_GRAVITY, new SequenceDispatcher());
 		mDispatchers.put(Sensor.TYPE_ROTATION_VECTOR, new SequenceDispatcher());
-
-		for (int i = 0; i < mDispatchers.size(); i++) {
-			((SequenceDispatcher) mDispatchers.valueAt(i)).addObserver(this);
-		}
 	}
 
 	private void setupContinuousDispatchers() {
@@ -97,7 +89,6 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 		for (int i = 0; i < mDispatchers.size(); i++) {
 			ContinuousDispatcher disp = (ContinuousDispatcher) mDispatchers
 					.valueAt(i);
-			disp.addObserver(this);
 			disp.start();
 		}
 	}
@@ -163,33 +154,6 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 			mListenerMap.put(listener, sensorRateMap);
 		}
 
-		// int interval; // in ms
-		//
-		// // TODO define intervals as constants somewhere else
-		// switch (rate) {
-		// case SensorManagerSimulator.SENSOR_DELAY_FASTEST:
-		// interval = 10;
-		// break;
-		// case SensorManagerSimulator.SENSOR_DELAY_GAME:
-		// interval = 20;
-		// break;
-		// case SensorManagerSimulator.SENSOR_DELAY_NORMAL:
-		// interval = 40;
-		// break;
-		// case SensorManagerSimulator.SENSOR_DELAY_UI:
-		// interval = 80;
-		// break;
-		// default:
-		// interval = rate; // as per Android Spec
-		// }
-
-		// check sensor type and add to correct dispatcher
-		// Dispatcher dispatcher = mDispatchers.get(sensor.getType());
-		// if (dispatcher != null) {
-		// dispatcher.addListener(listener, rate);
-		// return true;
-		// }
-		// return false;
 		return true;
 	}
 
@@ -216,16 +180,6 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 			for (int i = 0; i < mDispatchers.size(); i++) {
 				mDispatchers.valueAt(i).removeListener(listener);
 			}
-		}
-	}
-
-	int mDispatcherCount = 0;
-
-	@Override
-	public synchronized void update(Observable observable, Object data) {
-		mDispatcherCount++;
-		if (mDispatcherCount == mDispatchers.size()) {
-			this.notify();
 		}
 	}
 
@@ -271,11 +225,6 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 									// switch to sequence dispatchers
 									setupSequenceDispatchers();
 									addAllListeners();
-									for (int i = 0; i < mDispatchers.size(); i++) {
-										if (!mDispatchers.valueAt(i)
-												.hasStarted())
-											mDispatchers.valueAt(i).start();
-									}
 
 									// read sensor event count
 									int eventCount = in.readInt();
@@ -298,15 +247,14 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 									}
 
 									// start dispatching
-									for (int i = 0; i < mDispatchers.size(); i++)
-										((SequenceDispatcher) mDispatchers
-												.valueAt(i)).play();
+									for (int i = 0; i < mDispatchers.size(); i++) {
+										mDispatchers.valueAt(i).start();
+									}
 
-									// wait till all dispatchers finish
-									synchronized (DataReceiver.this) {
-										DataReceiver.this.wait();
-										// reset
-										mDispatcherCount = 0;
+									// wait for dispatchers to finish
+									for (int i = 0; i < mDispatchers.size(); i++) {
+										((SequenceDispatcher) mDispatchers
+												.valueAt(i)).join();
 									}
 
 									// tell server that its done
@@ -414,11 +362,6 @@ public class DataReceiver extends SensorDataReceiver implements Observer {
 
 				if (serverSocket != null)
 					serverSocket.close();
-
-			} catch (InterruptedException e) {
-				// interrupted while dispatching
-				e.printStackTrace();
-
 			} catch (IOException e) {
 				// some other crap happened
 				e.printStackTrace();

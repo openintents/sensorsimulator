@@ -1,7 +1,7 @@
 package org.openintents.sensorsimulator.hardware;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import android.util.Log;
 
@@ -33,7 +33,7 @@ public class SensorEventListenerWrapper implements
 		this.listener = listener;
 		this.sensorManager = sensorManager;
 		this.sensorManagerSimulator = sensorManagerSimulator;
-		sensors = new HashMap<Sensor, Integer>();
+		sensors = new ConcurrentHashMap<Sensor, Integer>();
 	}
 
 	// /////////////////////////////////////////////////////////////////////////

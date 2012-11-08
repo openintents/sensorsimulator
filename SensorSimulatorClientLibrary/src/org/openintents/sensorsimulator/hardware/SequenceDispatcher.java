@@ -3,7 +3,6 @@ package org.openintents.sensorsimulator.hardware;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Observable;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -20,13 +19,12 @@ import android.os.Looper;
  * <li>the dispatcher will try to dispatch events exactly in the same time
  * interval as it was recorded
  * <li>it will ignore the listeners update rate
- * <li>it will then notify the DispatcherEmptyListener if there is one
  * </ul>
  * 
  * @author Qui Don Ho
  * 
  */
-public class SequenceDispatcher extends Observable implements Dispatcher {
+public class SequenceDispatcher implements Dispatcher {
 
 	protected static final String TAG = "SequenceDispatcher";
 	private List<SensorEventListener> mListeners;
@@ -84,14 +82,6 @@ public class SequenceDispatcher extends Observable implements Dispatcher {
 	}
 
 	/**
-	 * Call this method when you have put a sequence of events into the
-	 * dispatcher and want it to start dispatching.
-	 */
-	public synchronized void play() {
-		this.notify();
-	}
-
-	/**
 	 * Should dispatch events as close as possible to the original time
 	 * intervals when it was recorded.
 	 * <p>
@@ -105,89 +95,90 @@ public class SequenceDispatcher extends Observable implements Dispatcher {
 		@Override
 		public void run() {
 
+			if (mQueue.size() == 0)
+				return;
+
 			try {
-				while (true) {
+				// init stuff
+				long lastTimeStamp = 0;
+				long now = 0;
+				long timePassedScheduled = 0;
+				long lastTimeDispatched = 0;
+				long timePassed = 0;
+				boolean firstTime = true;
 
-					// wait until play method is called
-					synchronized (SequenceDispatcher.this) {
-						SequenceDispatcher.this.wait();
+				int size = mQueue.size();
+
+				// actual dispatching
+				for (int i = 0; i < size; i++) {
+					// take new event
+					event = mQueue.poll();
+					now = System.nanoTime();
+
+					// check if it is time for that event (and just dispatch
+					// it on first run)
+					if (!firstTime) {
+						timePassedScheduled = event.timestamp - lastTimeStamp;
+						timePassed = now - lastTimeDispatched;
+
+						if (timePassed < timePassedScheduled) {
+							// convert to ms
+							long sleepTime = (timePassedScheduled - timePassed) / 1000000;
+							Thread.sleep(sleepTime);
+							now = System.nanoTime();
+						}
+					} else {
+						firstTime = false;
 					}
 
-					// init stuff
-					long lastTimeStamp = 0;
-					long now = 0;
-					long timePassedScheduled = 0;
-					long lastTimeDispatched = 0;
-					long timePassed = 0;
-					boolean firstTime = true;
+					// dispatch to all listeners on ui thread
+					for (final SensorEventListener listener : mListeners)
+						mUiThreadHandler.post(new Runnable() {
 
-					int size = mQueue.size();
-
-					// nothing to do
-					if (size == 0) {
-						setChanged();
-						notifyObservers();
-						continue;
-					}
-
-					// actual dispatching
-					for (int i = 0; i < size; i++) {
-						// take new event
-						event = mQueue.poll();
-						now = System.nanoTime();
-
-						// check if it is time for that event (and just dispatch
-						// it on first run)
-						if (!firstTime) {
-							timePassedScheduled = event.timestamp
-									- lastTimeStamp;
-							timePassed = now - lastTimeDispatched;
-
-							if (timePassed < timePassedScheduled) {
-								// convert to ms
-								long sleepTime = (timePassedScheduled - timePassed) / 1000000;
-								Thread.sleep(sleepTime);
-								now = System.nanoTime();
+							@Override
+							public void run() {
+								listener.onSensorChanged(event);
 							}
-						} else {
-							firstTime = false;
-						}
+						});
 
-						// dispatch to all listeners on ui thread
-						for (final SensorEventListener listener : mListeners)
-							mUiThreadHandler.post(new Runnable() {
-
-								@Override
-								public void run() {
-									listener.onSensorChanged(event);
-								}
-							});
-
-						// update for next round
-						lastTimeStamp = event.timestamp;
-						lastTimeDispatched = now;
-					}
-
-					// Tell observers we finished dispatching. Must be on UI
-					// thread to ensure this is done _after_ the last event was
-					// dispatched.
-					mUiThreadHandler.post(new Runnable() {
-
-						@Override
-						public void run() {
-							setChanged();
-							notifyObservers();
-						}
-					});
+					// update for next round
+					lastTimeStamp = event.timestamp;
+					lastTimeDispatched = now;
 				}
+
+				// Wait until finished dispatching before ending Thread. Must be
+				// on UI thread to ensure this is done _after_ the last event
+				// was dispatched.
+				mUiThreadHandler.post(new Runnable() {
+
+					@Override
+					public void run() {
+						synchronized (SequenceDispatcher.this) {
+							SequenceDispatcher.this.notify();
+						}
+					}
+				});
+
+				// wait till finished dispatching
+				synchronized (SequenceDispatcher.this) {
+					SequenceDispatcher.this.wait();
+				}
+
 			} catch (InterruptedException e) {
 				// clean up
 				mQueue.clear();
 			}
-
-			mThread = null;
 		}
 	};
+
+	public void join() {
+		try {
+			mThread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public boolean hasStarted() {
