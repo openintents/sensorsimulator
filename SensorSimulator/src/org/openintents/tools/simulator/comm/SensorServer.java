@@ -42,9 +42,9 @@ public class SensorServer implements Runnable {
 	private SensorServerThread mLastThread;
 
 	private ServerSocket mServerSocket;
-	private SensorServerThreadListener mThreadListener;
+	private SensorDataSource mThreadListener;
 
-	private int mPort;
+	private int mPort = 8886;
 	private boolean mListening;
 
 	/**
@@ -52,14 +52,8 @@ public class SensorServer implements Runnable {
 	 * 
 	 * @param sensorServerThreadListener
 	 *            implements the simulator command api
-	 * @param port
-	 *            the port on which to listen
 	 */
-	public SensorServer(SensorServerThreadListener sensorServerThreadListener,
-			int port) {
-		mPort = port;
-		if (mPort == 0)
-			return;
+	public SensorServer(SensorDataSource sensorServerThreadListener) {
 
 		mThreadListener = sensorServerThreadListener;
 		mFirstThread = null;
@@ -129,33 +123,4 @@ public class SensorServer implements Runnable {
 			System.exit(1);
 		}
 	}
-
-	/**
-	 * Stop all active threads and then oneself.
-	 */
-	public void stop() {
-
-		// go through the list and kill in turn
-		SensorServerThread sst;
-		SensorServerThread ssthelp;
-		for (sst = mFirstThread; sst != null; sst = ssthelp) {
-			// first remember next pointer before it is gone:
-			ssthelp = sst.getNextThread();
-			// sst.mThread.interrupt();
-			sst.stop();
-		}
-		// finally kill ourselves:
-		mListening = false;
-
-		try {
-			if (mServerSocket != null) {
-				Logg.i(TAG, "Closing listening server...");
-				mServerSocket.close();
-			}
-		} catch (IOException e) {
-			Logg.e(TAG, "Close failed.");
-			System.exit(1);
-		}
-	}
-
 }

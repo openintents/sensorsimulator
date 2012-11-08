@@ -37,7 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import org.openintents.tools.simulator.SensorsScenario;
-import org.openintents.tools.simulator.comm.SensorServer;
+import org.openintents.tools.simulator.comm.SensorEventProducer;
 import org.openintents.tools.simulator.controller.sensor.AccelerometerController;
 import org.openintents.tools.simulator.controller.sensor.BarcodeReaderController;
 import org.openintents.tools.simulator.controller.sensor.GravityController;
@@ -111,14 +111,11 @@ public class SensorSimulatorController implements WindowListener {
 	private SensorSimulatorModel mSensorSimulatorModel;
 	private SensorSimulatorView mSensorSimulatorView;
 
-	private int mSensorsPort = DEFAULT_PORT;
-	
 	// the time for a new sensors update cycle in the java application
 	private Timer mUpdateTimer;
 
 	private AllSensorsController mSensorTabController;
 	private SensorsScenarioController mScenarioController;
-	private SensorServer mSensorServer;
 	
 	/**
 	 * Time of next update for reading user settings from widgets. The time is
@@ -130,6 +127,7 @@ public class SensorSimulatorController implements WindowListener {
 	 */
 	private long mUserSettingsDuration;
 	private RefreshRateMeter mRefreshRateMeter;
+	private SensorEventProducer mSensorEventProducer;
 
 	public SensorSimulatorController(final SensorSimulatorModel model,
 			final SensorSimulatorView view, SensorsScenario scenario) {
@@ -190,8 +188,12 @@ public class SensorSimulatorController implements WindowListener {
 		sensorPortButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				mSensorServer.stop();
-				mSensorServer = new SensorServer(mSensorSimulatorModel, mSensorsPort);
+				// not supported anymore 
+				// mSensorServer.stop();
+				// mSensorServer = new SensorServer(mSensorSimulatorModel);
+				
+				// only test until own button is created
+				mSensorEventProducer.connect();
 			}
 		});
 
@@ -218,7 +220,7 @@ public class SensorSimulatorController implements WindowListener {
 																// now.
 
 		// start server
-		mSensorServer = new SensorServer(mSensorSimulatorModel, mSensorsPort);
+		mSensorEventProducer = SensorEventProducer.startProducing(mSensorSimulatorModel);
 	}
 
 	private void doTimer() {

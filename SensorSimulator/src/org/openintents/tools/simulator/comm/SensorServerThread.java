@@ -59,7 +59,7 @@ public class SensorServerThread implements Runnable {
 	 */
 	private boolean mTalking;
 
-	private SensorServerThreadListener mServerThreadListener;
+	private SensorDataSource mServerThreadListener;
 
 	/**
 	 * Constructor to start as thread.
@@ -69,7 +69,7 @@ public class SensorServerThread implements Runnable {
 	 * @param newClientSocket
 	 *            , Socket that is used in connecting
 	 */
-	public SensorServerThread(SensorServerThreadListener serverThreadListener,
+	public SensorServerThread(SensorDataSource serverThreadListener,
 			Socket newClientSocket) {
 		mNextThread = null;
 		mPreviousThread = null;

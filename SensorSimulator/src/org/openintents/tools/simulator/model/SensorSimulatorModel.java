@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openintents.tools.simulator.comm.SensorServerThreadListener;
+import org.openintents.tools.simulator.comm.SensorDataSource;
 import org.openintents.tools.simulator.model.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensors.BarcodeReaderModel;
 import org.openintents.tools.simulator.model.sensors.GravityModel;
@@ -58,7 +58,7 @@ import org.openintents.tools.simulator.model.sensors.TemperatureModel;
  * @author Peli
  * @author Josip Balic
  */
-public class SensorSimulatorModel implements SensorServerThreadListener {
+public class SensorSimulatorModel implements SensorDataSource {
 
 	// sensors
 	private Map<SensorType, SensorModel> mSensors;
