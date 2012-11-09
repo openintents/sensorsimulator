@@ -123,12 +123,10 @@ public class ContinuousDispatcher implements Dispatcher {
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
 				}
-
-				// control msg
-				if (mSensorEvents.size() < 10) {
-					Log.d(TAG, "queue empty!");
-				}
 			}
+
+			// clean up
+			mSensorEvents.clear();
 		}
 	};
 }

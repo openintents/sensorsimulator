@@ -22,7 +22,7 @@ import org.openintents.tools.simulator.model.sensors.SensorType;
  */
 public class SensorEventProducer {
 
-	private static final int SAMPLING_DELAY_DEFAULT = 100;
+	private static final int SAMPLING_DELAY_DEFAULT = 20;
 
 	private static SensorEventProducer mInstance;
 

@@ -29,10 +29,11 @@ public class SensorEventListenerWrapper implements
 
 	public SensorEventListenerWrapper(SensorEventListener listener,
 			android.hardware.SensorManager sensorManager,
-			SensorManagerSimulator sensorManagerSimulator) {
+			SensorManagerSimulator sensorManagerSimulator, boolean fakeMode) {
 		this.listener = listener;
 		this.sensorManager = sensorManager;
 		this.sensorManagerSimulator = sensorManagerSimulator;
+		this.mIsFakeMode = fakeMode;
 		sensors = new ConcurrentHashMap<Sensor, Integer>();
 	}
 

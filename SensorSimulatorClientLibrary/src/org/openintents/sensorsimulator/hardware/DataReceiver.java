@@ -3,6 +3,7 @@ package org.openintents.sensorsimulator.hardware;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import android.util.Log;
 import android.util.SparseArray;
 
 /**
@@ -35,6 +37,9 @@ public class DataReceiver extends SensorDataReceiver {
 
 	private boolean mConnected;
 	private Thread mReceivingThread;
+
+	// indicates if app wants to receive fake sensor data
+	private boolean mHasStarted;
 
 	public DataReceiver() {
 
@@ -112,23 +117,25 @@ public class DataReceiver extends SensorDataReceiver {
 
 	@Override
 	public void connect() {
+		mHasStarted = true;
 		mReceivingThread = new Thread(mReceiving);
 		mReceivingThread.start();
 	}
 
 	@Override
 	public void disconnect() {
-		// ignore call if not yet started
-		if (mConnected) {
-			// for (int i = 0; i < mDispatchers.size(); i++)
-			// mDispatchers.valueAt(i).stop();
-			mReceivingThread.interrupt();
-		}
+		mHasStarted = false;
+		mReceivingThread.interrupt();
 	}
 
 	@Override
 	public boolean isConnected() {
 		return mConnected;
+	}
+
+	@Override
+	public boolean hasStarted() {
+		return mHasStarted;
 	}
 
 	@Override
@@ -154,6 +161,14 @@ public class DataReceiver extends SensorDataReceiver {
 			mListenerMap.put(listener, sensorRateMap);
 		}
 
+		// register to dispatchers
+		if (mDispatchers != null) {
+			Dispatcher dispatcher = mDispatchers.get(sensor.getType());
+			if (dispatcher != null) {
+				dispatcher.addListener(listener, rate);
+			}
+		}
+
 		return true;
 	}
 
@@ -163,6 +178,7 @@ public class DataReceiver extends SensorDataReceiver {
 		if (mListenerMap.containsKey(listener))
 			mListenerMap.get(listener).remove(sensor);
 
+		// remove from dispatchers
 		if (mDispatchers != null) {
 			Dispatcher dispatcher = mDispatchers.get(sensor.getType());
 			if (dispatcher != null) {
@@ -189,182 +205,205 @@ public class DataReceiver extends SensorDataReceiver {
 
 		@Override
 		public void run() {
-			ServerSocket serverSocket = null;
-			Socket connection = null;
-			DataInputStream in = null;
-			DataOutputStream out = null;
 
-			try {
-				serverSocket = new ServerSocket(PORT);
-				serverSocket.setSoTimeout(100);
+			// listen on a port for clients to send fake sensor data
+			while (mHasStarted) {
+				ServerSocket serverSocket = null;
+				Socket connection = null;
+				DataInputStream in = null;
+				DataOutputStream out = null;
 
-				// wait for clients to connect and start sending events
-				while (!Thread.interrupted()) {
+				try {
+					serverSocket = new ServerSocket(PORT);
+					serverSocket.setSoTimeout(100);
 
-					try {
-						connection = serverSocket.accept();
-						connection.setSoTimeout(100);
+					// wait for clients to connect and start sending events
+					while (mHasStarted && !Thread.interrupted()) {
 
-						mConnected = true;
-						setChanged();
-						notifyObservers();
+						try {
+							connection = serverSocket.accept();
+							connection.setSoTimeout(100);
 
-						in = new DataInputStream(connection.getInputStream());
-						out = new DataOutputStream(connection.getOutputStream());
+							mConnected = true;
+							setChanged();
+							notifyObservers();
 
-						boolean quit = false;
+							in = new DataInputStream(
+									connection.getInputStream());
+							out = new DataOutputStream(
+									connection.getOutputStream());
 
-						// read commands from client and execute them
-						while (!quit && !Thread.interrupted()) {
+							boolean quit = false;
 
-							try {
-								int command = in.readInt();
+							// read commands from client and execute them
+							while (!quit && !Thread.interrupted()) {
 
-								// play sequence ///////////////////////////
-								if (command == 0) {
-									// switch to sequence dispatchers
-									setupSequenceDispatchers();
-									addAllListeners();
+								try {
+									int command = in.readInt();
 
-									// read sensor event count
-									int eventCount = in.readInt();
+									// play sequence ///////////////////////////
+									if (command == 0) {
+										// switch to sequence dispatchers
+										setupSequenceDispatchers();
+										addAllListeners();
 
-									// read sensor events
-									for (int j = 0; j < eventCount
-											&& !Thread.interrupted(); j++) {
-										int type = in.readInt();
-										int accuracy = in.readInt();
-										long timestamp = in.readLong();
-										int valLength = in.readInt();
-										float[] values = new float[valLength];
-										for (int i = 0; i < valLength; i++) {
-											values[i] = in.readFloat();
+										// read sensor event count
+										int eventCount = in.readInt();
+
+										// read sensor events
+										for (int j = 0; j < eventCount
+												&& !Thread.interrupted(); j++) {
+											int type = in.readInt();
+											int accuracy = in.readInt();
+											long timestamp = in.readLong();
+											int valLength = in.readInt();
+											float[] values = new float[valLength];
+											for (int i = 0; i < valLength; i++) {
+												values[i] = in.readFloat();
+											}
+
+											mDispatchers.get(type).putEvent(
+													new SensorEvent(type,
+															accuracy,
+															timestamp, values));
 										}
 
-										mDispatchers.get(type).putEvent(
-												new SensorEvent(type, accuracy,
-														timestamp, values));
+										// start dispatching
+										for (int i = 0; i < mDispatchers.size(); i++) {
+											mDispatchers.valueAt(i).start();
+										}
+
+										// wait for dispatchers to finish
+										for (int i = 0; i < mDispatchers.size(); i++) {
+											((SequenceDispatcher) mDispatchers
+													.valueAt(i)).join();
+										}
+
+										// tell server that its done
+										out.writeInt(2);
 									}
+									// read continuous data ////////////////////
+									else if (command == 1) {
+										setupContinuousDispatchers();
+										addAllListeners();
 
-									// start dispatching
-									for (int i = 0; i < mDispatchers.size(); i++) {
-										mDispatchers.valueAt(i).start();
-									}
-
-									// wait for dispatchers to finish
-									for (int i = 0; i < mDispatchers.size(); i++) {
-										((SequenceDispatcher) mDispatchers
-												.valueAt(i)).join();
-									}
-
-									// tell server that its done
-									out.writeInt(2);
-								}
-								// read continuous data ////////////////////
-								else if (command == 1) {
-									setupContinuousDispatchers();
-									addAllListeners();
-
-									// get fastest registered rates for each
-									// sensor
-									Map<Integer, Integer> fastestRegistration = new HashMap<Integer, Integer>();
-									for (Entry<SensorEventListener, Map<Sensor, Integer>> entry : mListenerMap
-											.entrySet()) {
-										for (Entry<Sensor, Integer> sensorRateMapping : entry
-												.getValue().entrySet()) {
-											Sensor sensor = sensorRateMapping
-													.getKey();
-											Integer rate = sensorRateMapping
-													.getValue();
-											if (fastestRegistration
-													.containsKey(sensor
-															.getType())) {
+										// get fastest registered rates for each
+										// sensor
+										Map<Integer, Integer> fastestRegistration = new HashMap<Integer, Integer>();
+										for (Entry<SensorEventListener, Map<Sensor, Integer>> entry : mListenerMap
+												.entrySet()) {
+											for (Entry<Sensor, Integer> sensorRateMapping : entry
+													.getValue().entrySet()) {
+												Sensor sensor = sensorRateMapping
+														.getKey();
+												Integer rate = sensorRateMapping
+														.getValue();
 												if (fastestRegistration
-														.get(sensor.getType()) > rate)
+														.containsKey(sensor
+																.getType())) {
+													if (fastestRegistration
+															.get(sensor
+																	.getType()) > rate)
+														fastestRegistration
+																.put(sensor
+																		.getType(),
+																		rate);
+												} else {
 													fastestRegistration.put(
 															sensor.getType(),
 															rate);
-											} else {
-												fastestRegistration.put(
-														sensor.getType(), rate);
+												}
 											}
 										}
+
+										// write sensor registration count
+										out.writeInt(fastestRegistration.size());
+										// write sensor registrations
+										for (Entry<Integer, Integer> entry : fastestRegistration
+												.entrySet()) {
+											out.writeInt(entry.getKey());
+											out.writeInt(entry.getValue()
+													.intValue());
+										}
+
+										// read and set event delivering speed
+										for (int i = 0; i < fastestRegistration
+												.size(); i++) {
+											int sensorType = in.readInt();
+											ContinuousDispatcher disp = (ContinuousDispatcher) mDispatchers
+													.get(sensorType);
+											disp.configProducer(in.readInt(),
+													fastestRegistration
+															.get(sensorType));
+										}
+
+										// open udp receiving socket
+										mContinuousDataSocket = new DatagramSocket(
+												8112);
+										// send udp socket
+										out.writeInt(8112);
+										mContinuousThread = new Thread(
+												mContinuousReceiving);
+										mContinuousThread.start();
+
+										// configure listeners and rates
 									}
-
-									// write sensor registration count
-									out.writeInt(fastestRegistration.size());
-									// write sensor registrations
-									for (Entry<Integer, Integer> entry : fastestRegistration
-											.entrySet()) {
-										out.writeInt(entry.getKey());
-										out.writeInt(entry.getValue()
-												.intValue());
+									// quit ////////////////////////////////////
+									else if (command == -1) {
+										quit = true;
+										if (mContinuousThread != null)
+											mContinuousThread.interrupt();
 									}
+								} catch (SocketTimeoutException e) {
+									// TODO: just check if thread was
+									// interrupted in
+									// while condition
 
-									// read and set event delivering speed
-									for (int i = 0; i < fastestRegistration
-											.size(); i++) {
-										int sensorType = in.readInt();
-										ContinuousDispatcher disp = (ContinuousDispatcher) mDispatchers
-												.get(sensorType);
-										disp.configProducer(in.readInt(),
-												fastestRegistration
-														.get(sensorType));
-									}
-
-									// open udp receiving socket
-									mContinuousDataSocket = new DatagramSocket(
-											8112);
-
-									// send udp socket
-									out.writeInt(8112);
-									mContinuousThread = new Thread(
-											mContinuousReceiving);
-									mContinuousThread.start();
-
-									// configure listeners and rates
+									// Check if registered listeners changed
+									// (which
+									// ones, rates...)
 								}
-								// quit ////////////////////////////////////
-								else if (command == -1) {
-									quit = true;
-									if (mContinuousThread != null)
-										mContinuousThread.interrupt();
-								}
-							} catch (SocketTimeoutException e) {
-								// TODO: just check if thread was interrupted in
-								// while condition
-
-								// Check if registered listeners changed (which
-								// ones, rates...)
 							}
+
+							// clean up client
+							if (out != null)
+								out.close();
+							if (in != null)
+								in.close();
+							if (connection != null)
+								connection.close();
+
+							mConnected = false;
+							setChanged();
+							notifyObservers();
+						} catch (SocketTimeoutException e) {
+							// just check if thread was interrupted in while
+							// condition
+						} catch (EOFException e) {
+							// client disconnected without saying bye :'(
+							if (mContinuousThread != null)
+								mContinuousThread.interrupt();
+							mReceivingThread.interrupt();
 						}
-
-						// clean up client
-						if (out != null)
-							out.close();
-						if (in != null)
-							in.close();
-						if (connection != null)
-							connection.close();
-
-						mConnected = false;
-						setChanged();
-						notifyObservers();
-					} catch (SocketTimeoutException e) {
-						// just check if thread was interrupted in while
-						// condition
 					}
+
+					// clean up
+					for (int i = 0; i < mDispatchers.size(); i++)
+						mDispatchers.valueAt(i).stop();
+
+					if (serverSocket != null)
+						serverSocket.close();
+				} catch (IOException e) {
+					// some other crap with the serverSocket happened
+					e.printStackTrace();
+				} finally {
+					// make sure sensormanagersimulator can switch to real api
+					// again, even if client disconnected abruptly
+					// (EOFException)
+					mConnected = false;
+					setChanged();
+					notifyObservers();
 				}
-
-				// clean up
-				for (int i = 0; i < mDispatchers.size(); i++)
-					mDispatchers.valueAt(i).stop();
-
-				if (serverSocket != null)
-					serverSocket.close();
-			} catch (IOException e) {
-				// some other crap happened
-				e.printStackTrace();
 			}
 		}
 
@@ -411,9 +450,10 @@ public class DataReceiver extends SensorDataReceiver {
 					mContinuousDataSocket.close();
 				} catch (IOException e) {
 					e.printStackTrace();
+				} finally {
+					Log.d(TAG, "mContinuousReceiving stopped.");
 				}
 			}
 		};
 	};
-
 }

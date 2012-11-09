@@ -221,7 +221,7 @@ public class SensorManagerSimulator implements Observer {
 
 		if (wrapper == null) {
 			wrapper = new SensorEventListenerWrapper(listener, mSensorManager,
-					this);
+					this, isConnectedSimulator());
 			mWrapperMap.put(listener, wrapper);
 		}
 
@@ -275,7 +275,7 @@ public class SensorManagerSimulator implements Observer {
 	 */
 	public void connectSimulator() {
 		Log.d(TAG, "sensimtest connectSimulator()");
-		if (!mSensorDataReceiver.isConnected())
+		if (!mSensorDataReceiver.hasStarted())
 			mSensorDataReceiver.connect();
 	};
 
@@ -332,35 +332,31 @@ public class SensorManagerSimulator implements Observer {
 	 */
 	@Override
 	public void update(Observable observable, Object data) {
+		final String msg;
 		if (mSensorDataReceiver.isConnected()) {
 			for (Entry<SensorEventListener, SensorEventListenerWrapper> entry : mWrapperMap
 					.entrySet()) {
 				entry.getValue().fakeAPI();
 			}
 
-			Handler handler = new Handler(Looper.getMainLooper());
-			handler.post(new Runnable() {
-
-				@Override
-				public void run() {
-					Toast.makeText(mContext, "fake sensor data",
-							Toast.LENGTH_SHORT).show();
-				}
-			});
+			msg = "fake sensor API";
 		} else {
 			for (Entry<SensorEventListener, SensorEventListenerWrapper> entry : mWrapperMap
 					.entrySet()) {
 				entry.getValue().realAPI();
 			}
-			Handler handler = new Handler(Looper.getMainLooper());
-			handler.post(new Runnable() {
 
-				@Override
-				public void run() {
-					Toast.makeText(mContext, "real sensor data",
-							Toast.LENGTH_SHORT).show();
-				}
-			});
+			msg = "real sensor API";
 		}
+
+		// notify user
+		Handler handler = new Handler(Looper.getMainLooper());
+		handler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+			}
+		});
 	}
 }

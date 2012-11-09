@@ -35,6 +35,11 @@ public abstract class SensorDataReceiver extends Observable {
 	public abstract boolean isConnected();
 
 	/**
+	 * Has connect been called already?
+	 */
+	public abstract boolean hasStarted();
+
+	/**
 	 * Method used to get supported sensors from sensor provider.
 	 * 
 	 * @return sensors, ArrayList<Integer> of supported sensors.

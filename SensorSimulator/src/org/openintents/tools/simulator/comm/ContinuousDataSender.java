@@ -30,6 +30,7 @@ public class ContinuousDataSender {
 	private Thread mSendingThread;
 	private InetAddress mUdpAddress;
 	private int mUdpPort;
+	private BlockingQueue<SensorEventContainer> mEvents;
 
 	public ContinuousDataSender(SensorEventProducer sensorEventProducer) {
 		mSensorEventProducer = sensorEventProducer;
@@ -128,7 +129,6 @@ public class ContinuousDataSender {
 
 		@Override
 		public void run() {
-			// establish udp socket
 			DatagramSocket dSocket;
 
 			try {
@@ -162,38 +162,15 @@ public class ContinuousDataSender {
 						mSendingThread.interrupt();
 					}
 				}
-
-				// // TODO remove test data
-				// for (int i = 0; i < 200; i++) {
-				//
-				// int type = i % 2 == 0 ? 1 : 5;
-				// int accuracy = i;
-				// int valLength = 3;
-				// float[] values = { (float) i, 2.0f, 3.0f };
-				//
-				// ByteArrayOutputStream output = new ByteArrayOutputStream();
-				// DataOutputStream dOut = new DataOutputStream(output);
-				// dOut.writeInt(type);
-				// dOut.writeInt(accuracy);
-				// dOut.writeInt(valLength);
-				// for (float value : values)
-				// dOut.writeFloat(value);
-				//
-				// byte[] buf = output.toByteArray();
-				// DatagramPacket dPacket = new DatagramPacket(buf,
-				// buf.length, mUdpAddress, mUdpPort);
-				//
-				// System.out.println(i + "th time");
-				// dSocket.send(dPacket);
-				// }
 			} catch (SocketException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} finally {
+				System.out.println("Sending ended");
 			}
 		}
 	};
-	private BlockingQueue<SensorEventContainer> mEvents;
 }
