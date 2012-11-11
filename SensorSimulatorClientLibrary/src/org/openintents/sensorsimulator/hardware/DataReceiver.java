@@ -412,6 +412,7 @@ public class DataReceiver extends SensorDataReceiver {
 
 			private static final int READ_TIMEOUT = 100;
 			private static final int DATAGRAM_BUFFER_SIZE = 512;
+			private int mNumberOfEvents = 20;
 
 			@Override
 			public void run() {
@@ -430,18 +431,20 @@ public class DataReceiver extends SensorDataReceiver {
 									new ByteArrayInputStream(payload));
 
 							// parse sensor data
-							int type = input.readInt();
-							int accuracy = input.readInt();
-							int valLength = input.readInt();
-							float[] values = new float[valLength];
-							for (int j = 0; j < valLength; j++) {
-								values[j] = input.readFloat();
-							}
+							for (int i = 0; i < mNumberOfEvents; i++) {
+								int type = input.readInt();
+								int accuracy = input.readInt();
+								int valLength = input.readInt();
+								float[] values = new float[valLength];
+								for (int j = 0; j < valLength; j++) {
+									values[j] = input.readFloat();
+								}
 
-							// put into dispatcher
-							mDispatchers.get(type).putEvent(
-									new SensorEvent(type, accuracy, System
-											.nanoTime(), values));
+								// put into dispatcher
+								mDispatchers.get(type).putEvent(
+										new SensorEvent(type, accuracy, System
+												.nanoTime(), values));
+							}
 						} catch (SocketTimeoutException e) {
 							// just check for interrupt and try again
 						}

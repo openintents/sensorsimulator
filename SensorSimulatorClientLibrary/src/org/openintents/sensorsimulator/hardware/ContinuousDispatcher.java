@@ -95,13 +95,11 @@ public class ContinuousDispatcher implements Dispatcher {
 				try {
 					final SensorEvent event = mSensorEvents.take();
 
-					Log.d(TAG, "processing [event accuracy: " + event.accuracy
-							+ "]");
-
 					// check whether it is time to dispatch
 					now = System.nanoTime();
 					delta = (now - lastTime) / 1000000;
 					if (delta < mProducerSpeed) {
+						// Log.d(TAG, "sleeping " + (mProducerSpeed - delta));
 						Thread.sleep(mProducerSpeed - delta);
 						now = System.nanoTime();
 					}

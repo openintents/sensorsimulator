@@ -22,7 +22,11 @@ import org.openintents.tools.simulator.model.sensors.SensorType;
  */
 public class SensorEventProducer {
 
-	private static final int SAMPLING_DELAY_DEFAULT = 20;
+	// default sampling speed values
+	private static final int SAMPLING_DELAY_FASTEST = 20;
+	private static final int SAMPLING_DELAY_GAME = 40;
+	private static final int SAMPLING_DELAY_UI = 80;
+	private static final int SAMPLING_DELAY_NORMAL = 160;
 
 	private static SensorEventProducer mInstance;
 
@@ -33,7 +37,6 @@ public class SensorEventProducer {
 	// sensor-to-sensorrate map
 	private Map<SensorType, Integer> mRegisteredSensorRates = new HashMap<SensorType, Integer>();
 	// should contain the fastest sensor rate
-	private int mSamplingDelay = SAMPLING_DELAY_DEFAULT;
 
 	private Map<Integer, Integer> mSamplingDelays;
 
@@ -62,10 +65,10 @@ public class SensorEventProducer {
 		mSamplingDelays = new HashMap<Integer, Integer>();
 
 		// default values
-		mSamplingDelays.put(0, 20);
-		mSamplingDelays.put(1, 40);
-		mSamplingDelays.put(2, 80);
-		mSamplingDelays.put(3, 160);
+		mSamplingDelays.put(0, SAMPLING_DELAY_FASTEST);
+		mSamplingDelays.put(1, SAMPLING_DELAY_GAME);
+		mSamplingDelays.put(2, SAMPLING_DELAY_UI);
+		mSamplingDelays.put(3, SAMPLING_DELAY_NORMAL);
 	}
 
 	public void connect() {

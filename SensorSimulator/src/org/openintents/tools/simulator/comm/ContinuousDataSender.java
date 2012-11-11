@@ -127,6 +127,9 @@ public class ContinuousDataSender {
 
 	private Runnable mSending = new Runnable() {
 
+		// determines how many events are put in one datagram
+		private final int MAX_EVENTS = 20;
+
 		@Override
 		public void run() {
 			DatagramSocket dSocket;
@@ -136,25 +139,29 @@ public class ContinuousDataSender {
 
 				while (!Thread.interrupted()) {
 					try {
-						SensorEventContainer event = mEvents.take();
+						SensorEventContainer[] eventsToSend = new SensorEventContainer[MAX_EVENTS];
 
-						int type = event.type;
-						int accuracy = event.accuracy;
-						int valLength = event.values.length;
-						float[] values = event.values;
+						// gather enough events for one packet
+						for (int i = 0; i < eventsToSend.length; i++) {
+							eventsToSend[i] = mEvents.take();
+						}
 
 						ByteArrayOutputStream output = new ByteArrayOutputStream();
 						DataOutputStream dOut = new DataOutputStream(output);
-						dOut.writeInt(type);
-						dOut.writeInt(accuracy);
-						dOut.writeInt(valLength);
-						for (float value : values)
-							dOut.writeFloat(value);
 
+						// write into stream
+						for (SensorEventContainer event : eventsToSend) {
+							dOut.writeInt(event.type);
+							dOut.writeInt(event.accuracy);
+							dOut.writeInt(event.values.length);
+							for (float value : event.values)
+								dOut.writeFloat(value);
+						}
+
+						// send packet
 						byte[] buf = output.toByteArray();
 						DatagramPacket dPacket = new DatagramPacket(buf,
 								buf.length, mUdpAddress, mUdpPort);
-
 						dSocket.send(dPacket);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
