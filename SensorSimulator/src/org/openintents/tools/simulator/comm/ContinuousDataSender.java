@@ -68,7 +68,7 @@ public class ContinuousDataSender {
 
 			// ... compute best sending mapping
 			Map<Integer, Integer> samplingMap = mSensorEventProducer
-					.setRegisteredSensorRates(sensorRateMapping);
+					.registerSensors(sensorRateMapping);
 
 			// send sensor - speed mapping
 			for (Entry<Integer, Integer> entry : samplingMap.entrySet()) {

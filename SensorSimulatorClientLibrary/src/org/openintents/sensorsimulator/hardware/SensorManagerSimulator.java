@@ -28,8 +28,6 @@ import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.openintents.sensorsimulator.db.SensorSimulatorConvenience;
-
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Build;

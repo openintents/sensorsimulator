@@ -35,6 +35,8 @@ public class SensorEventProducer {
 	// should contain the fastest sensor rate
 	private int mSamplingDelay = SAMPLING_DELAY_DEFAULT;
 
+	private Map<Integer, Integer> mSamplingDelays;
+
 	/**
 	 * Create a new instance and start producing.
 	 * 
@@ -52,33 +54,46 @@ public class SensorEventProducer {
 		}
 	}
 
-	public SensorEventProducer(SensorDataSource sensorDataSource) {
+	private SensorEventProducer(SensorDataSource sensorDataSource) {
 
 		mSender = new ContinuousDataSender(this);
 		mTimer = new Timer();
 		mDataSource = sensorDataSource;
+		mSamplingDelays = new HashMap<Integer, Integer>();
+
+		// default values
+		mSamplingDelays.put(0, 20);
+		mSamplingDelays.put(1, 40);
+		mSamplingDelays.put(2, 80);
+		mSamplingDelays.put(3, 160);
 	}
 
 	public void connect() {
 
 		mSender.connect();
-		mTimer.schedule(mTimerTask, 0, mSamplingDelay);
+		// mTimer.schedule(mTimerTask, 0, mSamplingDelay);
 	}
 
 	/**
 	 * Take sensor rate registrations and return the delays.
 	 * 
 	 * @param sensorRates
-	 * @return
+	 *            Map: SensorType - Rate (FASTEST, GAME...)
+	 * @return Map: SensorType(int) - update speed(ms)
 	 */
-	public Map<Integer, Integer> setRegisteredSensorRates(
+	public Map<Integer, Integer> registerSensors(
 			Map<SensorType, Integer> sensorRates) {
 		mRegisteredSensorRates = sensorRates;
 
 		Map<Integer, Integer> result = new HashMap<Integer, Integer>();
 		for (Entry<SensorType, Integer> entry : mRegisteredSensorRates
 				.entrySet()) {
-			result.put(sentypeToInt(entry.getKey()), mSamplingDelay);
+			result.put(sentypeToInt(entry.getKey()),
+					mSamplingDelays.get(entry.getValue()));
+
+			// start sampling
+			mTimer.schedule(new SensorQuery(entry.getKey()), 0,
+					mSamplingDelays.get(entry.getValue()));
 		}
 		return result;
 	}
@@ -89,31 +104,35 @@ public class SensorEventProducer {
 	 * connected device have registered to the
 	 * <code>SensorManagerSimulator</code>.
 	 */
-	private TimerTask mTimerTask = new TimerTask() {
+	private class SensorQuery extends TimerTask {
+
+		private SensorType mSensorType;
+
+		public SensorQuery(SensorType sensorType) {
+			mSensorType = sensorType;
+		}
 
 		@Override
 		public void run() {
-			// query data model
-			for (Entry<SensorType, Integer> entry : mRegisteredSensorRates
-					.entrySet()) {
-				String reading;
-				try {
-					reading = mDataSource.readSensor(entry.getKey());
-				} catch (IllegalStateException e) {
-					reading = "1\n0";
-				}
-				float[] sensorData = convertSensorData(reading);
-
-				// create sensorevent
-				SensorEventContainer sEvent = new SensorEventContainer(
-						sentypeToInt(entry.getKey()), 1, sensorData);
-
-				// put sensorevent in queue
-				mSender.push(sEvent);
-				System.out.println(sEvent);
+			String reading;
+			try {
+				reading = mDataSource.readSensor(mSensorType);
 			}
+			// TODO activate sensor
+			catch (IllegalStateException e) {
+				reading = "1\n0";
+			}
+			float[] sensorData = convertSensorData(reading);
+
+			// create sensorevent
+			SensorEventContainer sEvent = new SensorEventContainer(
+					sentypeToInt(mSensorType), 1, sensorData);
+
+			mSender.push(sEvent);
+			// control TODO remove
+			System.out.println(sEvent);
 		}
-	};
+	}
 
 	/**
 	 * Helper method to convert sensor data from String to float Array.
