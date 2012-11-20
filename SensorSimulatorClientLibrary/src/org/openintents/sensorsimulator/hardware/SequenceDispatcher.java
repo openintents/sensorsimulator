@@ -90,6 +90,7 @@ public class SequenceDispatcher implements Dispatcher {
 	 */
 	private Runnable mDispatching = new Runnable() {
 
+		private boolean mFinished;
 		private SensorEvent event;
 
 		@Override
@@ -108,6 +109,8 @@ public class SequenceDispatcher implements Dispatcher {
 				boolean firstTime = true;
 
 				int size = mQueue.size();
+
+				mFinished = false;
 
 				// actual dispatching
 				for (int i = 0; i < size; i++) {
@@ -154,6 +157,7 @@ public class SequenceDispatcher implements Dispatcher {
 					@Override
 					public void run() {
 						synchronized (SequenceDispatcher.this) {
+							mFinished = true;
 							SequenceDispatcher.this.notify();
 						}
 					}
@@ -161,7 +165,8 @@ public class SequenceDispatcher implements Dispatcher {
 
 				// wait till finished dispatching
 				synchronized (SequenceDispatcher.this) {
-					SequenceDispatcher.this.wait();
+					if (!mFinished)
+						SequenceDispatcher.this.wait();
 				}
 
 			} catch (InterruptedException e) {
