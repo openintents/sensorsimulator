@@ -32,7 +32,7 @@ public class SensorConsole {
 	public void start() {
 		System.out
 				.println("SensorSimulator started!" + nl +
-						"Please type a command or 'h' or 'help' for help!");
+						"Please type a command or 'help' for help!");
 
 		Scanner scanner = new Scanner(mIn);
 		PrintStream printStream = new PrintStream(mOut);

@@ -9,6 +9,12 @@ import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.LinkedList;
 
+/**
+ * Can load a sequence from a file for sending it to an app.
+ * 
+ * @author Qui Don Ho
+ * 
+ */
 public class SequenceLoader {
 
 	public LinkedList<SensorEvent> loadGesture(String fileName) {
