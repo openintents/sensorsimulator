@@ -19,7 +19,7 @@ import android.util.Log;
  * @author Qui Don Ho
  * 
  */
-public class SensorDataSender {
+public class SequenceDataSender {
 
 	private static final int PORT = 8111;
 	protected static final String TAG = "SensorDataSender";
@@ -32,7 +32,7 @@ public class SensorDataSender {
 	private DataOutputStream clientOut = null;
 	private DataInputStream clientIn = null;
 
-	public SensorDataSender() {
+	public SequenceDataSender() {
 		mSensorEvents = new LinkedBlockingQueue<SensorEvent>();
 	}
 
@@ -146,9 +146,5 @@ public class SensorDataSender {
 
 	public boolean isConnected() {
 		return mConnected;
-	}
-
-	public void sendSensorEvent(SensorEvent sensorEventContainer) {
-
 	}
 }

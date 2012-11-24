@@ -20,12 +20,12 @@ import java.util.List;
  */
 public class SensorTester {
 
-	private SensorDataSender mDataSender;
+	private SequenceDataSender mDataSender;
 	private SequenceLoader mSequenceLoader;
 	private boolean mConnected;
 
 	public SensorTester() {
-		mDataSender = new SensorDataSender();
+		mDataSender = new SequenceDataSender();
 		mSequenceLoader = new SequenceLoader();
 
 		mConnected = false;
