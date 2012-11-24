@@ -6,7 +6,10 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.openintents.sensorsimulator.testlibrary.ContinuousDataSender;
 import com.openintents.sensorsimulator.testlibrary.Sensor;
+import com.openintents.sensorsimulator.testlibrary.SensorEvent;
+import com.openintents.sensorsimulator.testlibrary.SensorEventProducer;
 
 /**
  * Produces sensor events (data), by sampling them from the underlying data
@@ -123,7 +126,7 @@ public class PollProducer implements SensorEventProducer {
 			float[] sensorData = convertSensorData(reading);
 
 			// create sensorevent
-			SensorEventContainer sEvent = new SensorEventContainer(
+			SensorEvent sEvent = new SensorEvent(
 					Sensor.typeToInt(mSensorType), 1, sensorData);
 
 			mSender.push(sEvent);

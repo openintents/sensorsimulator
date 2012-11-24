@@ -1,4 +1,4 @@
-package org.openintents.tools.simulator.comm;
+package com.openintents.sensorsimulator.testlibrary;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -18,8 +18,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.openintents.sensorsimulator.testlibrary.Sensor;
-
 public class ContinuousDataSender {
 
 	private static final int CONNECT_TIMEOUT = 100;
@@ -30,11 +28,11 @@ public class ContinuousDataSender {
 	private Thread mSendingThread;
 	private InetAddress mUdpAddress;
 	private int mUdpPort;
-	private BlockingQueue<SensorEventContainer> mEvents;
+	private BlockingQueue<SensorEvent> mEvents;
 
 	public ContinuousDataSender(SensorEventProducer sensorEventProducer) {
 		mSensorEventProducer = sensorEventProducer;
-		mEvents = new LinkedBlockingQueue<SensorEventContainer>();
+		mEvents = new LinkedBlockingQueue<SensorEvent>();
 	}
 
 	/**
@@ -116,7 +114,7 @@ public class ContinuousDataSender {
 	 * @param sEvent
 	 *            SensorEvent to enqueue.
 	 */
-	public void push(SensorEventContainer sEvent) {
+	public void push(SensorEvent sEvent) {
 		try {
 			mEvents.put(sEvent);
 		} catch (InterruptedException e) {
@@ -139,7 +137,7 @@ public class ContinuousDataSender {
 
 				while (!Thread.interrupted()) {
 					try {
-						SensorEventContainer[] eventsToSend = new SensorEventContainer[MAX_EVENTS];
+						SensorEvent[] eventsToSend = new SensorEvent[MAX_EVENTS];
 
 						// gather enough events for one packet
 						for (int i = 0; i < eventsToSend.length; i++) {
@@ -150,7 +148,7 @@ public class ContinuousDataSender {
 						DataOutputStream dOut = new DataOutputStream(output);
 
 						// write into stream
-						for (SensorEventContainer event : eventsToSend) {
+						for (SensorEvent event : eventsToSend) {
 							dOut.writeInt(event.type);
 							dOut.writeInt(event.accuracy);
 							dOut.writeInt(event.values.length);

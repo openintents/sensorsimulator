@@ -24,6 +24,12 @@ public class SensorEvent {
 		this.timestamp = timestamp;
 		this.values = values;
 	}
+	
+	public SensorEvent(int type, int accuracy, float[] values) {
+		this.type = type;
+		this.accuracy = accuracy;
+		this.values = values;
+	}
 
 	@Override
 	public String toString() {

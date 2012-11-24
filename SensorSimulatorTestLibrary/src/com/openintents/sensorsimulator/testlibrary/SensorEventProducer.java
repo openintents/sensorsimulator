@@ -1,8 +1,7 @@
-package org.openintents.tools.simulator.comm;
+package com.openintents.sensorsimulator.testlibrary;
 
 import java.util.Map;
 
-import com.openintents.sensorsimulator.testlibrary.Sensor;
 
 public interface SensorEventProducer {
 
