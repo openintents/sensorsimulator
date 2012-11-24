@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openintents.sensorsimulator.testlibrary.Sensor;
 import org.openintents.tools.simulator.comm.SensorDataSource;
 import org.openintents.tools.simulator.model.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensors.BarcodeReaderModel;
@@ -45,7 +46,6 @@ import org.openintents.tools.simulator.model.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensors.TemperatureModel;
 
-import com.openintents.sensorsimulator.testlibrary.Sensor;
 
 /**
  * {@code SensorSimulatorModel} keeps the internal data model behind

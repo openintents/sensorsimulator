@@ -1,6 +1,6 @@
 package org.openintents.tools.simulator.comm;
 
-import com.openintents.sensorsimulator.testlibrary.Sensor;
+import org.openintents.sensorsimulator.testlibrary.Sensor;
 
 /**
  * Temporary interface to reflect old API.

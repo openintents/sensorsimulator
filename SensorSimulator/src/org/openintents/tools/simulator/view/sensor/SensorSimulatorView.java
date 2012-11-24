@@ -60,6 +60,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.openintents.sensorsimulator.testlibrary.Sensor;
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.SensorsScenario;
 import org.openintents.tools.simulator.controller.SensorSimulatorController;
@@ -94,7 +95,6 @@ import org.openintents.tools.simulator.view.sensor.sensors.RotationVectorView;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 import org.openintents.tools.simulator.view.sensor.sensors.TemperatureView;
 
-import com.openintents.sensorsimulator.testlibrary.Sensor;
 
 /**
  * 

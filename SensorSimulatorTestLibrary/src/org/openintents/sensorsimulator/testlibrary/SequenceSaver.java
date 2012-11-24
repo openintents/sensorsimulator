@@ -1,4 +1,4 @@
-package com.openintents.sensorsimulator.testlibrary;
+package org.openintents.sensorsimulator.testlibrary;
 
 import java.io.BufferedWriter;
 import java.io.File;

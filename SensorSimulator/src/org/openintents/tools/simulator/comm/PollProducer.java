@@ -6,10 +6,11 @@ import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.openintents.sensorsimulator.testlibrary.ContinuousDataSender;
-import com.openintents.sensorsimulator.testlibrary.Sensor;
-import com.openintents.sensorsimulator.testlibrary.SensorEvent;
-import com.openintents.sensorsimulator.testlibrary.SensorEventProducer;
+import org.openintents.sensorsimulator.testlibrary.ContinuousDataSender;
+import org.openintents.sensorsimulator.testlibrary.Sensor;
+import org.openintents.sensorsimulator.testlibrary.SensorEvent;
+import org.openintents.sensorsimulator.testlibrary.SensorEventProducer;
+
 
 /**
  * Produces sensor events (data), by sampling them from the underlying data

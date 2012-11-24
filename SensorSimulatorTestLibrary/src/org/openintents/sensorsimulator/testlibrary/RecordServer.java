@@ -1,4 +1,4 @@
-package com.openintents.sensorsimulator.testlibrary;
+package org.openintents.sensorsimulator.testlibrary;
 
 import java.io.DataInputStream;
 import java.io.EOFException;
@@ -40,10 +40,11 @@ public class RecordServer {
 		@Override
 		public void run() {
 			System.out.println("Receiving thread started.");
-
+			ServerSocket serverSocket = null;
+			Socket client = null;
 			try {
-				ServerSocket serverSocket = new ServerSocket(9100);
-				Socket client = serverSocket.accept();
+				serverSocket = new ServerSocket(9100);
+				client = serverSocket.accept();
 				System.out.println("Client connected.");
 
 				DataInputStream clientIn = new DataInputStream(
@@ -69,6 +70,16 @@ public class RecordServer {
 			} catch (EOFException e) {
 				// client has finished sending sensor events
 				System.out.println("Client has finished.");
+
+				try {
+					if (serverSocket != null)
+						serverSocket.close();
+					if (client != null)
+						client.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
 				// handle events
 				mSequenceHandler.handle(mSensorEvents);

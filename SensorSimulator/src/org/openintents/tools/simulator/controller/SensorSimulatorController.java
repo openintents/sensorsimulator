@@ -36,6 +36,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import org.openintents.sensorsimulator.testlibrary.Sensor;
 import org.openintents.tools.simulator.SensorsScenario;
 import org.openintents.tools.simulator.comm.PollProducer;
 import org.openintents.tools.simulator.controller.sensor.AccelerometerController;
@@ -72,7 +73,6 @@ import org.openintents.tools.simulator.view.sensor.DeviceView;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
 
-import com.openintents.sensorsimulator.testlibrary.Sensor;
 
 /**
  * SensorSimulatorController keeps the behaviour of the SensorSimulator

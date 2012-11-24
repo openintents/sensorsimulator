@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
+import org.openintents.sensorsimulator.testlibrary.Sensor;
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensors.GravityModel;
@@ -34,7 +35,6 @@ import org.openintents.tools.simulator.model.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensors.TemperatureModel;
 import org.openintents.tools.simulator.util.Interpolate;
 
-import com.openintents.sensorsimulator.testlibrary.Sensor;
 
 /**
  * Represents the model for a scenario state.

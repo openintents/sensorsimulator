@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SpringLayout;
 
+import org.openintents.sensorsimulator.testlibrary.Sensor;
 import org.openintents.tools.simulator.Global;
 import org.openintents.tools.simulator.model.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensors.AccelerometerModel;
@@ -46,7 +47,6 @@ import org.openintents.tools.simulator.model.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensors.SensorModel;
 import org.openintents.tools.simulator.model.telnet.Vector;
 
-import com.openintents.sensorsimulator.testlibrary.Sensor;
 
 /**
  * Displays a mobile phone in a panel and calculates sensor physics.

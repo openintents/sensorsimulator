@@ -1,4 +1,4 @@
-package com.openintents.sensorsimulator.testlibrary;
+package org.openintents.sensorsimulator.testlibrary;
 
 public class Sensor {
 	// TODO add Level 14 sensors

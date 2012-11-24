@@ -6,10 +6,11 @@ import java.io.PrintStream;
 import java.util.Random;
 import java.util.Scanner;
 
-import com.openintents.sensorsimulator.testlibrary.RecordServer;
-import com.openintents.sensorsimulator.testlibrary.Sensor;
-import com.openintents.sensorsimulator.testlibrary.SensorTester;
-import com.openintents.sensorsimulator.testlibrary.SequenceSaver;
+import org.openintents.sensorsimulator.testlibrary.RecordServer;
+import org.openintents.sensorsimulator.testlibrary.Sensor;
+import org.openintents.sensorsimulator.testlibrary.SensorTester;
+import org.openintents.sensorsimulator.testlibrary.SequenceSaver;
+
 
 /**
  * Console input for SensorSimulator
