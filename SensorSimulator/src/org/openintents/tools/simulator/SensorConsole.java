@@ -31,7 +31,7 @@ public class SensorConsole {
 	 */
 	public void start() {
 		System.out
-				.println("SensorSimulator started!\n" +
+				.println("SensorSimulator started!" + nl +
 						"Please type a command or 'h' or 'help' for help!");
 
 		Scanner scanner = new Scanner(mIn);
@@ -43,6 +43,7 @@ public class SensorConsole {
 		boolean quit = false;
 		do {
 			// read cmd
+			printStream.print(">>");
 			String cmdInput = scanner.nextLine();
 			String[] cmd = cmdInput.split("\\s+");
 
@@ -168,8 +169,21 @@ public class SensorConsole {
 
 	}
 
+	// newline
+	String nl = System.getProperty("line.separator");
+
 	// help
-	String helpMsg = "Hellpppppp meeeee!!!!";
+	String helpMsg = "SensorSimulator"
+			+ nl
+			+ "connect [ipaddress]: connect to a running app with SensorSimulator"
+			+ nl
+			+ "disconnect: disconnect, duh!"
+			+ nl
+			+ "load <file>: load sequence file in current directory and send to app"
+			+ nl
+			+ "set <sensorcode> <value>: set specified sensor value"
+			+ nl
+			+ "shake|...: send predefined sequence";
 
 	// the most important thang in this program.
 	String[] quitMsg = { "I wouldn't leave if i were you. work is much worse.",
