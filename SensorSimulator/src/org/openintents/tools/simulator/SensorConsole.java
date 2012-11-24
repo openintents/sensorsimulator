@@ -6,8 +6,10 @@ import java.io.PrintStream;
 import java.util.Random;
 import java.util.Scanner;
 
+import com.openintents.sensorsimulator.testlibrary.RecordServer;
 import com.openintents.sensorsimulator.testlibrary.Sensor;
 import com.openintents.sensorsimulator.testlibrary.SensorTester;
+import com.openintents.sensorsimulator.testlibrary.SequenceSaver;
 
 /**
  * Console input for SensorSimulator
@@ -133,7 +135,15 @@ public class SensorConsole {
 					st.setSensor(Sensor.Type.ROTATION,
 							new float[] { a, b, c });
 				}
-			} else if (cmd[0].equalsIgnoreCase("load")) {
+			} else if (cmd[0].equalsIgnoreCase("rec")
+					|| cmd[0].equalsIgnoreCase("r")
+					|| cmd[0].equalsIgnoreCase("record")) {
+				RecordServer recServer;
+				if (cmd.length == 2)
+					recServer = new RecordServer(new SequenceSaver(cmd[1]));
+				else
+					recServer = new RecordServer(new SequenceSaver());
+				recServer.start();
 			} else if (cmd[0].equalsIgnoreCase("disconnect")) {
 				printStream.println("Disconnecting...");
 				st.disconnect();
