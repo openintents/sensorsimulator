@@ -31,7 +31,8 @@ public class SensorConsole {
 	 */
 	public void start() {
 		System.out
-				.println("SensorSimulator started!\nPlease type a command. 'h' or 'help' for help!");
+				.println("SensorSimulator started!\n" +
+						"Please type a command or 'h' or 'help' for help!");
 
 		Scanner scanner = new Scanner(mIn);
 		PrintStream printStream = new PrintStream(mOut);
@@ -144,6 +145,9 @@ public class SensorConsole {
 				else
 					recServer = new RecordServer(new SequenceSaver());
 				recServer.start();
+			} else if (cmd[0].equalsIgnoreCase("load")
+					|| cmd[0].equalsIgnoreCase("l")) {
+				st.sendSequenceFile(cmd[1]);
 			} else if (cmd[0].equalsIgnoreCase("disconnect")) {
 				printStream.println("Disconnecting...");
 				st.disconnect();

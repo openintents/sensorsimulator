@@ -1,7 +1,9 @@
 package com.openintents.sensorsimulator.testlibrary;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
@@ -56,9 +58,9 @@ public class SequenceLoader {
 		LinkedList<SensorEvent> result = new LinkedList<SensorEvent>();
 		String s;
 		try {
-			reader = new BufferedReader(new InputStreamReader(this.getClass()
-					.getClassLoader()
-					.getResourceAsStream(fileName)));
+			reader = new BufferedReader(new FileReader(new File(
+					System.getProperty("user.dir"),
+					fileName)));
 			while ((s = reader.readLine()) != null) {
 				String[] elements = s.split(",");
 				int type = Integer.parseInt(elements[0]);
