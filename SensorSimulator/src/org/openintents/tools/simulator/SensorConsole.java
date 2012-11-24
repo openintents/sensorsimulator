@@ -11,7 +11,6 @@ import org.openintents.sensorsimulator.testlibrary.Sensor;
 import org.openintents.sensorsimulator.testlibrary.SensorTester;
 import org.openintents.sensorsimulator.testlibrary.SequenceSaver;
 
-
 /**
  * Console input for SensorSimulator
  * 
@@ -150,7 +149,8 @@ public class SensorConsole {
 			} else if (cmd[0].equalsIgnoreCase("load")
 					|| cmd[0].equalsIgnoreCase("l")) {
 				st.sendSequenceFile(cmd[1]);
-			} else if (cmd[0].equalsIgnoreCase("disconnect")) {
+			} else if (cmd[0].equalsIgnoreCase("disconnect")
+					|| cmd[0].equalsIgnoreCase("d")) {
 				printStream.println("Disconnecting...");
 				st.disconnect();
 			} else if (cmd[0].equalsIgnoreCase("help")
