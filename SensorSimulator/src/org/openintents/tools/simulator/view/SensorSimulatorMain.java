@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package org.openintents.tools.simulator.main;
+package org.openintents.tools.simulator.view;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -253,12 +253,11 @@ public class SensorSimulatorMain extends JPanel implements WindowListener,
 	}
 
 	/**
-	 * Main method of SensorSimulatorMain class.
-	 * 
-	 * @param args
-	 *            , String[] arguments used to run this GUI.
+	 * 20. Nov '12, Don Ho: Old main method of SensorSimulatorMain class. There
+	 * is a new main entry point for this java program in
+	 * {@link SensorSimulator}, so that the old gui stuff can be refactored.
 	 */
-	public static void main(String[] args) {
+	public static void mainOld(String[] args) {
 		try {
 			// set nimbus theme
 			UIManager

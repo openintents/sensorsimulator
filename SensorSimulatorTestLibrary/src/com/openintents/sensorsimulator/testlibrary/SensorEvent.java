@@ -11,13 +11,13 @@ import java.util.Arrays;
  * @author Qui Don Ho
  * 
  */
-public class SensorEventContainer {
+public class SensorEvent {
 	public int type;
 	public int accuracy;
 	public long timestamp;
 	public float[] values;
 
-	public SensorEventContainer(int type, int accuracy, long timestamp,
+	public SensorEvent(int type, int accuracy, long timestamp,
 			float[] values) {
 		this.type = type;
 		this.accuracy = accuracy;

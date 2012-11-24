@@ -28,7 +28,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import org.openintents.tools.simulator.logging.Logg;
-import org.openintents.tools.simulator.model.sensors.SensorType;
+
+import com.openintents.sensorsimulator.testlibrary.Sensor;
 
 /**
  * Handles the communication with the SensorClient from the Android phone or
@@ -166,7 +167,7 @@ public class SensorServerThread implements Runnable {
 		} else {
 			try {
 				String sensorName = in.readLine();
-				SensorType sensorType = getSensorTypeFromString(sensorName);
+				Sensor.Type sensorType = getSensorTypeFromString(sensorName);
 
 				// get number of components of sensor data value
 				if (cmd.compareTo("getNumSensorValues()") == 0) {
@@ -230,31 +231,31 @@ public class SensorServerThread implements Runnable {
 	/** 
 	 * Helper to convert String into SensorType Enum
 	 */
-	public static SensorType getSensorTypeFromString(String sensorName) {
+	public static Sensor.Type getSensorTypeFromString(String sensorName) {
 		if (sensorName.compareTo("accelerometer") == 0)
-			return SensorType.ACCELEROMETER;
+			return Sensor.Type.ACCELEROMETER;
 		else if (sensorName.compareTo("magnetic field") == 0)
-			return SensorType.MAGNETIC_FIELD;
+			return Sensor.Type.MAGNETIC_FIELD;
 		else if (sensorName.compareTo("orientation") == 0)
-			return SensorType.ORIENTATION;
+			return Sensor.Type.ORIENTATION;
 		else if (sensorName.compareTo("temperature") == 0)
-			return SensorType.TEMPERATURE;
+			return Sensor.Type.TEMPERATURE;
 		else if (sensorName.compareTo("barcode reader") == 0)
-			return SensorType.BARCODE_READER;
+			return Sensor.Type.BARCODE_READER;
 		else if (sensorName.compareTo("light") == 0)
-			return SensorType.LIGHT;
+			return Sensor.Type.LIGHT;
 		else if (sensorName.compareTo("proximity") == 0)
-			return SensorType.PROXIMITY;
+			return Sensor.Type.PROXIMITY;
 		else if (sensorName.compareTo("pressure") == 0)
-			return SensorType.PRESSURE;
+			return Sensor.Type.PRESSURE;
 		else if (sensorName.compareTo("linear acceleration") == 0)
-			return SensorType.LINEAR_ACCELERATION;
+			return Sensor.Type.LINEAR_ACCELERATION;
 		else if (sensorName.compareTo("gravity") == 0)
-			return SensorType.GRAVITY;
+			return Sensor.Type.GRAVITY;
 		else if (sensorName.compareTo("rotation vector") == 0)
-			return SensorType.ROTATION;
+			return Sensor.Type.ROTATION;
 		else if (sensorName.compareTo("gyroscope") == 0)
-			return SensorType.GYROSCOPE;
+			return Sensor.Type.GYROSCOPE;
 		else
 			return null;
 	}

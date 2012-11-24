@@ -17,9 +17,9 @@
 package org.openintents.tools.simulator;
 
 import org.openintents.tools.simulator.controller.TelnetSimulatorController;
-import org.openintents.tools.simulator.main.SensorSimulatorMain;
 import org.openintents.tools.simulator.model.telnet.TelnetSimulatorModel;
 import org.openintents.tools.simulator.model.telnet.addons.GPSAddonModel;
+import org.openintents.tools.simulator.view.SensorSimulatorMain;
 import org.openintents.tools.simulator.view.telnet.TelnetSimulatorView;
 import org.openintents.tools.simulator.view.telnet.addons.BatteryAddonView;
 import org.openintents.tools.simulator.view.telnet.addons.GPSAddonView;

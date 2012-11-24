@@ -43,8 +43,9 @@ import org.openintents.tools.simulator.model.sensors.PressureModel;
 import org.openintents.tools.simulator.model.sensors.ProximityModel;
 import org.openintents.tools.simulator.model.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.sensors.SensorModel;
-import org.openintents.tools.simulator.model.sensors.SensorType;
 import org.openintents.tools.simulator.model.sensors.TemperatureModel;
+
+import com.openintents.sensorsimulator.testlibrary.Sensor;
 
 /**
  * {@code SensorSimulatorModel} keeps the internal data model behind
@@ -61,24 +62,24 @@ import org.openintents.tools.simulator.model.sensors.TemperatureModel;
 public class SensorSimulatorModel implements SensorDataSource {
 
 	// sensors
-	private Map<SensorType, SensorModel> mSensors;
+	private Map<Sensor.Type, SensorModel> mSensors;
 
 	public SensorSimulatorModel() {
 
 		// new sensors
-		mSensors = new HashMap<SensorType, SensorModel>();
-		mSensors.put(SensorType.ACCELEROMETER, new AccelerometerModel());
-		mSensors.put(SensorType.MAGNETIC_FIELD, new MagneticFieldModel());
-		mSensors.put(SensorType.ORIENTATION, new OrientationModel());
-		mSensors.put(SensorType.TEMPERATURE, new TemperatureModel());
-		mSensors.put(SensorType.BARCODE_READER, new BarcodeReaderModel());
-		mSensors.put(SensorType.LIGHT, new LightModel());
-		mSensors.put(SensorType.PROXIMITY, new ProximityModel());
-		mSensors.put(SensorType.PRESSURE, new PressureModel());
-		mSensors.put(SensorType.LINEAR_ACCELERATION, new LinearAccelerationModel());
-		mSensors.put(SensorType.GRAVITY, new GravityModel());
-		mSensors.put(SensorType.ROTATION, new RotationVectorModel());
-		mSensors.put(SensorType.GYROSCOPE, new GyroscopeModel());
+		mSensors = new HashMap<Sensor.Type, SensorModel>();
+		mSensors.put(Sensor.Type.ACCELEROMETER, new AccelerometerModel());
+		mSensors.put(Sensor.Type.MAGNETIC_FIELD, new MagneticFieldModel());
+		mSensors.put(Sensor.Type.ORIENTATION, new OrientationModel());
+		mSensors.put(Sensor.Type.TEMPERATURE, new TemperatureModel());
+		mSensors.put(Sensor.Type.BARCODE_READER, new BarcodeReaderModel());
+		mSensors.put(Sensor.Type.LIGHT, new LightModel());
+		mSensors.put(Sensor.Type.PROXIMITY, new ProximityModel());
+		mSensors.put(Sensor.Type.PRESSURE, new PressureModel());
+		mSensors.put(Sensor.Type.LINEAR_ACCELERATION, new LinearAccelerationModel());
+		mSensors.put(Sensor.Type.GRAVITY, new GravityModel());
+		mSensors.put(Sensor.Type.ROTATION, new RotationVectorModel());
+		mSensors.put(Sensor.Type.GYROSCOPE, new GyroscopeModel());
 	}
 
 	/**
@@ -90,38 +91,38 @@ public class SensorSimulatorModel implements SensorDataSource {
 	 */
 	public void loadState(SensorState state) {
 		// simple
-		TemperatureModel temperatureModel = (TemperatureModel) getSensorModel(SensorType.TEMPERATURE);
+		TemperatureModel temperatureModel = (TemperatureModel) getSensorModel(Sensor.Type.TEMPERATURE);
 		temperatureModel.setTemp(state.getTemperature());
 
-		LightModel lightModel = (LightModel) getSensorModel(SensorType.LIGHT);
+		LightModel lightModel = (LightModel) getSensorModel(Sensor.Type.LIGHT);
 		lightModel.setLight(state.getLight());
 
-		ProximityModel proximityModel = (ProximityModel) getSensorModel(SensorType.PROXIMITY);
+		ProximityModel proximityModel = (ProximityModel) getSensorModel(Sensor.Type.PROXIMITY);
 		proximityModel.setProximity(state.getProximity());
 
-		PressureModel pressureModel = (PressureModel) getSensorModel(SensorType.PRESSURE);
+		PressureModel pressureModel = (PressureModel) getSensorModel(Sensor.Type.PRESSURE);
 		pressureModel.setPressure(state.getPressure());
 
 		// complex
-		GravityModel gravityModel = (GravityModel) getSensorModel(SensorType.GRAVITY);
+		GravityModel gravityModel = (GravityModel) getSensorModel(Sensor.Type.GRAVITY);
 		gravityModel.setGravity(state.getGravity());
 
-		LinearAccelerationModel linearAccModel = (LinearAccelerationModel) getSensorModel(SensorType.LINEAR_ACCELERATION);
+		LinearAccelerationModel linearAccModel = (LinearAccelerationModel) getSensorModel(Sensor.Type.LINEAR_ACCELERATION);
 		linearAccModel.setLinearAcceleration(state.getLinearAcceleration());
 
-		OrientationModel orientationModel = (OrientationModel) getSensorModel(SensorType.ORIENTATION);
+		OrientationModel orientationModel = (OrientationModel) getSensorModel(Sensor.Type.ORIENTATION);
 		orientationModel.setOrientation(state.getOrientation());
 
-		AccelerometerModel accelerometerModel = (AccelerometerModel) getSensorModel(SensorType.ACCELEROMETER);
+		AccelerometerModel accelerometerModel = (AccelerometerModel) getSensorModel(Sensor.Type.ACCELEROMETER);
 		accelerometerModel.setAccelerometer(state.getAccelerometer());
 
-		MagneticFieldModel magneticFieldModel = (MagneticFieldModel) getSensorModel(SensorType.MAGNETIC_FIELD);
+		MagneticFieldModel magneticFieldModel = (MagneticFieldModel) getSensorModel(Sensor.Type.MAGNETIC_FIELD);
 		magneticFieldModel.setMagneticField(state.getMagneticField());
 
-		RotationVectorModel rotationVectorModel = (RotationVectorModel) getSensorModel(SensorType.ROTATION);
+		RotationVectorModel rotationVectorModel = (RotationVectorModel) getSensorModel(Sensor.Type.ROTATION);
 		rotationVectorModel.setRotationVector(state.getRotationVector());
 
-		GyroscopeModel gyroscopeModel = (GyroscopeModel) getSensorModel(SensorType.GYROSCOPE);
+		GyroscopeModel gyroscopeModel = (GyroscopeModel) getSensorModel(Sensor.Type.GYROSCOPE);
 		gyroscopeModel.setGyroscope(state.getGyroscope());
 	}
 
@@ -132,7 +133,7 @@ public class SensorSimulatorModel implements SensorDataSource {
 	 *            name of the model component to be returned
 	 * @return model component of the specified sensor
 	 */
-	public SensorModel getSensorModel(SensorType sensorType) {
+	public SensorModel getSensorModel(Sensor.Type sensorType) {
 		return mSensors.get(sensorType);
 	}
 
@@ -142,7 +143,7 @@ public class SensorSimulatorModel implements SensorDataSource {
 	@Override
 	public String[] getSupportedSensors() {
 		ArrayList<String> resultArray = new ArrayList<String>();
-		for (Map.Entry<SensorType, SensorModel> sensorEntry : mSensors.entrySet()) {
+		for (Map.Entry<Sensor.Type, SensorModel> sensorEntry : mSensors.entrySet()) {
 			if (sensorEntry.getValue().isEnabled()) {
 				resultArray.add(sensorEntry.getValue().getName());
 			}
@@ -151,12 +152,12 @@ public class SensorSimulatorModel implements SensorDataSource {
 	}
 
 	@Override
-	public int getNumSensorValues(SensorType sensorType) {
+	public int getNumSensorValues(Sensor.Type sensorType) {
 		return getSensorModel(sensorType).getNumSensorValues();
 	}
 
 	@Override
-	public void setSensorUpdateDelay(SensorType sensorType, int updateDelay) throws IllegalArgumentException {
+	public void setSensorUpdateDelay(Sensor.Type sensorType, int updateDelay) throws IllegalArgumentException {
 		SensorModel sensorModel = getSensorModel(sensorType);
 		if (sensorModel.isEnabled())
 			sensorModel.setCurrentUpdateDelay(updateDelay);
@@ -165,7 +166,7 @@ public class SensorSimulatorModel implements SensorDataSource {
 	}
 
 	@Override
-	public void unsetSensorUpdateRate(SensorType sensorType) throws IllegalStateException {
+	public void unsetSensorUpdateRate(Sensor.Type sensorType) throws IllegalStateException {
 		SensorModel sensorModel = getSensorModel(sensorType);
 		if (sensorModel.isEnabled()) {
 			sensorModel.setCurrentUpdateDelay(SensorModel.DELAY_MS_NORMAL);
@@ -175,7 +176,7 @@ public class SensorSimulatorModel implements SensorDataSource {
 	}
 
 	@Override
-	public String readSensor(SensorType sensorType) {
+	public String readSensor(Sensor.Type sensorType) {
 		SensorModel sensorModel = getSensorModel(sensorType);
 		if (sensorModel.isEnabled()) {
 			return sensorModel.printData();

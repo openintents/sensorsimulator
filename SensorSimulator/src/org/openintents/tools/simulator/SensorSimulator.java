@@ -19,8 +19,8 @@ package org.openintents.tools.simulator;
 import org.openintents.tools.simulator.controller.SensorSimulatorController;
 import org.openintents.tools.simulator.logging.Logg;
 import org.openintents.tools.simulator.logging.LoggPrintable;
-import org.openintents.tools.simulator.main.SensorSimulatorMain;
 import org.openintents.tools.simulator.model.SensorSimulatorModel;
+import org.openintents.tools.simulator.view.SensorSimulatorMain;
 import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
 
 /**
@@ -38,7 +38,7 @@ import org.openintents.tools.simulator.view.sensor.SensorSimulatorView;
  * @author ilarele
  */
 public class SensorSimulator implements LoggPrintable {
-	
+
 	public SensorSimulatorModel model;
 	public SensorSimulatorView view;
 	public SensorSimulatorController controller;
@@ -56,7 +56,26 @@ public class SensorSimulator implements LoggPrintable {
 		view = new SensorSimulatorView(model, scenario);
 		controller = new SensorSimulatorController(model, view, scenario);
 		scenario.setSimulator(this);
+	}
 
+	/**
+	 * If no argument is provided, SensorSimulator is run "the old way", with
+	 * Swing GUI. Else, the console-based version is launched.
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		if (args.length > 0) {
+			if (args[0].equals("t")) {
+				SensorConsole sensorConsole = new SensorConsole(System.in,
+						System.out);
+				sensorConsole.start();
+			} else {
+				System.out.println("Usage: <apppname> t");
+			}
+		} else {
+			SensorSimulatorMain.mainOld(args);
+		}
 	}
 
 	public void printStatus(String status) {

@@ -44,8 +44,9 @@ import org.openintents.tools.simulator.model.SensorSimulatorModel;
 import org.openintents.tools.simulator.model.sensors.AccelerometerModel;
 import org.openintents.tools.simulator.model.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensors.SensorModel;
-import org.openintents.tools.simulator.model.sensors.SensorType;
 import org.openintents.tools.simulator.model.telnet.Vector;
+
+import com.openintents.sensorsimulator.testlibrary.Sensor;
 
 /**
  * Displays a mobile phone in a panel and calculates sensor physics.
@@ -183,8 +184,8 @@ public class DeviceView extends JPanel {
 	@Override
 	protected void paintComponent(Graphics graphics) {
 		super.paintComponent(graphics);
-		OrientationModel orientation = (OrientationModel) mSensorSimulatorModel.getSensorModel(SensorType.ORIENTATION);
-		AccelerometerModel accelerometer = (AccelerometerModel) mSensorSimulatorModel.getSensorModel(SensorType.ACCELEROMETER);
+		OrientationModel orientation = (OrientationModel) mSensorSimulatorModel.getSensorModel(Sensor.Type.ORIENTATION);
+		AccelerometerModel accelerometer = (AccelerometerModel) mSensorSimulatorModel.getSensorModel(Sensor.Type.ACCELEROMETER);
 		Graphics2D g2 = (Graphics2D) graphics;
 		g2.setStroke(mStroke);
 		// draw Line2D.Double

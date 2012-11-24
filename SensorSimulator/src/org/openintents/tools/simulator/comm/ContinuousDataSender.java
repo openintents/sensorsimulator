@@ -18,7 +18,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.openintents.tools.simulator.model.sensors.SensorType;
+import com.openintents.sensorsimulator.testlibrary.Sensor;
 
 public class ContinuousDataSender {
 
@@ -57,10 +57,10 @@ public class ContinuousDataSender {
 			mCmdout.writeInt(1);
 
 			// read sensor event listener registrations
-			Map<SensorType, Integer> sensorRateMapping = new HashMap<SensorType, Integer>();
+			Map<Sensor.Type, Integer> sensorRateMapping = new HashMap<Sensor.Type, Integer>();
 			int n = mCmdIn.readInt();
 			for (int i = 0; i < n; i++) {
-				SensorType sensor = SensorEventProducer.intToSentype(mCmdIn
+				Sensor.Type sensor = Sensor.intToType(mCmdIn
 						.readInt());
 				int rate = mCmdIn.readInt();
 				sensorRateMapping.put(sensor, rate);

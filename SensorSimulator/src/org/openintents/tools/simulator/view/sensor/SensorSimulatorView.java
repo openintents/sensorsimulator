@@ -78,7 +78,6 @@ import org.openintents.tools.simulator.model.sensors.PressureModel;
 import org.openintents.tools.simulator.model.sensors.ProximityModel;
 import org.openintents.tools.simulator.model.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.sensors.SensorModel;
-import org.openintents.tools.simulator.model.sensors.SensorType;
 import org.openintents.tools.simulator.model.sensors.TemperatureModel;
 import org.openintents.tools.simulator.view.gui.util.SensorButton;
 import org.openintents.tools.simulator.view.sensor.sensors.AccelerometerView;
@@ -94,6 +93,8 @@ import org.openintents.tools.simulator.view.sensor.sensors.ProximityView;
 import org.openintents.tools.simulator.view.sensor.sensors.RotationVectorView;
 import org.openintents.tools.simulator.view.sensor.sensors.SensorView;
 import org.openintents.tools.simulator.view.sensor.sensors.TemperatureView;
+
+import com.openintents.sensorsimulator.testlibrary.Sensor;
 
 /**
  * 
@@ -153,18 +154,18 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 
 		// sensors
 		mSensors = new ArrayList<SensorView>();
-		mSensors.add(new AccelerometerView((AccelerometerModel) model.getSensorModel(SensorType.ACCELEROMETER)));
-		mSensors.add(new MagneticFieldView((MagneticFieldModel) model.getSensorModel(SensorType.MAGNETIC_FIELD)));
-		mSensors.add(new OrientationView((OrientationModel) model.getSensorModel(SensorType.ORIENTATION), model));
-		mSensors.add(new TemperatureView((TemperatureModel) model.getSensorModel(SensorType.TEMPERATURE)));
-		mSensors.add(new BarcodeReaderView((BarcodeReaderModel) model.getSensorModel(SensorType.BARCODE_READER)));
-		mSensors.add(new LightView((LightModel) model.getSensorModel(SensorType.LIGHT)));
-		mSensors.add(new ProximityView((ProximityModel) model.getSensorModel(SensorType.PROXIMITY)));
-		mSensors.add(new PressureView((PressureModel) model.getSensorModel(SensorType.PRESSURE)));
-		mSensors.add(new LinearAccelerationView((LinearAccelerationModel) model.getSensorModel(SensorType.LINEAR_ACCELERATION)));
-		mSensors.add(new GravityView((GravityModel) model.getSensorModel(SensorType.GRAVITY)));
-		mSensors.add(new RotationVectorView((RotationVectorModel) model.getSensorModel(SensorType.ROTATION)));
-		mSensors.add(new GyroscopeView((GyroscopeModel) model.getSensorModel(SensorType.GYROSCOPE)));
+		mSensors.add(new AccelerometerView((AccelerometerModel) model.getSensorModel(Sensor.Type.ACCELEROMETER)));
+		mSensors.add(new MagneticFieldView((MagneticFieldModel) model.getSensorModel(Sensor.Type.MAGNETIC_FIELD)));
+		mSensors.add(new OrientationView((OrientationModel) model.getSensorModel(Sensor.Type.ORIENTATION), model));
+		mSensors.add(new TemperatureView((TemperatureModel) model.getSensorModel(Sensor.Type.TEMPERATURE)));
+		mSensors.add(new BarcodeReaderView((BarcodeReaderModel) model.getSensorModel(Sensor.Type.BARCODE_READER)));
+		mSensors.add(new LightView((LightModel) model.getSensorModel(Sensor.Type.LIGHT)));
+		mSensors.add(new ProximityView((ProximityModel) model.getSensorModel(Sensor.Type.PROXIMITY)));
+		mSensors.add(new PressureView((PressureModel) model.getSensorModel(Sensor.Type.PRESSURE)));
+		mSensors.add(new LinearAccelerationView((LinearAccelerationModel) model.getSensorModel(Sensor.Type.LINEAR_ACCELERATION)));
+		mSensors.add(new GravityView((GravityModel) model.getSensorModel(Sensor.Type.GRAVITY)));
+		mSensors.add(new RotationVectorView((RotationVectorModel) model.getSensorModel(Sensor.Type.ROTATION)));
+		mSensors.add(new GyroscopeView((GyroscopeModel) model.getSensorModel(Sensor.Type.GYROSCOPE)));
 
 		mMobile = new DeviceView(model);
 

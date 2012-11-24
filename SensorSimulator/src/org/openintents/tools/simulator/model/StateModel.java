@@ -31,9 +31,10 @@ import org.openintents.tools.simulator.model.sensors.PressureModel;
 import org.openintents.tools.simulator.model.sensors.ProximityModel;
 import org.openintents.tools.simulator.model.sensors.RotationVectorModel;
 import org.openintents.tools.simulator.model.sensors.SensorModel;
-import org.openintents.tools.simulator.model.sensors.SensorType;
 import org.openintents.tools.simulator.model.sensors.TemperatureModel;
 import org.openintents.tools.simulator.util.Interpolate;
+
+import com.openintents.sensorsimulator.testlibrary.Sensor;
 
 /**
  * Represents the model for a scenario state.
@@ -99,13 +100,13 @@ public class StateModel implements SensorState {
 	 * Saves in the StateModel format all sesnsors data (a lighter format).
 	 */
 	public void copyState(SensorSimulatorModel simulatorModel) {
-		mTemperature = (float) ((TemperatureModel) simulatorModel.getSensorModel(SensorType.TEMPERATURE)).getReadTemp();
-		mLight = (float) ((LightModel) simulatorModel.getSensorModel(SensorType.LIGHT)).getReadLight();
-		mProximity = (float) ((ProximityModel) simulatorModel.getSensorModel(SensorType.PROXIMITY)).getReadProximity();
-		mPressure = (float) ((PressureModel) simulatorModel.getSensorModel(SensorType.PRESSURE)).getReadPressure();
+		mTemperature = (float) ((TemperatureModel) simulatorModel.getSensorModel(Sensor.Type.TEMPERATURE)).getReadTemp();
+		mLight = (float) ((LightModel) simulatorModel.getSensorModel(Sensor.Type.LIGHT)).getReadLight();
+		mProximity = (float) ((ProximityModel) simulatorModel.getSensorModel(Sensor.Type.PROXIMITY)).getReadProximity();
+		mPressure = (float) ((PressureModel) simulatorModel.getSensorModel(Sensor.Type.PRESSURE)).getReadPressure();
 
 		LinearAccelerationModel linearAcceleration = (LinearAccelerationModel) simulatorModel
-				.getSensorModel(SensorType.LINEAR_ACCELERATION);
+				.getSensorModel(Sensor.Type.LINEAR_ACCELERATION);
 		mLinearAcceleration[0] = (float) linearAcceleration
 				.getReadLinearAccelerationX();
 		mLinearAcceleration[1] = (float) linearAcceleration
@@ -114,33 +115,33 @@ public class StateModel implements SensorState {
 				.getReadLinearAccelerationZ();
 
 		GravityModel gravity = (GravityModel) simulatorModel
-				.getSensorModel(SensorType.GRAVITY);
+				.getSensorModel(Sensor.Type.GRAVITY);
 		mGravity[0] = (float) gravity.getReadGravityX();
 		mGravity[1] = (float) gravity.getReadGravityY();
 		mGravity[2] = (float) gravity.getReadGravityZ();
 
-		OrientationModel orientation = (OrientationModel) simulatorModel.getSensorModel(SensorType.ORIENTATION);
+		OrientationModel orientation = (OrientationModel) simulatorModel.getSensorModel(Sensor.Type.ORIENTATION);
 		mOrientation[0] = (float) orientation.getReadYaw();
 		mOrientation[1] = (float) orientation.getReadPitch();
 		mOrientation[2] = (float) orientation.getReadRoll();
 
-		AccelerometerModel accelerometer = (AccelerometerModel) simulatorModel.getSensorModel(SensorType.ACCELEROMETER);
+		AccelerometerModel accelerometer = (AccelerometerModel) simulatorModel.getSensorModel(Sensor.Type.ACCELEROMETER);
 		mAccelerometer[0] = (float) accelerometer.getReadAccelerometerX();
 		mAccelerometer[1] = (float) accelerometer.getReadAccelerometerY();
 		mAccelerometer[2] = (float) accelerometer.getReadAccelerometerZ();
 
-		MagneticFieldModel magneticField = (MagneticFieldModel) simulatorModel.getSensorModel(SensorType.MAGNETIC_FIELD);
+		MagneticFieldModel magneticField = (MagneticFieldModel) simulatorModel.getSensorModel(Sensor.Type.MAGNETIC_FIELD);
 		mMagneticField[0] = (float) magneticField.getReadCompassX();
 		mMagneticField[1] = (float) magneticField.getReadCompassY();
 		mMagneticField[2] = (float) magneticField.getReadCompassZ();
 
 		RotationVectorModel rotationVector = (RotationVectorModel) simulatorModel
-				.getSensorModel(SensorType.ROTATION);
+				.getSensorModel(Sensor.Type.ROTATION);
 		mRotationVector[0] = (float) rotationVector.getReadRotationVectorX();
 		mRotationVector[1] = (float) rotationVector.getReadRotationVectorY();
 		mRotationVector[2] = (float) rotationVector.getReadRotationVectorZ();
 
-		GyroscopeModel gyroscope = (GyroscopeModel) simulatorModel.getSensorModel(SensorType.GYROSCOPE);
+		GyroscopeModel gyroscope = (GyroscopeModel) simulatorModel.getSensorModel(Sensor.Type.GYROSCOPE);
 		mGyroscope[0] = (float) gyroscope.getReadGyroscopePitch();
 		mGyroscope[1] = (float) gyroscope.getReadGyroscopeYaw();
 		mGyroscope[2] = (float) gyroscope.getReadGyroscopeRoll();

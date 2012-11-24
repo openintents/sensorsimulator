@@ -23,9 +23,9 @@ public class SensorDataSender {
 
 	private static final int PORT = 8111;
 	protected static final String TAG = "SensorDataSender";
-	private BlockingQueue<SensorEventContainer> mSensorEvents;
+	private BlockingQueue<SensorEvent> mSensorEvents;
 
-	private boolean mClientConnected = false;
+	private boolean mConnected = false;
 
 	// network stuff
 	private Socket client;
@@ -33,39 +33,43 @@ public class SensorDataSender {
 	private DataInputStream clientIn = null;
 
 	public SensorDataSender() {
-		mSensorEvents = new LinkedBlockingQueue<SensorEventContainer>();
+		mSensorEvents = new LinkedBlockingQueue<SensorEvent>();
 	}
 
 	/**
 	 * Connect to app-under-test
+	 * 
+	 * @return true, if connection could be established, false otherwise.
 	 */
-	public void connect() {
+	public boolean connect() {
 		try {
-			 Log.d(TAG, "sensimtest  Trying to connect to server...");
+			Log.d(TAG, "sensimtest  Trying to connect to server...");
 			// connect to app under test
 			client = new Socket("127.0.0.1", PORT);
 
-			mClientConnected = true;
+			mConnected = true;
 			clientOut = new DataOutputStream(new BufferedOutputStream(
 					client.getOutputStream()));
 			clientIn = new DataInputStream(new BufferedInputStream(
 					client.getInputStream()));
 
+			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
 
 	/**
 	 * Connect to app-under-test
 	 */
-	public void connect(String ipAddress) {
+	public boolean connect(String ipAddress) {
 		try {
 			// Log.d(TAG, "Trying to connect to server...");
 			// connect to app under test
 			client = new Socket(ipAddress, PORT);
 
-			mClientConnected = true;
+			mConnected = true;
 			clientOut = new DataOutputStream(new BufferedOutputStream(
 					client.getOutputStream()));
 			clientIn = new DataInputStream(new BufferedInputStream(
@@ -74,6 +78,7 @@ public class SensorDataSender {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return mConnected;
 	}
 
 	/**
@@ -100,7 +105,7 @@ public class SensorDataSender {
 	 * @param events
 	 *            the events to send
 	 */
-	public boolean sendSensorEvents(Collection<SensorEventContainer> events) {
+	public boolean sendSensorEvents(Collection<SensorEvent> events) {
 		mSensorEvents.addAll(events);
 		try {
 			// command for sequence
@@ -112,7 +117,7 @@ public class SensorDataSender {
 
 			// process queue
 			for (int i = 0; i < size; i++) {
-				SensorEventContainer event = mSensorEvents.take();
+				SensorEvent event = mSensorEvents.take();
 				// send event to client
 				clientOut.writeInt(event.type);
 				clientOut.writeInt(event.accuracy);
@@ -139,7 +144,11 @@ public class SensorDataSender {
 		return false;
 	}
 
-	public boolean isClientConnected() {
-		return mClientConnected;
+	public boolean isConnected() {
+		return mConnected;
+	}
+
+	public void sendSensorEvent(SensorEvent sensorEventContainer) {
+
 	}
 }
