@@ -59,19 +59,22 @@ public class SensorSimulator implements LoggPrintable {
 	}
 
 	/**
+	 * Entry point for the SensorSimulator desktop application.
+	 * <p>
 	 * If no argument is provided, SensorSimulator is run "the old way", with
-	 * Swing GUI. Else, the console-based version is launched.
+	 * Swing GUI. Else, a console-based version is launched.
 	 * 
 	 * @param args
+	 *            "c" for console version, nothing for swing gui
 	 */
 	public static void main(String[] args) {
 		if (args.length > 0) {
-			if (args[0].equals("t")) {
+			if (args[0].equalsIgnoreCase("c")) {
 				SensorConsole sensorConsole = new SensorConsole(System.in,
 						System.out);
 				sensorConsole.start();
 			} else {
-				System.out.println("Usage: <apppname> t");
+				System.out.println("Usage: <apppname> c");
 			}
 		} else {
 			SensorSimulatorMain.mainOld(args);

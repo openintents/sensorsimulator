@@ -131,8 +131,6 @@ public class PollProducer implements SensorEventProducer {
 					Sensor.typeToInt(mSensorType), 1, sensorData);
 
 			mSender.push(sEvent);
-			// control TODO remove
-			System.out.println(sEvent);
 		}
 	}
 
