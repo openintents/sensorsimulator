@@ -26,6 +26,8 @@ import android.widget.Toast;
 public class SensorRecordService extends Service {
 	private static final String TAG = "SensorRecordService";
 
+	private static final int PORT = 9100;
+
 	private static final CharSequence MSG_SERVER_UNREACHABLE = "Please check"
 			+ " the IP address and make sure that you have started the java"
 			+ " desktop application!";
@@ -68,7 +70,7 @@ public class SensorRecordService extends Service {
 		// get ip address (from intent)
 		String ipAddress = intent.getStringExtra("ip");
 		try {
-			mRequestSocket = new Socket(ipAddress, Global.PORT);
+			mRequestSocket = new Socket(ipAddress, PORT);
 			Log.d(TAG, "created socket for ip address:" + ipAddress);
 			mOutStream = new DataOutputStream(
 					mRequestSocket.getOutputStream());
