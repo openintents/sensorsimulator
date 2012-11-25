@@ -28,7 +28,7 @@ import android.util.SparseArray;
  * 
  * @author Qui Don Ho
  */
-public class DataReceiver extends Observable {
+class DataReceiver extends Observable {
 
 	private static final String TAG = "DataReceiver";
 	protected static final int PORT = 8111;

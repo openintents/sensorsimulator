@@ -16,7 +16,7 @@ import android.util.Log;
  * @author Qui Don Ho
  * 
  */
-public class SensorEventListenerWrapper implements
+class SensorEventListenerWrapper implements
 		android.hardware.SensorEventListener {
 
 	private static final String TAG = "SensorEventListener";

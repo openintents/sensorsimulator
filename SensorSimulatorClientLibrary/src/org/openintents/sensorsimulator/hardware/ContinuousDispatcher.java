@@ -11,7 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-public class ContinuousDispatcher implements Dispatcher {
+class ContinuousDispatcher implements Dispatcher {
 
 	protected static final String TAG = ContinuousDispatcher.class.getName();
 	private Map<SensorEventListener, Integer> mListeners;

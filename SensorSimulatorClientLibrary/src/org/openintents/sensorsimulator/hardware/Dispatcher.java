@@ -12,7 +12,7 @@ import java.util.Collection;
  * @author Qui Don Ho
  * 
  */
-public interface Dispatcher {
+interface Dispatcher {
 
 	/**
 	 * Add a new <code>SensorEventListener</code>.

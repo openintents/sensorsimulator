@@ -24,7 +24,7 @@ import android.os.Looper;
  * @author Qui Don Ho
  * 
  */
-public class SequenceDispatcher implements Dispatcher {
+class SequenceDispatcher implements Dispatcher {
 
 	protected static final String TAG = "SequenceDispatcher";
 	private List<SensorEventListener> mListeners;
