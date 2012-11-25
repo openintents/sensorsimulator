@@ -70,12 +70,26 @@ public class SensorTester {
 	}
 
 	/**
-	 * Send a sequence loaded from a file.
+	 * Send a sequence loaded from a file in the current directory.
 	 */
 	public boolean sendSequenceFile(String fileName) {
 		// read shake sensor data from somewhere
 		List<SensorEvent> sequence = mSequenceLoader
 				.loadFile(fileName);
+		// send to client
+		if (mDataSender.sendSensorEvents(sequence))
+			return true;
+
+		return false;
+	}
+
+	/**
+	 * Send a sequence loaded from a file in a source folder.
+	 */
+	public boolean sendSequenceFromSource(String fileName) {
+		// read shake sensor data from somewhere
+		List<SensorEvent> sequence = mSequenceLoader
+				.loadGesture(fileName);
 		// send to client
 		if (mDataSender.sendSensorEvents(sequence))
 			return true;
