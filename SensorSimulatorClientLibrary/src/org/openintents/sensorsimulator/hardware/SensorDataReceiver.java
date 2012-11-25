@@ -1,8 +1,6 @@
 package org.openintents.sensorsimulator.hardware;
 
-import java.util.ArrayList;
 import java.util.Observable;
-import java.util.Observer;
 
 /**
  * SensorDataReceiver defines the methods for a client-side message broker,
@@ -38,13 +36,6 @@ public abstract class SensorDataReceiver extends Observable {
 	 * Has connect been called already?
 	 */
 	public abstract boolean hasStarted();
-
-	/**
-	 * Method used to get supported sensors from sensor provider.
-	 * 
-	 * @return sensors, ArrayList<Integer> of supported sensors.
-	 */
-	public abstract ArrayList<Integer> getSensors();
 
 	/**
 	 * Method that registers listener for specific sensor. All sensors can't be

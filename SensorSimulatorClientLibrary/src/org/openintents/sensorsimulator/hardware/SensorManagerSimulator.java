@@ -21,7 +21,6 @@
 
 package org.openintents.sensorsimulator.hardware;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -166,21 +165,21 @@ public class SensorManagerSimulator implements Observer {
 		mSensorManager = sensormanager;
 	}
 
-	/**
-	 * Returns the available sensors.
-	 * 
-	 * @return available sensors as ArrayList<Integer>
-	 */
-	public ArrayList<Integer> getSensors() {
-		if (mSensorDataReceiver.isConnected()) {
-			return mSensorDataReceiver.getSensors();
-		} else {
-			if (mSensorManager != null) {
-				return null;
-			}
-			return null;
-		}
-	}
+//	/**
+//	 * Returns the available sensors.
+//	 * 
+//	 * @return available sensors as ArrayList<Integer>
+//	 */
+//	public ArrayList<Integer> getSensors() {
+//		if (mSensorDataReceiver.isConnected()) {
+//			return mSensorDataReceiver.getSensors();
+//		} else {
+//			if (mSensorManager != null) {
+//				return null;
+//			}
+//			return null;
+//		}
+//	}
 
 	/**
 	 * Method that checks for the 1.5 SDK Emulator bug...

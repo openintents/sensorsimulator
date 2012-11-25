@@ -10,7 +10,6 @@ import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -136,16 +135,6 @@ public class DataReceiver extends SensorDataReceiver {
 	@Override
 	public boolean hasStarted() {
 		return mHasStarted;
-	}
-
-	@Override
-	public ArrayList<Integer> getSensors() {
-		String[] sensornames = new String[] { "accelerometer" };
-		// Convert that array to ArrayList of integers.
-		ArrayList<Integer> sensors = SensorNames
-				.getSensorsFromNames(sensornames);
-
-		return sensors;
 	}
 
 	@Override
