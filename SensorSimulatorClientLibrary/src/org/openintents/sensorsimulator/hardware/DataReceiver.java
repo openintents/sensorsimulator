@@ -12,21 +12,23 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Map.Entry;
 
 import android.util.Log;
 import android.util.SparseArray;
 
 /**
- * Client-side receiver which receives sensor events from sensor data provider
- * and sends them to the respective Listeners.
+ * DataReceiver defines the methods for a client-side message broker,
+ * which is responsible for accepting sensor data from a sensor data provider.
+ * The data provider can be the SensorSimulator server component, or the JUnit
+ * Testcases.
  * <p>
  * This class is responsible for all network related stuff.
  * 
  * @author Qui Don Ho
- * 
  */
-public class DataReceiver extends SensorDataReceiver {
+public class DataReceiver extends Observable {
 
 	private static final String TAG = "DataReceiver";
 	protected static final int PORT = 8111;
@@ -114,30 +116,25 @@ public class DataReceiver extends SensorDataReceiver {
 
 	}
 
-	@Override
 	public void connect() {
 		mHasStarted = true;
 		mReceivingThread = new Thread(mReceiving);
 		mReceivingThread.start();
 	}
 
-	@Override
 	public void disconnect() {
 		mHasStarted = false;
 		mReceivingThread.interrupt();
 	}
 
-	@Override
 	public boolean isConnected() {
 		return mConnected;
 	}
 
-	@Override
 	public boolean hasStarted() {
 		return mHasStarted;
 	}
 
-	@Override
 	public boolean registerListener(SensorEventListener listener,
 			Sensor sensor, int rate) {
 
@@ -161,7 +158,6 @@ public class DataReceiver extends SensorDataReceiver {
 		return true;
 	}
 
-	@Override
 	public void unregisterListener(SensorEventListener listener, Sensor sensor) {
 		// remove from map
 		if (mListenerMap.containsKey(listener))
@@ -176,7 +172,6 @@ public class DataReceiver extends SensorDataReceiver {
 		}
 	}
 
-	@Override
 	public void unregisterListener(SensorEventListener listener) {
 		// remove from map
 		mListenerMap.remove(listener);

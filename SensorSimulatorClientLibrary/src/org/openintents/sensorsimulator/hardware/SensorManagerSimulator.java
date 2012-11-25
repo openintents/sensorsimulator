@@ -58,7 +58,7 @@ public class SensorManagerSimulator implements Observer {
 	/**
 	 * Client that communicates with the SensorSimulator application.
 	 */
-	private static SensorDataReceiver mSensorDataReceiver;
+	private static DataReceiver mSensorDataReceiver;
 	private static Context mContext;
 
 	private SensorManager mSensorManager = null;
