@@ -47,7 +47,7 @@ public class ContinuousDataSender {
 			// mCmdIn = new DataInputStream(mConn.getInputStream());
 			// mCmdout = new DataOutputStream(mConn.getOutputStream());
 
-			mConn = new Socket("192.168.2.102", 8111);
+			mConn = new Socket("192.168.2.101", 8111);
 			mCmdIn = new DataInputStream(mConn.getInputStream());
 			mCmdout = new DataOutputStream(mConn.getOutputStream());
 

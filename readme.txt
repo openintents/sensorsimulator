@@ -56,7 +56,45 @@ INSTRUCTIONS:
    running. The ip address of the simulator must be reachable from
    your Android device (a local wireless network will do the trick).
 
+Launch SensorSimulator Desktop Application
 -------------------------------------------------------------
+1) Build one of the sample applications, for example 
+   samples/SensorDemo in Eclipse. Further instructions can be 
+   found in the source code.
+
+2) Launch the sample application.
+
+3) Launch bin/sensorsimulator.jar with parameter "ip <phone ipadress>". Both
+   this machine and the smartphone have to be on the same w-lan. 
+
+Launch SensorSimulator Desktop Application console version
+-------------------------------------------------------------
+1) Same as above, but in step 3), launch sensorsimulator.jar with parameter
+   "c".
+
+2) Press "h" for an overview of commands.
+
+Record a sensor sequence (Console version)
+-------------------------------------------------------------
+1) In Sensorsimulator, type "r <filename>" for recording.
+
+2) On smartphone, launch SensorRecordFromDevice app.
+
+3) Type in ip of machine, where SensorSimulator is running.
+
+4) Press "Record", perform sensor sequence, e.g. shake handset, and press
+   "Stop".
+
+5) SensorSequence will be saved in same directory as SensorSimulator. 
+
+Play a sensor sequence (Console version)
+-------------------------------------------------------------
+1) Launch app.
+
+2) In SensorSimulator, type "c <ipaddress>" to connect (or "c" to use previous
+   ip address).
+
+3) Press "l <filename>". 
 
 Directory structure:
 
