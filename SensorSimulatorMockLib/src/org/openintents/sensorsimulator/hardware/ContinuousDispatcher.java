@@ -83,6 +83,11 @@ class ContinuousDispatcher implements Dispatcher {
 
 	private Runnable mDispatching = new Runnable() {
 
+		private int accCounter = 0;
+		private long lastAccTime = 0;
+		private int measuresPerInterval = 50;
+
+		
 		@Override
 		public void run() {
 			long lastTime = 0;
@@ -93,6 +98,8 @@ class ContinuousDispatcher implements Dispatcher {
 			while (!Thread.interrupted()) {
 
 				try {
+					if (mSensorEvents.isEmpty())
+						System.out.println("event queue empty!");
 					final SensorEvent event = mSensorEvents.take();
 
 					// check whether it is time to dispatch
@@ -116,6 +123,18 @@ class ContinuousDispatcher implements Dispatcher {
 							}
 						});
 					}
+					
+					// performance measuring
+					if (accCounter == 0 || accCounter == measuresPerInterval) {
+						String s = String.valueOf("acc dispatch: " + measuresPerInterval
+								/ ((event.timestamp - lastAccTime) / 1000000000.0)
+								+ "Hz");
+						lastAccTime = event.timestamp;
+						Log.i(TAG, s);
+						accCounter = 0;
+					}
+
+					 accCounter++;
 
 					lastTime = now;
 				} catch (InterruptedException e) {

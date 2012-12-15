@@ -404,12 +404,20 @@ class DataReceiver extends Observable {
 					mContinuousDataSocket.setSoTimeout(READ_TIMEOUT);
 					byte[] buf = new byte[DATAGRAM_BUFFER_SIZE];
 					DatagramPacket packet = new DatagramPacket(buf, buf.length);
+					
+					long then = 0;
 
 					while (!Thread.interrupted()) {
 
 						// receive data
 						try {
 							mContinuousDataSocket.receive(packet);
+							
+							// test time
+							long now = System.currentTimeMillis();
+							System.out.println(now - then);
+							then = now;
+							
 							byte[] payload = packet.getData();
 							DataInputStream input = new DataInputStream(
 									new ByteArrayInputStream(payload));

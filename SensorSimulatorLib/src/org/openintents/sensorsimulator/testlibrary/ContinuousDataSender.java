@@ -131,6 +131,7 @@ public class ContinuousDataSender {
 		@Override
 		public void run() {
 			DatagramSocket dSocket;
+			long then = 0;
 
 			try {
 				dSocket = new DatagramSocket();
@@ -161,6 +162,9 @@ public class ContinuousDataSender {
 						DatagramPacket dPacket = new DatagramPacket(buf,
 								buf.length, mUdpAddress, mUdpPort);
 						dSocket.send(dPacket);
+						long now = System.currentTimeMillis();
+						System.out.println(now - then);
+						then = now;
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
