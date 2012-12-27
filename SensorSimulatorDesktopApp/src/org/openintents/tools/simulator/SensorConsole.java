@@ -66,7 +66,7 @@ public class SensorConsole {
 				doDisconnectCmd();
 			else if (cmd[0].equalsIgnoreCase("help")
 					|| cmd[0].equalsIgnoreCase("h"))
-				doHelpCmd();
+				doHelpCmd(cmd);
 			else if (cmd[0].equalsIgnoreCase("quit")
 					|| cmd[0].equalsIgnoreCase("q"))
 				quit = doQuitCmd();
@@ -90,9 +90,38 @@ public class SensorConsole {
 		return quit;
 	}
 
-	private void doHelpCmd() {
-		{
+	private void doHelpCmd(String[] cmd) {
+		if (cmd.length == 1) {
 			mPrintStream.println(helpMsg);
+		} else if (cmd[1].equalsIgnoreCase("connect")) {
+			mPrintStream.println("No help available yet!");
+		} else if (cmd[1].equalsIgnoreCase("set")) {
+			mPrintStream.println("Sensors" + nl +
+					"=================================" +
+					"acc - Accelerometer" + nl +
+					"mag - Magnetic Field" + nl +
+					"ori - Orientation" + nl +
+					"gyr - Gyroscope" + nl +
+					"lig - Light" + nl +
+					"pre - Pressure" + nl +
+					"tem - Temperature" + nl +
+					"pro - Proximity" + nl +
+					"lac - Linear Acceleration" + nl +
+					"grv - Gravity" + nl +
+					"rot - Rotation Vector" + nl
+					);
+		} else if (cmd[1].equalsIgnoreCase("gesture")) {
+			mPrintStream.println("No help available yet!");
+		} else if (cmd[1].equalsIgnoreCase("record")) {
+			mPrintStream.println("No help available yet!");
+		} else if (cmd[1].equalsIgnoreCase("load")) {
+			mPrintStream.println("No help available yet!");
+		} else if (cmd[1].equalsIgnoreCase("disconnect")) {
+			mPrintStream.println("No help available yet!");
+		} else if (cmd[1].equalsIgnoreCase("quit")) {
+			mPrintStream.println("No help available yet!");
+		} else {
+			mPrintStream.println("Unknown command!");
 		}
 	}
 
@@ -235,6 +264,8 @@ public class SensorConsole {
 	// help
 	String helpMsg = "SensorSimulator"
 			+ nl
+			+ "================================="
+			+ nl
 			+ "connect [ipaddress]: connect to a running app with SensorSimulator"
 			+ nl
 			+ "disconnect: disconnect, duh!"
@@ -243,7 +274,9 @@ public class SensorConsole {
 			+ nl
 			+ "set <sensorcode> <value>: set specified sensor value"
 			+ nl
-			+ "shake|...: send predefined sequence";
+			+ "shake|...: send predefined sequence"
+			+ nl + nl
+			+ "Type 'h <command>' for detailed help.";
 
 	// the most important thang in this program.
 	String[] quitMsg = { "I wouldn't leave if i were you. work is much worse.",
