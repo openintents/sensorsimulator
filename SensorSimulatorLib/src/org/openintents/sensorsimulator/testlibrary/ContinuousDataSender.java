@@ -1,11 +1,9 @@
 package org.openintents.sensorsimulator.testlibrary;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -76,6 +74,8 @@ public class ContinuousDataSender {
 
 			mUdpAddress = mConn.getInetAddress();
 			mUdpPort = mCmdIn.readInt();
+			
+			Thread.sleep(500);
 
 			mSendingThread = new Thread(mSending);
 			mSendingThread.start();
@@ -88,6 +88,9 @@ public class ContinuousDataSender {
 			System.err
 					.println("Connection was refused. Has the app been started?");
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -134,37 +137,57 @@ public class ContinuousDataSender {
 			long then = 0;
 
 			try {
-				dSocket = new DatagramSocket();
+				// dSocket = new DatagramSocket();
+				//
+				// while (!Thread.interrupted()) {
+				// try {
+				// SensorEvent[] eventsToSend = new SensorEvent[MAX_EVENTS];
+				//
+				// // gather enough events for one packet
+				// for (int i = 0; i < eventsToSend.length; i++) {
+				// eventsToSend[i] = mEvents.take();
+				// }
+				//
+				// ByteArrayOutputStream output = new ByteArrayOutputStream();
+				// DataOutputStream dOut = new DataOutputStream(output);
+				//
+				// // write into stream
+				// for (SensorEvent event : eventsToSend) {
+				// dOut.writeInt(event.type);
+				// dOut.writeInt(event.accuracy);
+				// dOut.writeInt(event.values.length);
+				// for (float value : event.values)
+				// dOut.writeFloat(value);
+				// }
+				//
+				// // send packet
+				// byte[] buf = output.toByteArray();
+				// DatagramPacket dPacket = new DatagramPacket(buf,
+				// buf.length, mUdpAddress, mUdpPort);
+				// dSocket.send(dPacket);
+				// long now = System.currentTimeMillis();
+				// System.out.println(now - then);
+				// then = now;
+				// } catch (InterruptedException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// mSendingThread.interrupt();
+				// }
+				// }
+				Socket dSocket2 = new Socket(mUdpAddress, mUdpPort);
+
+				DataOutputStream dOut = new DataOutputStream(
+						dSocket2.getOutputStream());
 
 				while (!Thread.interrupted()) {
 					try {
-						SensorEvent[] eventsToSend = new SensorEvent[MAX_EVENTS];
-
-						// gather enough events for one packet
-						for (int i = 0; i < eventsToSend.length; i++) {
-							eventsToSend[i] = mEvents.take();
-						}
-
-						ByteArrayOutputStream output = new ByteArrayOutputStream();
-						DataOutputStream dOut = new DataOutputStream(output);
-
+						SensorEvent event = mEvents.take();
 						// write into stream
-						for (SensorEvent event : eventsToSend) {
-							dOut.writeInt(event.type);
-							dOut.writeInt(event.accuracy);
-							dOut.writeInt(event.values.length);
-							for (float value : event.values)
-								dOut.writeFloat(value);
-						}
-
-						// send packet
-						byte[] buf = output.toByteArray();
-						DatagramPacket dPacket = new DatagramPacket(buf,
-								buf.length, mUdpAddress, mUdpPort);
-						dSocket.send(dPacket);
-						long now = System.currentTimeMillis();
-						System.out.println(now - then);
-						then = now;
+						dOut.writeInt(event.type);
+						dOut.writeInt(event.accuracy);
+						dOut.writeInt(event.values.length);
+						for (float value : event.values)
+							dOut.writeFloat(value);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

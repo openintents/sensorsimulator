@@ -54,7 +54,7 @@ public class SensorConsole {
 
 				boolean success = false;
 				if (cmd.length == 1) {
-					success = st.connect("192.168.2.102");
+					success = st.connect("192.168.2.101");
 				} else {
 					success = st.connect(cmd[1]);
 				}

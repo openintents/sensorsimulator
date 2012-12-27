@@ -321,15 +321,14 @@ class DataReceiver extends Observable {
 															.get(sensorType));
 										}
 
-										// open udp receiving socket
-										mContinuousDataSocket = new DatagramSocket(
-												8112);
-										// send udp socket
+										mSocket2 = new ServerSocket(8112);
+										
 										out.writeInt(8112);
 										mContinuousThread = new Thread(
 												mContinuousReceiving);
 										mContinuousThread.start();
 
+										
 										// configure listeners and rates
 									}
 									// quit ////////////////////////////////////
@@ -401,48 +400,69 @@ class DataReceiver extends Observable {
 			@Override
 			public void run() {
 				try {
-					mContinuousDataSocket.setSoTimeout(READ_TIMEOUT);
-					byte[] buf = new byte[DATAGRAM_BUFFER_SIZE];
-					DatagramPacket packet = new DatagramPacket(buf, buf.length);
+//					mContinuousDataSocket.setSoTimeout(READ_TIMEOUT);
+//					byte[] buf = new byte[DATAGRAM_BUFFER_SIZE];
+//					DatagramPacket packet = new DatagramPacket(buf, buf.length);
+//					
+//					long then = 0;
 					
-					long then = 0;
+					Socket conn = mSocket2.accept();
+					mSocket2.close();
+					DataInputStream input = new DataInputStream(conn.getInputStream());
 
 					while (!Thread.interrupted()) {
+						
+						// parse sensor data
+						for (int i = 0; i < mNumberOfEvents; i++) {
+							int type = input.readInt();
+							int accuracy = input.readInt();
+							int valLength = input.readInt();
+							float[] values = new float[valLength];
+							for (int j = 0; j < valLength; j++) {
+								values[j] = input.readFloat();
+							}
+
+							// put into dispatcher
+							mDispatchers.get(type).putEvent(
+									new SensorEvent(type, accuracy, System
+											.nanoTime(), values));
+						}
 
 						// receive data
-						try {
-							mContinuousDataSocket.receive(packet);
-							
-							// test time
-							long now = System.currentTimeMillis();
-							System.out.println(now - then);
-							then = now;
-							
-							byte[] payload = packet.getData();
-							DataInputStream input = new DataInputStream(
-									new ByteArrayInputStream(payload));
-
-							// parse sensor data
-							for (int i = 0; i < mNumberOfEvents; i++) {
-								int type = input.readInt();
-								int accuracy = input.readInt();
-								int valLength = input.readInt();
-								float[] values = new float[valLength];
-								for (int j = 0; j < valLength; j++) {
-									values[j] = input.readFloat();
-								}
-
-								// put into dispatcher
-								mDispatchers.get(type).putEvent(
-										new SensorEvent(type, accuracy, System
-												.nanoTime(), values));
-							}
-						} catch (SocketTimeoutException e) {
-							// just check for interrupt and try again
-						}
+//						try {
+//							mContinuousDataSocket.receive(packet);
+//							
+//							// test time
+//							long now = System.currentTimeMillis();
+//							System.out.println(now - then);
+//							then = now;
+//							
+//							byte[] payload = packet.getData();
+//							DataInputStream input = new DataInputStream(
+//									new ByteArrayInputStream(payload));
+//
+//							// parse sensor data
+//							for (int i = 0; i < mNumberOfEvents; i++) {
+//								int type = input.readInt();
+//								int accuracy = input.readInt();
+//								int valLength = input.readInt();
+//								float[] values = new float[valLength];
+//								for (int j = 0; j < valLength; j++) {
+//									values[j] = input.readFloat();
+//								}
+//
+//								// put into dispatcher
+//								mDispatchers.get(type).putEvent(
+//										new SensorEvent(type, accuracy, System
+//												.nanoTime(), values));
+//							}
+//						} catch (SocketTimeoutException e) {
+//							// just check for interrupt and try again
+//						}
 					}
 
 					mContinuousDataSocket.close();
+					conn.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				} finally {
@@ -450,5 +470,6 @@ class DataReceiver extends Observable {
 				}
 			}
 		};
+		private ServerSocket mSocket2;
 	};
 }
