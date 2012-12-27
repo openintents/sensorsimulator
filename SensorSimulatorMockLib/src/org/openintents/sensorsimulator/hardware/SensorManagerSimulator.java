@@ -89,29 +89,31 @@ public class SensorManagerSimulator implements Observer {
 		// create default sensor map
 		defaultSensors = new SparseArray<Sensor>();
 		defaultSensors.put(Sensor.TYPE_ACCELEROMETER, new Sensor(
-				Sensor.TYPE_ACCELEROMETER));
+				Sensor.TYPE_ACCELEROMETER, "accelerometer"));
 		defaultSensors.put(Sensor.TYPE_GYROSCOPE, new Sensor(
-				Sensor.TYPE_GYROSCOPE));
-		defaultSensors.put(Sensor.TYPE_LIGHT, new Sensor(Sensor.TYPE_LIGHT));
+				Sensor.TYPE_GYROSCOPE, "gyroscope"));
+		defaultSensors.put(Sensor.TYPE_LIGHT, new Sensor(Sensor.TYPE_LIGHT,
+				"light"));
 		defaultSensors.put(Sensor.TYPE_MAGNETIC_FIELD, new Sensor(
-				Sensor.TYPE_MAGNETIC_FIELD));
+				Sensor.TYPE_MAGNETIC_FIELD, "magnetic field"));
 		defaultSensors.put(Sensor.TYPE_ORIENTATION, new Sensor(
-				Sensor.TYPE_ORIENTATION));
+				Sensor.TYPE_ORIENTATION, "orientation"));
 		defaultSensors.put(Sensor.TYPE_PRESSURE, new Sensor(
-				Sensor.TYPE_PRESSURE));
+				Sensor.TYPE_PRESSURE, "pressure"));
 		defaultSensors.put(Sensor.TYPE_PROXIMITY, new Sensor(
-				Sensor.TYPE_PROXIMITY));
+				Sensor.TYPE_PROXIMITY, "proximity"));
 		defaultSensors.put(Sensor.TYPE_TEMPERATURE, new Sensor(
-				Sensor.TYPE_TEMPERATURE));
+				Sensor.TYPE_TEMPERATURE, "temperature"));
 		defaultSensors.put(Sensor.TYPE_BARCODE_READER, new Sensor(
-				Sensor.TYPE_BARCODE_READER));
+				Sensor.TYPE_BARCODE_READER, "barcode reader"));
 		defaultSensors.put(Sensor.TYPE_LINEAR_ACCELERATION, new Sensor(
-				Sensor.TYPE_LINEAR_ACCELERATION));
+				Sensor.TYPE_LINEAR_ACCELERATION, "linear acceleration"));
 		defaultSensors
-				.put(Sensor.TYPE_GRAVITY, new Sensor(Sensor.TYPE_GRAVITY));
+				.put(Sensor.TYPE_GRAVITY, new Sensor(Sensor.TYPE_GRAVITY,
+						"gravity"));
 		defaultSensors.put(Sensor.TYPE_ROTATION_VECTOR, new Sensor(
-				Sensor.TYPE_ROTATION_VECTOR));
-		defaultSensors.put(Sensor.TYPE_ALL, new Sensor(Sensor.TYPE_ALL));
+				Sensor.TYPE_ROTATION_VECTOR, "rotation vector"));
+		defaultSensors.put(Sensor.TYPE_ALL, new Sensor(Sensor.TYPE_ALL, "all"));
 
 		mWrapperMap = new HashMap<SensorEventListener, SensorEventListenerWrapper>();
 

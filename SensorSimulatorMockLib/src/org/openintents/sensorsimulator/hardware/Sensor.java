@@ -48,7 +48,8 @@ public class Sensor {
 	public static final int TYPE_GRAVITY = 11;
 	public static final int TYPE_ROTATION_VECTOR = 12;
 
-	private int type;
+	private int mType;
+	private String mName;
 
 	// public int sensorToRegister = 0;
 	// public int sensorToRemove = 0;
@@ -64,8 +65,9 @@ public class Sensor {
 	 * @param type
 	 *            , integer number of sensor we want to register.
 	 */
-	protected Sensor(int type) {
-		this.type = type;
+	protected Sensor(int type, String name) {
+		mType = type;
+		mName = name;
 	}
 
 	// //////////////////////////////////////////////////////////////////////////////
@@ -81,7 +83,7 @@ public class Sensor {
 	}
 
 	public String getName() {
-		throw new UnsupportedOperationException();
+		return mName;
 	}
 
 	public float getPower() {
@@ -93,7 +95,7 @@ public class Sensor {
 	}
 
 	public int getType() {
-		return type;
+		return mType;
 	}
 
 	public String getVendor() {
