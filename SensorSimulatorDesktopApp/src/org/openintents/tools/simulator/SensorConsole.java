@@ -185,28 +185,20 @@ public class SensorConsole {
 						new float[] { a, b, c });
 			} else if (cmd[1].equalsIgnoreCase("lig")) {
 				Float a = Float.parseFloat(cmd[2]);
-				Float b = Float.parseFloat(cmd[3]);
-				Float c = Float.parseFloat(cmd[4]);
 				mSimulator.setSensor(Sensor.Type.LIGHT,
-						new float[] { a, b, c });
+						new float[] { a });
 			} else if (cmd[1].equalsIgnoreCase("pre")) {
 				Float a = Float.parseFloat(cmd[2]);
-				Float b = Float.parseFloat(cmd[3]);
-				Float c = Float.parseFloat(cmd[4]);
 				mSimulator.setSensor(Sensor.Type.PRESSURE,
-						new float[] { a, b, c });
+						new float[] { a });
 			} else if (cmd[1].equalsIgnoreCase("tem")) {
 				Float a = Float.parseFloat(cmd[2]);
-				Float b = Float.parseFloat(cmd[3]);
-				Float c = Float.parseFloat(cmd[4]);
 				mSimulator.setSensor(Sensor.Type.TEMPERATURE,
-						new float[] { a, b, c });
+						new float[] { a });
 			} else if (cmd[1].equalsIgnoreCase("pro")) {
 				Float a = Float.parseFloat(cmd[2]);
-				Float b = Float.parseFloat(cmd[3]);
-				Float c = Float.parseFloat(cmd[4]);
 				mSimulator.setSensor(Sensor.Type.PROXIMITY,
-						new float[] { a, b, c });
+						new float[] { a });
 			} else if (cmd[1].equalsIgnoreCase("lac")) {
 				Float a = Float.parseFloat(cmd[2]);
 				Float b = Float.parseFloat(cmd[3]);
