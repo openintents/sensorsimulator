@@ -54,11 +54,13 @@ public class SensorConsole {
 
 				boolean success = false;
 				if (cmd.length == 1) {
-					success = st.connect("192.168.2.101");
+					// TODO implement connection to last ip address for
+					// convenience
+					printStream.println("Please provide an IP address.");
 				} else {
 					success = st.connect(cmd[1]);
 				}
-				System.out.println(success ? "Done." : "Could not connect!");
+				printStream.println(success ? "Done." : "Could not connect!");
 			} else if (cmd[0].equalsIgnoreCase("shake")) {
 				if (st.isConnected()) {
 					printStream.println("shaking");
