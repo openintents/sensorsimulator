@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.prefs.Preferences;
 
 import org.openintents.sensorsimulator.testlibrary.RecordServer;
 import org.openintents.sensorsimulator.testlibrary.Sensor;
@@ -19,12 +20,15 @@ import org.openintents.sensorsimulator.testlibrary.SequenceSaver;
 public class SensorConsole {
 
 	private SensorTester mSimulator;
+	private Preferences mPrefs;
 	private PrintStream mPrintStream;
+	private Scanner mScanner;
 
 	public SensorConsole(InputStream in, OutputStream out) {
 		mScanner = new Scanner(in);
 		mPrintStream = new PrintStream(out);
 		mSimulator = new SensorTester();
+		mPrefs = Preferences.userRoot().node(this.getClass().getName());
 	}
 
 	/**
@@ -136,12 +140,18 @@ public class SensorConsole {
 
 			boolean success = false;
 			if (cmd.length == 1) {
-				// TODO implement connection to last ip address for
-				// convenience
-				// printStream.println("Please provide an IP address.");
-				success = mSimulator.connect("192.168.2.101");
+				String ip = mPrefs.get("ip", null);
+				if (ip != null) {
+					mPrintStream.println("No ip provided, " +
+							"using last given ip (" + ip + ").");
+					success = mSimulator.connect(ip);
+				} else {
+					mPrintStream.println("Please provide an IP address.");
+				}
 			} else {
 				success = mSimulator.connect(cmd[1]);
+				if (success)
+					mPrefs.put("ip", cmd[1]);
 			}
 			mPrintStream.println(success ? "Done." : "Could not connect!");
 		}
@@ -215,11 +225,13 @@ public class SensorConsole {
 				Float c = Float.parseFloat(cmd[4]);
 				mSimulator.setSensor(Sensor.Type.ROTATION,
 						new float[] { a, b, c });
+			} else {
+				mPrintStream.println("Unknown sensor!");
 			}
 		} catch (NumberFormatException e) {
-			mPrintStream.println();
+			mPrintStream.println("Please provide only floats as input.");
 		} catch (ArrayIndexOutOfBoundsException e) {
-			mPrintStream.println();
+			mPrintStream.println("Missing attributes!");
 		}
 	}
 
@@ -246,5 +258,4 @@ public class SensorConsole {
 			"You want to quit? Then, thou hast lost an eighth!",
 			"Get outta here and go back to your boring programs.",
 			"Don't quit now! We're  still spending your money!" };
-	private Scanner mScanner;
 }
