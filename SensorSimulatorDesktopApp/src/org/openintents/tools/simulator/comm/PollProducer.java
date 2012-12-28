@@ -11,7 +11,6 @@ import org.openintents.sensorsimulator.testlibrary.Sensor;
 import org.openintents.sensorsimulator.testlibrary.SensorEvent;
 import org.openintents.sensorsimulator.testlibrary.SensorEventProducer;
 
-
 /**
  * Produces sensor events (data), by sampling them from the underlying data
  * source. This is a temporary solution until the data source
@@ -73,14 +72,16 @@ public class PollProducer implements SensorEventProducer {
 		mSamplingDelays.put(3, SAMPLING_DELAY_NORMAL);
 	}
 
-	public void connect() {
-
-		mSender.connect();
-		// mTimer.schedule(mTimerTask, 0, mSamplingDelay);
+	public void connect(String ipAddress) {
+		mSender.connect(ipAddress);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openintents.tools.simulator.comm.SensorEventProducer#registerSensors(java.util.Map)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openintents.tools.simulator.comm.SensorEventProducer#registerSensors
+	 * (java.util.Map)
 	 */
 	@Override
 	public Map<Integer, Integer> registerSensors(

@@ -189,12 +189,7 @@ public class SensorSimulatorController implements WindowListener {
 		sensorPortButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// not supported anymore 
-				// mSensorServer.stop();
-				// mSensorServer = new SensorServer(mSensorSimulatorModel);
-				
-				// only test until own button is created
-				mSensorEventProducer.connect();
+				mSensorEventProducer.connect(view.getIp());
 			}
 		});
 
@@ -218,7 +213,6 @@ public class SensorSimulatorController implements WindowListener {
 		mUserSettingsDuration = 500; // Update every half second. This should be
 										// enough.
 		mUserSettingsNextUpdate = System.currentTimeMillis(); // First update is
-																// now.
 
 		// start server
 		mSensorEventProducer = PollProducer.startProducing(mSensorSimulatorModel);

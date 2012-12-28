@@ -238,30 +238,30 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 		messageTextArea.setContentType("text/html");
 		messageTextArea.setEditable(false);
 
-		StringBuffer infoText = new StringBuffer();
-		infoText.append("Write emulator command port and click on "
-				+ "set to create connection. Possible IP addresses:");
-		try {
-			Enumeration<NetworkInterface> nets = NetworkInterface
-					.getNetworkInterfaces();
-			infoText.append("<p style='color:E96B14'>10.0.2.2<br\\>");
-			for (NetworkInterface netint : Collections.list(nets)) {
-				Enumeration<InetAddress> inetAddresses = netint
-						.getInetAddresses();
-				for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-					String address = inetAddress.toString();
-					if (address.compareTo("/127.0.0.1") != 0
-							&& !address.contains(":")) {
-						infoText.append(address.substring(1) + "<br\\>");
-					}
-				}
-			}
-			infoText.append("</p>");
-		} catch (SocketException e) {
-			infoText.append("Socket exception. Could not obtain IP addresses.");
-		}
-
-		messageTextArea.setText(infoText.toString());
+		// StringBuffer infoText = new StringBuffer();
+		// infoText.append("Write emulator command port and click on "
+		// + "set to create connection. Possible IP addresses:");
+		// try {
+		// Enumeration<NetworkInterface> nets = NetworkInterface
+		// .getNetworkInterfaces();
+		// infoText.append("<p style='color:E96B14'>10.0.2.2<br\\>");
+		// for (NetworkInterface netint : Collections.list(nets)) {
+		// Enumeration<InetAddress> inetAddresses = netint
+		// .getInetAddresses();
+		// for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+		// String address = inetAddress.toString();
+		// if (address.compareTo("/127.0.0.1") != 0
+		// && !address.contains(":")) {
+		// infoText.append(address.substring(1) + "<br\\>");
+		// }
+		// }
+		// }
+		// infoText.append("</p>");
+		// } catch (SocketException e) {
+		// infoText.append("Socket exception. Could not obtain IP addresses.");
+		// }
+		//
+		// messageTextArea.setText(infoText.toString());
 		JScrollPane areaScrollPane = new JScrollPane(messageTextArea);
 		areaScrollPane
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -278,7 +278,7 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 
 		// Add IP address properties:
 		Font fontNotify = new Font("SansSerif", Font.BOLD, 12);
-		JLabel socketLabel = new JLabel("Socket ", SwingConstants.LEFT);
+		JLabel socketLabel = new JLabel("Device IP Address ", SwingConstants.LEFT);
 		socketLabel.setFont(fontNotify);
 		layout.gridx = 0;
 		layout.gridy = 0;
@@ -289,10 +289,9 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 		layout.gridy = 0;
 		layout.gridwidth = 2;
 		mSensorPortText = new JTextField(5);
-		mSensorPortText.setText("" + SensorSimulatorController.DEFAULT_PORT);
 		settingsPanel.add(mSensorPortText);
 
-		mSensorPortButton = new JButton("Change");
+		mSensorPortButton = new JButton("Connect");
 		mSensorPortButton.setFont(fontNotify);
 		layout.gridx = 2;
 		layout.gridy = 0;
@@ -579,19 +578,12 @@ public class SensorSimulatorView extends JPanel implements RefreshRateObserver {
 	}
 
 	/**
-	 * Get socket port number.
+	 * Get ip address.
 	 * 
-	 * @return String containing port number.
+	 * @return String containing ip address.
 	 */
-	public int getPort() {
-		String s = mSensorPortText.getText();
-		int port = 0;
-		try {
-			port = Integer.parseInt(s);
-		} catch (NumberFormatException e) {
-			addMessage("Invalid port number: " + s);
-		}
-		return port;
+	public String getIp() {
+		return mSensorPortText.getText();
 	}
 
 	/**

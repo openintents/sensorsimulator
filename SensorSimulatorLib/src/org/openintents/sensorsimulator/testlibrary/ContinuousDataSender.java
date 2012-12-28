@@ -37,15 +37,15 @@ public class ContinuousDataSender {
 	 * Connect to app-under-test
 	 */
 	public void connect() {
-		try {
-			// mConn = new Socket();
-			// SocketAddress devAddr = new InetSocketAddress("192.168.2.102",
-			// 8111);
-			// mConn.connect(devAddr, CONNECT_TIMEOUT);
-			// mCmdIn = new DataInputStream(mConn.getInputStream());
-			// mCmdout = new DataOutputStream(mConn.getOutputStream());
+		connect("192.168.2.101");
+	}
 
-			mConn = new Socket("192.168.2.101", 8111);
+	/**
+	 * Connect to app-under-test
+	 */
+	public void connect(String ipAddress) {
+		try {
+			mConn = new Socket(ipAddress, 8111);
 			mCmdIn = new DataInputStream(mConn.getInputStream());
 			mCmdout = new DataOutputStream(mConn.getOutputStream());
 
@@ -74,7 +74,7 @@ public class ContinuousDataSender {
 
 			mUdpAddress = mConn.getInetAddress();
 			mUdpPort = mCmdIn.readInt();
-			
+
 			Thread.sleep(500);
 
 			mSendingThread = new Thread(mSending);
@@ -94,13 +94,6 @@ public class ContinuousDataSender {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Connect to app-under-test
-	 */
-	public void connect(String ipAddress) {
-
 	}
 
 	/**
