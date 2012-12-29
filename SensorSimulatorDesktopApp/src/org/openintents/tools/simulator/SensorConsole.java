@@ -97,7 +97,7 @@ public class SensorConsole {
 			mPrintStream.println("No help available yet!");
 		} else if (cmd[1].equalsIgnoreCase("set")) {
 			mPrintStream.println("Sensors" + nl +
-					"=================================" +
+					"=================================" + nl +
 					"acc - Accelerometer" + nl +
 					"mag - Magnetic Field" + nl +
 					"ori - Orientation" + nl +
@@ -154,9 +154,6 @@ public class SensorConsole {
 			if (mSimulator.isConnected()) {
 				mPrintStream.println("shaking");
 				mSimulator.shake();
-				// st.sendSequenceFile("lesequence");
-				// mDataSender.sendSensorEvents(mSequenceLoader
-				// .loadFromFile("shortShake"));
 			} else {
 				mPrintStream.println("not connected!");
 			}
@@ -279,8 +276,9 @@ public class SensorConsole {
 			+ "Type 'h <command>' for detailed help.";
 
 	// the most important thang in this program.
-	String[] quitMsg = { "I wouldn't leave if i were you. work is much worse.",
-			"You want to quit? Then, thou hast lost an eighth!",
-			"Get outta here and go back to your boring programs.",
-			"Don't quit now! We're  still spending your money!" };
+	String[] quitMsg = { "Goodbye!",
+			"Au revoir!",
+			"Wiedersehen!",
+			"Tam biet!",
+			"Sayonara!" };
 }
