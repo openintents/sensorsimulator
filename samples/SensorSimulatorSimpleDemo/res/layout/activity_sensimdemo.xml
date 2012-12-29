@@ -1,0 +1,72 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/sensimdemo_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" />
+
+    <RelativeLayout
+        android:id="@+id/sensimdemo_accrl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sensimdemo_info" >
+
+        <TextView
+            android:id="@+id/sensimdemo_acctitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/sensimdemo_accval"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="@string/hello_world"
+            tools:context=".SenSimDemoActivity" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/sensimdemo_proxrl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sensimdemo_accrl" >
+
+        <TextView
+            android:id="@+id/sensimdemo_protitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/sensimdemo_proxval"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="@string/hello_world"
+            tools:context=".SenSimDemoActivity" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/sensimdemo_ligrl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sensimdemo_proxrl" >
+
+        <TextView
+            android:id="@+id/sensimdemo_ligtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/sensimdemo_ligval"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="@string/hello_world"
+            tools:context=".SenSimDemoActivity" />
+    </RelativeLayout>
+
+</RelativeLayout>
