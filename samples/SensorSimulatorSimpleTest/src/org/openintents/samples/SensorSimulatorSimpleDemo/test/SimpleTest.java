@@ -28,11 +28,22 @@ public class SimpleTest extends
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		// activity must be started before SensorTester
-		mActivity = getActivity();
+		// //////////////////////////////////////////////////////////////
+		// INSTRUCTIONS
+		// ============
 
+		// 1) Include sensimlib.jar in your project. Put that file
+		// into the 'libs' folder. In Eclipse, right-click on your project in
+		// the Package Explorer, select Properties > Java Build Path > (tab)
+		// Libraries then click Add JARs to add this jar.
+
+		// 2) call the activity before connecting to it
+		mActivity = getActivity();
+		
+		// 3) Connect to activity-under-test
 		sensorTester = new SensorTester();
 		sensorTester.connect();
+		// //////////////////////////////////////////////////////////////
 
 		tv = (TextView) mActivity
 				.findViewById(org.openintents.samples.SensorSimulatorSimpleDemo.R.id.sensimdemo_accval);
