@@ -1,19 +1,16 @@
 package org.openintents.sensorsimulator.hardware;
 
-import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Map.Entry;
+import java.util.Observable;
 
 import android.util.Log;
 import android.util.SparseArray;
@@ -407,8 +404,6 @@ class DataReceiver extends Observable {
 
 					while (!Thread.interrupted()) {
 
-						// parse sensor data
-						// for (int i = 0; i < mNumberOfEvents; i++) {
 						try {
 							int type = input.readInt();
 							int accuracy = input.readInt();
@@ -424,12 +419,13 @@ class DataReceiver extends Observable {
 											.nanoTime(), values));
 						} catch (SocketTimeoutException e) {
 							// just try again
+						} catch (EOFException e) {
+							Thread.currentThread().interrupt();
 						}
-
 					}
 
-					mSocket2.close();
 					conn.close();
+					mSocket2.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				} finally {

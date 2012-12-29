@@ -18,7 +18,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class ContinuousDataSender {
 
-	private static final int CONNECT_TIMEOUT = 100;
 	private SensorEventProducer mSensorEventProducer;
 	private Socket mConn;
 	private DataInputStream mCmdIn;
@@ -31,13 +30,6 @@ public class ContinuousDataSender {
 	public ContinuousDataSender(SensorEventProducer sensorEventProducer) {
 		mSensorEventProducer = sensorEventProducer;
 		mEvents = new LinkedBlockingQueue<SensorEvent>(100);
-	}
-
-	/**
-	 * Connect to app-under-test
-	 */
-	public void connect() {
-		connect("192.168.2.101");
 	}
 
 	/**
@@ -76,6 +68,7 @@ public class ContinuousDataSender {
 			mUdpAddress = mConn.getInetAddress();
 			mUdpPort = mCmdIn.readInt();
 
+			// wait until server has been set up
 			Thread.sleep(500);
 
 			mSendingThread = new Thread(mSending);
@@ -114,7 +107,6 @@ public class ContinuousDataSender {
 	public void push(SensorEvent sEvent) {
 		try {
 			mEvents.put(sEvent);
-			System.out.println(mEvents.size());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
