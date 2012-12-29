@@ -25,10 +25,10 @@ import org.openintents.sensorsimulator.testlibrary.SensorEventProducer;
 public class PollProducer implements SensorEventProducer {
 
 	// default sampling speed values
-	private static final int SAMPLING_DELAY_FASTEST = 10;
-	private static final int SAMPLING_DELAY_GAME = 20;
-	private static final int SAMPLING_DELAY_UI = 40;
-	private static final int SAMPLING_DELAY_NORMAL = 80;
+	private static final int SAMPLING_DELAY_FASTEST = 50;
+	private static final int SAMPLING_DELAY_GAME = 100;
+	private static final int SAMPLING_DELAY_NORMAL = 200;
+	private static final int SAMPLING_DELAY_UI = 400;
 
 	private static PollProducer mInstance;
 

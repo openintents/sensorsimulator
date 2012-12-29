@@ -58,6 +58,7 @@ class ContinuousDispatcher implements Dispatcher {
 	public void putEvent(SensorEvent event) {
 		try {
 			mSensorEvents.put(event);
+			Log.d(TAG, "queue size: " + mSensorEvents.size());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -77,6 +78,7 @@ class ContinuousDispatcher implements Dispatcher {
 	}
 
 	public void configProducer(int speed, int rate) {
+		Log.d(TAG, "producer speed: " + speed + ", rate: " + rate);
 		mProducerSpeed = speed;
 		mProducerRate = rate;
 	}
@@ -100,6 +102,8 @@ class ContinuousDispatcher implements Dispatcher {
 				try {
 					if (mSensorEvents.isEmpty())
 						System.out.println("event queue empty!");
+					else 
+						Log.d(TAG, "event queue size: " + mSensorEvents.size());
 					final SensorEvent event = mSensorEvents.take();
 
 					// check whether it is time to dispatch
@@ -120,6 +124,7 @@ class ContinuousDispatcher implements Dispatcher {
 							@Override
 							public void run() {
 								entry.getKey().onSensorChanged(event);
+								Log.d(TAG, "Dispatching " + event.type);
 							}
 						});
 					}

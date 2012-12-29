@@ -206,7 +206,7 @@ class DataReceiver extends Observable {
 
 						try {
 							connection = serverSocket.accept();
-							connection.setSoTimeout(100);
+//							connection.setSoTimeout(100);
 
 							mConnected = true;
 							setChanged();
@@ -309,6 +309,8 @@ class DataReceiver extends Observable {
 											out.writeInt(entry.getValue()
 													.intValue());
 										}
+										
+										out.flush();
 
 										// read and set event delivering speed
 										for (int i = 0; i < fastestRegistration
@@ -324,6 +326,9 @@ class DataReceiver extends Observable {
 										mSocket2 = new ServerSocket(8112);
 										
 										out.writeInt(8112);
+										
+										out.flush();
+										
 										mContinuousThread = new Thread(
 												mContinuousReceiving);
 										mContinuousThread.start();
@@ -390,30 +395,21 @@ class DataReceiver extends Observable {
 			}
 		}
 
-		private DatagramSocket mContinuousDataSocket;
 		private Runnable mContinuousReceiving = new Runnable() {
-
-			private static final int READ_TIMEOUT = 100;
-			private static final int DATAGRAM_BUFFER_SIZE = 512;
-			private int mNumberOfEvents = 20;
 
 			@Override
 			public void run() {
 				try {
-//					mContinuousDataSocket.setSoTimeout(READ_TIMEOUT);
-//					byte[] buf = new byte[DATAGRAM_BUFFER_SIZE];
-//					DatagramPacket packet = new DatagramPacket(buf, buf.length);
-//					
-//					long then = 0;
-					
 					Socket conn = mSocket2.accept();
-					mSocket2.close();
-					DataInputStream input = new DataInputStream(conn.getInputStream());
+					conn.setSoTimeout(1000);
+					DataInputStream input = new DataInputStream(
+							conn.getInputStream());
 
 					while (!Thread.interrupted()) {
-						
+
 						// parse sensor data
-						for (int i = 0; i < mNumberOfEvents; i++) {
+						// for (int i = 0; i < mNumberOfEvents; i++) {
+						try {
 							int type = input.readInt();
 							int accuracy = input.readInt();
 							int valLength = input.readInt();
@@ -426,42 +422,13 @@ class DataReceiver extends Observable {
 							mDispatchers.get(type).putEvent(
 									new SensorEvent(type, accuracy, System
 											.nanoTime(), values));
+						} catch (SocketTimeoutException e) {
+							// just try again
 						}
 
-						// receive data
-//						try {
-//							mContinuousDataSocket.receive(packet);
-//							
-//							// test time
-//							long now = System.currentTimeMillis();
-//							System.out.println(now - then);
-//							then = now;
-//							
-//							byte[] payload = packet.getData();
-//							DataInputStream input = new DataInputStream(
-//									new ByteArrayInputStream(payload));
-//
-//							// parse sensor data
-//							for (int i = 0; i < mNumberOfEvents; i++) {
-//								int type = input.readInt();
-//								int accuracy = input.readInt();
-//								int valLength = input.readInt();
-//								float[] values = new float[valLength];
-//								for (int j = 0; j < valLength; j++) {
-//									values[j] = input.readFloat();
-//								}
-//
-//								// put into dispatcher
-//								mDispatchers.get(type).putEvent(
-//										new SensorEvent(type, accuracy, System
-//												.nanoTime(), values));
-//							}
-//						} catch (SocketTimeoutException e) {
-//							// just check for interrupt and try again
-//						}
 					}
 
-					mContinuousDataSocket.close();
+					mSocket2.close();
 					conn.close();
 				} catch (IOException e) {
 					e.printStackTrace();
