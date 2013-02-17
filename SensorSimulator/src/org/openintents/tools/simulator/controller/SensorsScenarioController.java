@@ -127,6 +127,7 @@ public class SensorsScenarioController {
 				// load scenario from xml
 				if (selectedFile != null) {
 					XMLUtil.loadScenarioFromXml(selectedFile, mModel);
+					mModel.getSensorSimulatorModel().getSensorSimulator().printStatus("Scenario successfully loaded");
 				}
 
 				int size = mModel.getStates().size();
@@ -144,6 +145,7 @@ public class SensorsScenarioController {
 				File file = getSavingFile();
 				if (file != null) {
 					XMLUtil.saveScenarioToXml(file, mModel);
+					mModel.getSensorSimulatorModel().getSensorSimulator().printStatus("Scenario successfully saved");
 				}
 			}
 		});

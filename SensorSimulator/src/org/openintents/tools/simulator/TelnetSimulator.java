@@ -35,7 +35,7 @@ import org.openintents.tools.simulator.view.telnet.addons.GPSAddonView;
 public class TelnetSimulator {
 	private SensorSimulatorMain mMain;
 
-	public TelnetSimulatorModel model = new TelnetSimulatorModel();
+	public TelnetSimulatorModel model = new TelnetSimulatorModel(this);
 	public TelnetSimulatorView view = new TelnetSimulatorView(model);
 	public TelnetSimulatorController ctrl = new TelnetSimulatorController(
 			model, view);

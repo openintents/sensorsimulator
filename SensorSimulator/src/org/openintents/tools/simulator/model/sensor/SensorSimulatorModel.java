@@ -91,6 +91,10 @@ public class SensorSimulatorModel {
 	private int mDelay;
 	private SensorSimulator mSensorSimulator;
 
+	public SensorSimulator getSensorSimulator() {
+		return mSensorSimulator;
+	}
+	
 	public SensorSimulatorModel(SensorSimulator sensorSimulator) {
 		mSensorSimulator = sensorSimulator;
 		// Initialize variables

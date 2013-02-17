@@ -33,6 +33,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import org.openintents.tools.simulator.TelnetSimulator;
+
 /**
  * TelnetServer creates telnet connection with emulator's or Android's command
  * port. Once we connect with command port we only need to send correct

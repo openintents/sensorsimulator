@@ -137,7 +137,7 @@ public class SensorSimulatorController implements WindowListener {
 				.getGyroscope()));
 
 		mSensorTabController = new AllSensorsController(
-				view.getAllSensorsView(), mSensors);
+				view.getAllSensorsView(), mSensors, mSensorSimulatorModel);
 
 		JButton sensorPortButton = view.getSensorPortButton();
 		sensorPortButton.addActionListener(new ActionListener() {

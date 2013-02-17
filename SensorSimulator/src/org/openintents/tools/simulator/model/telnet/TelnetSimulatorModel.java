@@ -16,6 +16,7 @@
 
 package org.openintents.tools.simulator.model.telnet;
 
+import org.openintents.tools.simulator.TelnetSimulator;
 import org.openintents.tools.simulator.model.telnet.addons.BatteryAddonModel;
 import org.openintents.tools.simulator.model.telnet.addons.GPSAddonModel;
 
@@ -37,12 +38,13 @@ public class TelnetSimulatorModel {
 	// Servers
 	// Telnet server variable
 	private TelnetServer mTelnetServer;
-
+	private TelnetSimulator mTelnetSimulator;
+	
 	private int mTelnetPort;
 
-	public TelnetSimulatorModel() {
+	public TelnetSimulatorModel(TelnetSimulator telnetSimulator) {
 		mTelnetPort = 5554;
-
+		mTelnetSimulator = telnetSimulator;
 		// Set up the servers
 		mTelnetServer = new TelnetServer();
 
@@ -62,6 +64,7 @@ public class TelnetSimulatorModel {
 	public void connectViaTelnet(int port) {
 		mTelnetPort = port;
 		mTelnetServer.connect(port);
+		mTelnetSimulator.printStatus("Telnet connection started");
 	}
 
 	public int getPort() {
