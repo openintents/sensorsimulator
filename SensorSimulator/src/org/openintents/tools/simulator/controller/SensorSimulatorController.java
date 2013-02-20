@@ -150,7 +150,7 @@ public class SensorSimulatorController implements WindowListener {
 		// set tabs for each sensor
 		JPanel tabbedPanel = view.getSensorsButtonsPanel();
 		for (final SensorController sensorCtrl : mSensors) {
-			sensorCtrl.setTab(tabbedPanel);
+			sensorCtrl.setTab(tabbedPanel,mSensorSimulatorModel.getSensorSimulator());
 		}
 		mSensorTabController.setEnabledSensors();
 

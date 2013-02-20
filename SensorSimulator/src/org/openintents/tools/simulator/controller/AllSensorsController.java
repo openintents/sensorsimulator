@@ -61,9 +61,9 @@ public class AllSensorsController {
 		Vector<SensorController> localSensors = mSensors;
 		for (SensorController sensor : localSensors) {
 			if (phoneSensors.sensors.contains(sensor.getName())) {
-				sensor.setEnable(true);
+				sensor.setEnable(true,null);
 			} else {
-				sensor.setEnable(false);
+				sensor.setEnable(false,null);
 			}
 		}
 	}
