@@ -78,7 +78,7 @@ public class SensorRecordFromDeviceActivity extends Activity {
 		ArrayList<SimpleSensor> sensorsObjects = new ArrayList<SimpleSensor>();
 		// get saved sensors
 		// if enableSensor[5] <=> sensor of type 5 (light) is enabled
-		boolean[] enableSensor = new boolean[SimpleSensor.MAX_SENSORS];
+		boolean[] enableSensor = new boolean[SimpleSensor.MAX_SENSORS + 1];
 		String[] savedSensorsString = mPreferences.getString(
 				PREF_SUPPORTED_SENSORS, "").split(" ");
 		for (String savedSensor : savedSensorsString) {
@@ -87,7 +87,7 @@ public class SensorRecordFromDeviceActivity extends Activity {
 				enableSensor[type] = true;
 			}
 		}
-		for (int type = 1; type < SimpleSensor.MAX_SENSORS; type++) {
+		for (int type = 1; type <= SimpleSensor.MAX_SENSORS; type++) {
 			sensorsObjects.add(new SimpleSensor(type, enableSensor[type]));
 		}
 
