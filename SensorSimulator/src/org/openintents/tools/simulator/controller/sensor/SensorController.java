@@ -24,6 +24,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.openintents.tools.simulator.Global;
+import org.openintents.tools.simulator.SensorSimulator;
 import org.openintents.tools.simulator.model.sensor.sensors.OrientationModel;
 import org.openintents.tools.simulator.model.sensor.sensors.SensorModel;
 import org.openintents.tools.simulator.model.sensor.sensors.WiiAccelerometerModel;
@@ -146,24 +147,28 @@ public abstract class SensorController {
 		return mSensorView;
 	}
 
-	public void setEnable(boolean enabled) {
+	public void setEnable(boolean enabled, SensorSimulator sensorSimulator) {
 		mSensorModel.setEnabled(enabled);
 		mSensorView.setEnabled(enabled);
 		SensorButton sensorButton = mSensorView.getSensorButton();
-		if (enabled) {
-			mSensorsButtons.add(sensorButton);
-		} else {
-			mSensorsButtons.remove(sensorButton);
+		if(sensorSimulator != null) {
+			if (enabled) {
+				sensorSimulator.printStatus(sensorButton.getText() + " enabled" );
+				mSensorsButtons.add(sensorButton);
+			} else {
+				sensorSimulator.printStatus(sensorButton.getText() + " disabled" );
+				mSensorsButtons.remove(sensorButton);
+			}
 		}
 	}
 
-	public void setTab(JPanel tabbedPanel) {
+	public void setTab(JPanel tabbedPanel, final SensorSimulator sensorSimulator) {
 		mSensorsButtons = tabbedPanel;
 		mEnableBtn = mSensorView.getEnabled();
 		mEnableBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				setEnable(!mSensorModel.isEnabled());
+				setEnable(!mSensorModel.isEnabled(), sensorSimulator);
 			}
 		});
 	}

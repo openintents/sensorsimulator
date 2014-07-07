@@ -22,6 +22,7 @@ import java.util.Vector;
 import javax.swing.JComboBox;
 
 import org.openintents.tools.simulator.controller.sensor.SensorController;
+import org.openintents.tools.simulator.model.sensor.SensorSimulatorModel;
 import org.openintents.tools.simulator.util.PhoneSensors;
 import org.openintents.tools.simulator.view.sensor.AllSensorsView;
 
@@ -35,11 +36,13 @@ public class AllSensorsController {
 	private AllSensorsView mView;
 	private Vector<SensorController> mSensors;
 	protected String mChosenValue;
-
+	private SensorSimulatorModel mModel;
+	
 	public AllSensorsController(final AllSensorsView view,
-			Vector<SensorController> sensors) {
+			Vector<SensorController> sensors, SensorSimulatorModel model) {
 		mView = view;
 		mSensors = sensors;
+		mModel = model;
 		final JComboBox comboBox = view.getSensorsComboBox();
 		mChosenValue = (String) comboBox.getSelectedItem();
 		comboBox.addActionListener(new ActionListener() {
@@ -47,6 +50,7 @@ public class AllSensorsController {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox cb = (JComboBox) e.getSource();
 				mChosenValue = (String) cb.getSelectedItem();
+				mModel.getSensorSimulator().printStatus(mChosenValue + " configuration loaded");
 				setEnabledSensors();
 			}
 		});
@@ -57,9 +61,9 @@ public class AllSensorsController {
 		Vector<SensorController> localSensors = mSensors;
 		for (SensorController sensor : localSensors) {
 			if (phoneSensors.sensors.contains(sensor.getName())) {
-				sensor.setEnable(true);
+				sensor.setEnable(true,null);
 			} else {
-				sensor.setEnable(false);
+				sensor.setEnable(false,null);
 			}
 		}
 	}
